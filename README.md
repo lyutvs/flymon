@@ -1,8 +1,11 @@
 # FlyMon
 
-MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션. M0 단계: 엔진과 flybrain 측정값 재현.
+MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
+M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
+
+**M1 결과: 통과 (풀 게이트 MAX − RND 승률 0.319 ≥ 0.15, 95% CI [0.291, 0.344])**
 
 ## 측정된 것 / 우리가 정한 것 / 안 된 것
 
@@ -86,6 +89,14 @@ MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션. M0 단계: 엔진�
   (PPL101은 휴지 ~119 Hz 상시 발화로 기각), PPL105 새 프로토콜 0/8(disc 8/8),
   trace 스케일 10/5 실행 2/8(disc 4/8, 기록용으로만 보관, 채택 안 함). 후속 과제는 단기 시냅스 억압
   (Tsodyks–Markram STD)이며 M0에는 없다. M0는 이 기준 실패를 안은 채 **부분 통과**로 닫는다.
+- **실제 M1 파일럿 측정**(뇌 없음, 팔당 16마리 × 100배틀, 상대 SimpleHeuristicsPlayer, 서버 난수 비고정):
+  승률 RND 0.152 · MAX 0.471 · WEAK-RND 0.145 · WEAK-MAX 0.485, 동점·미완료 0. 마리 간 SD는 이항 하한과 같다
+  (마리 수준 추가 분산 ≈ 0). 약한 코치(교체·보조기 없음)와 강한 코치의 승률이 같다 — 이 풀에서 승률 차이는 공격기 선택이
+  만든다. 결정 제공자가 결정 레코드의 82–83%를 맡고 후보는 평균 2.47개다. 요약 `results/summary/m1_pilot.json`,
+  일정 `results/summary/schedule_m1.json`, 자세한 것은 스펙 부록 B.
+- **우리가 정한 것(M1)**: 16마리 풀과 기술 허용 목록(`docs/pool.md`, Showdown `validate-team gen1ou`가 최종 권위), 코치 v1 =
+  poke-env SimpleHeuristicsPlayer 규칙(스탯 추정이 3세대 이후 공식이라 1세대에서는 근사), MAX = 코치 자체의 공격 점수,
+  라우터(공격기 & 후보 ≥ 2 → 제공자), 귀속 규칙(직접 피해만, 잔여·대타·빗나감·불확실은 무신호), 배리어(100 ms 마감 또는 활성 전원 대기).
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -109,6 +120,20 @@ PASS / PARTIAL / FAIL 한 줄을 찍고 `gate` 블록에 그대로 기록한다)
 - `sparsity`는 도파민 구획 표를 `results/summary/compartments.json`으로 내보낸다(PPL105·PAM08의 core 행 포함).
 - `conditioning`의 워커는 각자 커넥톰 전체(약 1–2 GB)를 올린다. `--jobs`는 단일 워커 실행으로 메모리를 잰 뒤 정한다
   (기본값 `min(4, CPU 수)`).
+
+### M1 배틀 환경
+
+    bash scripts/install_showdown.sh                      # pokemon-showdown 0.11.11 고정 설치(npm ci)
+    uv run python -m flymon.battle.validate_pool --write-docs
+    uv run python scripts/pilot_no_brain.py --arm RND --flies 16 --battles 100
+    uv run python scripts/pilot_no_brain.py --arm MAX --flies 16 --battles 100
+    uv run python scripts/pilot_no_brain.py --arm WEAK-RND --flies 16 --battles 100
+    uv run python scripts/pilot_no_brain.py --arm WEAK-MAX --flies 16 --battles 100
+    uv run python scripts/pilot_no_brain.py --gate         # MAX − RND ≥ 0.15 → results/summary/m1_pilot.json
+
+- 서버는 항상 127.0.0.1에만 바인딩된다(`flymon/battle/server.py`). 포트 충돌은 `lsof -nP -iTCP:<port>`로 확인한다.
+- 팔은 한 번에 하나씩 돌린다(상대 계정 이름이 팔 사이에 겹친다). 팔당 1,600배틀은 수 분이다.
+- `tests/battle/test_server.py`·`test_fly_coach_player.py`는 서버가 설치돼 있지 않으면 skip된다.
 
 ### 학습 중 보기
 
