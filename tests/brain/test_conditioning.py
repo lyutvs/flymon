@@ -6,7 +6,8 @@ import numpy as np
 import pytest
 
 from flymon.brain.circuits import Populations, compartments
-from flymon.brain.conditioning import D, Readout, arms, disc, probe, run_arm, train_block
+from flymon.brain.conditioning import (D, D_graded, Readout, arms, disc, disc_graded, probe, run_arm,
+                                       train_block)
 from flymon.brain.config import Params
 from flymon.brain.engine_cpu import Engine
 from flymon.brain.plasticity import Plasticity
@@ -31,6 +32,19 @@ def test_disc_and_D():
     assert disc(0, 0) == pytest.approx(0.0)
     ro = Readout(a_core=np.array([0]), p_core=np.array([1]))
     assert D(ro, {"A": 3, "P": 1}, {"A": 1, "P": 3}) == pytest.approx(0.5 - (-0.5))
+
+
+def test_disc_graded_is_not_saturated():
+    """The classic index pins to -1 as soon as one count is 0; the graded one still reports how
+    big the surviving response is relative to the naive total."""
+    assert disc(0, 10) == pytest.approx(-1.0)
+    assert disc_graded(0, 10, 40) == pytest.approx(-0.25)
+    assert disc_graded(0, 40, 40) == pytest.approx(-1.0)
+    assert disc_graded(0, 0, 0) == pytest.approx(0.0)       # empty naive total -> no signal, not a divide by zero
+    assert disc_graded(5, 5, 0) == pytest.approx(0.0)
+    ro = Readout(a_core=np.array([0]), p_core=np.array([1]))
+    assert D_graded({"A": 0, "P": 10}, {"A": 10, "P": 0}, 40, 20) == pytest.approx(-0.25 - 0.5)
+    assert D(ro, {"A": 0, "P": 10}, {"A": 10, "P": 0}) == pytest.approx(-1.0 - 1.0)
 
 
 def test_arms_use_requested_types():
@@ -74,7 +88,26 @@ def test_noplast_arm_gives_exactly_zero(synthetic_connectome):
     c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
     r = run_arm(eng, pl, pops, ro, a, b, 1.0, seed=2, arm="noplast", trials=2, present_ms=100, gap_ms=20,
                 settle_ms=50, read_ms=100)
-    assert r["dD"] == 0.0 and r["weights_frac"] == pytest.approx(1.0)
+    assert r["dD"] == 0.0 and r["dD_disc"] == 0.0 and r["weights_frac"] == pytest.approx(1.0)
+
+
+def test_run_arm_reports_both_indices_and_counts(synthetic_connectome):
+    """Both indices and the raw probe counts they are computed from travel with every arm."""
+    c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
+    r = run_arm(eng, pl, pops, ro, a, b, 1.0, seed=2, arm="noplast", trials=2, present_ms=100, gap_ms=20,
+                settle_ms=50, read_ms=100)
+    assert set(r) == {"arm", "seed", "D_pre", "D_post", "dD", "D_pre_disc", "D_post_disc", "dD_disc",
+                      "counts", "weights_frac", "w_frac_a_core", "w_frac_p_core"}
+    assert r["dD"] == 0.0 and r["dD_disc"] == 0.0           # no plasticity: both indices are exactly 0
+    assert set(r["counts"]) == {"pre_plus", "pre_minus", "post_plus", "post_minus"}
+    assert all(set(v) == {"A", "P"} for v in r["counts"].values())
+    assert r["counts"]["pre_plus"] == r["counts"]["post_plus"]   # same seed, frozen weights
+    pre, post = r["counts"]["pre_plus"], r["counts"]["pre_minus"]
+    norm_a = pre["A"] + post["A"]
+    norm_p = pre["P"] + post["P"]
+    assert r["D_pre"] == pytest.approx(D_graded(pre, post, norm_a, norm_p))
+    assert r["D_pre_disc"] == pytest.approx(D(ro, pre, post))
+    assert r["w_frac_a_core"] == pytest.approx(1.0) and r["w_frac_p_core"] == pytest.approx(1.0)
 
 
 def test_train_block_changes_weights_when_dan_driven(synthetic_connectome):

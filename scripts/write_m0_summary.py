@@ -5,7 +5,9 @@ Reads the data manifest and the two gate result files, picks the sparsity grid
 row matching the current Params() defaults, checks that row against the M0 gate
 (spec 5: KC sparsity 3-7%, overlap at or below chance, trimmed MBON baseline 3-4 Hz) and
 freezes those defaults into the summary. A row that fails the gate is never
-frozen. Run after both reproduce_flybrain_measurements.py subcommands.
+frozen. The conditioning block carries the graded gate statistics (`n_flip`, per-arm `mean_dD`) and,
+when the run recorded it, the saturating index's `n_flip_disc` alongside.
+Run after both reproduce_flybrain_measurements.py subcommands.
 """
 from __future__ import annotations
 
@@ -67,6 +69,9 @@ def main() -> None:
                          "reward_type": co.get("params", {}).get("reward_type", "PAM08"),
                          "arms": co["arms"]},
     }
+    # the saturating index, when the run recorded it (older runs predate the graded index)
+    if "n_flip_disc" in co:
+        out["conditioning"]["n_flip_disc"] = co["n_flip_disc"]
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=2))
     print(f"wrote {OUT}")

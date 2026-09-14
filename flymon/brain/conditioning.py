@@ -3,14 +3,18 @@
 Protocol (reproduction target: flybrain conditioning4c):
   pre-test  : probe CS+ and CS- with the same noise seed `seed` (plasticity off; training uses the
               disjoint seed block 1_000_000 + seed * 1000 + trial so probes never see a training seed)
-  training  : N trials of CS+ paired with one DAN type (punishment, default PPL105; reward,
-              default PAM08 - the real-data gate uses PPL101 for punishment, see README),
+  training  : N trials of CS+ paired with one DAN type (punishment PPL105, reward PAM08; the
+              real-data gate uses the same pair - PPL101 was tried and rejected, see README),
               then CS- paired with the other. The "reversed" arm keeps the odour identities and
               the readout frame fixed and exchanges which dopamine type is paired with which
               odour, so the sign of dD must flip.
   post-test : same probes, same seed -> the no-plasticity arm is exactly 0.0
-Readout D = disc over the punishment type's core (approach MBONs) minus disc over the reward type's
-core (avoidance MBONs).
+Readout D = the discrimination index over the punishment type's core (approach MBONs) minus the
+same index over the reward type's core (avoidance MBONs). The primary index is the *graded* one
+(`disc_graded`: CS+ minus CS- over the naive pre-training total of that set) because the classic
+`(x+ - x-)/(x+ + x-)` saturates at +-1 as soon as one count is 0, which in the sparse regime is the
+normal case and hides real graded learning. The classic index is still computed and reported as
+`*_disc` for comparison.
 """
 from __future__ import annotations
 
@@ -47,11 +51,29 @@ class Readout:
 
 
 def disc(x_plus: float, x_minus: float) -> float:
+    """The classic (saturating) discrimination index. Kept for comparison only: see `disc_graded`."""
     return float((x_plus - x_minus) / (x_plus + x_minus + 1e-9))
+
+
+def disc_graded(x_plus: float, x_minus: float, norm: float) -> float:
+    """The primary index: the CS+ / CS- difference in units of the *naive* total on the same set.
+
+    `disc` divides by the current total, so it pins to +-1 whenever one count is 0 and then cannot
+    move at all. In the sparse regime that is the normal case (the PPL105 core's only responsive
+    cell answers exactly one odour: 0 vs 27-41 spikes / 600 ms), so a real, graded depression of the
+    responsive odour (A- falling 33 -> 10) leaves disc_A = -1 unchanged - a measurement artefact,
+    not absence of learning. Normalising by a fixed pre-training total keeps the index graded.
+    """
+    return float((x_plus - x_minus) / max(norm, 1))
 
 
 def D(ro: Readout, plus: dict, minus: dict) -> float:
     return disc(plus["A"], minus["A"]) - disc(plus["P"], minus["P"])
+
+
+def D_graded(plus: dict, minus: dict, norm_a: float, norm_p: float) -> float:
+    """Graded readout D, with `norm_a`/`norm_p` the naive (pre-training) totals of the same arm."""
+    return disc_graded(plus["A"], minus["A"], norm_a) - disc_graded(plus["P"], minus["P"], norm_p)
 
 
 def probe(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, odor, strength: float, seed: int,
@@ -133,15 +155,19 @@ def run_arm(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, cs_p
             settle_ms: float = 800.0, read_ms: float = 600.0,
             punish_type: str = "PPL105", reward_type: str = "PAM08", on_event=None) -> dict:
     """One arm at one seed. `on_event(kind, **fields)`, when given, only observes: "arm_start",
-    each "probe" (phase, cs, A, P), each "presentation" (trial, cs, dan) and "arm_end" (the result)."""
+    each "probe" (phase, cs, A, P), each "presentation" (trial, cs, dan) and "arm_end" (the result).
+
+    "D_pre"/"D_post"/"dD" are the *graded* index (`D_graded`), normalised by this arm's own naive
+    pre-training totals; the saturating classic index is kept alongside as "D_pre_disc"/"D_post_disc"/
+    "dD_disc", and the four raw probe count pairs under "counts"."""
     emit = on_event or (lambda kind, **fields: None)
 
-    def probes(phase: str) -> float:
+    def probes(phase: str) -> dict:
         counts = {cs: probe(engine, pl, pops, ro, odor, strength, seed, settle_ms, read_ms)
                   for cs, odor in (("plus", cs_plus), ("minus", cs_minus))}
         for cs, c in counts.items():
             emit("probe", phase=phase, cs=cs, **c)
-        return D(ro, counts["plus"], counts["minus"])
+        return counts
 
     punish, reward, plastic = arms(punish_type, reward_type)[arm]
     emit("arm_start", arm=arm, seed=seed)
@@ -152,7 +178,21 @@ def run_arm(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, cs_p
                 settle_ms, on_event=on_event)
     pl.set_enabled(True)
     post = probes("post")
-    result = {"arm": arm, "seed": seed, "D_pre": pre, "D_post": post, "dD": post - pre, "weights_frac": pl.weights_frac()}
+    # the naive totals of this arm and seed: a fixed yardstick, so post-training change is graded
+    norm_a = pre["plus"]["A"] + pre["minus"]["A"]
+    norm_p = pre["plus"]["P"] + pre["minus"]["P"]
+    g_pre = D_graded(pre["plus"], pre["minus"], norm_a, norm_p)
+    g_post = D_graded(post["plus"], post["minus"], norm_a, norm_p)
+    d_pre = D(ro, pre["plus"], pre["minus"])
+    d_post = D(ro, post["plus"], post["minus"])
+    result = {"arm": arm, "seed": seed,
+              "D_pre": g_pre, "D_post": g_post, "dD": g_post - g_pre,
+              "D_pre_disc": d_pre, "D_post_disc": d_post, "dD_disc": d_post - d_pre,
+              "counts": {"pre_plus": pre["plus"], "pre_minus": pre["minus"],
+                         "post_plus": post["plus"], "post_minus": post["minus"]},
+              "weights_frac": pl.weights_frac(),
+              "w_frac_a_core": pl.weights_frac_by_mbon_set(ro.a_core),
+              "w_frac_p_core": pl.weights_frac_by_mbon_set(ro.p_core)}
     emit("arm_end", **result)
     return result
 
@@ -162,9 +202,9 @@ def reversal_test(engine, pl, pops, ro, cs_plus, cs_minus, strength, seeds,
     """Run all five arms at every seed for the chosen dopamine channels.
 
     The readout frame follows the channels: the approach set is the punishment type's core and the
-    avoidance set is the reward type's core (`Readout.from_compartments`). On real data the gate uses
-    PPL101 (gamma1pedc, core MBON11) as the punishment channel because the PPL105 core is
-    odour-selective or silent in our engine - see README ("우리가 정한 것").
+    avoidance set is the reward type's core (`Readout.from_compartments`). The real-data gate keeps
+    PPL105/PAM08: PPL105 is endogenously quiet and odour-specific, while PPL101 fires tonically
+    (~119 Hz at rest) and carries no phasic contrast - see README ("우리가 정한 것").
     """
     names = arms(punish_type, reward_type)
     per_seed = {s: {arm: run_arm(engine, pl, pops, ro, cs_plus, cs_minus, strength, s, arm,
@@ -174,14 +214,21 @@ def reversal_test(engine, pl, pops, ro, cs_plus, cs_minus, strength, seeds,
 
 
 def summarise(per_seed: dict) -> dict:
+    """Gate statistics on the graded `dD`, with the saturating index reported alongside
+    (`n_flip_disc`, per-arm `mean_dD_disc`) so the two can be compared run to run."""
     seeds = list(per_seed)
-    flips = sum(1 for s in seeds if np.sign(per_seed[s]["both"]["dD"]) == -np.sign(per_seed[s]["reversed"]["dD"])
-                and per_seed[s]["both"]["dD"] != 0)
+
+    def n_flip(key: str) -> int:
+        return sum(1 for s in seeds
+                   if np.sign(per_seed[s]["both"][key]) == -np.sign(per_seed[s]["reversed"][key])
+                   and per_seed[s]["both"][key] != 0)
+
     # arm names do not depend on the channels, so the default ARMS keys are the full set
     per_arm = {arm: {"mean_dD": float(np.mean([per_seed[s][arm]["dD"] for s in seeds])),
                      "sd_dD": float(np.std([per_seed[s][arm]["dD"] for s in seeds])),
+                     "mean_dD_disc": float(np.mean([per_seed[s][arm]["dD_disc"] for s in seeds])),
                      "mean_weights_frac": float(np.mean([per_seed[s][arm]["weights_frac"] for s in seeds]))}
                for arm in ARMS}
-    return {"n_seeds": len(seeds), "n_flip": flips,
+    return {"n_seeds": len(seeds), "n_flip": n_flip("dD"), "n_flip_disc": n_flip("dD_disc"),
             "noplast_max_abs_dD": float(max(abs(per_seed[s]["noplast"]["dD"]) for s in seeds)),
             "arms": per_arm, "per_seed": {str(s): per_seed[s] for s in seeds}}

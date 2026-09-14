@@ -49,8 +49,8 @@ def test_run_arm_reports_probes_presentations_and_result(synthetic_connectome):
     probes = [f for k, f in events if k == "probe"]
     assert [(f["phase"], f["cs"]) for f in probes] == [("pre", "plus"), ("pre", "minus"),
                                                        ("post", "plus"), ("post", "minus")]
-    assert D(ro, probes[0], probes[1]) == r["D_pre"]
-    assert D(ro, probes[2], probes[3]) == r["D_post"]
+    assert D(ro, probes[0], probes[1]) == r["D_pre_disc"]        # events carry the raw counts both
+    assert D(ro, probes[2], probes[3]) == r["D_post_disc"]       # indices are computed from
     assert events[-1] == ("arm_end", r)
 
 
