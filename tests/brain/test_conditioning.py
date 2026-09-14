@@ -83,6 +83,29 @@ def test_train_block_changes_weights_when_dan_driven(synthetic_connectome):
     assert pl.weights_frac() < 1.0
 
 
+def test_settle_window_freezes_weights_but_adapts_baseline(synthetic_connectome):
+    """Phasic, not absolute, dopamine teaches: a DAN level the baseline has settled on during the
+    settle window depresses far less than a pulse delivered after the settle. Both arms deliver
+    dopamine on all four presentations, so only the timing differs."""
+    c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
+    kw = dict(trials=2, present_ms=300, gap_ms=20, settle_ms=800)   # settle 800 = 4 x da_baseline_ms
+
+    # tonic/endogenous DAN activity: driven before train_block and never quieted, so it is already
+    # on during the settle window and the baseline adapts to it (quiet_dan is a no-op here)
+    pl.quiet_dan = lambda: None
+    pl.drive_dan("PAM08", 70.0)
+    train_block(eng, pl, pops, a, b, 1.0, seed=2, punish=None, reward=None, **kw)
+    wf_tonic = pl.weights_frac()
+
+    # the normal protocol: the same DAN, same number of presentations, driven only after the settle
+    c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
+    train_block(eng, pl, pops, a, b, 1.0, seed=2, punish="PAM08", reward="PAM08", **kw)
+    wf_phasic = pl.weights_frac()
+
+    assert wf_tonic > wf_phasic
+    assert (1.0 - wf_tonic) < 0.5 * (1.0 - wf_phasic)   # adapted-to DAN teaches at most half as much
+
+
 def test_recovery_applied_once_per_dopamine_pulse(synthetic_connectome):
     c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
     calls = []

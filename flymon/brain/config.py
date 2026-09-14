@@ -37,7 +37,8 @@ class Params:
     learn_rate: float = 3e-4
     kc_trace_ms: float = 200.0
     da_trace_ms: float = 100.0
-    da_baseline_ms: float = 1000.0
+    da_baseline_ms: float = 200.0   # short: the baseline must track the odour-evoked DAN level
+                                   # within a presentation so only phasic dopamine teaches
     kc_trace_scale: float = 40.0   # normalise a strongly driven KC trace to ~1
     da_trace_scale: float = 20.0   # normalise phasic dopamine at a core MBON to ~1
     min_weight_frac: float = 0.2

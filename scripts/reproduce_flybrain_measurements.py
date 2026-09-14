@@ -99,8 +99,9 @@ def _cond_worker(args):
 def cmd_conditioning(a):
     from multiprocessing import Pool
     params_dict = dict(learn_rate=a.learn_rate, kc_trace_scale=a.kc_trace_scale, da_trace_scale=a.da_trace_scale,
-                       recovery_per_pulse=a.recovery, kc_thresh=a.kc_thresh, apl_scale=a.apl_scale)
-    kw = dict(trials=a.trials, present_ms=a.present_ms)
+                       recovery_per_pulse=a.recovery, kc_thresh=a.kc_thresh, apl_scale=a.apl_scale,
+                       da_baseline_ms=a.da_baseline_ms)
+    kw = dict(trials=a.trials, present_ms=a.present_ms, settle_ms=a.settle_ms)
     viz = None
     if a.viz:
         import uuid
@@ -114,7 +115,7 @@ def cmd_conditioning(a):
             for s in range(a.seeds)]
     with Pool(a.jobs) as pool:
         per_seed = dict(pool.map(_cond_worker, jobs))
-    params_out = dict(params_dict, punish_type=a.punish_type, reward_type=a.reward_type)
+    params_out = dict(params_dict, punish_type=a.punish_type, reward_type=a.reward_type, settle_ms=a.settle_ms)
     out = {"params": params_out, "strength": a.strength, "trials": a.trials, **summarise(per_seed)}
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(out, indent=2))
@@ -145,6 +146,10 @@ def main():
     # flybrain used PPL105 punishment / PAM08 reward; the real-data gate overrides punishment to PPL101
     c.add_argument("--punish-type", default="PPL105"); c.add_argument("--reward-type", default="PAM08")
     c.add_argument("--kc-thresh", type=float, default=Params().kc_thresh); c.add_argument("--apl-scale", type=float, default=Params().apl_scale)
+    # phasic dopamine is measured against the odour-evoked DAN baseline: the settle window lets
+    # da_base catch up (weights frozen) before the pulse; 800 ms = 4 x da_baseline_ms
+    c.add_argument("--settle-ms", type=float, default=800.0)
+    c.add_argument("--da-baseline-ms", type=float, default=Params().da_baseline_ms)
     c.add_argument("--viz", action="store_true")                 # live Rerun viewer (uv sync --extra viz)
     c.add_argument("--viz-every", type=int, default=100)         # steps per rate window
     c.set_defaults(fn=cmd_conditioning)
