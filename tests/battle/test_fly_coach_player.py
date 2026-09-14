@@ -34,18 +34,32 @@ async def test_two_battles_end_and_log_turns(server, tmp_path):
         lines = (tmp_path / "log.jsonl").read_text().splitlines()
         assert len(lines) > 10
         recs = [json.loads(line) for line in lines]
-        assert {r["decider"] for r in recs} <= {"fly", "coach"}
-        assert all(r["coach_kind"] in ("attack", "support", "switch", "default") for r in recs)
-        assert any(r["decider"] == "fly" and len(r["candidates"]) >= 2 for r in recs)
-        assert any(r["outcome"] is not None for r in recs), "attribution never produced an outcome"
+        assert {r["kind"] for r in recs} == {"decision", "outcome"}
+        decisions = [r for r in recs if r["kind"] == "decision"]
+        outcomes = [r for r in recs if r["kind"] == "outcome"]
+        assert {r["decider"] for r in decisions} <= {"fly", "coach"}
+        assert all(r["coach_kind"] in ("attack", "support", "switch", "default") for r in decisions)
+        assert any(r["decider"] == "fly" and len(r["candidates"]) >= 2 for r in decisions)
+        assert outcomes, "attribution never produced an outcome"
+        assert all("outcome" not in r for r in decisions)
         stats = [me.battle_stats(t) for t in me.battles]
         assert all(s["fly_turns"] + s["coach_turns"] > 0 for s in stats)
         assert all(isinstance(s["won"], bool) for s in stats)
+        assert all(s["finished"] for s in stats)
         assert all(me.n_candidates_mean(t) >= 2.0 for t in me.battles if me.battle_stats(t)["fly_turns"])
-        # every battle attributed at least one of my action blocks, on the right side
-        for tag in me.battles:
-            assert me.attributors[tag].my_side == me.battles[tag].player_role
+        for tag, battle in me.battles.items():
+            # every battle attributed at least one of my action blocks, on the right side
+            assert me.attributors[tag].my_side == battle.player_role
             assert me.outcomes.get(tag)
+            mine = [r for r in outcomes if r["battle_tag"] == tag]
+            assert len(mine) == len(me.outcomes[tag])
+            # an outcome belongs to a turn in which I was asked to act and used a move
+            move_turns = {r["turn"] for r in decisions
+                          if r["battle_tag"] == tag and (r["decider"] == "fly" or r["coach_kind"] in ("attack", "support"))}
+            assert all(r["turn"] in move_turns for r in mine), (mine, sorted(move_turns))
+            # the last turn's outcome -- the KO/winning one -- reaches the log
+            assert mine[-1]["turn"] == battle.turn
+            assert mine[-1]["outcome"]["move_id"]
     finally:
         await me.ps_client.stop_listening()
         await opp.ps_client.stop_listening()

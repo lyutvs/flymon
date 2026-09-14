@@ -20,6 +20,11 @@ class FlyCoachPlayer(Player):
 
     Raw protocol lines are mirrored into a per-battle `TurnAttributor`, so each turn's `Outcome`
     (direct damage, effectiveness, KO by my move) is available as a reinforcement signal.
+
+    The JSONL log interleaves two record kinds, both carrying `battle_tag` and `turn`:
+    `"decision"` (what I chose that turn) and `"outcome"` (what the move I used that turn did).
+    They are written at different moments -- a turn's outcome is only known once the turn closes --
+    so they are separate records and are joined on `(battle_tag, turn)`.
     """
 
     def __init__(self, provider: DecisionProvider, coach: Coach, barrier: BatchBarrier | None = None,
@@ -32,6 +37,7 @@ class FlyCoachPlayer(Player):
         self.attributors: dict[str, TurnAttributor] = {}
         self.outcomes: dict[str, list] = {}
         self.turn_log: dict[str, list[dict]] = {}
+        self.turns: dict[str, int] = {}                 # last `|turn|N` seen, per battle
         self.player_id = self.username
         if barrier is not None:
             barrier.register(self.player_id)
@@ -45,11 +51,24 @@ class FlyCoachPlayer(Player):
             if battle is not None and battle.player_role:
                 att.my_side = battle.player_role
             for line in split_messages[1:]:
-                if len(line) > 1 and line[1] in ("turn", "upkeep") and att.has_block():
-                    self.outcomes.setdefault(tag, []).append(att.end_turn())
+                event = line[1] if len(line) > 1 else ""
+                if event in ("turn", "upkeep", "win", "tie"):
+                    self._close_turn(tag)   # a block closed at `|turn|N+1` still belongs to turn N
                 att.feed(line)
+                if event == "turn" and len(line) > 2:
+                    self.turns[tag] = int(line[2])
         # a `|request|` line in this message makes super() call choose_move synchronously
         await super()._handle_battle_message(split_messages)
+
+    def _close_turn(self, battle_tag: str) -> None:
+        """End the turn's attribution block, if I acted, and log its `Outcome` against that turn."""
+        att = self.attributors.get(battle_tag)
+        if att is None or not att.has_block():
+            return
+        outcome = att.end_turn()
+        self.outcomes.setdefault(battle_tag, []).append(outcome)
+        self._write({"battle_tag": battle_tag, "turn": self.turns.get(battle_tag, 0), "kind": "outcome",
+                     "outcome": asdict(outcome)})
 
     # ---- decision -------------------------------------------------------------------------
     async def choose_move(self, battle: AbstractBattle):
@@ -71,12 +90,13 @@ class FlyCoachPlayer(Player):
         return order
 
     def _log(self, battle, who, decision, cands, chosen) -> None:
-        outcomes = self.outcomes.get(battle.battle_tag)
-        rec = {"battle_tag": battle.battle_tag, "turn": battle.turn, "decider": who, "coach_kind": decision.kind,
-               "candidates": [m.id for m in cands],
-               "chosen": chosen.id if chosen else (decision.move.id if decision.move else None),
-               "outcome": asdict(outcomes[-1]) if outcomes else None}
+        rec = {"battle_tag": battle.battle_tag, "turn": battle.turn, "kind": "decision", "decider": who,
+               "coach_kind": decision.kind, "candidates": [m.id for m in cands],
+               "chosen": chosen.id if chosen else (decision.move.id if decision.move else None)}
         self.turn_log.setdefault(battle.battle_tag, []).append(rec)
+        self._write(rec)
+
+    def _write(self, rec: dict) -> None:
         if self.log_path:
             with open(self.log_path, "a") as f:
                 f.write(json.dumps(rec) + "\n")
@@ -87,7 +107,8 @@ class FlyCoachPlayer(Player):
         b = self._battles.get(battle_tag)
         return {"fly_turns": sum(r["decider"] == "fly" for r in recs),
                 "coach_turns": sum(r["decider"] == "coach" for r in recs),
-                "won": bool(b.won) if b is not None and b.won is not None else None}
+                "won": bool(b.won) if b is not None and b.won is not None else None,
+                "finished": bool(b.finished) if b is not None else False}
 
     def n_candidates_mean(self, battle_tag: str) -> float:
         """Mean number of attack candidates over the turns the fly decided (0.0 if it never did)."""
@@ -95,5 +116,6 @@ class FlyCoachPlayer(Player):
         return sum(counts) / len(counts) if counts else 0.0
 
     def _battle_finished_callback(self, battle: AbstractBattle) -> None:
+        self._close_turn(battle.battle_tag)   # a battle that ends without `|upkeep|` still logs its last turn
         if self.barrier is not None:
             self.barrier.unregister(self.player_id)

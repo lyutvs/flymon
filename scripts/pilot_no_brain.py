@@ -68,12 +68,18 @@ async def run_fly(arm: str, fly_id: int, sbs: list, cfg: ServerConfiguration, lo
                 raise RuntimeError(f"expected exactly one new battle for {sb.battle_id}, got {new}")
             battle, stats = me.battles[new[0]], me.battle_stats(new[0])
             records.append({"battle_id": sb.battle_id, "fly_id": fly_id, "battle_tag": new[0],
-                            "won": stats["won"], "turns": battle.turn, "fly_turns": stats["fly_turns"],
-                            "coach_turns": stats["coach_turns"], "n_candidates_mean": me.n_candidates_mean(new[0])})
+                            "won": stats["won"], "finished": stats["finished"], "turns": battle.turn,
+                            "fly_turns": stats["fly_turns"], "coach_turns": stats["coach_turns"],
+                            "n_candidates_mean": me.n_candidates_mean(new[0])})
     finally:
         await me.ps_client.stop_listening()
         await opp.ps_client.stop_listening()
     return records
+
+
+def _is_tie(r: dict) -> bool:
+    """Finished, but neither side won: a non-win that is not a loss."""
+    return bool(r["finished"]) and r["won"] is None
 
 
 def _per_fly(records: list[dict]) -> list[dict]:
@@ -82,7 +88,8 @@ def _per_fly(records: list[dict]) -> list[dict]:
         rs = [r for r in records if r["fly_id"] == fly_id]
         turns = sum(r["fly_turns"] + r["coach_turns"] for r in rs)
         fly_turns = sum(r["fly_turns"] for r in rs)
-        out.append({"fly_id": fly_id, "wins": sum(bool(r["won"]) for r in rs), "battles": len(rs),
+        out.append({"fly_id": fly_id, "wins": sum(r["won"] is True for r in rs), "battles": len(rs),
+                    "ties": sum(_is_tie(r) for r in rs),
                     "fly_turn_fraction": fly_turns / turns if turns else 0.0,
                     "n_candidates_mean": _mean([r["n_candidates_mean"] for r in rs if r["fly_turns"]])})
     return out
@@ -110,13 +117,16 @@ async def run_arm(args) -> dict:
     payload = {
         "arm": arm, "provider": ARMS[arm][0], "weak_coach": ARMS[arm][1],
         "n_flies": len(by_fly), "n_battles": len(records),
-        "win_rate": _mean([float(bool(r["won"])) for r in records]),
+        "win_rate": _mean([float(r["won"] is True) for r in records]),   # ties and unfinished are non-wins
+        "n_ties": sum(_is_tie(r) for r in records),
+        "n_unfinished": sum(not r["finished"] for r in records),
         "per_fly": per_fly, "battles": records,
         "schedule_path": str(sched_path), "log_dir": str(log_dir), "wall_clock_s": round(wall, 2),
     }
     path = out_dir / f"pilot_{arm}.json"
     path.write_text(json.dumps(payload, indent=1))
     print(f"{arm}: win_rate={payload['win_rate']:.3f} battles={payload['n_battles']} "
+          f"ties={payload['n_ties']} unfinished={payload['n_unfinished']} "
           f"flies={payload['n_flies']} wall={wall:.1f}s -> {path}")
     return payload
 
@@ -129,6 +139,7 @@ def _arm_summary(payload: dict) -> dict:
     turns = sum(r["fly_turns"] + r["coach_turns"] for r in records)
     rates = [p["wins"] / p["battles"] if p["battles"] else 0.0 for p in per_fly]
     return {"win_rate": payload["win_rate"], "n_battles": payload["n_battles"], "n_flies": payload["n_flies"],
+            "n_ties": payload["n_ties"], "n_unfinished": payload["n_unfinished"],
             "per_fly_win_rates": rates, "sd_across_flies": float(np.std(rates, ddof=1)) if len(rates) > 1 else 0.0,
             "fly_turn_fraction": sum(r["fly_turns"] for r in records) / turns if turns else 0.0,
             "n_candidates_mean": _mean([r["n_candidates_mean"] for r in records if r["fly_turns"]])}
@@ -155,11 +166,14 @@ def run_gate(args) -> dict:
         payload = json.loads(path.read_text())
         arms[arm] = _arm_summary(payload)
         schedule_path = payload.get("schedule_path", schedule_path)
+    unfinished = {a: s["n_unfinished"] for a, s in arms.items() if s["n_unfinished"]}
+    if unfinished:
+        print(f"WARNING: unfinished battles {unfinished}: the win rates are not trustworthy, gate fails")
     gap = (arms["MAX"]["win_rate"] - arms["RND"]["win_rate"]) if {"MAX", "RND"} <= set(arms) else None
     ci = (_bootstrap_ci(arms["MAX"]["per_fly_win_rates"], arms["RND"]["per_fly_win_rates"])
           if {"MAX", "RND"} <= set(arms) else None)
     summary = {"arms": arms, "gap_max_minus_rnd": gap, "gap_ci95": ci,
-               "gate_ok": bool(gap is not None and gap >= GATE_THRESHOLD),
+               "gate_ok": bool(gap is not None and gap >= GATE_THRESHOLD and not unfinished),
                "schedule_path": str(schedule_path) if schedule_path else None,
                "generated_at": datetime.now(timezone.utc).isoformat()}
     summary_path.parent.mkdir(parents=True, exist_ok=True)
