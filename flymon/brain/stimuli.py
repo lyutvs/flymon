@@ -31,15 +31,20 @@ def present(engine: Engine, pops: Populations, odor: Odor, strength: float) -> N
 
 def design_odor_pair(pops: Populations, k: int = 8, exclude=("ORN_DA1", "ORN_V"), seed: int = 0):
     """Two disjoint k-glomerulus odours with matched total receptor drive.
-    Sort candidate types by receptor count, take the 2k smallest-variance middle band, alternate A/B."""
+
+    Sort candidate types by receptor count and take a 2k-wide band, then alternate A/B so the
+    two odours interleave neighbouring receptor counts. Seed 0 takes the middle band; other
+    seeds draw a random band start so repeated designs vary.
+    """
     cand = [t for t in pops.receptor_types if t not in exclude]
     cand.sort(key=lambda t: len(pops.receptor_types[t]))
-    if len(cand) < 2 * k:
-        raise ValueError(f"need {2 * k} receptor types, have {len(cand)}")
-    mid = len(cand) // 2
-    band = cand[max(0, mid - k):mid + k]
-    rng = np.random.default_rng(seed)
-    if rng.random() < 0.5:
-        band = band[::-1]
+    n = len(cand)
+    if n < 2 * k:
+        raise ValueError(f"need {2 * k} receptor types, have {n}")
+    if seed == 0:
+        offset = (n - 2 * k) // 2
+    else:
+        offset = int(np.random.default_rng(seed).integers(0, n - 2 * k + 1))
+    band = cand[offset:offset + 2 * k]
     a_types, b_types = band[0::2], band[1::2]
     return channel_strengths(pops, a_types), channel_strengths(pops, b_types)
