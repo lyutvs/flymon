@@ -6,6 +6,9 @@
    "n_flies": 16,
    "n_ties": 0,
    "n_unfinished": 0,
+   "n_failed_flies": 0,
+   "wall_clock_s": 33.33,
+   "mean_turns": 24.728125,
    "per_fly_win_rates": [
     0.12,
     0.14,
@@ -34,6 +37,9 @@
    "n_flies": 16,
    "n_ties": 0,
    "n_unfinished": 0,
+   "n_failed_flies": 0,
+   "wall_clock_s": 500.6,
+   "mean_turns": 22.6525,
    "per_fly_win_rates": [
     0.42,
     0.47,
@@ -62,6 +68,9 @@
    "n_flies": 16,
    "n_ties": 0,
    "n_unfinished": 0,
+   "n_failed_flies": 0,
+   "wall_clock_s": 308.39,
+   "mean_turns": 24.52375,
    "per_fly_win_rates": [
     0.12,
     0.14,
@@ -90,6 +99,9 @@
    "n_flies": 16,
    "n_ties": 0,
    "n_unfinished": 0,
+   "n_failed_flies": 0,
+   "wall_clock_s": 449.16,
+   "mean_turns": 22.265,
    "per_fly_win_rates": [
     0.43,
     0.54,
@@ -120,5 +132,6 @@
  ],
  "gate_ok": true,
  "schedule_path": "results/m1/schedule.json",
- "generated_at": "2026-09-14T12:22:28.592596+00:00"
+ "schedule_committed_path": "results/summary/schedule_m1.json",
+ "generated_at": "2026-09-14T13:52:47.139211+00:00"
 }
