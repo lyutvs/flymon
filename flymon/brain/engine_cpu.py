@@ -84,13 +84,10 @@ class Engine:
             return out
         ptr, tgt, w = self.csc.ptr, self.csc.tgt, self.csc.w
         starts, ends = ptr[src], ptr[src + 1]
-        total = int((ends - starts).sum())
-        if total == 0:
-            return out
         idx = np.concatenate([tgt[a:b] for a, b in zip(starts, ends)])
         val = np.concatenate([w[a:b] for a, b in zip(starts, ends)])
-        np.add.at(out, idx, val)
-        return out
+        # bincount, not np.add.at: the unbuffered ufunc path dominates per-step cost at 162k neurons
+        return np.bincount(idx, weights=val, minlength=self.N).astype(np.float32)
 
     def step(self) -> np.ndarray:
         p = self.p

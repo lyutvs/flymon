@@ -108,3 +108,26 @@ def test_kc_threshold_normalised_by_pn_input(synthetic_connectome):
     expect = 7.0 * 1.5 * np.clip(pn_in[pops.kc] / med, 0.5, 3.0)
     np.testing.assert_allclose(eng.v_th[pops.kc], expect, rtol=1e-6)
     assert (eng.v_th[pops.mbon] == 7.0).all()
+
+
+def test_on_step_hook_called_after_spikes_are_queued(synthetic_connectome):
+    eng, c = _engine(synthetic_connectome)
+    i = int(np.flatnonzero(c.sc == "descending_neuron")[0])
+    eng.set_ext([i], 1000.0)     # dv = 50 mV -> fires on the first step
+    calls, seen = [], []
+
+    def hook(engine, fired):
+        seen.append(engine)
+        calls.append((engine.t_ms, fired.copy(), len(engine.delay), engine.delay[-1].copy()))
+
+    eng.on_step = hook
+    for _ in range(3):
+        eng.step()
+
+    assert len(calls) == 3
+    assert all(e is eng for e in seen)
+    t0, fired0, dlen0, queued0 = calls[0]
+    assert i in fired0
+    assert t0 == 1.0                                   # the hook runs after t_ms advances
+    np.testing.assert_array_equal(queued0, fired0)     # this step's spikes are already queued
+    assert [dlen for _, _, dlen, _ in calls] == [eng.p.dly_steps()] * 3
