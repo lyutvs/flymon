@@ -105,3 +105,45 @@ async def test_all_players_terminating_cancels_pending_request():
     with pytest.raises(asyncio.CancelledError):
         await task
     assert calls == []                                   # never run with an empty batch
+
+
+async def test_short_result_list_fans_out_an_error_instead_of_hanging():
+    async def short(reqs):
+        return [0] * (len(reqs) - 1)                     # the swarm returned one decision too few
+
+    bar = BatchBarrier(short, deadline_ms=10_000)
+    bar.register("a"); bar.register("b")
+    gathered = asyncio.gather(bar.submit("a", None, ["x"], {}), bar.submit("b", None, ["x"], {}))
+    with pytest.raises((ValueError, RuntimeError)):
+        await asyncio.wait_for(gathered, 1.0)
+
+
+async def test_non_int_result_fans_out_an_error_instead_of_hanging():
+    async def bad(reqs):
+        return ["not-an-index"] * len(reqs)
+
+    bar = BatchBarrier(bad, deadline_ms=10_000)
+    bar.register("a"); bar.register("b")
+    gathered = asyncio.gather(bar.submit("a", None, ["x"], {}), bar.submit("b", None, ["x"], {}))
+    with pytest.raises((ValueError, RuntimeError)):
+        await asyncio.wait_for(gathered, 1.0)
+
+
+async def test_cancel_during_running_batch_wakes_only_that_waiter():
+    calls = []
+
+    async def run_batch(reqs):
+        calls.append([r.player_id for r in reqs])
+        await asyncio.sleep(0.05)
+        return [0] * len(reqs)
+
+    bar = BatchBarrier(run_batch, deadline_ms=10_000)
+    bar.register("a"); bar.register("b")
+    ta = asyncio.create_task(bar.submit("a", None, ["x"], {}))
+    tb = asyncio.create_task(bar.submit("b", None, ["x"], {}))
+    await asyncio.sleep(0.01)                            # the batch for a+b is in flight
+    bar.cancel("a")                                      # a's battle ended mid-batch
+    with pytest.raises(asyncio.CancelledError):
+        await asyncio.wait_for(ta, 1.0)
+    assert await asyncio.wait_for(tb, 1.0) == 0          # b is unaffected
+    assert len(calls) == 1 and sorted(calls[0]) == ["a", "b"]

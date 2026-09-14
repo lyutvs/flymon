@@ -23,7 +23,9 @@ class BatchBarrier:
         self.run_batch, self.deadline = run_batch, deadline_ms / 1000.0
         self.active: set = set()
         self.pending: dict = {}
+        self._inflight: dict = {}                                  # requests handed to a running run_batch
         self._timer: asyncio.Task | None = None
+        self._tasks: set = set()                                   # strong refs: the loop only weakly holds tasks
         self._lock = asyncio.Lock()
 
     def register(self, player_id: str) -> None:
@@ -36,8 +38,9 @@ class BatchBarrier:
         self._maybe_flush_soon()
 
     def cancel(self, player_id: str) -> None:
-        req = self.pending.pop(player_id, None)
-        if req and not req.future.done():
+        """Wake the player's request with CancelledError, whether it is queued or already in a running batch."""
+        req = self.pending.pop(player_id, None) or self._inflight.get(player_id)
+        if req is not None and not req.future.done():
             req.future.cancel()
         self._stop_timer_if_idle()
 
@@ -51,7 +54,9 @@ class BatchBarrier:
 
     def _maybe_flush_soon(self) -> None:
         if self.pending and self.active <= set(self.pending):      # every active player is waiting
-            asyncio.create_task(self._flush())
+            task = asyncio.create_task(self._flush())
+            self._tasks.add(task)
+            task.add_done_callback(self._tasks.discard)
 
     def _stop_timer_if_idle(self) -> None:
         """No pending request left: drop the timer so it neither fires on an empty set nor outlives the loop."""
@@ -71,18 +76,24 @@ class BatchBarrier:
             self._stop_timer_if_idle()       # requests that arrive from here on start a fresh deadline
             if not reqs:
                 return
+            self._inflight.update({r.player_id: r for r in reqs})
             try:
                 results = await self.run_batch(reqs)
+                if len(results) != len(reqs):                       # the swarm broke its contract
+                    raise ValueError(f"run_batch returned {len(results)} results for {len(reqs)} requests")
+                for r, idx in zip(reqs, results):
+                    if not r.future.done():  # a waiter cancelled mid-batch never gets a result
+                        r.future.set_result(int(idx))
             except asyncio.CancelledError:   # the flush itself was cancelled: do not leave waiters hanging
                 for r in reqs:
                     if not r.future.done():
                         r.future.cancel()
                 raise
-            except Exception as e:           # propagate to every waiter in this batch
+            except Exception as e:           # run_batch *or* result dispatch: propagate to every waiter
                 for r in reqs:
                     if not r.future.done():
                         r.future.set_exception(e)
-                return
-            for r, idx in zip(reqs, results):
-                if not r.future.done():      # a waiter cancelled mid-batch never gets a result
-                    r.future.set_result(int(idx))
+            finally:
+                for r in reqs:
+                    if self._inflight.get(r.player_id) is r:
+                        del self._inflight[r.player_id]
