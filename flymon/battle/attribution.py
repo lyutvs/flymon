@@ -77,6 +77,7 @@ class TurnAttributor:
         self._in_block = False
         self._target: str | None = None
         self._after_direct = False
+        self._any_direct = False
 
     def has_block(self) -> bool:
         """True iff a `|move|` by my side has been seen since the last `end_turn()`/`reset()`."""
@@ -92,8 +93,9 @@ class TurnAttributor:
             self._in_block = False
         elif handler is not None:
             handler(args)
-        elif self._in_block:
-            self._after_direct = False
+        # Any other event (`-hitcount`, `-message`, `-crit`, `-anim`, `-hint`, ...) is cosmetic or an
+        # annotation: it carries no HP change, so it leaves faint adjacency untouched. Every event that
+        # can change HP or end my action block has a handler above and breaks adjacency there.
 
     # -- protocol events -------------------------------------------------
 
@@ -136,9 +138,11 @@ class TurnAttributor:
         if before is None:
             self._out.notes.append(f"target HP before was unseen; assumed max {max_hp}")
         self._out.direct_damage += max(0, hp_before - cur)
-        self._out.target_hp_before = hp_before
+        if not self._any_direct:  # multi-hit: keep the HP the target had before the *first* hit
+            self._out.target_hp_before = hp_before
         self._out.target_max_hp = max_hp
         self._after_direct = True
+        self._any_direct = True
 
     def _on_heal(self, args: list[str]) -> None:
         if args and _is_ident(args[0]):

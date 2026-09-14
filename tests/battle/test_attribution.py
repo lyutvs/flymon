@@ -69,6 +69,34 @@ CASE_EFFECTIVENESS_TAG = """
 |-damage|p2a: Starmie|40/100
 |upkeep
 """
+CASE_MULTI_HIT_KO = """
+|turn|11
+|switch|p2a: Gengar|Gengar, L100|100/100
+|move|p1a: Hitmonlee|Double Kick|p2a: Gengar
+|-damage|p2a: Gengar|40/100
+|-damage|p2a: Gengar|0 fnt
+|-hitcount|p2a: Gengar|2
+|faint|p2a: Gengar
+|upkeep
+"""
+CASE_COSMETIC_BEFORE_FAINT = """
+|turn|12
+|switch|p2a: Gengar|Gengar, L100|100/100
+|move|p1a: Hitmonlee|Hi Jump Kick|p2a: Gengar
+|-damage|p2a: Gengar|0 fnt
+|-message|Gengar fainted!
+|faint|p2a: Gengar
+|upkeep
+"""
+CASE_RESIDUAL_IN_BLOCK = """
+|turn|13
+|switch|p2a: Gengar|Gengar, L100|100/100
+|move|p1a: Hitmonlee|Hi Jump Kick|p2a: Gengar
+|-damage|p2a: Gengar|10/100
+|-damage|p2a: Gengar|0 fnt|[from] brn
+|faint|p2a: Gengar
+|upkeep
+"""
 
 
 def run(case, **kwargs):
@@ -148,3 +176,21 @@ def test_hp_tracking_persists_across_turns_until_reset():
     o = a.end_turn()
     assert o.target_hp_before == 40 and o.direct_damage == 30 and o.dealt_frac == 0.3
     assert not any("assumed" in n for n in o.notes)
+
+
+def test_multi_hit_ko_uses_first_hit_hp_before():
+    o = run(CASE_MULTI_HIT_KO)
+    assert o.move_id == "doublekick"
+    assert o.direct_damage == 100 and o.target_hp_before == 100 and o.dealt_frac == 1.0
+    assert o.target_fainted_by_me and not o.uncertain
+
+
+def test_cosmetic_line_between_damage_and_faint_keeps_attribution():
+    o = run(CASE_COSMETIC_BEFORE_FAINT)
+    assert o.target_fainted_by_me and o.dealt_frac == 1.0 and not o.uncertain
+
+
+def test_residual_damage_inside_block_still_blocks_faint_attribution():
+    o = run(CASE_RESIDUAL_IN_BLOCK)
+    assert o.direct_damage == 90 and o.dealt_frac == 0.9
+    assert not o.target_fainted_by_me and "residual" in " ".join(o.notes)
