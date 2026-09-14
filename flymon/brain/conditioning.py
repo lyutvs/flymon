@@ -71,10 +71,10 @@ def probe(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, odor, 
 
 def train_block(engine: Engine, pl: Plasticity, pops: Populations, cs_plus, cs_minus, strength: float, seed: int,
                 punish: str | None, reward: str | None, trials: int = 12, present_ms: float = 800.0,
-                gap_ms: float = 200.0) -> None:
+                gap_ms: float = 200.0, on_event=None) -> None:
     p = engine.p
     for t in range(trials):
-        for odor, dan in ((cs_plus, punish), (cs_minus, reward)):
+        for cs, odor, dan in (("plus", cs_plus, punish), ("minus", cs_minus, reward)):
             engine.reset(1_000_000 + seed * 1000 + t)   # disjoint from the probe seeds
             pl.reset_traces()
             engine.clear_drive()
@@ -88,6 +88,8 @@ def train_block(engine: Engine, pl: Plasticity, pops: Populations, cs_plus, cs_m
             engine.run(gap_ms)
             if dan is not None:
                 pl.recover_pulse()   # spec 3.1: recovery is per dopamine pulse, not per presentation
+            if on_event is not None:
+                on_event("presentation", trial=t, cs=cs, dan=dan)
 
 
 def arms(punish_type: str = "PPL105", reward_type: str = "PAM08") -> dict:
@@ -112,17 +114,30 @@ ARMS = arms()   # default channels, kept module-level for backward compatibility
 def run_arm(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, cs_plus, cs_minus, strength: float,
             seed: int, arm: str, trials: int = 12, present_ms: float = 800.0, gap_ms: float = 200.0,
             settle_ms: float = 200.0, read_ms: float = 600.0,
-            punish_type: str = "PPL105", reward_type: str = "PAM08") -> dict:
+            punish_type: str = "PPL105", reward_type: str = "PAM08", on_event=None) -> dict:
+    """One arm at one seed. `on_event(kind, **fields)`, when given, only observes: "arm_start",
+    each "probe" (phase, cs, A, P), each "presentation" (trial, cs, dan) and "arm_end" (the result)."""
+    emit = on_event or (lambda kind, **fields: None)
+
+    def probes(phase: str) -> float:
+        counts = {cs: probe(engine, pl, pops, ro, odor, strength, seed, settle_ms, read_ms)
+                  for cs, odor in (("plus", cs_plus), ("minus", cs_minus))}
+        for cs, c in counts.items():
+            emit("probe", phase=phase, cs=cs, **c)
+        return D(ro, counts["plus"], counts["minus"])
+
     punish, reward, plastic = arms(punish_type, reward_type)[arm]
+    emit("arm_start", arm=arm, seed=seed)
     pl.reset_weights()
-    pre = D(ro, probe(engine, pl, pops, ro, cs_plus, strength, seed, settle_ms, read_ms),
-            probe(engine, pl, pops, ro, cs_minus, strength, seed, settle_ms, read_ms))
+    pre = probes("pre")
     pl.set_enabled(plastic)
-    train_block(engine, pl, pops, cs_plus, cs_minus, strength, seed, punish, reward, trials, present_ms, gap_ms)
+    train_block(engine, pl, pops, cs_plus, cs_minus, strength, seed, punish, reward, trials, present_ms, gap_ms,
+                on_event=on_event)
     pl.set_enabled(True)
-    post = D(ro, probe(engine, pl, pops, ro, cs_plus, strength, seed, settle_ms, read_ms),
-             probe(engine, pl, pops, ro, cs_minus, strength, seed, settle_ms, read_ms))
-    return {"arm": arm, "seed": seed, "D_pre": pre, "D_post": post, "dD": post - pre, "weights_frac": pl.weights_frac()}
+    post = probes("post")
+    result = {"arm": arm, "seed": seed, "D_pre": pre, "D_post": post, "dD": post - pre, "weights_frac": pl.weights_frac()}
+    emit("arm_end", **result)
+    return result
 
 
 def reversal_test(engine, pl, pops, ro, cs_plus, cs_minus, strength, seeds,

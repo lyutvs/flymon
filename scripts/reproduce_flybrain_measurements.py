@@ -69,7 +69,7 @@ def cmd_sparsity(a):
 
 
 def _cond_worker(args):
-    npz, params_dict, seed, strength, k, odor_seed, punish_type, reward_type, kw = args
+    npz, params_dict, seed, strength, k, odor_seed, punish_type, reward_type, kw, viz = args
     conn = Connectome.load(npz)
     pops = Populations.from_connectome(conn)
     p = Params(**params_dict)
@@ -77,11 +77,23 @@ def _cond_worker(args):
     comps = compartments(conn, pops, p.core_frac)
     validate_populations(conn, pops, comps, punish_type, reward_type)
     pl = Plasticity(eng, pops, comps)
+    on_event, rec = None, None
+    if viz is not None:   # after Plasticity, which takes engine.on_step; the tap chains it
+        import rerun as rr
+        from flymon.brain.viz import RerunSink, attach_conditioning_viz
+        recording_id, every = viz
+        rec = rr.RecordingStream("flymon-conditioning", recording_id=recording_id)
+        rec.connect_grpc()
+        on_event = attach_conditioning_viz(eng, pl, pops, RerunSink(rec, prefix=f"seed{seed}/"),
+                                           (punish_type, reward_type), every=every)
     ro = Readout.from_compartments(comps, punish_type, reward_type)
     a, b = design_odor_pair(pops, k=k, seed=odor_seed)
-    return seed, {arm: run_arm(eng, pl, pops, ro, a, b, strength, seed, arm,
-                               punish_type=punish_type, reward_type=reward_type, **kw)
-                  for arm in arms(punish_type, reward_type)}
+    result = {arm: run_arm(eng, pl, pops, ro, a, b, strength, seed, arm,
+                           punish_type=punish_type, reward_type=reward_type, on_event=on_event, **kw)
+              for arm in arms(punish_type, reward_type)}
+    if rec is not None:
+        rec.flush(timeout_sec=10.0)   # Pool terminates its workers on exit; unsent rows would be lost
+    return seed, result
 
 
 def cmd_conditioning(a):
@@ -89,7 +101,16 @@ def cmd_conditioning(a):
     params_dict = dict(learn_rate=a.learn_rate, kc_trace_scale=a.kc_trace_scale, da_trace_scale=a.da_trace_scale,
                        recovery_per_pulse=a.recovery, kc_thresh=a.kc_thresh, apl_scale=a.apl_scale)
     kw = dict(trials=a.trials, present_ms=a.present_ms)
-    jobs = [(a.npz, params_dict, s, a.strength, a.k, a.odor_seed, a.punish_type, a.reward_type, kw)
+    viz = None
+    if a.viz:
+        import uuid
+        try:
+            import rerun as rr
+        except ImportError:
+            raise SystemExit("--viz needs the viz extra: uv sync --extra viz")
+        viz = (str(uuid.uuid4()), a.viz_every)
+        rr.init("flymon-conditioning", recording_id=viz[0], spawn=True)   # opens the viewer; workers join this recording
+    jobs = [(a.npz, params_dict, s, a.strength, a.k, a.odor_seed, a.punish_type, a.reward_type, kw, viz)
             for s in range(a.seeds)]
     with Pool(a.jobs) as pool:
         per_seed = dict(pool.map(_cond_worker, jobs))
@@ -124,6 +145,8 @@ def main():
     # flybrain used PPL105 punishment / PAM08 reward; the real-data gate overrides punishment to PPL101
     c.add_argument("--punish-type", default="PPL105"); c.add_argument("--reward-type", default="PAM08")
     c.add_argument("--kc-thresh", type=float, default=Params().kc_thresh); c.add_argument("--apl-scale", type=float, default=Params().apl_scale)
+    c.add_argument("--viz", action="store_true")                 # live Rerun viewer (uv sync --extra viz)
+    c.add_argument("--viz-every", type=int, default=100)         # steps per rate window
     c.set_defaults(fn=cmd_conditioning)
     a = ap.parse_args()
     a.fn(a)

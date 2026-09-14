@@ -58,4 +58,18 @@ MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션. M0 단계: 엔진�
 - `conditioning`의 워커는 각자 커넥톰 전체(약 1–2 GB)를 올린다. `--jobs`는 단일 워커 실행으로 메모리를 잰 뒤 정한다
   (기본값 `min(4, CPU 수)`).
 
+### 학습 중 보기
+
+    uv sync --extra viz
+    uv run python scripts/reproduce_flybrain_measurements.py conditioning --seeds 2 --jobs 2 --viz --out results/m0/viz.json
+
+- `--viz`는 Rerun 뷰어를 띄우고 워커마다 `seed<N>/` 아래로 보낸다. 시간축 `sim`은 시뮬레이션 시간이고
+  `engine.reset()`을 넘어 계속 흐른다.
+  - `rate_hz/{alpn,kc,mbon,apl,dan/<타입>}`: `--viz-every` 스텝(기본 100) 창의 집단 평균 발화율
+  - `cell_hz/mbon`: MBON별 발화율 막대(포화 세포가 바로 보인다)
+  - `weights_frac/<타입>`, `dan_pulse/<타입>`: 제시마다 core 구획의 KC→MBON 가중치 비율과 도파민 펄스
+  - `probe/{pre,post}/{plus,minus}/{A,P}`, `D_pre`·`D_post`·`dD/<팔>`, `events`: 탐침 발화 수와 팔 결과
+- 관찰은 결과를 바꾸지 않는다. 탭은 가소성 훅을 먼저 부른 뒤 스파이크만 센다(`tests/brain/test_conditioning_events.py`).
+- `--out`을 주지 않으면 게이트 결과 `results/m0/conditioning.json`을 덮어쓴다. 그냥 `uv sync`를 하면 `viz` extra가 빠진다.
+
 데이터 출처와 감사: `docs/acknowledgments.md`.
