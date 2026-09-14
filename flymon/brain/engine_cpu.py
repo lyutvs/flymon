@@ -3,6 +3,11 @@
 Membrane (mV above rest):  v <- v + (-v + g + ext) * dt/tau_m + noise, while not refractory
 Alpha synapse:             g <- g + W on arrival of a spike emitted syn_delay ago;  g <- g * (1 - dt/tau_syn)
 Threshold:                 spike when v >= v_th; v <- v_reset; refractory for refrac_steps
+Refractory:                a spike sets refrac = refrac_steps() and the cell is eligible again after
+                           that many further steps; at dt = 1 ms that is 3 ms of wall time, one step
+                           longer than the published 2.2 ms.
+Membrane floor:            v is clamped at >= -v_thresh, so inhibition cannot drive a cell
+                           arbitrarily far below rest (our design decision).
 Receptors (sensory classes) ignore the membrane and fire as Poisson sources at drive_hz.
 Reproduction target for the design decisions (MBON hold, KC threshold normalisation, APL scale):
 flybrain FINDINGS.md; constants: Shiu et al. 2024.
@@ -29,7 +34,9 @@ class Engine:
         # thresholds: KC thresholds normalised by their PN input (our design decision)
         self.v_th = np.full(self.N, params.v_thresh, np.float32)
         pn_in = np.zeros(self.N, np.float64)
-        m = np.isin(conn.pre, pops.alpn) & np.isin(conn.post, pops.kc)
+        is_alpn = np.zeros(self.N, bool); is_alpn[pops.alpn] = True
+        is_kc = np.zeros(self.N, bool); is_kc[pops.kc] = True
+        m = is_alpn[conn.pre] & is_kc[conn.post]   # one boolean mask, not two np.isin scans
         np.add.at(pn_in, conn.post[m], conn.w[m])
         med = float(np.median(pn_in[pops.kc])) if len(pops.kc) else 1.0
         if med > 0:

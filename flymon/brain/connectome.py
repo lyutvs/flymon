@@ -100,16 +100,21 @@ class CSC:
 def build_csc(conn: Connectome, params: Params, apl_idx: np.ndarray) -> CSC:
     sign, _ = apply_sign_override(conn, params)
     keep = (conn.w >= params.min_weight) & (sign[conn.pre] != 0)
-    pre, post, w = conn.pre[keep], conn.post[keep], conn.w[keep].astype(np.float64)
-    mv = sign[pre] * w * params.mv_per_synapse
+    pre, post = conn.pre[keep], conn.post[keep]
+    # float32 end to end and in-place masked multiplies: at 100M+ edges each float64 temporary
+    # costs ~1 GB, and np.where would allocate a second full-length array per correction
+    mv = conn.w[keep].astype(np.float32)
+    mv *= sign[pre].astype(np.float32)
+    mv *= np.float32(params.mv_per_synapse)
     if params.balance_hemispheres:
-        scale = hemisphere_scale(conn)
-        mv = np.where(conn.side[post] == "R", mv * scale, mv)
+        m = conn.side[post] == "R"
+        mv[m] *= np.float32(hemisphere_scale(conn))
     is_apl = np.zeros(conn.N, bool)
     is_apl[apl_idx] = True
-    mv = np.where(is_apl[pre], mv * params.apl_scale, mv)
+    m = is_apl[pre]
+    mv[m] *= np.float32(params.apl_scale)
     order = np.argsort(pre, kind="stable")
     pre, post, mv = pre[order], post[order], mv[order]
     counts = np.bincount(pre, minlength=conn.N)
     ptr = np.concatenate([[0], np.cumsum(counts)]).astype(np.int64)
-    return CSC(ptr=ptr, tgt=post.astype(np.int32), w=mv.astype(np.float32))
+    return CSC(ptr=ptr, tgt=post.astype(np.int32), w=mv)
