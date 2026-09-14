@@ -4,10 +4,10 @@ version = "0.0.1"
 description = "MaleCNS fly-brain LIF simulation learning Pokémon attack choice via KC->MBON plasticity"
 requires-python = ">=3.13,<3.14"
 dependencies = [
-  "numpy>=2.1",
+  "numpy>=2.1,<3",
   "scipy>=1.14",
   "pyarrow>=17",
-  "pandas>=2.2",
+  "pandas>=2.2,<3",
 ]
 
 [dependency-groups]
