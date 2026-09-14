@@ -42,10 +42,16 @@ def test_mbon_baseline_is_measured_per_params(synthetic_connectome):
     assert len(out) == 2
 
 
-@pytest.mark.skipif(not Path("data/malecns.npz").exists(), reason="real connectome not built")
+@pytest.mark.skipif(not Path("results/m0/sparsity.json").exists(), reason="gate not yet run on real data")
 def test_real_sparsity_gate_recorded():
-    """Passes only after Task 8 Step 5 found a grid point in range and wrote results/m0/sparsity.json."""
+    """The grid row that the frozen Params() defaults select must itself meet the spec 5 gate
+    (KC sparsity 3-7%, overlap at or below chance, MBON baseline 3-4 Hz)."""
     d = json.loads(Path("results/m0/sparsity.json").read_text())
-    ok = [g for g in d["grid"] if 0.03 <= g["frac_active_A"] <= 0.07 and 0.03 <= g["frac_active_B"] <= 0.07
-          and g["jaccard"] <= g["chance"] and 2.0 <= g["mbon_hz_rest"] <= 6.0]
-    assert ok, "no grid point met the KC-sparsity / MBON-baseline gate"
+    p = Params()
+    pick = [g for g in d["grid"] if g["kc_thresh"] == p.kc_thresh and g["apl_scale"] == p.apl_scale
+            and g.get("mbon_hold_frac") == p.mbon_hold_frac]
+    assert pick, "no sparsity grid row for the current Params() defaults"
+    g = pick[0]
+    assert 0.03 <= g["frac_active_A"] <= 0.07 and 0.03 <= g["frac_active_B"] <= 0.07
+    assert g["jaccard"] <= g["chance"]
+    assert 3.0 <= g["mbon_hz_rest"] <= 4.0
