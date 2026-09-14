@@ -1,0 +1,129 @@
+"""Event-driven leaky integrate-and-fire engine over the MaleCNS connectome (reference CPU implementation).
+
+Membrane (mV above rest):  v <- v + (-v + g + ext) * dt/tau_m + noise, while not refractory
+Alpha synapse:             g <- g + W on arrival of a spike emitted syn_delay ago;  g <- g * (1 - dt/tau_syn)
+Threshold:                 spike when v >= v_th; v <- v_reset; refractory for refrac_steps
+Receptors (sensory classes) ignore the membrane and fire as Poisson sources at drive_hz.
+Reproduction target for the design decisions (MBON hold, KC threshold normalisation, APL scale):
+flybrain FINDINGS.md; constants: Shiu et al. 2024.
+"""
+from __future__ import annotations
+
+from collections import deque
+
+import numpy as np
+
+from .circuits import Populations
+from .config import Params
+from .connectome import Connectome, build_csc
+
+
+class Engine:
+    def __init__(self, conn: Connectome, pops: Populations, params: Params, seed: int = 0):
+        self.p = params
+        self.conn, self.pops = conn, pops
+        self.N = conn.N
+        self.csc = build_csc(conn, params, pops.apl)
+        self.on_step = None
+
+        # thresholds: KC thresholds normalised by their PN input (our design decision)
+        self.v_th = np.full(self.N, params.v_thresh, np.float32)
+        pn_in = np.zeros(self.N, np.float64)
+        m = np.isin(conn.pre, pops.alpn) & np.isin(conn.post, pops.kc)
+        np.add.at(pn_in, conn.post[m], conn.w[m])
+        med = float(np.median(pn_in[pops.kc])) if len(pops.kc) else 1.0
+        if med > 0:
+            lo, hi = params.kc_norm_clip
+            self.v_th[pops.kc] = params.v_thresh * params.kc_thresh * np.clip(pn_in[pops.kc] / med, lo, hi)
+
+        # tonic drive: MBON hold (our design decision); everything else 0 until set_ext
+        self.ext0 = np.zeros(self.N, np.float32)
+        self.ext0[pops.mbon] = params.mbon_hold_frac * params.v_thresh
+        self.ext = self.ext0.copy()
+
+        self.is_receptor = np.zeros(self.N, bool)
+        self.is_receptor[pops.sensory] = True
+        self.receptor_idx = pops.sensory.astype(np.int64)
+        self.drive_hz = np.zeros(self.N, np.float32)
+
+        self._seed = seed
+        self.reset(seed)
+
+    # ---- state -------------------------------------------------------------------------------
+    def reset(self, seed: int | None = None) -> None:
+        if seed is not None:
+            self._seed = seed
+        self.rng = np.random.default_rng(self._seed)
+        self.v = np.zeros(self.N, np.float32)
+        self.g = np.zeros(self.N, np.float32)
+        self.refrac = np.zeros(self.N, np.int32)
+        # delay line: spikes emitted at step t are popped (delivered) at step t + dly_steps.
+        # The deque holds dly_steps entries; step() pops one at the start and appends this step's
+        # spikes at the end, so a 2-step delay means: fire on step 1 -> arrive on step 3.
+        self.delay = deque([np.zeros(0, np.int64) for _ in range(self.p.dly_steps())], maxlen=self.p.dly_steps())
+        self.last = np.zeros(0, np.int64)
+        self.t_ms = 0.0
+
+    def set_ext(self, idx, mv: float) -> None:
+        self.ext[np.asarray(idx, dtype=np.int64)] = np.float32(mv)
+
+    def clear_ext(self) -> None:
+        self.ext = self.ext0.copy()
+
+    def set_drive_hz(self, idx, hz: float) -> None:
+        self.drive_hz[np.asarray(idx, dtype=np.int64)] = np.float32(hz)
+
+    def clear_drive(self) -> None:
+        self.drive_hz[:] = 0.0
+
+    # ---- dynamics ----------------------------------------------------------------------------
+    def propagate(self, src: np.ndarray) -> np.ndarray:
+        """Sum signed mV of every out-edge of the spiking sources into a dense [N] vector."""
+        out = np.zeros(self.N, np.float32)
+        if src.size == 0:
+            return out
+        ptr, tgt, w = self.csc.ptr, self.csc.tgt, self.csc.w
+        starts, ends = ptr[src], ptr[src + 1]
+        total = int((ends - starts).sum())
+        if total == 0:
+            return out
+        idx = np.concatenate([tgt[a:b] for a, b in zip(starts, ends)])
+        val = np.concatenate([w[a:b] for a, b in zip(starts, ends)])
+        np.add.at(out, idx, val)
+        return out
+
+    def step(self) -> np.ndarray:
+        p = self.p
+        arrived = self.delay.popleft()
+        if arrived.size:
+            self.g += self.propagate(arrived)
+        dt_m = p.dt / p.tau_m
+        dv = (-self.v + self.g + self.ext) * dt_m
+        if p.noise_mv:
+            dv += self.rng.standard_normal(self.N, dtype=np.float32) * p.noise_mv
+        free = self.refrac <= 0
+        self.v = np.where(free, self.v + dv, self.v)
+        self.refrac = np.where(free, self.refrac, self.refrac - 1)
+        np.maximum(self.v, -p.v_thresh, out=self.v)
+        self.g *= (1.0 - p.dt / p.tau_syn)
+        spk = (self.v >= self.v_th) & free
+        # receptors: Poisson at commanded rate, membrane ignored
+        ri = self.receptor_idx
+        hz = self.drive_hz[ri]
+        pois = (self.rng.random(ri.size) < hz * (p.dt / 1000.0)) & free[ri]
+        spk[ri] = pois
+        fired = np.flatnonzero(spk)
+        self.v[fired] = p.v_reset
+        self.refrac[fired] = p.refrac_steps()
+        self.last = fired
+        self.delay.append(fired)          # delivered dly_steps steps from now
+        self.t_ms += p.dt
+        if self.on_step is not None:
+            self.on_step(self, fired)
+        return fired
+
+    def run(self, ms: float, count_idx=None) -> np.ndarray:
+        counts = np.zeros(self.N, np.int32)
+        for _ in range(int(round(ms / self.p.dt))):
+            counts[self.step()] += 1
+        return counts
