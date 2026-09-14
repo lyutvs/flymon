@@ -1,0 +1,193 @@
+{
+  "PAM01": {
+    "family": "PAM",
+    "n_cells": 44,
+    "core_mbon_types": [
+      "MBON01",
+      "MBON27"
+    ]
+  },
+  "PAM02": {
+    "family": "PAM",
+    "n_cells": 17,
+    "core_mbon_types": [
+      "MBON01",
+      "MBON03"
+    ]
+  },
+  "PAM03": {
+    "family": "PAM",
+    "n_cells": 12,
+    "core_mbon_types": [
+      "MBON02",
+      "MBON03",
+      "MBON04",
+      "MBON24"
+    ]
+  },
+  "PAM04": {
+    "family": "PAM",
+    "n_cells": 32,
+    "core_mbon_types": [
+      "MBON02",
+      "MBON24"
+    ]
+  },
+  "PAM05": {
+    "family": "PAM",
+    "n_cells": 20,
+    "core_mbon_types": [
+      "MBON03",
+      "MBON04",
+      "MBON26"
+    ]
+  },
+  "PAM06": {
+    "family": "PAM",
+    "n_cells": 28,
+    "core_mbon_types": [
+      "MBON03",
+      "MBON04"
+    ]
+  },
+  "PAM07": {
+    "family": "PAM",
+    "n_cells": 14,
+    "core_mbon_types": [
+      "MBON05",
+      "MBON21"
+    ]
+  },
+  "PAM08": {
+    "family": "PAM",
+    "n_cells": 50,
+    "core_mbon_types": [
+      "MBON05",
+      "MBON21"
+    ]
+  },
+  "PAM09": {
+    "family": "PAM",
+    "n_cells": 9,
+    "core_mbon_types": [
+      "MBON06"
+    ]
+  },
+  "PAM10": {
+    "family": "PAM",
+    "n_cells": 15,
+    "core_mbon_types": [
+      "MBON06"
+    ]
+  },
+  "PAM11": {
+    "family": "PAM",
+    "n_cells": 15,
+    "core_mbon_types": [
+      "MBON06",
+      "MBON07"
+    ]
+  },
+  "PAM12": {
+    "family": "PAM",
+    "n_cells": 22,
+    "core_mbon_types": [
+      "MBON05",
+      "MBON09"
+    ]
+  },
+  "PAM13": {
+    "family": "PAM",
+    "n_cells": 16,
+    "core_mbon_types": [
+      "MBON09",
+      "MBON10"
+    ]
+  },
+  "PAM14": {
+    "family": "PAM",
+    "n_cells": 18,
+    "core_mbon_types": [
+      "MBON03",
+      "MBON09"
+    ]
+  },
+  "PAM15": {
+    "family": "PAM",
+    "n_cells": 4,
+    "core_mbon_types": [
+      "MBON01",
+      "MBON03",
+      "MBON21"
+    ]
+  },
+  "PPL101": {
+    "family": "PPL1",
+    "n_cells": 2,
+    "core_mbon_types": [
+      "MBON11"
+    ]
+  },
+  "PPL102": {
+    "family": "PPL1",
+    "n_cells": 2,
+    "core_mbon_types": [
+      "MBON11",
+      "MBON20",
+      "MBON25",
+      "MBON32",
+      "MBON33",
+      "MBON35"
+    ]
+  },
+  "PPL103": {
+    "family": "PPL1",
+    "n_cells": 2,
+    "core_mbon_types": [
+      "MBON12",
+      "MBON30",
+      "MBON31",
+      "MBON32",
+      "MBON33",
+      "MBON35"
+    ]
+  },
+  "PPL104": {
+    "family": "PPL1",
+    "n_cells": 2,
+    "core_mbon_types": [
+      "MBON16",
+      "MBON17",
+      "MBON28"
+    ]
+  },
+  "PPL105": {
+    "family": "PPL1",
+    "n_cells": 2,
+    "core_mbon_types": [
+      "MBON13",
+      "MBON18"
+    ]
+  },
+  "PPL106": {
+    "family": "PPL1",
+    "n_cells": 2,
+    "core_mbon_types": [
+      "MBON14"
+    ]
+  },
+  "PPL107": {
+    "family": "PPL1",
+    "n_cells": 2,
+    "core_mbon_types": [
+      "MBON04"
+    ]
+  },
+  "PPL108": {
+    "family": "PPL1",
+    "n_cells": 2,
+    "core_mbon_types": [
+      "MBON35"
+    ]
+  }
+}

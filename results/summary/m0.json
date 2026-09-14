@@ -1,0 +1,135 @@
+{
+  "data_manifest": {
+    "n_neurons": 162517,
+    "n_edges": 25120209,
+    "counts": {
+      "Kenyon_Cell": 4064,
+      "MBON": 97,
+      "DAN": 340,
+      "ALPN": 682,
+      "olfactory": 2635,
+      "APL": 2,
+      "lLN": 151
+    }
+  },
+  "inputs_sha256": {
+    "connectome-weights-male-cns-v1.0-minconf-0.5.feather": "e35da783d1c686b2b58b3b87cd6a403ae43bfcfba8bff28e08ef752c1a56afc1",
+    "body-annotations-male-cns-v1.0-minconf-0.5.feather": "2177e246113e4cfbf1e7772ec37c6da1955ff22e8063d0b1f833101f99a9a3b2",
+    "body-neurotransmitters-male-cns-v1.0.feather": "95c9289220663abeb3409f3ad9e5a7f8a53f8093f5139d15502cd08da8879621"
+  },
+  "params_frozen": {
+    "v_thresh": 7.0,
+    "v_reset": 0.0,
+    "tau_m": 20.0,
+    "tau_syn": 5.0,
+    "syn_delay_ms": 1.8,
+    "refractory_ms": 2.2,
+    "mv_per_synapse": 0.275,
+    "dt": 1.0,
+    "noise_mv": 0.15,
+    "max_rate_hz": 200.0,
+    "min_weight": 5,
+    "sign_override": [
+      [
+        "lLN1",
+        -1
+      ],
+      [
+        "lLN2",
+        -1
+      ]
+    ],
+    "apl_scale": 0.1,
+    "mbon_hold_frac": 0.85,
+    "kc_thresh": 1.5,
+    "kc_norm_clip": [
+      0.5,
+      3.0
+    ],
+    "balance_hemispheres": true,
+    "learn_rate": 0.0003,
+    "kc_trace_ms": 200.0,
+    "da_trace_ms": 100.0,
+    "da_baseline_ms": 200.0,
+    "kc_trace_scale": 40.0,
+    "da_trace_scale": 20.0,
+    "min_weight_frac": 0.2,
+    "core_frac": 0.2,
+    "dan_drive_mv": 70.0,
+    "recovery_per_pulse": 0.0
+  },
+  "sparsity": {
+    "kc_thresh": 1.5,
+    "apl_scale": 0.1,
+    "mbon_hold_frac": 0.85,
+    "frac_active_A": 0.06208989501312336,
+    "frac_active_B": 0.058070866141732284,
+    "jaccard": 0.02277257699232743,
+    "chance": 0.030685615434405383,
+    "mbon_hz_A": 16.80412371134021,
+    "mbon_hz_B": 25.4581901489118,
+    "mbon_hz_rest": 11.18098510882016,
+    "mbon_hz_rest_trimmed": 3.5213196033562166,
+    "mbon_hz_rest_trimmed_sd": 1.0270911858459144,
+    "mbon_n_saturated": 3.0,
+    "mbon_types_active_rest": 35.0,
+    "rest_seeds": [
+      100,
+      101,
+      102
+    ],
+    "rest_ms": 3000.0
+  },
+  "mbon_hz_rest": 11.18098510882016,
+  "mbon_hz_rest_trimmed": 3.5213196033562166,
+  "conditioning": {
+    "n_flip": 0,
+    "noplast_max_abs_dD": 0.0,
+    "punish_type": "PPL105",
+    "reward_type": "PAM08",
+    "settle_ms": 800.0,
+    "da_baseline_ms": 200.0,
+    "arms": {
+      "both": {
+        "mean_dD": 0.37136258360303653,
+        "sd_dD": 0.2648277166945038,
+        "mean_dD_disc": -0.740267638701459,
+        "mean_weights_frac": 0.9863346442580223
+      },
+      "reversed": {
+        "mean_dD": 1.4439141638649873,
+        "sd_dD": 0.35663386977279415,
+        "mean_dD_disc": 2.0097323613713813,
+        "mean_weights_frac": 0.9866294264793396
+      },
+      "noplast": {
+        "mean_dD": 0.0,
+        "sd_dD": 0.0,
+        "mean_dD_disc": 0.0,
+        "mean_weights_frac": 1.0
+      },
+      "punish_only": {
+        "mean_dD": 0.5239372089722579,
+        "sd_dD": 0.1658241389844588,
+        "mean_dD_disc": -0.15727184866114585,
+        "mean_weights_frac": 0.9882570654153824
+      },
+      "reward_only": {
+        "mean_dD": 0.3288651105473168,
+        "sd_dD": 0.276311716990325,
+        "mean_dD_disc": -0.7277676387081524,
+        "mean_weights_frac": 0.9885242059826851
+      }
+    },
+    "n_flip_disc": 8
+  },
+  "gate_runs": "results/m0/gate_runs.md",
+  "gate": {
+    "sparsity_ok": true,
+    "conditioning_index_flip_ok": false,
+    "conditioning_channel_specific_ok": true,
+    "channel_specific_seeds": 8,
+    "passed": false,
+    "partial": true
+  }
+}
