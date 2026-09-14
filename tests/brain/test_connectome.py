@@ -67,3 +67,21 @@ def test_csc_drops_below_threshold_and_zero_sign(synthetic_connectome):
     sign, _ = apply_sign_override(c, p)
     assert (sign[pre] != 0).all()
     assert (np.abs(csc.w) >= 5 * p.mv_per_synapse * min(1.0, p.apl_scale) - 1e-9).all()
+
+
+def test_load_rejects_out_of_range_edge_index(tmp_path, synthetic_connectome):
+    c = synthetic_connectome()
+    c.pre[0] = -1
+    path = tmp_path / "neg.npz"
+    c.save(path)
+    with pytest.raises(ValueError, match="out of range"):
+        Connectome.load(path)
+
+
+def test_sign_override_counts_only_actual_changes(synthetic_connectome):
+    c = synthetic_connectome()
+    lln = np.char.startswith(c.type, "lLN")
+    c.sign[lln] = -1  # already inhibitory: the override has nothing to change
+    sign, n = apply_sign_override(c, Params())
+    assert n == 0
+    np.testing.assert_array_equal(sign, c.sign)

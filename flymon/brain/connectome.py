@@ -50,20 +50,29 @@ class Connectome:
             a = d[k]
             arrs[k] = a.astype(dt) if dt is not None else a.astype(str)
         c = cls(**arrs)
-        if c.pre.max(initial=-1) >= c.N or c.post.max(initial=-1) >= c.N:
+        if (
+            c.pre.min(initial=0) < 0
+            or c.post.min(initial=0) < 0
+            or c.pre.max(initial=-1) >= c.N
+            or c.post.max(initial=-1) >= c.N
+        ):
             raise ValueError("edge index out of range")
         return c
 
 
 def apply_sign_override(conn: Connectome, params: Params) -> tuple[np.ndarray, int]:
-    """Re-sign cell types by prefix (spec 3.1: lLN1/lLN2 are inhibitory). Returns (sign, n_changed)."""
+    """Re-sign cell types by prefix (spec 3.1: lLN1/lLN2 are inhibitory). Returns (sign, n_changed).
+
+    n_changed counts cells whose sign the override actually altered, each cell once
+    even if several prefixes match it.
+    """
     sign = conn.sign.astype(np.int8).copy()
-    n = 0
+    changed = np.zeros(sign.shape, bool)
     for prefix, s in params.sign_override:
         m = np.char.startswith(conn.type, prefix)
-        n += int(m.sum())
+        changed |= m & (sign != s)
         sign[m] = s
-    return sign, n
+    return sign, int(changed.sum())
 
 
 def hemisphere_scale(conn: Connectome) -> float:
