@@ -1,0 +1,64 @@
+import json
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from flymon.brain.circuits import Populations, compartments
+from flymon.brain.conditioning import D, Readout, disc, probe, run_arm, train_block
+from flymon.brain.config import Params
+from flymon.brain.engine_cpu import Engine
+from flymon.brain.plasticity import Plasticity
+from flymon.brain.stimuli import design_odor_pair
+
+
+def _setup(synthetic_connectome):
+    c = synthetic_connectome()
+    # kc_thresh 0.5 so the tiny synthetic olfactory pathway reliably drives Kenyon cells
+    p = Params(noise_mv=0.15, min_weight=1, balance_hemispheres=False, learn_rate=0.05, kc_thresh=0.5)
+    pops = Populations.from_connectome(c)
+    eng = Engine(c, pops, p, seed=0)
+    comps = compartments(c, pops, p.core_frac)
+    pl = Plasticity(eng, pops, comps)
+    ro = Readout(a_core=comps["PPL105"].core, p_core=comps["PAM08"].core)
+    a, b = design_odor_pair(pops, k=2, exclude=("ORN_DA1",))
+    return c, pops, eng, pl, ro, a, b
+
+
+def test_disc_and_D():
+    assert disc(3, 1) == pytest.approx(0.5)
+    assert disc(0, 0) == pytest.approx(0.0)
+    ro = Readout(a_core=np.array([0]), p_core=np.array([1]))
+    assert D(ro, {"A": 3, "P": 1}, {"A": 1, "P": 3}) == pytest.approx(0.5 - (-0.5))
+
+
+def test_probe_is_paired_by_seed_and_leaves_weights(synthetic_connectome):
+    c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
+    r1 = probe(eng, pl, pops, ro, a, 1.0, seed=5, settle_ms=50, read_ms=100)
+    r2 = probe(eng, pl, pops, ro, a, 1.0, seed=5, settle_ms=50, read_ms=100)
+    assert r1 == r2
+    assert pl.weights_frac() == pytest.approx(1.0)
+    assert pl.enabled is True     # restored after the probe
+
+
+def test_noplast_arm_gives_exactly_zero(synthetic_connectome):
+    c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
+    r = run_arm(eng, pl, pops, ro, a, b, 1.0, seed=2, arm="noplast", trials=2, present_ms=100, gap_ms=20,
+                settle_ms=50, read_ms=100)
+    assert r["dD"] == 0.0 and r["weights_frac"] == pytest.approx(1.0)
+
+
+def test_train_block_changes_weights_when_dan_driven(synthetic_connectome):
+    c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
+    train_block(eng, pl, pops, a, b, 1.0, seed=2, punish="PPL105", reward="PAM08", trials=2, present_ms=200, gap_ms=20)
+    assert pl.weights_frac() < 1.0
+
+
+@pytest.mark.skipif(not Path("results/m0/conditioning.json").exists(), reason="gate not yet run on real data")
+def test_real_conditioning_gate():
+    d = json.loads(Path("results/m0/conditioning.json").read_text())
+    assert d["n_seeds"] == 8 and d["n_flip"] == 8
+    assert d["noplast_max_abs_dD"] == 0.0
+    both, rev = d["arms"]["both"]["mean_dD"], d["arms"]["reversed"]["mean_dD"]
+    assert abs(both) >= 0.3 and abs(rev) >= 0.3 and np.sign(both) == -np.sign(rev)
+    assert np.sign(d["arms"]["punish_only"]["mean_dD"] + d["arms"]["reward_only"]["mean_dD"]) == np.sign(both)
