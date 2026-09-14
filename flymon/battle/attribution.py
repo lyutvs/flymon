@@ -141,7 +141,7 @@ class TurnAttributor:
         if not self._any_direct:  # multi-hit: keep the HP the target had before the *first* hit
             self._out.target_hp_before = hp_before
         self._out.target_max_hp = max_hp
-        self._after_direct = True
+        self._after_direct = cur == 0   # only a line that itself emptied the HP bar can justify a faint
         self._any_direct = True
 
     def _on_heal(self, args: list[str]) -> None:
@@ -174,6 +174,7 @@ class TurnAttributor:
         self._after_direct = False
 
     def _on_faint(self, args: list[str]) -> None:
+        """Attributed only if the last accepted damage line on the target read 0 HP (`_after_direct`)."""
         if args and _is_ident(args[0]):
             self._hp[args[0]] = (0, self._hp.get(args[0], (0, DEFAULT_MAX_HP))[1])
         if self._in_block and args and args[0] == self._target and self._after_direct:
@@ -215,7 +216,7 @@ class TurnAttributor:
             out.no_action = True
         if out.target_max_hp:
             out.dealt_frac = min(out.direct_damage, out.target_hp_before) / out.target_max_hp
-        if self._has_block and expected_multiplier is not None:
+        if self._has_block and expected_multiplier is not None and not (out.missed or out.no_action):
             expected = _multiplier_class(expected_multiplier)
             if expected != out.effectiveness:
                 out.uncertain = True

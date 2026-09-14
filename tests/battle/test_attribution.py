@@ -97,6 +97,20 @@ CASE_RESIDUAL_IN_BLOCK = """
 |faint|p2a: Gengar
 |upkeep
 """
+CASE_PERISH_FAINT_AFTER_DAMAGE = """
+|turn|14
+|move|p1a: Lapras|Surf|p2a: Gengar
+|-damage|p2a: Gengar|30/100
+|-start|p2a: Gengar|perish0
+|faint|p2a: Gengar
+|upkeep
+"""
+CASE_MISS_WITH_TAG = """
+|turn|15
+|move|p1a: Zapdos|Thunderbolt|p2a: Starmie
+|-miss|p1a: Zapdos|p2a: Starmie
+|upkeep
+"""
 
 
 def run(case, **kwargs):
@@ -194,3 +208,16 @@ def test_residual_damage_inside_block_still_blocks_faint_attribution():
     o = run(CASE_RESIDUAL_IN_BLOCK)
     assert o.direct_damage == 90 and o.dealt_frac == 0.9
     assert not o.target_fainted_by_me and "residual" in " ".join(o.notes)
+
+
+def test_faint_not_attributed_when_my_damage_left_the_target_alive():
+    """The accepted direct-damage line must itself have brought the target to 0 HP (spec 7절)."""
+    o = run(CASE_PERISH_FAINT_AFTER_DAMAGE)
+    assert o.direct_damage == 70 and o.dealt_frac == 0.7
+    assert not o.target_fainted_by_me and not o.uncertain
+
+
+def test_missed_turn_skips_the_expected_multiplier_check():
+    o = run(CASE_MISS_WITH_TAG, expected_multiplier=2.0)
+    assert o.missed and not o.uncertain
+    assert "effectiveness mismatch" not in " ".join(o.notes)
