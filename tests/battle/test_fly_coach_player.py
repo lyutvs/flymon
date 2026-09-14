@@ -1,4 +1,4 @@
-"""Integration: two real gen1ou battles against a local Showdown server."""
+"""FlyCoachPlayer: real gen1ou battles against a local Showdown server, plus one offline case."""
 import json
 
 import pytest
