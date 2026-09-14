@@ -1,0 +1,69 @@
+"""Integration: two real gen1ou battles against a local Showdown server."""
+import json
+
+import pytest
+from poke_env.player import RandomPlayer
+from poke_env.ps_client import AccountConfiguration, ServerConfiguration
+
+from flymon.battle.coach import Coach
+from flymon.battle.fly_coach_player import FlyCoachPlayer
+from flymon.battle.opponents import make_opponent
+from flymon.battle.pool import POOL, team_export
+from flymon.battle.providers import RandomProvider
+from flymon.battle.server import NODE_BIN, ShowdownServer
+
+pytestmark = pytest.mark.skipif(not NODE_BIN.exists(), reason="run scripts/install_showdown.sh first")
+
+
+@pytest.fixture(scope="module")
+def server():
+    with ShowdownServer(port=8790) as s:
+        yield s
+
+
+async def test_two_battles_end_and_log_turns(server, tmp_path):
+    cfg = ServerConfiguration(server.url_ws, "https://play.pokemonshowdown.com/action.php?")
+    me = FlyCoachPlayer(provider=RandomProvider(1), coach=Coach(), barrier=None, log_path=tmp_path / "log.jsonl",
+                        account_configuration=AccountConfiguration("fm-test-me", None), battle_format="gen1ou",
+                        server_configuration=cfg, team=team_export(POOL[:6]), max_concurrent_battles=1)
+    opp = RandomPlayer(account_configuration=AccountConfiguration("fm-test-opp", None), battle_format="gen1ou",
+                       server_configuration=cfg, team=team_export(POOL[6:12]))
+    try:
+        await me.battle_against(opp, n_battles=2)
+        assert me.n_finished_battles == 2
+        lines = (tmp_path / "log.jsonl").read_text().splitlines()
+        assert len(lines) > 10
+        recs = [json.loads(line) for line in lines]
+        assert {r["decider"] for r in recs} <= {"fly", "coach"}
+        assert all(r["coach_kind"] in ("attack", "support", "switch", "default") for r in recs)
+        assert any(r["decider"] == "fly" and len(r["candidates"]) >= 2 for r in recs)
+        assert any(r["outcome"] is not None for r in recs), "attribution never produced an outcome"
+        stats = [me.battle_stats(t) for t in me.battles]
+        assert all(s["fly_turns"] + s["coach_turns"] > 0 for s in stats)
+        assert all(isinstance(s["won"], bool) for s in stats)
+        assert all(me.n_candidates_mean(t) >= 2.0 for t in me.battles if me.battle_stats(t)["fly_turns"])
+        # every battle attributed at least one of my action blocks, on the right side
+        for tag in me.battles:
+            assert me.attributors[tag].my_side == me.battles[tag].player_role
+            assert me.outcomes.get(tag)
+    finally:
+        await me.ps_client.stop_listening()
+        await opp.ps_client.stop_listening()
+
+
+async def test_make_opponent_kinds(server):
+    cfg = ServerConfiguration(server.url_ws, "https://play.pokemonshowdown.com/action.php?")
+    team = team_export(POOL[:6])
+    players = [make_opponent("random", 91, cfg, team), make_opponent("heuristic", 92, cfg, team)]
+    try:
+        for p in players:  # let the login finish, so stop_listening does not race the handshake
+            await p.ps_client.wait_for_login()
+        assert players[0].username == "fm-random-91"
+        assert players[1].username == "fm-heuristic-92"
+        assert type(players[0]).__name__ == "RandomPlayer"
+        assert type(players[1]).__name__ == "SimpleHeuristicsPlayer"
+        with pytest.raises(KeyError):
+            make_opponent("nope", 93, cfg, team)
+    finally:
+        for p in players:
+            await p.ps_client.stop_listening()
