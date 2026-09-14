@@ -3,12 +3,14 @@
 Protocol (reproduction target: flybrain conditioning4c):
   pre-test  : probe CS+ and CS- with the same noise seed `seed` (plasticity off; training uses the
               disjoint seed block 1_000_000 + seed * 1000 + trial so probes never see a training seed)
-  training  : N trials of CS+ paired with one DAN type (punishment PPL105 or reward PAM08),
+  training  : N trials of CS+ paired with one DAN type (punishment, default PPL105; reward,
+              default PAM08 - the real-data gate uses PPL101 for punishment, see README),
               then CS- paired with the other. The "reversed" arm keeps the odour identities and
               the readout frame fixed and exchanges which dopamine type is paired with which
               odour, so the sign of dD must flip.
   post-test : same probes, same seed -> the no-plasticity arm is exactly 0.0
-Readout D = disc over the PPL105 core (approach MBONs) minus disc over the PAM08 core (avoidance MBONs).
+Readout D = disc over the punishment type's core (approach MBONs) minus disc over the reward type's
+core (avoidance MBONs).
 """
 from __future__ import annotations
 
@@ -24,8 +26,24 @@ from .stimuli import present
 
 @dataclass
 class Readout:
+    """Approach/avoidance readout frame: `a_core` is the punishment type's core compartment
+    (approach MBONs), `p_core` the reward type's core (avoidance MBONs)."""
     a_core: np.ndarray
     p_core: np.ndarray
+
+    @classmethod
+    def from_compartments(cls, comps: dict, punish_type: str = "PPL105",
+                          reward_type: str = "PAM08") -> "Readout":
+        missing = [t for t in (punish_type, reward_type) if t not in comps]
+        if missing:
+            raise ValueError(f"missing dopamine compartments {missing}: the readout needs both "
+                             f"{punish_type} and {reward_type}")
+        a_core, p_core = comps[punish_type].core, comps[reward_type].core
+        overlap = set(a_core.tolist()) & set(p_core.tolist())
+        if overlap:
+            raise ValueError(f"{punish_type} and {reward_type} core compartments overlap on "
+                             f"{len(overlap)} MBONs: the readout would not separate approach from avoidance")
+        return cls(a_core=a_core, p_core=p_core)
 
 
 def disc(x_plus: float, x_minus: float) -> float:
@@ -72,21 +90,30 @@ def train_block(engine: Engine, pl: Plasticity, pops: Populations, cs_plus, cs_m
                 pl.recover_pulse()   # spec 3.1: recovery is per dopamine pulse, not per presentation
 
 
-ARMS = {
-    # arm: (DAN type paired with the odour in the CS+ slot, DAN type paired with the CS- slot, plasticity on)
-    "both": ("PPL105", "PAM08", True),
-    # reversed = same odours, same dopamine amounts, channels exchanged; sign of dD must flip
-    "reversed": ("PAM08", "PPL105", True),
-    "noplast": ("PPL105", "PAM08", False),
-    "punish_only": ("PPL105", None, True),
-    "reward_only": (None, "PAM08", True),
-}
+def arms(punish_type: str = "PPL105", reward_type: str = "PAM08") -> dict:
+    """The five protocol arms for a chosen pair of dopamine channels.
+
+    arm -> (DAN type paired with the odour in the CS+ slot, DAN type paired with the CS- slot,
+    plasticity on). "reversed" keeps the odours and the readout frame and exchanges the channels,
+    so the sign of dD must flip.
+    """
+    return {
+        "both": (punish_type, reward_type, True),
+        "reversed": (reward_type, punish_type, True),
+        "noplast": (punish_type, reward_type, False),
+        "punish_only": (punish_type, None, True),
+        "reward_only": (None, reward_type, True),
+    }
+
+
+ARMS = arms()   # default channels, kept module-level for backward compatibility
 
 
 def run_arm(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, cs_plus, cs_minus, strength: float,
             seed: int, arm: str, trials: int = 12, present_ms: float = 800.0, gap_ms: float = 200.0,
-            settle_ms: float = 200.0, read_ms: float = 600.0) -> dict:
-    punish, reward, plastic = ARMS[arm]
+            settle_ms: float = 200.0, read_ms: float = 600.0,
+            punish_type: str = "PPL105", reward_type: str = "PAM08") -> dict:
+    punish, reward, plastic = arms(punish_type, reward_type)[arm]
     pl.reset_weights()
     pre = D(ro, probe(engine, pl, pops, ro, cs_plus, strength, seed, settle_ms, read_ms),
             probe(engine, pl, pops, ro, cs_minus, strength, seed, settle_ms, read_ms))
@@ -98,8 +125,19 @@ def run_arm(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, cs_p
     return {"arm": arm, "seed": seed, "D_pre": pre, "D_post": post, "dD": post - pre, "weights_frac": pl.weights_frac()}
 
 
-def reversal_test(engine, pl, pops, ro, cs_plus, cs_minus, strength, seeds, **kw) -> dict:
-    per_seed = {s: {arm: run_arm(engine, pl, pops, ro, cs_plus, cs_minus, strength, s, arm, **kw) for arm in ARMS} for s in seeds}
+def reversal_test(engine, pl, pops, ro, cs_plus, cs_minus, strength, seeds,
+                  punish_type: str = "PPL105", reward_type: str = "PAM08", **kw) -> dict:
+    """Run all five arms at every seed for the chosen dopamine channels.
+
+    The readout frame follows the channels: the approach set is the punishment type's core and the
+    avoidance set is the reward type's core (`Readout.from_compartments`). On real data the gate uses
+    PPL101 (gamma1pedc, core MBON11) as the punishment channel because the PPL105 core is
+    odour-selective or silent in our engine - see README ("우리가 정한 것").
+    """
+    names = arms(punish_type, reward_type)
+    per_seed = {s: {arm: run_arm(engine, pl, pops, ro, cs_plus, cs_minus, strength, s, arm,
+                                 punish_type=punish_type, reward_type=reward_type, **kw)
+                    for arm in names} for s in seeds}
     return summarise(per_seed)
 
 
@@ -107,10 +145,11 @@ def summarise(per_seed: dict) -> dict:
     seeds = list(per_seed)
     flips = sum(1 for s in seeds if np.sign(per_seed[s]["both"]["dD"]) == -np.sign(per_seed[s]["reversed"]["dD"])
                 and per_seed[s]["both"]["dD"] != 0)
-    arms = {arm: {"mean_dD": float(np.mean([per_seed[s][arm]["dD"] for s in seeds])),
-                  "sd_dD": float(np.std([per_seed[s][arm]["dD"] for s in seeds])),
-                  "mean_weights_frac": float(np.mean([per_seed[s][arm]["weights_frac"] for s in seeds]))}
-            for arm in ARMS}
+    # arm names do not depend on the channels, so the default ARMS keys are the full set
+    per_arm = {arm: {"mean_dD": float(np.mean([per_seed[s][arm]["dD"] for s in seeds])),
+                     "sd_dD": float(np.std([per_seed[s][arm]["dD"] for s in seeds])),
+                     "mean_weights_frac": float(np.mean([per_seed[s][arm]["weights_frac"] for s in seeds]))}
+               for arm in ARMS}
     return {"n_seeds": len(seeds), "n_flip": flips,
             "noplast_max_abs_dD": float(max(abs(per_seed[s]["noplast"]["dD"]) for s in seeds)),
-            "arms": arms, "per_seed": {str(s): per_seed[s] for s in seeds}}
+            "arms": per_arm, "per_seed": {str(s): per_seed[s] for s in seeds}}

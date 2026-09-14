@@ -1,3 +1,4 @@
+import dataclasses
 import json
 from pathlib import Path
 
@@ -5,7 +6,7 @@ import numpy as np
 import pytest
 
 from flymon.brain.circuits import Populations, compartments
-from flymon.brain.conditioning import D, Readout, disc, probe, run_arm, train_block
+from flymon.brain.conditioning import D, Readout, arms, disc, probe, run_arm, train_block
 from flymon.brain.config import Params
 from flymon.brain.engine_cpu import Engine
 from flymon.brain.plasticity import Plasticity
@@ -20,7 +21,7 @@ def _setup(synthetic_connectome):
     eng = Engine(c, pops, p, seed=0)
     comps = compartments(c, pops, p.core_frac)
     pl = Plasticity(eng, pops, comps)
-    ro = Readout(a_core=comps["PPL105"].core, p_core=comps["PAM08"].core)
+    ro = Readout.from_compartments(comps)
     a, b = design_odor_pair(pops, k=2, exclude=("ORN_DA1",))
     return c, pops, eng, pl, ro, a, b
 
@@ -30,6 +31,34 @@ def test_disc_and_D():
     assert disc(0, 0) == pytest.approx(0.0)
     ro = Readout(a_core=np.array([0]), p_core=np.array([1]))
     assert D(ro, {"A": 3, "P": 1}, {"A": 1, "P": 3}) == pytest.approx(0.5 - (-0.5))
+
+
+def test_arms_use_requested_types():
+    a = arms("PPL101", "PAM08")
+    assert a["both"] == ("PPL101", "PAM08", True)
+    assert a["reversed"] == ("PAM08", "PPL101", True)      # channels exchanged, not odours
+    assert a["noplast"] == ("PPL101", "PAM08", False)
+    assert a["punish_only"] == ("PPL101", None, True)
+    assert a["reward_only"] == (None, "PAM08", True)
+    assert set(a) == set(arms())                            # same five arms whatever the channels
+    assert arms()["both"] == ("PPL105", "PAM08", True)      # defaults stay the flybrain pair
+
+
+def test_readout_from_compartments_rejects_overlap_and_missing(synthetic_connectome):
+    c = synthetic_connectome()
+    pops = Populations.from_connectome(c)
+    comps = compartments(c, pops, Params().core_frac)       # synthetic fixture has PPL105 and PAM08 only
+    ro = Readout.from_compartments(comps, "PPL105", "PAM08")
+    assert ro.a_core.tolist() == comps["PPL105"].core.tolist()
+    assert ro.p_core.tolist() == comps["PAM08"].core.tolist()
+    with pytest.raises(ValueError, match="PPL101"):
+        Readout.from_compartments(comps, "PPL101", "PAM08")
+    with pytest.raises(ValueError, match="PAM11"):
+        Readout.from_compartments(comps, "PPL105", "PAM11")
+    overlapping = dict(comps)
+    overlapping["PAM08"] = dataclasses.replace(comps["PAM08"], core=comps["PPL105"].core)
+    with pytest.raises(ValueError, match="overlap"):
+        Readout.from_compartments(overlapping, "PPL105", "PAM08")
 
 
 def test_probe_is_paired_by_seed_and_leaves_weights(synthetic_connectome):
@@ -94,7 +123,7 @@ def test_reversed_arm_flips_sign_with_odour_specific_learning(synthetic_connecto
     eng = Engine(c, pops, p, seed=0)
     comps = compartments(c, pops, p.core_frac)
     pl = Plasticity(eng, pops, comps)
-    ro = Readout(a_core=comps["PPL105"].core, p_core=comps["PAM08"].core)
+    ro = Readout.from_compartments(comps)
     a = {"ORN_DM1": 1.0, "ORN_DA1": 1.0}
     b = {"ORN_VA2": 1.0, "ORN_DM6": 1.0}
     # read_ms 600, not 100: with a 100 ms readout the synthetic MBONs emit 0-1 spikes per probe

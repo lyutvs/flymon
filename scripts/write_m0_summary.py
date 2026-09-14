@@ -61,7 +61,11 @@ def main() -> None:
         "sparsity": row,
         "mbon_hz_rest": sp["mbon_hz_rest"],
         "mbon_hz_rest_trimmed": sp["mbon_hz_rest_trimmed"],
-        "conditioning": {"n_flip": co["n_flip"], "noplast_max_abs_dD": co["noplast_max_abs_dD"], "arms": co["arms"]},
+        # record which dopamine channels the run used (older runs predate the flag: flybrain pair)
+        "conditioning": {"n_flip": co["n_flip"], "noplast_max_abs_dD": co["noplast_max_abs_dD"],
+                         "punish_type": co.get("params", {}).get("punish_type", "PPL105"),
+                         "reward_type": co.get("params", {}).get("reward_type", "PAM08"),
+                         "arms": co["arms"]},
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=2))

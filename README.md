@@ -25,6 +25,15 @@ MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션. M0 단계: 엔진�
   자기지속적인 FR1 clique가 MBON 몇 개를 포화시켜 raw 평균이 시드마다 흔들리기 때문이다. `mbon_hold_frac`은
   0.85로 두고(0이면 뇌가 침묵한다), `kc_thresh`는 1.5로 고정한다(1.0은 KC 겹침이 우연 수준을 넘는다).
   이런 clique를 안정화할 기전인 단기 시냅스 억압(short-term depression)은 M0에 없으며 후속 과제로 남긴다.
+- **우리가 정한 것(도파민 채널)**: 실제 데이터 조건화 게이트는 처벌 채널로 **PPL101**(γ1pedc, core MBON11,
+  Aso et al. 2014의 표준 혐오 기억 구획), 보상 채널로 **PAM08**(core MBON05/21)을 쓴다(두 core는 disjoint).
+  flybrain은 PPL105를 썼지만 우리 엔진에서 PPL105의 core 판독은 퇴화한다 — MBON18은 어떤 hold에서도 침묵하고
+  (flybrain 보고와 동일), MBON23은 0–3 스파이크, MBON13은 시험한 설계 냄새쌍 16개 모두에서 두 냄새 중
+  **하나에만** 반응해(600 ms에 0 대 27–41 스파이크) 판별 지수가 학습 전부터 ±1에 붙는다. 실제로 PPL105/PAM08
+  8시드 실행은 noplast = 0.0, `reversed` dD = +2.28(8/8 양수)이지만 `both` dD ≈ 0, n_flip 2/8이었다.
+  MBON11은 모든 쌍에서 두 냄새에 모두 반응한다(설계 시드 0에서 41/107, 26/107 스파이크/600 ms).
+  CLI 기본값은 PPL105/PAM08 그대로라 합성 테스트와 flybrain 비교는 바뀌지 않으며
+  (`conditioning --punish-type PPL101`로 바꾼다), 사용한 채널은 M0 요약의 `conditioning` 블록에 기록된다.
 - **재현 결과**: `results/summary/m0.json` — KC 희소성/겹침, MBON 기저, 조건화 반전(8시드).
 - **안 된 것**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.

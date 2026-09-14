@@ -69,6 +69,24 @@ def test_validate_populations_rejects_missing_dan_type(synthetic_connectome):
         validate_populations(c, p, {k: v for k, v in comps.items() if k != "PAM08"})
 
 
+def test_validate_populations_checks_the_requested_dan_types(synthetic_connectome):
+    """Default args still check the flybrain pair; a channel absent from the connectome is fatal."""
+    c, p, comps = _valid(synthetic_connectome)
+    assert validate_populations(c, p, comps, "PPL105", "PAM08") is None
+    with pytest.raises(ValueError, match="PPL101"):
+        validate_populations(c, p, comps, punish_type="PPL101")
+    with pytest.raises(ValueError, match="PAM11"):
+        validate_populations(c, p, comps, reward_type="PAM11")
+
+
+def test_validate_populations_rejects_overlapping_requested_cores(synthetic_connectome):
+    c, p, comps = _valid(synthetic_connectome)
+    same = dict(comps)
+    same["PPL105"] = dataclasses.replace(comps["PPL105"], core=comps["PAM08"].core)
+    with pytest.raises(ValueError, match="PPL105 and PAM08 core compartments overlap"):
+        validate_populations(c, p, same, "PPL105", "PAM08")
+
+
 def test_validate_populations_rejects_overlapping_cores(synthetic_connectome):
     c, p, comps = _valid(synthetic_connectome)
     overlapping = dict(comps)

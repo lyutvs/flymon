@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 
 from flymon.brain.circuits import Populations, compartments, export_compartments, validate_populations
-from flymon.brain.conditioning import ARMS, Readout, run_arm, summarise
+from flymon.brain.conditioning import Readout, arms, run_arm, summarise
 from flymon.brain.config import Params
 from flymon.brain.connectome import Connectome
 from flymon.brain.engine_cpu import Engine
@@ -69,17 +69,19 @@ def cmd_sparsity(a):
 
 
 def _cond_worker(args):
-    npz, params_dict, seed, strength, k, odor_seed, kw = args
+    npz, params_dict, seed, strength, k, odor_seed, punish_type, reward_type, kw = args
     conn = Connectome.load(npz)
     pops = Populations.from_connectome(conn)
     p = Params(**params_dict)
     eng = Engine(conn, pops, p, seed=seed)
     comps = compartments(conn, pops, p.core_frac)
-    validate_populations(conn, pops, comps)
+    validate_populations(conn, pops, comps, punish_type, reward_type)
     pl = Plasticity(eng, pops, comps)
-    ro = Readout(a_core=comps["PPL105"].core, p_core=comps["PAM08"].core)
+    ro = Readout.from_compartments(comps, punish_type, reward_type)
     a, b = design_odor_pair(pops, k=k, seed=odor_seed)
-    return seed, {arm: run_arm(eng, pl, pops, ro, a, b, strength, seed, arm, **kw) for arm in ARMS}
+    return seed, {arm: run_arm(eng, pl, pops, ro, a, b, strength, seed, arm,
+                               punish_type=punish_type, reward_type=reward_type, **kw)
+                  for arm in arms(punish_type, reward_type)}
 
 
 def cmd_conditioning(a):
@@ -87,10 +89,12 @@ def cmd_conditioning(a):
     params_dict = dict(learn_rate=a.learn_rate, kc_trace_scale=a.kc_trace_scale, da_trace_scale=a.da_trace_scale,
                        recovery_per_pulse=a.recovery, kc_thresh=a.kc_thresh, apl_scale=a.apl_scale)
     kw = dict(trials=a.trials, present_ms=a.present_ms)
-    jobs = [(a.npz, params_dict, s, a.strength, a.k, a.odor_seed, kw) for s in range(a.seeds)]
+    jobs = [(a.npz, params_dict, s, a.strength, a.k, a.odor_seed, a.punish_type, a.reward_type, kw)
+            for s in range(a.seeds)]
     with Pool(a.jobs) as pool:
         per_seed = dict(pool.map(_cond_worker, jobs))
-    out = {"params": params_dict, "strength": a.strength, "trials": a.trials, **summarise(per_seed)}
+    params_out = dict(params_dict, punish_type=a.punish_type, reward_type=a.reward_type)
+    out = {"params": params_out, "strength": a.strength, "trials": a.trials, **summarise(per_seed)}
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(out, indent=2))
     print(json.dumps({k: out[k] for k in ("n_seeds", "n_flip", "noplast_max_abs_dD")}), json.dumps(out["arms"], indent=1))
@@ -117,6 +121,8 @@ def main():
     c.add_argument("--kc-trace-scale", type=float, default=Params().kc_trace_scale)
     c.add_argument("--da-trace-scale", type=float, default=Params().da_trace_scale)
     c.add_argument("--recovery", type=float, default=0.0)
+    # flybrain used PPL105 punishment / PAM08 reward; the real-data gate overrides punishment to PPL101
+    c.add_argument("--punish-type", default="PPL105"); c.add_argument("--reward-type", default="PAM08")
     c.add_argument("--kc-thresh", type=float, default=Params().kc_thresh); c.add_argument("--apl-scale", type=float, default=Params().apl_scale)
     c.set_defaults(fn=cmd_conditioning)
     a = ap.parse_args()

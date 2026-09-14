@@ -86,19 +86,24 @@ def compartments(c: Connectome, p: Populations, core_frac: float) -> dict:
     return out
 
 
-def validate_populations(conn: Connectome, pops: Populations, comps: dict) -> None:
-    """Fail fast on a connectome that cannot carry the M0 protocol (called before long runs)."""
+def validate_populations(conn: Connectome, pops: Populations, comps: dict,
+                         punish_type: str = "PPL105", reward_type: str = "PAM08") -> None:
+    """Fail fast on a connectome that cannot carry the M0 protocol (called before long runs).
+
+    The two dopamine channels are the ones the conditioning run will use; the defaults are the
+    flybrain pair (PPL105 punishment / PAM08 reward)."""
     for name, arr in (("Kenyon cells", pops.kc), ("MBONs", pops.mbon)):
         if len(arr) == 0:
             raise ValueError(f"no {name} in the connectome: check the class annotations")
     if not pops.receptor_types:
         raise ValueError("no olfactory receptor types (ORN_*) in the connectome")
-    missing = [t for t in ("PPL105", "PAM08") if t not in comps]
+    missing = [t for t in (punish_type, reward_type) if t not in comps]
     if missing:
-        raise ValueError(f"missing dopamine compartments {missing}: the M0 gate needs both PPL105 and PAM08")
-    overlap = set(comps["PPL105"].core.tolist()) & set(comps["PAM08"].core.tolist())
+        raise ValueError(f"missing dopamine compartments {missing}: the M0 gate needs both "
+                         f"{punish_type} and {reward_type}")
+    overlap = set(comps[punish_type].core.tolist()) & set(comps[reward_type].core.tolist())
     if overlap:
-        raise ValueError(f"PPL105 and PAM08 core compartments overlap on {len(overlap)} MBONs: "
+        raise ValueError(f"{punish_type} and {reward_type} core compartments overlap on {len(overlap)} MBONs: "
                          "the readout would not separate approach from avoidance")
 
 
