@@ -110,9 +110,17 @@ async def run_arm(args) -> dict:
     cfg = ServerConfiguration(f"ws://127.0.0.1:{args.port}/showdown/websocket",
                               "https://play.pokemonshowdown.com/action.php?")
     t0 = time.time()
-    results = await asyncio.gather(*(run_fly(arm, f, sbs, cfg, log_dir) for f, sbs in by_fly.items()))
+    fly_ids = list(by_fly)
+    results = await asyncio.gather(*(run_fly(arm, f, by_fly[f], cfg, log_dir) for f in fly_ids),
+                                   return_exceptions=True)   # one broken fly must not discard the arm
     wall = time.time() - t0
-    records = [r for rs in results for r in rs]
+    records, failed_flies = [], []
+    for fly_id, res in zip(fly_ids, results):
+        if isinstance(res, BaseException):
+            failed_flies.append({"fly_id": fly_id, "error": repr(res)})
+            print(f"{arm}: fly {fly_id} failed: {res!r}")
+            continue
+        records.extend(res)
     per_fly = _per_fly(records)
     payload = {
         "arm": arm, "provider": ARMS[arm][0], "weak_coach": ARMS[arm][1],
@@ -120,6 +128,7 @@ async def run_arm(args) -> dict:
         "win_rate": _mean([float(r["won"] is True) for r in records]),   # ties and unfinished are non-wins
         "n_ties": sum(_is_tie(r) for r in records),
         "n_unfinished": sum(not r["finished"] for r in records),
+        "n_failed_flies": len(failed_flies), "failed_flies": failed_flies,
         "per_fly": per_fly, "battles": records,
         "schedule_path": str(sched_path), "log_dir": str(log_dir), "wall_clock_s": round(wall, 2),
     }
@@ -127,6 +136,7 @@ async def run_arm(args) -> dict:
     path.write_text(json.dumps(payload, indent=1))
     print(f"{arm}: win_rate={payload['win_rate']:.3f} battles={payload['n_battles']} "
           f"ties={payload['n_ties']} unfinished={payload['n_unfinished']} "
+          f"failed_flies={payload['n_failed_flies']} "
           f"flies={payload['n_flies']} wall={wall:.1f}s -> {path}")
     return payload
 
@@ -140,6 +150,9 @@ def _arm_summary(payload: dict) -> dict:
     rates = [p["wins"] / p["battles"] if p["battles"] else 0.0 for p in per_fly]
     return {"win_rate": payload["win_rate"], "n_battles": payload["n_battles"], "n_flies": payload["n_flies"],
             "n_ties": payload["n_ties"], "n_unfinished": payload["n_unfinished"],
+            "n_failed_flies": payload.get("n_failed_flies", 0),   # arm files written before this key
+            "wall_clock_s": payload.get("wall_clock_s"),
+            "mean_turns": _mean([r["turns"] for r in records]),
             "per_fly_win_rates": rates, "sd_across_flies": float(np.std(rates, ddof=1)) if len(rates) > 1 else 0.0,
             "fly_turn_fraction": sum(r["fly_turns"] for r in records) / turns if turns else 0.0,
             "n_candidates_mean": _mean([r["n_candidates_mean"] for r in records if r["fly_turns"]])}
@@ -169,17 +182,23 @@ def run_gate(args) -> dict:
     unfinished = {a: s["n_unfinished"] for a, s in arms.items() if s["n_unfinished"]}
     if unfinished:
         print(f"WARNING: unfinished battles {unfinished}: the win rates are not trustworthy, gate fails")
+    failed = {a: s["n_failed_flies"] for a, s in arms.items() if s["n_failed_flies"]}
+    if failed:
+        print(f"WARNING: failed flies {failed}: the arm is incomplete, gate fails")
+    committed_path = summary_path.parent / "schedule_m1.json" if schedule_path and Path(schedule_path).exists() else None
+    if committed_path is not None:
+        summary_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(schedule_path, committed_path)
     gap = (arms["MAX"]["win_rate"] - arms["RND"]["win_rate"]) if {"MAX", "RND"} <= set(arms) else None
     ci = (_bootstrap_ci(arms["MAX"]["per_fly_win_rates"], arms["RND"]["per_fly_win_rates"])
           if {"MAX", "RND"} <= set(arms) else None)
     summary = {"arms": arms, "gap_max_minus_rnd": gap, "gap_ci95": ci,
-               "gate_ok": bool(gap is not None and gap >= GATE_THRESHOLD and not unfinished),
+               "gate_ok": bool(gap is not None and gap >= GATE_THRESHOLD and not unfinished and not failed),
                "schedule_path": str(schedule_path) if schedule_path else None,
+               "schedule_committed_path": str(committed_path) if committed_path else None,
                "generated_at": datetime.now(timezone.utc).isoformat()}
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     summary_path.write_text(json.dumps(summary, indent=1))
-    if schedule_path and Path(schedule_path).exists():
-        shutil.copyfile(schedule_path, summary_path.parent / "schedule_m1.json")
     print(f"gap(MAX-RND)={gap} ci95={ci} gate_ok={summary['gate_ok']} -> {summary_path}")
     return summary
 
