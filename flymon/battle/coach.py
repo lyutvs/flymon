@@ -7,7 +7,7 @@ from poke_env.battle import AbstractBattle, Move, MoveCategory, Pokemon
 from poke_env.player import Player, SimpleHeuristicsPlayer
 from poke_env.player.battle_order import BattleOrder
 
-from .moves import is_attack
+from .moves import fly_choosable, is_attack
 
 
 @dataclass
@@ -33,7 +33,7 @@ class Coach:
 
     def decide(self, battle: AbstractBattle) -> CoachDecision:
         if self.weak and not battle.force_switch:
-            attacks = [m for m in battle.available_moves if is_attack(m)]
+            attacks = [m for m in battle.available_moves if fly_choosable(m)]
             if attacks:
                 best = max(attacks, key=lambda m: attack_score(battle, m))
                 return CoachDecision(Player.create_order(best), "attack", best)

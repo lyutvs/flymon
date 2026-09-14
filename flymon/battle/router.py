@@ -4,12 +4,12 @@ from __future__ import annotations
 from poke_env.battle import AbstractBattle, Move
 
 from .coach import CoachDecision
-from .moves import attack_allowed, is_attack
+from .moves import fly_choosable
 
 
 def candidates(battle: AbstractBattle) -> list[Move]:
     """The fly's attack candidates, in request order."""
-    return [m for m in battle.available_moves if is_attack(m) and attack_allowed(m)[0]]
+    return [m for m in battle.available_moves if fly_choosable(m)]
 
 
 def route(coach_decision: CoachDecision, cands: list[Move]) -> tuple[str, list[Move]]:

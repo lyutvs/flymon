@@ -17,16 +17,21 @@ def gen1(move_id: str) -> Move:
     return Move(to_id_str(move_id), gen=1)
 
 
+def _fixed_damage(entry: dict) -> bool:
+    """Fixed/level damage (`damage`) or a computed one (`damageCallback`: Super Fang, Counter, Psywave)."""
+    return "damage" in entry or "damageCallback" in entry
+
+
 def is_attack(move: Move) -> bool:
     e = move.entry
-    return e.get("category") in ("Physical", "Special") and e.get("basePower", 0) > 0 and "damage" not in e
+    return e.get("category") in ("Physical", "Special") and e.get("basePower", 0) > 0 and not _fixed_damage(e)
 
 
 def attack_allowed(move: Move) -> tuple[bool, str]:
     e = move.entry
     if e.get("category") not in ("Physical", "Special"):
         return False, "category: not an attack"
-    if e.get("basePower", 0) <= 0 or "damage" in e:
+    if e.get("basePower", 0) <= 0 or _fixed_damage(e):
         return False, "damage: fixed/level damage or zero power"
     flags = e.get("flags", {})
     for f in ("charge", "recharge"):
@@ -58,6 +63,11 @@ def attack_allowed(move: Move) -> tuple[bool, str]:
     if e.get("critRatio", 1) != 1:
         return False, f"critRatio {e['critRatio']}"
     return True, ""
+
+
+def fly_choosable(move: Move) -> bool:
+    """The single filter for "the fly may pick this attack": shared by the router and the weak coach."""
+    return is_attack(move) and attack_allowed(move)[0]
 
 
 def support_allowed(move: Move) -> tuple[bool, str]:

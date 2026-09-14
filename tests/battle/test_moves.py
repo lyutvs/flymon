@@ -1,6 +1,6 @@
 import pytest
 
-from flymon.battle.moves import attack_allowed, gen1, is_attack, support_allowed
+from flymon.battle.moves import attack_allowed, fly_choosable, gen1, is_attack, support_allowed
 
 
 @pytest.mark.parametrize("mid,ok,why", [
@@ -16,6 +16,8 @@ from flymon.battle.moves import attack_allowed, gen1, is_attack, support_allowed
     ("fly", False, "charge"),
     ("slash", False, "critRatio"),
     ("seismictoss", False, "damage"),
+    ("superfang", False, "damage"),       # damageCallback: halves current HP
+    ("counter", False, "damage"),         # damageCallback: returns damage taken
     ("doubleedge", False, "recoil"),
     ("megakick", False, "accuracy"),
     ("stomp", False, "secondary"),        # flinch
@@ -37,3 +39,10 @@ def test_support_allowed(mid, ok):
 
 def test_is_attack():
     assert is_attack(gen1("surf")) and not is_attack(gen1("thunderwave")) and not is_attack(gen1("seismictoss"))
+    assert not is_attack(gen1("superfang")) and not is_attack(gen1("counter"))
+
+
+def test_fly_choosable_is_the_conjunction():
+    assert fly_choosable(gen1("surf"))
+    assert not fly_choosable(gen1("superfang"))
+    assert not fly_choosable(gen1("bodyslam"))   # an attack, but not allowed
