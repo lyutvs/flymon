@@ -43,10 +43,15 @@ def build(data_dir: str | Path, out_path: str | Path, min_weight: int = 1) -> di
         data_dir / ANNOT,
         columns=["bodyId", "type", "class", "superclass", "somaSide", "rootSide", "status"],
     ).to_pandas()
+    # Janelia dictionary-encodes string columns; pandas returns them as Categorical, which
+    # rejects fillna/where with values outside its categories -- decode to object first.
+    for c in ("type", "class", "superclass", "somaSide", "rootSide", "status"):
+        ann[c] = ann[c].astype(object)
     ann = ann[(ann["status"] == "Traced") & ann["type"].notna()].sort_values("bodyId").reset_index(drop=True)
     ids = ann["bodyId"].to_numpy(dtype=np.int64)
 
     nt = feather.read_table(data_dir / NT, columns=["body", "consensus_nt"]).to_pandas()
+    nt["consensus_nt"] = nt["consensus_nt"].astype(object)
     nt = nt.drop_duplicates("body").set_index("body")["consensus_nt"]
     ntv = nt.reindex(ids).fillna("unknown").to_numpy().astype(str)
     sign = np.array([SIGN_OF_NT.get(x, 0) for x in ntv], dtype=np.int8)

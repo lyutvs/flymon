@@ -17,20 +17,25 @@ FILES = [
 ]
 
 
-def _write_fake_dataset(d: Path):
+def _write_fake_dataset(d: Path, dictionary: bool = False):
     d.mkdir(parents=True)
+
+    def s(values):
+        a = pa.array(values, pa.string())
+        return a.dictionary_encode() if dictionary else a
+
     ann = pa.table({
         "bodyId": pa.array([1, 2, 3, 4, 5], pa.int64()),
-        "type": ["ORN_DM1", "KCab-m", "MBON01", None, "lLN1_a"],
-        "class": ["olfactory", "Kenyon_Cell", "MBON", None, "ALLN"],
-        "superclass": ["cb_sensory", "cb_intrinsic", "cb_intrinsic", None, "cb_intrinsic"],
-        "somaSide": ["M", "L", "R", "L", "L"],
-        "rootSide": ["L", None, None, None, None],
-        "status": ["Traced", "Traced", "Traced", "Traced", "Orphan"],
+        "type": s(["ORN_DM1", "KCab-m", "MBON01", None, "lLN1_a"]),
+        "class": s(["olfactory", "Kenyon_Cell", "MBON", None, "ALLN"]),
+        "superclass": s(["cb_sensory", "cb_intrinsic", "cb_intrinsic", None, "cb_intrinsic"]),
+        "somaSide": s(["M", "L", "R", "L", "L"]),
+        "rootSide": s(["L", None, None, None, None]),
+        "status": s(["Traced", "Traced", "Traced", "Traced", "Orphan"]),
     })
     feather.write_feather(ann, d / FILES[1])
     nt = pa.table({"body": pa.array([1, 2, 3, 3], pa.int64()),
-                   "consensus_nt": ["acetylcholine", "acetylcholine", "glutamate", "glutamate"]})
+                   "consensus_nt": s(["acetylcholine", "acetylcholine", "glutamate", "glutamate"])})
     feather.write_feather(nt, d / FILES[2])
     wt = pa.table({"body_pre": pa.array([1, 2, 2, 3, 9], pa.int64()),
                    "body_post": pa.array([2, 3, 3, 1, 1], pa.int64()),
@@ -58,6 +63,21 @@ def test_build_from_fake_feathers(tmp_path):
     assert set(manifest["inputs"]) == set(FILES)
     assert all(len(v["sha256"]) == 64 for v in manifest["inputs"].values())
     assert json.loads((out.with_suffix(".manifest.json")).read_text())["n_edges"] == 4
+
+
+def test_build_from_dictionary_encoded_feathers(tmp_path):
+    """Janelia dictionary-encodes string columns; pandas hands those back as Categorical."""
+    raw = tmp_path / "raw"
+    _write_fake_dataset(raw, dictionary=True)
+    out = tmp_path / "c.npz"
+    manifest = build(raw, out, min_weight=1)
+    c = Connectome.load(out)
+    assert c.N == 3 and list(c.bodyId) == [1, 2, 3]
+    assert list(c.type) == ["ORN_DM1", "KCab-m", "MBON01"]
+    assert list(c.cls) == ["olfactory", "Kenyon_Cell", "MBON"]
+    assert list(c.sign) == [1, 1, -1]
+    assert list(c.side) == ["L", "L", "R"]
+    assert c.E == 4 and manifest["n_edges"] == 4
 
 
 @pytest.mark.skipif(not all((RAW / f).exists() for f in FILES), reason="MaleCNS raw files not downloaded")
