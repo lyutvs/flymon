@@ -1,8 +1,7 @@
-data/
+data/*
 !data/.gitkeep
-results/
+results/*
 !results/summary/
-!results/summary/*.json
 .venv/
 __pycache__/
 *.pyc
