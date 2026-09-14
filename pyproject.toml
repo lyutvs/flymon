@@ -1,0 +1,26 @@
+[project]
+name = "flymon"
+version = "0.0.1"
+description = "MaleCNS fly-brain LIF simulation learning Pokémon attack choice via KC->MBON plasticity"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "numpy>=2.1",
+  "scipy>=1.14",
+  "pyarrow>=17",
+  "pandas>=2.2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-timeout>=2.3"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["flymon"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 600
+addopts = "-q"
