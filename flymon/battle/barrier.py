@@ -45,6 +45,10 @@ class BatchBarrier:
         self._stop_timer_if_idle()
 
     async def submit(self, player_id: str, battle, candidates: list, context: dict) -> int:
+        """One request at a time per player: a fly plays its battles sequentially, so a second
+        concurrent submit is a bug and must not silently orphan the first one's waiter."""
+        if player_id in self.pending or player_id in self._inflight:
+            raise RuntimeError(f"{player_id} already has a pending request")
         req = Request(player_id, battle, candidates, context)
         self.pending[player_id] = req
         if self._timer is None:                                    # deadline runs from the first pending request

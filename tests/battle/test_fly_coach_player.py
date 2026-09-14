@@ -5,22 +5,25 @@ import pytest
 from poke_env.player import RandomPlayer
 from poke_env.ps_client import AccountConfiguration, ServerConfiguration
 
+from flymon.battle.barrier import BatchBarrier
 from flymon.battle.coach import Coach
 from flymon.battle.fly_coach_player import FlyCoachPlayer
 from flymon.battle.opponents import make_opponent
-from flymon.battle.pool import POOL, team_export
+from flymon.battle.pool import POOL, by_species, team_export
 from flymon.battle.providers import RandomProvider
 from flymon.battle.server import NODE_BIN, ShowdownServer
 
-pytestmark = pytest.mark.skipif(not NODE_BIN.exists(), reason="run scripts/install_showdown.sh first")
+requires_server = pytest.mark.skipif(not NODE_BIN.exists(), reason="run scripts/install_showdown.sh first")
 
 
 @pytest.fixture(scope="module")
 def server():
+    """A local Showdown server shared by the server-backed tests in this module."""
     with ShowdownServer(port=8790) as s:
         yield s
 
 
+@requires_server
 async def test_two_battles_end_and_log_turns(server, tmp_path):
     cfg = ServerConfiguration(server.url_ws, "https://play.pokemonshowdown.com/action.php?")
     me = FlyCoachPlayer(provider=RandomProvider(1), coach=Coach(), barrier=None, log_path=tmp_path / "log.jsonl",
@@ -65,6 +68,7 @@ async def test_two_battles_end_and_log_turns(server, tmp_path):
         await opp.ps_client.stop_listening()
 
 
+@requires_server
 async def test_make_opponent_kinds(server):
     cfg = ServerConfiguration(server.url_ws, "https://play.pokemonshowdown.com/action.php?")
     team = team_export(POOL[:6])
@@ -81,3 +85,49 @@ async def test_make_opponent_kinds(server):
     finally:
         for p in players:
             await p.ps_client.stop_listening()
+
+
+@requires_server
+async def test_two_battles_through_the_barrier(server, tmp_path):
+    """The barrier path end to end: the fly re-registers per battle, so no turn hangs on it."""
+    calls = []
+
+    async def run_batch(reqs):
+        calls.append([r.player_id for r in reqs])
+        return [0] * len(reqs)
+
+    cfg = ServerConfiguration(server.url_ws, "https://play.pokemonshowdown.com/action.php?")
+    barrier = BatchBarrier(run_batch, deadline_ms=50)
+    me = FlyCoachPlayer(provider=RandomProvider(2), coach=Coach(), barrier=barrier,
+                        log_path=tmp_path / "barrier.jsonl",
+                        account_configuration=AccountConfiguration("fm-test-bar", None), battle_format="gen1ou",
+                        server_configuration=cfg, team=team_export(POOL[:6]), max_concurrent_battles=1)
+    opp = RandomPlayer(account_configuration=AccountConfiguration("fm-test-bar-opp", None), battle_format="gen1ou",
+                       server_configuration=cfg, team=team_export(POOL[6:12]))
+    try:
+        await me.battle_against(opp, n_battles=2)
+        assert me.n_finished_battles == 2
+        assert all(me.battle_stats(t)["finished"] for t in me.battles)
+        assert len(calls) >= 1
+        recs = [json.loads(line) for line in (tmp_path / "barrier.jsonl").read_text().splitlines()]
+        fly = [r for r in recs if r["kind"] == "decision" and r["decider"] == "fly"]
+        assert fly, "the fly never decided a turn"
+        assert all(r["chosen"] == r["candidates"][0] for r in fly)
+    finally:
+        await me.ps_client.stop_listening()
+        await opp.ps_client.stop_listening()
+
+
+async def test_out_of_range_provider_index_is_rejected(make_battle):
+    """M3 feeds the index from the swarm: an out-of-range one must fail loudly, not IndexError."""
+
+    class OutOfRangeProvider:
+        async def decide(self, battle, cands, ctx):
+            return 99
+
+    player = FlyCoachPlayer(provider=OutOfRangeProvider(), coach=Coach(), barrier=None,
+                            account_configuration=AccountConfiguration("fm-offline-oob", None),
+                            battle_format="gen1ou", start_listening=False)
+    battle = make_battle(by_species["Blastoise"], "Charizard")
+    with pytest.raises(ValueError, match="index 99 for 3 candidates"):
+        await player.choose_move(battle)

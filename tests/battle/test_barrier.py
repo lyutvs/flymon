@@ -147,3 +147,14 @@ async def test_cancel_during_running_batch_wakes_only_that_waiter():
         await asyncio.wait_for(ta, 1.0)
     assert await asyncio.wait_for(tb, 1.0) == 0          # b is unaffected
     assert len(calls) == 1 and sorted(calls[0]) == ["a", "b"]
+
+
+async def test_second_concurrent_submit_from_one_player_raises():
+    calls = []
+    bar = BatchBarrier(_batcher(calls), deadline_ms=100)
+    bar.register("a"); bar.register("b")                  # b never submits: only the deadline can flush
+    first = asyncio.ensure_future(bar.submit("a", None, ["x", "y"], {}))
+    await asyncio.sleep(0)
+    with pytest.raises(RuntimeError, match="already has a pending request"):
+        await bar.submit("a", None, ["x", "y"], {})
+    assert await asyncio.wait_for(first, 1.0) == 0        # the first waiter is untouched

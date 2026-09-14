@@ -25,6 +25,10 @@ class FlyCoachPlayer(Player):
     `"decision"` (what I chose that turn) and `"outcome"` (what the move I used that turn did).
     They are written at different moments -- a turn's outcome is only known once the turn closes --
     so they are separate records and are joined on `(battle_tag, turn)`.
+
+    A forced switch (after a faint) makes the server ask again within the same `turn`, so that turn
+    carries a second `"decision"` record with the same `(battle_tag, turn)`: the join between
+    decision and outcome records is many-to-one, not one-to-one.
     """
 
     def __init__(self, provider: DecisionProvider, coach: Coach, barrier: BatchBarrier | None = None,
@@ -82,6 +86,8 @@ class FlyCoachPlayer(Player):
                 idx = await self.barrier.submit(self.player_id, battle, cands, ctx)
             else:
                 idx = await self.provider.decide(battle, cands, ctx)
+            if not 0 <= idx < len(cands):
+                raise ValueError(f"provider returned index {idx} for {len(cands)} candidates")
             chosen = cands[idx]
             order = self.create_order(chosen)
         else:
