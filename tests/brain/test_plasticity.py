@@ -101,3 +101,29 @@ def test_reset_weights_restores_w0(synthetic_connectome):
     assert pl.weights_frac() < 1.0
     pl.reset_weights()
     assert pl.weights_frac() == pytest.approx(1.0)
+
+
+def test_rejects_connectome_without_plastic_edges(synthetic_connectome):
+    c = synthetic_connectome()
+    pops = Populations.from_connectome(c)
+    # min_weight above every KC->MBON synapse count (5-14) drops all plastic edges
+    p = Params(noise_mv=0.0, min_weight=100, balance_hemispheres=False)
+    eng = Engine(c, pops, p, seed=0)
+    with pytest.raises(ValueError, match="no plastic KC->MBON edges"):
+        Plasticity(eng, pops, compartments(c, pops, p.core_frac))
+
+
+def test_rejects_non_positive_kc_weight(synthetic_connectome):
+    c, pops, eng, pl = _setup(synthetic_connectome)
+    eng.csc.w[pl.edges[0]] = -1.0          # a KC->MBON edge with the wrong sign
+    with pytest.raises(ValueError, match="non-positive"):
+        Plasticity(eng, pops, compartments(c, pops, Params().core_frac))
+
+
+def test_weights_frac_raises_on_empty_selection(synthetic_connectome):
+    c, pops, eng, pl = _setup(synthetic_connectome)
+    with pytest.raises(ValueError, match="no plastic edges selected"):
+        pl.weights_frac_by_mbon_set(pops.mbon[:0])
+    pl.edges = pl.edges[:0]
+    with pytest.raises(ValueError, match="no plastic edges selected"):
+        pl.weights_frac()

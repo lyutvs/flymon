@@ -18,6 +18,11 @@ class Plasticity:
         self.w0 = csc.w[self.edges].copy()
         kc_local = np.full(engine.N, -1, np.int64); kc_local[pops.kc] = np.arange(len(pops.kc))
         mb_local = np.full(engine.N, -1, np.int64); mb_local[pops.mbon] = np.arange(len(pops.mbon))
+        if self.edges.size == 0:
+            raise ValueError("no plastic KC->MBON edges: check min_weight and the KC/MBON populations")
+        if (self.w0 <= 0).any():
+            raise ValueError("non-positive KC->MBON weight: Kenyon cells are cholinergic, so a "
+                             "w0 <= 0 means a sign/transmitter problem in the connectome")
         self.pre_kc = kc_local[pre[self.edges]]
         self.post_mb = mb_local[csc.tgt[self.edges]]
         self.mb_local = mb_local
@@ -69,10 +74,14 @@ class Plasticity:
 
     # ---- bookkeeping ---------------------------------------------------------------------
     def weights_frac(self) -> float:
+        if self.edges.size == 0:
+            raise ValueError("no plastic edges selected")
         return float(np.mean(self.eng.csc.w[self.edges] / self.w0))
 
     def weights_frac_by_mbon_set(self, mbon_idx) -> float:
         sel = np.isin(self.post_mb, self.mb_local[np.asarray(mbon_idx)])
+        if not sel.any():
+            raise ValueError("no plastic edges selected")
         return float(np.mean(self.eng.csc.w[self.edges][sel] / self.w0[sel]))
 
     def recover_pulse(self) -> None:

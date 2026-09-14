@@ -1,8 +1,10 @@
+import dataclasses
 import json
 
 import numpy as np
+import pytest
 
-from flymon.brain.circuits import Populations, compartments, export_compartments
+from flymon.brain.circuits import Populations, compartments, export_compartments, validate_populations
 
 
 def test_populations_from_synthetic(synthetic_connectome):
@@ -40,3 +42,36 @@ def test_export_compartments(tmp_path, synthetic_connectome):
     d = json.loads(path.read_text())
     assert d["PAM08"]["core_mbon_types"] == ["MBON01", "MBON02"]
     assert d["PPL105"]["n_cells"] == 2
+
+
+def _valid(synthetic_connectome):
+    c = synthetic_connectome()
+    p = Populations.from_connectome(c)
+    return c, p, compartments(c, p, 0.2)
+
+
+def test_validate_populations_accepts_synthetic(synthetic_connectome):
+    c, p, comps = _valid(synthetic_connectome)
+    assert validate_populations(c, p, comps) is None
+
+
+def test_validate_populations_rejects_empty_populations(synthetic_connectome):
+    c, p, comps = _valid(synthetic_connectome)
+    for field, msg in (("kc", "Kenyon"), ("mbon", "MBON"), ("receptor_types", "receptor types")):
+        bad = dataclasses.replace(p, **{field: {} if field == "receptor_types" else np.zeros(0, np.int64)})
+        with pytest.raises(ValueError, match=msg):
+            validate_populations(c, bad, comps)
+
+
+def test_validate_populations_rejects_missing_dan_type(synthetic_connectome):
+    c, p, comps = _valid(synthetic_connectome)
+    with pytest.raises(ValueError, match="PAM08"):
+        validate_populations(c, p, {k: v for k, v in comps.items() if k != "PAM08"})
+
+
+def test_validate_populations_rejects_overlapping_cores(synthetic_connectome):
+    c, p, comps = _valid(synthetic_connectome)
+    overlapping = dict(comps)
+    overlapping["PAM08"] = dataclasses.replace(comps["PAM08"], core=comps["PPL105"].core)
+    with pytest.raises(ValueError, match="overlap"):
+        validate_populations(c, p, overlapping)

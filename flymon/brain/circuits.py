@@ -66,11 +66,17 @@ def compartments(c: Connectome, p: Populations, core_frac: float) -> dict:
     not transmit, so these edges carry no current in the CSC and must be read from raw arrays)."""
     is_mbon = np.zeros(c.N, bool)
     is_mbon[p.mbon] = True
+    is_dan_any = np.zeros(c.N, bool)
+    for cells in p.dan_types.values():
+        is_dan_any[cells] = True
+    # pre-mask once: only DAN->MBON edges can contribute, and they are a tiny slice of the edge list
+    keep = np.flatnonzero(is_dan_any[c.pre] & is_mbon[c.post])
+    k_pre, k_post, k_w = c.pre[keep], c.post[keep], c.w[keep].astype(np.float32)
     out = {}
     for name, cells in p.dan_types.items():
-        m = np.isin(c.pre, cells) & is_mbon[c.post]
+        m = np.isin(k_pre, cells)
         acc = np.zeros(c.N, np.float32)
-        np.add.at(acc, c.post[m], c.w[m].astype(np.float32))
+        np.add.at(acc, k_post[m], k_w[m])
         peak = float(acc.max())
         if peak <= 0:
             continue
@@ -78,6 +84,22 @@ def compartments(c: Connectome, p: Populations, core_frac: float) -> dict:
         core = np.flatnonzero(w >= core_frac)
         out[name] = Compartment(family="PAM" if name.startswith("PAM") else "PPL1", cells=cells, w_mbon=w, core=core)
     return out
+
+
+def validate_populations(conn: Connectome, pops: Populations, comps: dict) -> None:
+    """Fail fast on a connectome that cannot carry the M0 protocol (called before long runs)."""
+    for name, arr in (("Kenyon cells", pops.kc), ("MBONs", pops.mbon)):
+        if len(arr) == 0:
+            raise ValueError(f"no {name} in the connectome: check the class annotations")
+    if not pops.receptor_types:
+        raise ValueError("no olfactory receptor types (ORN_*) in the connectome")
+    missing = [t for t in ("PPL105", "PAM08") if t not in comps]
+    if missing:
+        raise ValueError(f"missing dopamine compartments {missing}: the M0 gate needs both PPL105 and PAM08")
+    overlap = set(comps["PPL105"].core.tolist()) & set(comps["PAM08"].core.tolist())
+    if overlap:
+        raise ValueError(f"PPL105 and PAM08 core compartments overlap on {len(overlap)} MBONs: "
+                         "the readout would not separate approach from avoidance")
 
 
 def export_compartments(comps: dict, c: Connectome, path: str | Path) -> None:
