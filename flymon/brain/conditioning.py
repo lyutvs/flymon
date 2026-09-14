@@ -1,9 +1,12 @@
 """Paired-seed olfactory conditioning with reversal: the engine acceptance gate (spec 5, M0).
 
 Protocol (reproduction target: flybrain conditioning4c):
-  pre-test  : probe CS+ and CS- with the same noise seed (plasticity off)
+  pre-test  : probe CS+ and CS- with the same noise seed `seed` (plasticity off; training uses the
+              disjoint seed block 1_000_000 + seed * 1000 + trial so probes never see a training seed)
   training  : N trials of CS+ paired with one DAN type (punishment PPL105 or reward PAM08),
-              then CS- paired with the other
+              then CS- paired with the other. The "reversed" arm keeps the odour identities and
+              the readout frame fixed and exchanges which dopamine type is paired with which
+              odour, so the sign of dD must flip.
   post-test : same probes, same seed -> the no-plasticity arm is exactly 0.0
 Readout D = disc over the PPL105 core (approach MBONs) minus disc over the PAM08 core (avoidance MBONs).
 """
@@ -38,6 +41,7 @@ def probe(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, odor, 
     was = pl.enabled
     pl.set_enabled(False)
     engine.reset(seed)
+    pl.reset_traces()
     engine.clear_drive()
     pl.quiet_dan()
     present(engine, pops, odor, strength)
@@ -53,7 +57,8 @@ def train_block(engine: Engine, pl: Plasticity, pops: Populations, cs_plus, cs_m
     p = engine.p
     for t in range(trials):
         for odor, dan in ((cs_plus, punish), (cs_minus, reward)):
-            engine.reset(seed * 1000 + t)
+            engine.reset(1_000_000 + seed * 1000 + t)   # disjoint from the probe seeds
+            pl.reset_traces()
             engine.clear_drive()
             pl.quiet_dan()
             present(engine, pops, odor, strength)
@@ -70,20 +75,18 @@ def train_block(engine: Engine, pl: Plasticity, pops: Populations, cs_plus, cs_m
 ARMS = {
     # arm: (DAN type paired with the odour in the CS+ slot, DAN type paired with the CS- slot, plasticity on)
     "both": ("PPL105", "PAM08", True),
-    "reversed": ("PPL105", "PAM08", True),   # same dopamine, but the two odours swap slots -> sign must flip
+    # reversed = same odours, same dopamine amounts, channels exchanged; sign of dD must flip
+    "reversed": ("PAM08", "PPL105", True),
     "noplast": ("PPL105", "PAM08", False),
     "punish_only": ("PPL105", None, True),
     "reward_only": (None, "PAM08", True),
 }
-SWAP_ODOURS = {"reversed"}
 
 
 def run_arm(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, cs_plus, cs_minus, strength: float,
             seed: int, arm: str, trials: int = 12, present_ms: float = 800.0, gap_ms: float = 200.0,
             settle_ms: float = 200.0, read_ms: float = 600.0) -> dict:
     punish, reward, plastic = ARMS[arm]
-    if arm in SWAP_ODOURS:
-        cs_plus, cs_minus = cs_minus, cs_plus        # reversal = swap which odour gets which channel
     pl.reset_weights()
     pre = D(ro, probe(engine, pl, pops, ro, cs_plus, strength, seed, settle_ms, read_ms),
             probe(engine, pl, pops, ro, cs_minus, strength, seed, settle_ms, read_ms))

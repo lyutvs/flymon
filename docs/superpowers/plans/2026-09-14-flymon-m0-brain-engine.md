@@ -1991,20 +1991,18 @@ def train_block(engine: Engine, pl: Plasticity, pops: Populations, cs_plus, cs_m
 ARMS = {
     # arm: (DAN type paired with the odour in the CS+ slot, DAN type paired with the CS- slot, plasticity on)
     "both": ("PPL105", "PAM08", True),
-    "reversed": ("PPL105", "PAM08", True),   # same dopamine, but the two odours swap slots -> sign must flip
+    # reversed = same odours, same dopamine amounts, channels exchanged; sign of dD must flip
+    "reversed": ("PAM08", "PPL105", True),
     "noplast": ("PPL105", "PAM08", False),
     "punish_only": ("PPL105", None, True),
     "reward_only": (None, "PAM08", True),
 }
-SWAP_ODOURS = {"reversed"}
 
 
 def run_arm(engine: Engine, pl: Plasticity, pops: Populations, ro: Readout, cs_plus, cs_minus, strength: float,
             seed: int, arm: str, trials: int = 12, present_ms: float = 800.0, gap_ms: float = 200.0,
             settle_ms: float = 200.0, read_ms: float = 600.0) -> dict:
     punish, reward, plastic = ARMS[arm]
-    if arm in SWAP_ODOURS:
-        cs_plus, cs_minus = cs_minus, cs_plus        # reversal = swap which odour gets which channel
     pl.reset_weights()
     pre = D(ro, probe(engine, pl, pops, ro, cs_plus, strength, seed, settle_ms, read_ms),
             probe(engine, pl, pops, ro, cs_minus, strength, seed, settle_ms, read_ms))
@@ -2034,7 +2032,7 @@ def summarise(per_seed: dict) -> dict:
             "arms": arms, "per_seed": {str(s): per_seed[s] for s in seeds}}
 ```
 
-주의: `run_arm`의 "reversed" 팔은 냄새를 바꿔 끼우는 방식으로 반전을 구현한다. 이렇게 하면 두 팔이 **같은 양의 도파민**을 받고, CS+ 관점에서 부호가 뒤집혀야 한다.
+주의: `run_arm`의 "reversed" 팔은 냄새 정체성과 판독 기준(readout frame)을 그대로 두고 **어느 도파민 종류가 어느 냄새와 짝지어지는지**만 바꿔서 반전을 구현한다. 냄새를 바꿔 끼우면 D(a, b) = −D(b, a)라는 판독의 반대칭성 때문에 학습이 없어도 부호가 뒤집혀 보이므로 절대 그렇게 하지 않는다. 두 팔은 **같은 양의 도파민**을 받고, 같은 냄새로 프로브하며, 부호만 뒤집혀야 한다.
 
 - [ ] **Step 4: 스크립트에 `conditioning` 서브커맨드 추가** — `scripts/reproduce_flybrain_measurements.py`
 
@@ -2099,7 +2097,7 @@ Expected 소요: 시드당 5팔 × (4 probe + 24 학습 제시) × 약 1 s(0.8 s
 불합격 시 순서대로, 한 번에 하나만 바꾸고 각 실행 결과를 `results/m0/conditioning_<태그>.json`으로 보관한다:
 1. `noplast_max_abs_dD != 0.0`이면 버그다(짝지은 시드가 깨짐). `Engine.reset(seed)`가 RNG·상태·지연 링을 전부 초기화하는지, `probe`가 `enabled=False`로 도는지 확인.
 2. `both`가 거의 0이면 학습이 약하다: `--kc-trace-scale`과 `--da-trace-scale`을 2배씩(최대 8배), 그다음 `--learn-rate 1e-3`.
-3. `both`와 `reversed`가 같은 부호면 냄새 코드가 겹친다: Task 8 격자에서 Jaccard가 가장 낮은 `kc_thresh`/`apl_scale`을 `--kc-thresh --apl-scale`로 지정.
+3. `both`와 `reversed`가 같은 부호면 냄새별 학습이 없거나(두 냄새가 같은 KC를 쓴다) 가소성이 포화된 것이다: Task 8 격자에서 Jaccard가 가장 낮은 `kc_thresh`/`apl_scale`을 `--kc-thresh --apl-scale`로 지정해 겹침을 낮춘다.
 4. 포화(weights_frac < 0.3)면 `--learn-rate 1e-4`, `--trials 6`.
 
 합격한 파라미터를 `Params` 기본값으로 바꾸고 결과 파일을 `results/m0/conditioning.json`으로 둔다.

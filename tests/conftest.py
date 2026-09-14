@@ -5,6 +5,11 @@ Layout (indices are contiguous blocks, in this order):
   APL (one), lLN1/lLN2 (three, labelled acetylcholine on purpose), DN, MN.
 Edges: ORN->ALPN, ALPN->KC (random 3 glomeruli each), KC->MBON (all pairs), DAN->MBON,
   APL->KC, KC->APL, lLN->ALPN, MBON->DN, DN->MN. Weights are synapse counts >= 1.
+
+With disjoint_kc=True the ALPN->KC draw is restricted so that odour-specific learning is
+expressible: KC i draws only from the ALPNs of glomerulus group i % 2 (group 0 = ORN_DM1 and
+ORN_DA1, group 1 = ORN_VA2 and ORN_DM6; ORN_VC1's ALPNs stay unused), so the two groups drive
+disjoint Kenyon-cell sets.
 """
 from __future__ import annotations
 
@@ -14,7 +19,7 @@ import pytest
 from flymon.brain.connectome import Connectome
 
 
-def _build(n_orn=20, n_alpn=10, n_kc=40, n_mbon=4, n_dan=4, n_dn=6, n_mn=4, seed=0):
+def _build(n_orn=20, n_alpn=10, n_kc=40, n_mbon=4, n_dan=4, n_dn=6, n_mn=4, seed=0, disjoint_kc=False):
     rng = np.random.default_rng(seed)
     types, cls, sc, nt, side = [], [], [], [], []
 
@@ -56,8 +61,12 @@ def _build(n_orn=20, n_alpn=10, n_kc=40, n_mbon=4, n_dan=4, n_dn=6, n_mn=4, seed
         g = glom[types[o]]
         for b in (alpn[(2 * g) % n_alpn], alpn[(2 * g + 1) % n_alpn]):
             edge(o, b, 12)
-    for k in kc:                                   # 3 random ALPN inputs, 6-20 synapses
-        for a in rng.choice(alpn, 3, replace=False):
+    groups = [["ORN_DM1", "ORN_DA1"], ["ORN_VA2", "ORN_DM6"]]
+    group_alpn = [np.array(sorted({alpn[(2 * glom[t] + j) % n_alpn] for t in g for j in (0, 1)}))
+                  for g in groups]
+    for n, k in enumerate(kc):                     # 3 ALPN inputs, 6-20 synapses
+        pool = group_alpn[n % len(group_alpn)] if disjoint_kc else alpn
+        for a in rng.choice(pool, 3, replace=False):
             edge(a, k, rng.integers(6, 21))
         edge(k, apl[0], 4); edge(apl[0], k, 30)    # APL loop
     for k in kc:

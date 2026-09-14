@@ -70,6 +70,43 @@ def test_recovery_applied_once_per_dopamine_pulse(synthetic_connectome):
     assert len(calls) == 0          # unpaired presentations recover nothing
 
 
+def test_training_traces_do_not_leak_into_probes(synthetic_connectome):
+    """Traces are per-presentation state: a dopamine pulse leaves da > 0, but the next probe
+    (same seed, plasticity off) must return exactly the pre-training counts."""
+    c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
+    before = probe(eng, pl, pops, ro, a, 1.0, seed=7, settle_ms=50, read_ms=100)
+    pl.set_enabled(False)          # weights frozen: only the traces can carry anything over
+    train_block(eng, pl, pops, a, b, 1.0, seed=7, punish="PPL105", reward="PAM08", trials=2,
+                present_ms=200, gap_ms=20)
+    assert pl.da.max() > 0.0       # the pulse really did charge the dopamine trace
+    pl.set_enabled(True)
+    after = probe(eng, pl, pops, ro, a, 1.0, seed=7, settle_ms=50, read_ms=100)
+    assert after == before
+    assert pl.weights_frac() == pytest.approx(1.0)
+
+
+def test_reversed_arm_flips_sign_with_odour_specific_learning(synthetic_connectome):
+    """Disjoint KC codes make the contingency learnable, so exchanging the dopamine channels
+    (same odours, same readout frame) must flip the sign of dD."""
+    c = synthetic_connectome(disjoint_kc=True)
+    p = Params(noise_mv=0.15, min_weight=1, balance_hemispheres=False, learn_rate=0.05, kc_thresh=0.5)
+    pops = Populations.from_connectome(c)
+    eng = Engine(c, pops, p, seed=0)
+    comps = compartments(c, pops, p.core_frac)
+    pl = Plasticity(eng, pops, comps)
+    ro = Readout(a_core=comps["PPL105"].core, p_core=comps["PAM08"].core)
+    a = {"ORN_DM1": 1.0, "ORN_DA1": 1.0}
+    b = {"ORN_VA2": 1.0, "ORN_DM6": 1.0}
+    # read_ms 600, not 100: with a 100 ms readout the synthetic MBONs emit 0-1 spikes per probe
+    # and D is quantised to 0 for both arms (measured: dD_both = 0.0 at every seed)
+    kw = dict(trials=3, present_ms=150, gap_ms=20, settle_ms=50, read_ms=600)
+    arms = {arm: run_arm(eng, pl, pops, ro, a, b, 1.0, seed=1, arm=arm, **kw)
+            for arm in ("noplast", "both", "reversed")}
+    assert arms["noplast"]["dD"] == 0.0
+    assert arms["both"]["dD"] != 0.0
+    assert np.sign(arms["both"]["dD"]) == -np.sign(arms["reversed"]["dD"])
+
+
 @pytest.mark.skipif(not Path("results/m0/conditioning.json").exists(), reason="gate not yet run on real data")
 def test_real_conditioning_gate():
     d = json.loads(Path("results/m0/conditioning.json").read_text())

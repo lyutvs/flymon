@@ -81,6 +81,18 @@ def test_recover_pulse_moves_toward_w0(synthetic_connectome):
     assert f1 == pytest.approx(f0 + (1.0 - f0) * 0.5, abs=1e-6)
 
 
+def test_reset_traces_zeroes_traces_but_keeps_weights(synthetic_connectome):
+    c, pops, eng, pl = _setup(synthetic_connectome, learn_rate=0.5)
+    _drive_kcs(eng, pops, k=40, mv=80.0)
+    pl.drive_dan("PAM08", 70.0)
+    eng.run(500)
+    assert pl.kc_trace.max() > 0 and pl.da.max() > 0
+    w = eng.csc.w[pl.edges].copy()
+    pl.reset_traces()
+    assert pl.kc_trace.max() == 0 and pl.da.max() == 0 and pl.da_base.max() == 0
+    np.testing.assert_array_equal(eng.csc.w[pl.edges], w)
+
+
 def test_reset_weights_restores_w0(synthetic_connectome):
     c, pops, eng, pl = _setup(synthetic_connectome, learn_rate=0.5)
     _drive_kcs(eng, pops, k=40, mv=80.0)

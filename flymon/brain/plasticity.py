@@ -82,9 +82,13 @@ class Plasticity:
         w = self.eng.csc.w
         w[self.edges] += (self.w0 - w[self.edges]) * np.float32(r)
 
+    def reset_traces(self) -> None:
+        """Zero the eligibility/dopamine traces (state carries no meaning across presentations)."""
+        self.kc_trace[:] = 0; self.da[:] = 0; self.da_base[:] = 0
+
     def reset_weights(self) -> None:
         self.eng.csc.w[self.edges] = self.w0
-        self.kc_trace[:] = 0; self.da[:] = 0; self.da_base[:] = 0
+        self.reset_traces()
 
     def set_enabled(self, on: bool) -> None:
         self.enabled = bool(on)
