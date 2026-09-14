@@ -193,10 +193,38 @@ def test_reversed_arm_flips_sign_with_odour_specific_learning(synthetic_connecto
 
 
 @pytest.mark.skipif(not Path("results/m0/conditioning.json").exists(), reason="gate not yet run on real data")
+@pytest.mark.xfail(strict=True, reason="M0 partial outcome: composite D-index flip is not achievable "
+                                       "with the PPL105 core in this engine (MBON13 answers one odour "
+                                       "only); see README '안 된 것'")
 def test_real_conditioning_gate():
+    """The pre-registered M0 conditioning criterion, kept verbatim. It FAILS on the frozen run
+    (graded n_flip 0/8): recorded as an expected failure, not removed and not relaxed."""
     d = json.loads(Path("results/m0/conditioning.json").read_text())
     assert d["n_seeds"] == 8 and d["n_flip"] == 8
     assert d["noplast_max_abs_dD"] == 0.0
     both, rev = d["arms"]["both"]["mean_dD"], d["arms"]["reversed"]["mean_dD"]
     assert abs(both) >= 0.3 and abs(rev) >= 0.3 and np.sign(both) == -np.sign(rev)
     assert np.sign(d["arms"]["punish_only"]["mean_dD"] + d["arms"]["reward_only"]["mean_dD"]) == np.sign(both)
+
+
+def _channel_specific_seeds(per_seed: dict) -> int:
+    """Same definition as scripts/write_m0_summary.channel_specific_seeds (scripts/ is not an
+    importable package, so the small helper is duplicated here on purpose)."""
+    def drop(pre, post):
+        return 0.0 if pre == 0 else (pre - post) / pre
+    n = 0
+    for rec in per_seed.values():
+        both, rev = rec["both"]["counts"], rec["reversed"]["counts"]
+        if (drop(both["pre_minus"]["P"], both["post_minus"]["P"]) > drop(both["pre_plus"]["P"], both["post_plus"]["P"])
+                and drop(rev["pre_plus"]["P"], rev["post_plus"]["P"]) > drop(rev["pre_minus"]["P"], rev["post_minus"]["P"])
+                and drop(rev["pre_minus"]["A"], rev["post_minus"]["A"]) > drop(both["pre_minus"]["A"], both["post_minus"]["A"])):
+            n += 1
+    return n
+
+
+@pytest.mark.skipif(not Path("results/m0/conditioning.json").exists(), reason="gate not yet run on real data")
+def test_real_conditioning_channel_specificity():
+    """What M0 did show: each dopamine channel depresses the odour it was paired with, read off the
+    raw probe counts. This is a separate, weaker claim than the failed composite criterion above."""
+    d = json.loads(Path("results/m0/conditioning.json").read_text())
+    assert _channel_specific_seeds(d["per_seed"]) == d["n_seeds"] == 8

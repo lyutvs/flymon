@@ -253,3 +253,53 @@ results/    (git-ignored: 로그, 체크포인트; 요약 JSON은 커밋)
 - poke-env에서 원시 이벤트를 얻는 방법(observation events 또는 메시지 훅)은 M1에서 확정.
 - 판독 집합, 창 길이, τ_rec, 펄스 길이, 마리·배틀 수, 최소 검출 효과의 최종값은 M0b·M1·M2 뒤 부록으로 추가하고 동결 해시를 기록.
 - 팀 풀 16마리 목록은 M1 검증 스크립트를 통과한 것으로 확정.
+
+## 부록 A. M0 게이트 결과 (2026-09-14)
+
+**결과: 부분 통과(PARTIAL).** 희소성 게이트와 채널별 냄새 특이 억제는 통과했고, 사전 등록한 조건화
+합성 지수 반전 기준은 **실패**했다. 기준을 사후에 고쳐 쓰지 않고 실패로 기록한다.
+
+### A.1 동결 파라미터
+
+`kc_thresh` 1.5, `apl_scale` 0.1, `mbon_hold_frac` 0.85, 냄새 강도 0.35, 설계된 8-사구체 냄새쌍(design seed 0),
+settle 800 ms, `da_baseline_ms` 200 ms, `learn_rate` 3e-4, trace 스케일 40 / 20,
+처벌 채널 PPL105, 보상 채널 PAM08. 전체 값은 `results/summary/m0.json`의 `params_frozen`.
+
+### A.2 기준별 판정
+
+| 기준 | 판정 | 수치 |
+|---|---|---|
+| 희소성·겹침·MBON 기저 (스펙 5) | **PASS** | KC 활성 6.2% / 5.8%(3–7%), Jaccard 0.023 ≤ 우연 0.031, MBON 기저 절사 평균(3시드 × 3초) 3.52 ± 1.03 Hz(3–4 Hz), 활성 MBON 타입 35개 |
+| 조건화 — 사전 등록 합성 지수 반전 (graded D가 `both`/`reversed`에서 부호 반전, 8/8 시드, \|mean dD\| ≥ 0.3) | **FAIL** | graded n_flip **0/8**, both +0.37, reversed +1.44(부호 같음). 고전 포화 지수는 8/8이나 퇴화값(MBON13이 냄새 A에 무반응이라 ±1 고정). `noplast` dD = 0.0 정확(짝지음 검증됨) |
+| 조건화 — 채널별 수반성 특이 억제 (원시 프로브 카운트, 600 ms) | **PASS 8/8** | 보상: PAM08 × B → MBON05의 B 35→0, A는 33→22만; PAM08 × A → A 33→0, B는 35→15만. 처벌: PPL105 × B → MBON13의 B 31→0–1; PPL105 × A → 같은 B 31→12–19(절반). MBON13의 A 반응은 전후 모두 0(억압할 것이 없음) |
+
+세 번째 기준의 정의: 시드마다 (i) `both`에서 P−의 감소율 > P+의 감소율, (ii) `reversed`에서 P+의 감소율 > P−의
+감소율, (iii) `reversed`의 A− 감소율 > `both`의 A− 감소율. 감소율은 `(pre − post)/pre`(pre = 0이면 0).
+`scripts/write_m0_summary.py`의 `channel_specific_seeds()`와 `tests/brain/test_conditioning.py`가 같은 정의를 쓴다.
+이 기준은 사전 등록 기준의 **대체가 아니라 별개의 더 약한 주장**이다.
+
+### A.3 시도한 실행 (`results/m0/gate_runs.md`)
+
+| 실행 | n_flip (graded) | n_flip (disc) | 비고 |
+|---|---|---|---|
+| PPL105, 구 프로토콜(settle 200 / da_base 1000) | 2/8 | — | 기각 |
+| PPL101, 구 프로토콜 | 5/8 | — | PPL101 기각(휴지 ~119 Hz 상시 발화) |
+| PPL105, 새 프로토콜(settle 800 / da_base 200, 스케일 40/20) | **0/8** | 8/8(퇴화) | **채택(동결)** |
+| PPL105, 새 프로토콜, trace 스케일 10/5 | 2/8 | 4/8 | 서브에이전트 실행, 기록용 보관, 채택 안 함 |
+
+### A.4 엔진에서 확인된 한계
+
+- FR1 clique 폭주: `mbon_hold_frac` 0.85에서 FR1 18개가 상호 시냅스로 260–300 Hz에 포화해 MBON 2–5개를 끌어올린다.
+  게이트 통계를 절사 평균으로 쓴 이유다(포화 세포는 PPL105·PAM08 core에 없다).
+- PPL101 상시 발화(~119 Hz): 위상성 교사 신호를 실을 수 없어 처벌 채널에서 기각.
+- MBON18 무발화, MBON13은 5% 희소 영역에서 한 냄새에만 반응: 처벌 판독의 접근 항이 한쪽으로만 열려 있어
+  두 채널 합성 지수가 구조적으로 부호를 뒤집을 수 없다. 이것이 A.2의 FAIL의 직접 원인이다.
+
+### A.5 결정
+
+**옵션 1: M0를 부분 통과로 기록하고 M1로 진행한다.** 사전 등록 기준 실패는 README "안 된 것"과 이 부록,
+그리고 `tests/brain/test_conditioning.py::test_real_conditioning_gate`(strict xfail)에 남긴다 —
+테스트는 삭제하거나 완화하지 않고, 기준이 충족되는 날 xfail이 XPASS로 깨지도록 둔다.
+요약 JSON은 `gate.passed = false`, `gate.partial = true`로 쓴다.
+후속 과제: 단기 시냅스 억압(Tsodyks–Markram STD). 두 채널 판독이 실제로 필요해지는 시점
+(M0b / M2 전)에 먼저 처리한다. M1은 두 채널 합성 지수에 의존하지 않는 판독으로 진행한다.

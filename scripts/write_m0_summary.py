@@ -7,7 +7,12 @@ row matching the current Params() defaults, checks that row against the M0 gate
 freezes those defaults into the summary. A row that fails the gate is never
 frozen. The conditioning block carries the graded gate statistics (`n_flip`, per-arm `mean_dD`) and,
 when the run recorded it, the saturating index's `n_flip_disc` alongside.
-Run after both reproduce_flybrain_measurements.py subcommands.
+
+The `gate` block records the M0 outcome as it actually came out: the pre-registered composite
+criterion (graded index D flips sign between `both` and `reversed` on 8/8 seeds with
+|mean dD| >= 0.3) FAILED, while sparsity and the per-channel odour-specific depression passed,
+so the summary is written with `partial: true` rather than refused. Run after both
+reproduce_flybrain_measurements.py subcommands.
 """
 from __future__ import annotations
 
@@ -31,6 +36,42 @@ def _load(path: Path) -> dict:
     return json.loads(path.read_text())
 
 
+def _drop(pre: float, post: float) -> float:
+    """Fraction of a naive probe response lost after training (0 when there was nothing to lose)."""
+    return 0.0 if pre == 0 else (pre - post) / pre
+
+
+def channel_specific_seeds(per_seed: dict) -> int:
+    """Seeds where both dopamine channels depress the odour they were actually paired with.
+
+    Read off the raw probe counts, not the composite index. Per seed, all three must hold:
+      - `both` (reward PAM08 on the CS-): the approach core's minus-odour response drops more
+        than its plus-odour response;
+      - `reversed` (reward on the CS+): the other way round;
+      - `reversed` (punishment PPL105 on the CS-): the aversive core's minus-odour response drops
+        more than it does in `both`, where the same channel was paired with the other odour.
+    """
+    n = 0
+    for rec in per_seed.values():
+        both, rev = rec["both"]["counts"], rec["reversed"]["counts"]
+        p_minus_both = _drop(both["pre_minus"]["P"], both["post_minus"]["P"])
+        p_plus_both = _drop(both["pre_plus"]["P"], both["post_plus"]["P"])
+        p_plus_rev = _drop(rev["pre_plus"]["P"], rev["post_plus"]["P"])
+        p_minus_rev = _drop(rev["pre_minus"]["P"], rev["post_minus"]["P"])
+        a_minus_both = _drop(both["pre_minus"]["A"], both["post_minus"]["A"])
+        a_minus_rev = _drop(rev["pre_minus"]["A"], rev["post_minus"]["A"])
+        if p_minus_both > p_plus_both and p_plus_rev > p_minus_rev and a_minus_rev > a_minus_both:
+            n += 1
+    return n
+
+
+def index_flip_ok(co: dict) -> bool:
+    """The pre-registered composite criterion. FAILS on the frozen M0 run (n_flip 0/8)."""
+    both, rev = co["arms"]["both"]["mean_dD"], co["arms"]["reversed"]["mean_dD"]
+    return bool(co["n_flip"] == co["n_seeds"] and abs(both) >= 0.3 and abs(rev) >= 0.3
+                and (both > 0) != (rev > 0))
+
+
 def gate_ok(row: dict) -> bool:
     """Spec 5 M0 gate on one sparsity grid row."""
     return (0.03 <= row["frac_active_A"] <= 0.07 and 0.03 <= row["frac_active_B"] <= 0.07
@@ -49,7 +90,8 @@ def main() -> None:
               f"mbon_hold_frac={p.mbon_hold_frac} in {SPARSITY}")
         raise SystemExit(2)
     row = pick[0]
-    if not gate_ok(row):
+    sparsity_ok = gate_ok(row)
+    if not sparsity_ok:
         print("sparsity grid row for the current Params() fails the M0 gate: "
               f"frac_active_A={row['frac_active_A']} frac_active_B={row['frac_active_B']} "
               f"jaccard={row['jaccard']} chance={row['chance']} "
@@ -67,11 +109,28 @@ def main() -> None:
         "conditioning": {"n_flip": co["n_flip"], "noplast_max_abs_dD": co["noplast_max_abs_dD"],
                          "punish_type": co.get("params", {}).get("punish_type", "PPL105"),
                          "reward_type": co.get("params", {}).get("reward_type", "PAM08"),
+                         "settle_ms": co.get("params", {}).get("settle_ms"),
+                         "da_baseline_ms": co.get("params", {}).get("da_baseline_ms"),
                          "arms": co["arms"]},
+        "gate_runs": "results/m0/gate_runs.md",
+    }
+    n_spec = channel_specific_seeds(co["per_seed"])
+    flip_ok = index_flip_ok(co)
+    spec_ok = n_spec == co["n_seeds"]
+    out["gate"] = {
+        "sparsity_ok": sparsity_ok,
+        "conditioning_index_flip_ok": flip_ok,
+        "conditioning_channel_specific_ok": spec_ok,
+        "channel_specific_seeds": n_spec,
+        "passed": sparsity_ok and flip_ok,
+        "partial": sparsity_ok and spec_ok and not flip_ok,
     }
     # the saturating index, when the run recorded it (older runs predate the graded index)
     if "n_flip_disc" in co:
         out["conditioning"]["n_flip_disc"] = co["n_flip_disc"]
+    verdict = ("PASS" if out["gate"]["passed"] else "PARTIAL" if out["gate"]["partial"] else "FAIL")
+    print(f"M0 gate {verdict}: sparsity_ok={sparsity_ok} index_flip_ok={flip_ok} "
+          f"channel_specific={n_spec}/{co['n_seeds']} (pre-registered criterion is the index flip)")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=2))
     print(f"wrote {OUT}")
