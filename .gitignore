@@ -7,3 +7,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .superpowers/
+flymon/battle/node_modules/
+flymon/battle/logs/
+flymon/battle/config/config.js

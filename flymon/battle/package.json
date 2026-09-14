@@ -1,0 +1,6 @@
+{
+  "name": "flymon-battle",
+  "private": true,
+  "description": "Pinned Pokémon Showdown server for FlyMon (MIT)",
+  "dependencies": { "pokemon-showdown": "0.11.11" }
+}

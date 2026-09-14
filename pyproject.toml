@@ -8,6 +8,7 @@ dependencies = [
   "scipy>=1.14",
   "pyarrow>=17",
   "pandas>=2.2,<3",
+  "poke-env>=0.16.1,<0.17",
 ]
 
 [project.optional-dependencies]
@@ -16,7 +17,7 @@ viz = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=8", "pytest-timeout>=2.3"]
+dev = ["pytest>=8", "pytest-timeout>=2.3", "pytest-asyncio>=0.24"]
 
 [build-system]
 requires = ["hatchling"]
@@ -29,3 +30,4 @@ packages = ["flymon"]
 testpaths = ["tests"]
 timeout = 600
 addopts = "-q"
+asyncio_mode = "auto"
