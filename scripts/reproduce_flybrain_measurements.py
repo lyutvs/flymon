@@ -38,7 +38,9 @@ def cmd_sparsity(a):
                          "chance": chance_jaccard(ra["frac_active"], rb["frac_active"]),
                          "mbon_hz_A": ra["mbon_hz"], "mbon_hz_B": rb["mbon_hz"]})
         mean = {k: float(np.mean([r[k] for r in rows])) for k in rows[0]}
-        grid.append({"kc_thresh": kc_thresh, "apl_scale": apl, **mean})
+        rest = mbon_baseline(eng, pops, seed=100)  # baseline depends on kc_thresh/apl_scale too
+        grid.append({"kc_thresh": kc_thresh, "apl_scale": apl, **mean,
+                     "mbon_hz_rest": rest["mbon_hz"], "mbon_types_active_rest": rest["n_types_active"]})
         print(json.dumps(grid[-1]), flush=True)
     base = mbon_baseline(Engine(conn, pops, Params(), seed=0), pops, seed=100)
     out = {"odor_A": odor_a, "odor_B": odor_b, "drive_A": total_drive(pops, odor_a), "drive_B": total_drive(pops, odor_b),
