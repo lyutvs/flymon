@@ -54,6 +54,22 @@ def test_train_block_changes_weights_when_dan_driven(synthetic_connectome):
     assert pl.weights_frac() < 1.0
 
 
+def test_recovery_applied_once_per_dopamine_pulse(synthetic_connectome):
+    c, pops, eng, pl, ro, a, b = _setup(synthetic_connectome)
+    calls = []
+    orig = pl.recover_pulse
+    pl.recover_pulse = lambda: (calls.append(1), orig())
+
+    train_block(eng, pl, pops, a, b, 1.0, seed=2, punish="PPL105", reward=None, trials=2, present_ms=50, gap_ms=10)
+    assert len(calls) == 2          # one pulse per trial
+    calls.clear()
+    train_block(eng, pl, pops, a, b, 1.0, seed=2, punish="PPL105", reward="PAM08", trials=2, present_ms=50, gap_ms=10)
+    assert len(calls) == 4          # two pulses per trial
+    calls.clear()
+    train_block(eng, pl, pops, a, b, 1.0, seed=2, punish=None, reward=None, trials=2, present_ms=50, gap_ms=10)
+    assert len(calls) == 0          # unpaired presentations recover nothing
+
+
 @pytest.mark.skipif(not Path("results/m0/conditioning.json").exists(), reason="gate not yet run on real data")
 def test_real_conditioning_gate():
     d = json.loads(Path("results/m0/conditioning.json").read_text())

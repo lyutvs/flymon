@@ -63,7 +63,8 @@ def train_block(engine: Engine, pl: Plasticity, pops: Populations, cs_plus, cs_m
             pl.quiet_dan()
             engine.clear_drive()
             engine.run(gap_ms)
-            pl.recover_pulse()
+            if dan is not None:
+                pl.recover_pulse()   # spec 3.1: recovery is per dopamine pulse, not per presentation
 
 
 ARMS = {
