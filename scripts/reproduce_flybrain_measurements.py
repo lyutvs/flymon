@@ -19,7 +19,7 @@ from flymon.brain.conditioning import ARMS, Readout, run_arm, summarise
 from flymon.brain.config import Params
 from flymon.brain.connectome import Connectome
 from flymon.brain.engine_cpu import Engine
-from flymon.brain.measure import chance_jaccard, jaccard, kc_sparsity, mbon_baseline
+from flymon.brain.measure import chance_jaccard, jaccard, kc_sparsity, mbon_baseline_multi
 from flymon.brain.plasticity import Plasticity
 from flymon.brain.stimuli import design_odor_pair, total_drive
 
@@ -48,17 +48,22 @@ def cmd_sparsity(a):
                          "chance": chance_jaccard(ra["frac_active"], rb["frac_active"]),
                          "mbon_hz_A": ra["mbon_hz"], "mbon_hz_B": rb["mbon_hz"]})
         mean = {k: float(np.mean([r[k] for r in rows])) for k in rows[0]}
-        rest = mbon_baseline(eng, pops, seed=100)  # baseline depends on every Params in the grid
-        grid.append({"kc_thresh": kc_thresh, "apl_scale": apl, "mbon_hold_frac": hold, **mean,
-                     "mbon_hz_rest": rest["mbon_hz"], "mbon_types_active_rest": rest["n_types_active"]})
+        # baseline depends on every Params in the grid; several seeds because the raw mean is
+        # unstable when the FR1 clique saturates a few MBONs (the gate reads the trimmed mean)
+        rest = mbon_baseline_multi(eng, pops, seeds=range(100, 100 + a.rest_seeds), ms=a.rest_ms)
+        grid.append({"kc_thresh": kc_thresh, "apl_scale": apl, "mbon_hold_frac": hold, **mean, **rest})
         print(json.dumps(grid[-1]), flush=True)
     d = Params()
     default_row = [g for g in grid if (g["kc_thresh"], g["apl_scale"], g["mbon_hold_frac"])
                    == (d.kc_thresh, d.apl_scale, d.mbon_hold_frac)]
-    base = ({"mbon_hz": default_row[0]["mbon_hz_rest"], "n_types_active": default_row[0]["mbon_types_active_rest"]}
-            if default_row else mbon_baseline(Engine(conn, pops, d, seed=0), pops, seed=100))
+    base = (default_row[0] if default_row else
+            mbon_baseline_multi(Engine(conn, pops, d, seed=0), pops,
+                                seeds=range(100, 100 + a.rest_seeds), ms=a.rest_ms))
     out = {"odor_A": odor_a, "odor_B": odor_b, "drive_A": total_drive(pops, odor_a), "drive_B": total_drive(pops, odor_b),
-           "strength": a.strength, "grid": grid, "mbon_hz_rest": base["mbon_hz"], "mbon_types_active_rest": base["n_types_active"]}
+           "strength": a.strength, "grid": grid,
+           "mbon_hz_rest": base["mbon_hz_rest"], "mbon_hz_rest_trimmed": base["mbon_hz_rest_trimmed"],
+           "mbon_hz_rest_trimmed_sd": base["mbon_hz_rest_trimmed_sd"], "mbon_n_saturated": base["mbon_n_saturated"],
+           "mbon_types_active_rest": base["mbon_types_active_rest"]}
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(out, indent=2))
 
@@ -100,6 +105,7 @@ def main():
     s.add_argument("--mbon-hold", type=float, nargs="+", default=[0.85])   # third grid axis: MBON baseline band is 3-4 Hz
     s.add_argument("--strength", type=float, default=0.35); s.add_argument("--seeds", type=int, default=3)
     s.add_argument("--k", type=int, default=8); s.add_argument("--odor-seed", type=int, default=0)
+    s.add_argument("--rest-seeds", type=int, default=3); s.add_argument("--rest-ms", type=float, default=3000.0)
     s.set_defaults(fn=cmd_sparsity)
     c = sub.add_parser("conditioning")
     c.add_argument("--npz", default="data/malecns.npz"); c.add_argument("--out", default="results/m0/conditioning.json")

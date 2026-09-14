@@ -28,7 +28,8 @@ class Params:
     sign_override: tuple = (("lLN1", -1), ("lLN2", -1))
     apl_scale: float = 0.1         # multiplier on APL out-edge weights
     mbon_hold_frac: float = 0.85   # tonic drive on MBONs as fraction of v_thresh
-    kc_thresh: float = 1.0         # multiplier on KC threshold after PN-input normalisation
+    kc_thresh: float = 1.5         # multiplier on KC threshold after PN-input normalisation
+                                   # (frozen at 1.5: 1.0 leaves KC overlap above chance)
     kc_norm_clip: tuple = (0.5, 3.0)
     balance_hemispheres: bool = True
 

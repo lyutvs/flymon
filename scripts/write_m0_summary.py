@@ -3,7 +3,7 @@
 
 Reads the data manifest and the two gate result files, picks the sparsity grid
 row matching the current Params() defaults, checks that row against the M0 gate
-(spec 5: KC sparsity 3-7%, overlap at or below chance, MBON baseline 3-4 Hz) and
+(spec 5: KC sparsity 3-7%, overlap at or below chance, trimmed MBON baseline 3-4 Hz) and
 freezes those defaults into the summary. A row that fails the gate is never
 frozen. Run after both reproduce_flybrain_measurements.py subcommands.
 """
@@ -32,7 +32,7 @@ def _load(path: Path) -> dict:
 def gate_ok(row: dict) -> bool:
     """Spec 5 M0 gate on one sparsity grid row."""
     return (0.03 <= row["frac_active_A"] <= 0.07 and 0.03 <= row["frac_active_B"] <= 0.07
-            and row["jaccard"] <= row["chance"] and 3.0 <= row["mbon_hz_rest"] <= 4.0)
+            and row["jaccard"] <= row["chance"] and 3.0 <= row["mbon_hz_rest_trimmed"] <= 4.0)
 
 
 def main() -> None:
@@ -50,7 +50,8 @@ def main() -> None:
     if not gate_ok(row):
         print("sparsity grid row for the current Params() fails the M0 gate: "
               f"frac_active_A={row['frac_active_A']} frac_active_B={row['frac_active_B']} "
-              f"jaccard={row['jaccard']} chance={row['chance']} mbon_hz_rest={row['mbon_hz_rest']} "
+              f"jaccard={row['jaccard']} chance={row['chance']} "
+              f"mbon_hz_rest_trimmed={row['mbon_hz_rest_trimmed']} (raw {row['mbon_hz_rest']}) "
               "(want 0.03-0.07, 0.03-0.07, jaccard <= chance, 3.0-4.0 Hz)")
         raise SystemExit(2)
     out = {
@@ -59,6 +60,7 @@ def main() -> None:
         "params_frozen": dataclasses.asdict(p),
         "sparsity": row,
         "mbon_hz_rest": sp["mbon_hz_rest"],
+        "mbon_hz_rest_trimmed": sp["mbon_hz_rest_trimmed"],
         "conditioning": {"n_flip": co["n_flip"], "noplast_max_abs_dD": co["noplast_max_abs_dD"], "arms": co["arms"]},
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)

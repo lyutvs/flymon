@@ -23,6 +23,6 @@ def test_our_design_defaults():
     p = Params()
     assert p.apl_scale == 0.1
     assert p.mbon_hold_frac == 0.85
-    assert p.kc_thresh == 1.0
+    assert p.kc_thresh == 1.5
     assert p.sign_override == (("lLN1", -1), ("lLN2", -1))
     assert p.min_weight == 5

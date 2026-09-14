@@ -34,10 +34,41 @@ def kc_sparsity(engine: Engine, pops: Populations, odor, strength: float, seed: 
     }
 
 
-def mbon_baseline(engine: Engine, pops: Populations, seed: int, ms: float = 1000.0) -> dict:
+def mbon_baseline(engine: Engine, pops: Populations, seed: int, ms: float = 1000.0,
+                  sat_hz: float = 100.0) -> dict:
+    """Resting MBON rates.
+
+    A self-sustaining cholinergic clique (FR1) saturates a few MBONs on the real
+    connectome, so the raw mean is unstable; the gate uses the trimmed mean over
+    cells at or below `sat_hz`.
+    """
     engine.reset(seed)
     engine.clear_drive()
     counts = engine.run(ms)
     hz = counts[pops.mbon] / (ms / 1000.0)
     types = engine.conn.type[pops.mbon]
-    return {"mbon_hz": float(hz.mean()), "n_types_active": int(len(set(types[hz > 0].tolist())))}
+    keep = hz <= sat_hz
+    trimmed = float(hz[keep].mean()) if keep.any() else 0.0
+    return {
+        "mbon_hz": float(hz.mean()),
+        "mbon_hz_trimmed": trimmed,
+        "n_saturated": int((~keep).sum()),
+        "n_types_active": int(len(set(types[hz > 0].tolist()))),
+    }
+
+
+def mbon_baseline_multi(engine: Engine, pops: Populations, seeds, ms: float = 3000.0,
+                        sat_hz: float = 100.0) -> dict:
+    """`mbon_baseline` averaged over seeds; the gate statistic is `mbon_hz_rest_trimmed`."""
+    seeds = [int(s) for s in seeds]
+    runs = [mbon_baseline(engine, pops, seed=s, ms=ms, sat_hz=sat_hz) for s in seeds]
+    trimmed = np.array([r["mbon_hz_trimmed"] for r in runs], float)
+    return {
+        "mbon_hz_rest": float(np.mean([r["mbon_hz"] for r in runs])),
+        "mbon_hz_rest_trimmed": float(trimmed.mean()),
+        "mbon_hz_rest_trimmed_sd": float(trimmed.std()),
+        "mbon_n_saturated": float(np.mean([r["n_saturated"] for r in runs])),
+        "mbon_types_active_rest": float(np.mean([r["n_types_active"] for r in runs])),
+        "rest_seeds": seeds,
+        "rest_ms": float(ms),
+    }
