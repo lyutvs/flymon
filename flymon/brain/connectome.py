@@ -1,0 +1,106 @@
+"""Connectome arrays, our npz schema, sign/hemisphere corrections, CSC out-edge build."""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+
+import numpy as np
+
+from .config import Params
+
+SCHEMA = {
+    "bodyId": np.int64, "type": None, "cls": None, "sc": None, "nt": None,
+    "sign": np.int8, "side": None, "pre": np.int32, "post": np.int32, "w": np.int32,
+}
+SIGN_OF_NT = {"acetylcholine": 1, "gaba": -1, "glutamate": -1, "histamine": -1}
+
+
+@dataclass
+class Connectome:
+    bodyId: np.ndarray
+    type: np.ndarray
+    cls: np.ndarray
+    sc: np.ndarray
+    nt: np.ndarray
+    sign: np.ndarray
+    side: np.ndarray
+    pre: np.ndarray
+    post: np.ndarray
+    w: np.ndarray
+
+    @property
+    def N(self) -> int:
+        return int(self.bodyId.shape[0])
+
+    @property
+    def E(self) -> int:
+        return int(self.pre.shape[0])
+
+    def save(self, path: str | Path) -> None:
+        np.savez_compressed(path, **{k: getattr(self, k) for k in SCHEMA})
+
+    @classmethod
+    def load(cls, path: str | Path) -> "Connectome":
+        d = np.load(path, allow_pickle=False)
+        missing = [k for k in SCHEMA if k not in d.files]
+        if missing:
+            raise ValueError(f"npz missing arrays: {missing}")
+        arrs = {}
+        for k, dt in SCHEMA.items():
+            a = d[k]
+            arrs[k] = a.astype(dt) if dt is not None else a.astype(str)
+        c = cls(**arrs)
+        if c.pre.max(initial=-1) >= c.N or c.post.max(initial=-1) >= c.N:
+            raise ValueError("edge index out of range")
+        return c
+
+
+def apply_sign_override(conn: Connectome, params: Params) -> tuple[np.ndarray, int]:
+    """Re-sign cell types by prefix (spec 3.1: lLN1/lLN2 are inhibitory). Returns (sign, n_changed)."""
+    sign = conn.sign.astype(np.int8).copy()
+    n = 0
+    for prefix, s in params.sign_override:
+        m = np.char.startswith(conn.type, prefix)
+        n += int(m.sum())
+        sign[m] = s
+    return sign, n
+
+
+def hemisphere_scale(conn: Connectome) -> float:
+    """inL / inR: total synapse count onto left vs right postsynaptic cells. Applied to R inputs."""
+    in_l = float(conn.w[conn.side[conn.post] == "L"].sum())
+    in_r = float(conn.w[conn.side[conn.post] == "R"].sum())
+    return in_l / in_r if in_l > 0 and in_r > 0 else 1.0
+
+
+@dataclass
+class CSC:
+    """Out-edges grouped by presynaptic neuron: targets tgt[ptr[i]:ptr[i+1]] with signed mV weights."""
+    ptr: np.ndarray
+    tgt: np.ndarray
+    w: np.ndarray
+
+    @property
+    def N(self) -> int:
+        return int(self.ptr.shape[0] - 1)
+
+    def pre_of_edge(self) -> np.ndarray:
+        return np.repeat(np.arange(self.N, dtype=np.int32), np.diff(self.ptr))
+
+
+def build_csc(conn: Connectome, params: Params, apl_idx: np.ndarray) -> CSC:
+    sign, _ = apply_sign_override(conn, params)
+    keep = (conn.w >= params.min_weight) & (sign[conn.pre] != 0)
+    pre, post, w = conn.pre[keep], conn.post[keep], conn.w[keep].astype(np.float64)
+    mv = sign[pre] * w * params.mv_per_synapse
+    if params.balance_hemispheres:
+        scale = hemisphere_scale(conn)
+        mv = np.where(conn.side[post] == "R", mv * scale, mv)
+    is_apl = np.zeros(conn.N, bool)
+    is_apl[apl_idx] = True
+    mv = np.where(is_apl[pre], mv * params.apl_scale, mv)
+    order = np.argsort(pre, kind="stable")
+    pre, post, mv = pre[order], post[order], mv[order]
+    counts = np.bincount(pre, minlength=conn.N)
+    ptr = np.concatenate([[0], np.cumsum(counts)]).astype(np.int64)
+    return CSC(ptr=ptr, tgt=post.astype(np.int32), w=mv.astype(np.float32))
