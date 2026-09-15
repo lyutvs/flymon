@@ -556,7 +556,7 @@ A.5의 STD 재검토 조건이 M0b(C.7)에서 충족됐다. 이 부록은 그 �
 |---|---|---|
 | 희소성 | 설계 냄새쌍(design seed 0), 강도 0.35, 시드 100–102: KC 활성 3–7% 양쪽, Jaccard ≤ 우연 | PASS |
 | MBON 기저 | 시드 8개(100–107) × 3초 절사 평균(100 Hz 이하 세포) 3–4 Hz | 불확실 |
-| 폭주 | 휴지 8시드 모두 100 Hz 초과 KC 0개; 냄새 B 결정 창 64시드(100–163)에서 읽기 창 600 ms 평균 **150 Hz** 초과 KC 0개(100 Hz 초과 수는 함께 기록) | PASS |
+| 폭주 | 휴지 8시드 모두 100 Hz 초과 KC 0개; 냄새 B 결정 창 64시드(100–163)에서 읽기 창 600 ms 평균 **150 Hz** 초과 KC 0개(100 Hz 초과 수와 100–150 Hz 구간 KC의 정체는 함께 기록). 표본 수(8, 64)는 정의의 일부다 | PASS |
 | 조건화 | 사전 등록 기준 그대로(graded 지수 부호 반전 8/8, \|mean dD\| ≥ 0.3), **시드 8–15**로 판정, 0–7은 함께 보고 | FAIL |
 | 채널별 특이 억제 | 보고만 | 7–8/8 |
 | 등가성 | `kc_kc_scale=1.0`이 `results/m0/conditioning.json` 40건과 희소성 기본 행을 비트 동일 재현; 합성 커넥톰에서 1.0이면 CSC 비트 동일, 0이면 KC→KC 엣지 수만큼 정확히 줄고 그 합이 0 | PASS |
@@ -570,8 +570,12 @@ A.5의 STD 재검토 조건이 M0b(C.7)에서 충족됐다. 이 부록은 그 �
 
 - 새 결과는 `results/m0c/{sparsity,conditioning,conditioning_seeds0-7}.json`, `results/m0c/gate_runs.md`, `results/summary/m0c.json`(params_frozen에 `kc_kc_scale`, git 커밋, 시드, 게이트, 처리량·예산·등가성 블록). `results/m0/`, `results/summary/m0.json`, `results/summary/m0b.json`은 **불변**(옛 엔진의 기록).
 - M0c 조건화 기준(`results/m0c/conditioning.json`, 시드 8–15; `conditioning_seeds0-7.json`)은 **풀**(16워커, `conditioning_arm_job`)로 만든다. 풀과 인프로세스의 등가성은 (seed, arm) 두 쌍의 인프로세스 `run_arm` 결과가 풀 행과 비트 동일한 것과 `decide_equal`로 확인한다. 원시 풀 출력(`results/m0c/throughput.json`, `reproduce_*.json`)은 M0b와 같이 git 제외, 요약만 커밋한다.
-- 희소성 grid 행 키에 `kc_kc_scale`을 포함한다. 옛 파일에는 키가 없으므로 새 Params가 옛 행에 우연히 매치되지 않는다.
-- 기존 실제 데이터 테스트는 옛 JSON을 읽으므로 그대로 둔다. 추가: `build_csc` 스케일 테스트(합성), 실제 데이터 등가성 테스트(`kc_kc_scale=1.0`), `results/summary/m0c.json` 게이트 테스트.
+- 희소성 grid 행 키에 `kc_kc_scale`과 `sparsity_seeds`를 포함한다. 옛 파일에는 키가 없으므로 옛 행은 `kc_kc_scale` 1.0으로 읽고(`g.get("kc_kc_scale", 1.0)`), 옛 엔진의 소비자(`write_m0_summary.py`, `bench_pool.py summary`, M0 실제 데이터 테스트)는 1.0 행만 고른다.
+- **쓰기 가드**(계획 레드팀 P0): `kc_kc_scale ≠ 1.0`인 실행이 `results/m0/`, `results/m0b/`, `results/summary/m0.json`, `m0b.json`에 쓰려 하면 스크립트가 거부한다(`pool_bench.refuse_old_engine_output`, 종료 코드 2). README의 M0 명령은 `--kc-kc-scale 1.0`을 명시한다. 컨트롤러는 게이트 실행 전에 `results/m0/*.json` 사본을 스크래치에 둔다.
+- **요약 작성기의 입력 검증**: `write_m0c_summary.py`는 엔진 정체(old 1.0 / new 0.0), 판정 시드 8–15, 희소성 시드 100–102, 휴지 시드 100–107, 냄새 B 시드 100–163, 임계 100/150 Hz, 등가성 40건, 워커 {4, 8, 16}을 확인해 부족 항목을 이름 붙여 거부한다. `m0c_gate`의 폭주 항은 표본 수(휴지 ≥ 8, 냄새 ≥ 64)를 정의에 포함한다. 요약에는 git 커밋·dirty 여부·입력 파일 sha256을 기록한다.
+- 기존 실제 데이터 테스트는 수치를 바꾸지 않는다(행 선택에 `kc_kc_scale` 1.0만 붙는다). 추가: `build_csc` 스케일 테스트(합성, 1.0 비트 동일 참조 구현 포함), 실제 데이터 엣지 수 테스트(1.0: 6,005,611 / 0.0: 5,972,364), `results/m0c/sparsity.json` 게이트 테스트(D.4 정의; FAIL이면 strict xfail), `results/summary/m0c.json` 테스트(`equivalence_ok`·`runaway_ok`·옛 엔진 40/40을 단언).
+- D.2의 변형 비교는 스크래치 조사(2026-09-15)이며 HEAD에 코드 경로가 없어 재현 불가다. `results/m0c/gate_runs.md`에 출처 열로 명시하고 스크래치 진단 스크립트 사본을 `results/m0c/scratch/`에 둔다.
+- 게이트 FAIL 분기: 기본값 0.0은 유지하고 D.8·README·`m0c.json`에 FAIL을 기록하며, M2 인계는 사용자 판정 뒤에 한다. 되돌린다면 `kc_kc_scale` 기본값을 1.0으로 바꾸는 한 커밋이다.
 - M1 파일럿(부록 B)은 뇌 없이 돌았으므로 영향이 없다.
 
 ### D.6 STD 재검토 조건(재정의), FR1·MBON30 수용, M2 인계
