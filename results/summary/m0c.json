@@ -41,7 +41,7 @@
   "dan_drive_mv": 70.0,
   "recovery_per_pulse": 0.0
  },
- "git_commit": "2ae5c869933760fc0258e050490c2501911627a3",
+ "git_commit": "90ce2b29f190a10bb725dc9c3a03b0aa1fb680a1",
  "git_dirty": false,
  "inputs_sha256": {
   "sparsity": "e38da678e4a4f4c174c96591dfecfd4e29eb7868b3392d0985da8c0b3f55c514",
@@ -684,7 +684,7 @@
   "old": 939.0314543750137,
   "new": 1278.8327401250135
  },
- "generated_at": "2026-09-15T14:40:10.002987+00:00",
+ "generated_at": "2026-09-15T14:47:16.926719+00:00",
  "gate": {
   "sparsity_ok": true,
   "baseline_ok": true,
