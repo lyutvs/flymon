@@ -99,6 +99,13 @@ M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없�
   라우터(공격기 & 후보 ≥ 2 → 제공자), 귀속 규칙(직접 피해만, 잔여·대타·빗나감·불확실은 무신호), 배리어(100 ms 마감 또는 활성 전원 대기).
 - **실제 M0b 측정**(CPU 프로세스 풀, 실제 커넥톰): 16워커 엔드투엔드 예산 42.2시간(학습 결정 52,000 + 평가 결정 81,600; 학습만 19.3시간) ≤ 60시간 게이트 **통과**. 풀로 재실행한 M0 조건화 40건(5팔 × 8시드)이 `results/m0/conditioning.json`과 비트 동일, 희소성·기저도 차이 0.0, 풀의 결정이 인프로세스 엔진과 동일. 워커 RSS 0.57 GB(최대 0.79), C-shuf 배선 변형 하나 +0.15 GB. 휴지 3초에서 100 Hz 초과 뉴런 156개 중 KC 17개, 스파이크의 29% — 스펙 A.5의 STD 재검토 조건 충족. 요약 `results/summary/m0b.json`, 자세한 것은 스펙 부록 C.7.
 - **우리가 정한 것(M0b)**: MPS 배치 엔진 대신 기존 CPU 엔진의 프로세스 풀(레드팀 실측, 스펙 C.6). 마리별로 남는 상태는 KC→MBON 가중치·켬/끔·배선 변형뿐이고 부모가 보관한다. 결정은 후보를 같은 시드로 순차 제시(짝지은 잡음), 강화는 M0 `train_block`의 한 프레젠테이션. 등가성 게이트는 통계 일치가 아니라 비트 동일 재현. STD는 여전히 보류(A.5).
+- **우리가 정한 것(M0c, KC→KC 제거)**: KC→KC 엣지는 기본 제거한다(`kc_kc_scale` 0.0). M0b가 잰 "휴지 100 Hz 초과 집합의 KC 17개"는 시드 평균(0 / 52 / 0)이었고,
+  실체는 KCab-p 우반구 62개의 KC→KC 재귀 흥분 clique였다(냄새 B가 64시드 중 54개에서 점화, 판독 core에 직접 시냅스 0). KC 축삭간 접촉은
+  mAChR-B 매개 억제라(Manoim et al. 2022) 빠른 흥분으로 두는 것이 근거 없는 선택이었다. 이는 lLN1/lLN2와 같은 급의 데이터 라벨 재정의다.
+  `kc_kc_scale=1.0`은 M0·M0b 엔진이며 `results/m0/`·`results/summary/m0.json`·`m0b.json`은 옛 엔진의 기록으로 불변이다. 게이트는 실행 전에
+  사전 등록했고(스펙 부록 D.4: 희소성 ∧ 기저 8시드 ∧ 폭주 ∧ 등가성 ∧ 처리량; 조건화 기준은 그대로 두고 시드 8–15로 판정·기록), 파라미터는
+  게이트 결과를 보고 조정하지 않는다. STD는 재보류(재검토 조건은 D.6의 관측치). 알려진 한계: PN 입력이 0인 KC 297개(αβp·γd)의 역치 정규화는
+  정의되지 않아 클립 하한을 받는다(KC→KC 제거 후 실질 영향 없음).
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -106,8 +113,8 @@ M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없�
 
     uv sync
     uv run python -m flymon.brain.data_build --data data/raw --out data/malecns.npz
-    uv run python scripts/reproduce_flybrain_measurements.py sparsity
-    uv run python scripts/reproduce_flybrain_measurements.py conditioning --seeds 8
+    uv run python scripts/reproduce_flybrain_measurements.py sparsity --kc-kc-scale 1.0                # M0 = 옛 엔진; 기본값(0.0)으로는 results/m0/ 쓰기를 거부한다
+    uv run python scripts/reproduce_flybrain_measurements.py conditioning --seeds 8 --kc-kc-scale 1.0
     uv run python scripts/write_m0_summary.py
     uv run pytest
 
@@ -146,6 +153,21 @@ PASS / PARTIAL / FAIL 한 줄을 찍고 `gate` 블록에 그대로 기록한다)
 - 스웜은 `flymon/brain/fly_pool.py`의 워커 프로세스 풀이다. 워커마다 CPU 엔진 하나, 마리별로는 KC→MBON 가중치·켬/끔·배선 변형만 남고 부모가 보관한다.
 - 결정은 후보를 같은 시드로 순차 제시해 잡음을 짝짓는다(`flymon/brain/presentation.py`). 강화는 M0 `train_block`의 한 프레젠테이션과 같다.
 - MPS 배치 엔진은 스파이크와 레드팀 뒤 채택하지 않았다(스펙 부록 C.6).
+
+### M0c KC→KC 제거와 재게이트
+
+    uv run python scripts/reproduce_flybrain_measurements.py sparsity --kc-thresh 1.5 --apl-scale 0.1 --rest-seeds 8 --out results/m0c/sparsity.json
+    uv run python scripts/bench_pool.py reproduce --kc-kc-scale 1.0 --out results/m0c/reproduce_old.json                       # 옛 엔진 = results/m0 비트 동일(등가성)
+    uv run python scripts/bench_pool.py reproduce --seed-start 8 --sparsity-seeds 3 --rest-seeds 8 --odor-runaway-seeds 64 --arm-equal \
+        --m0-conditioning "" --m0-sparsity results/m0c/sparsity.json --conditioning-out results/m0c/conditioning.json --out results/m0c/reproduce.json
+    uv run python scripts/bench_pool.py reproduce --seed-start 0 --rest-seeds 0 --sparsity-seeds 0 --m0-conditioning "" --m0-sparsity "" \
+        --conditioning-out results/m0c/conditioning_seeds0-7.json --out results/m0c/reproduce_seeds0-7.json                    # 보고용(판정 아님)
+    uv run python scripts/bench_pool.py throughput --out results/m0c/throughput.json
+    uv run python scripts/write_m0c_summary.py                                                                                  # results/summary/m0c.json
+
+- 새 엔진(`Params()` 기본값, `kc_kc_scale` 0.0)의 M0 게이트를 스펙 부록 D.4의 사전 등록대로 다시 잰다. 옛 결과 파일은 덮어쓰지 않는다.
+- `--kc-kc-scale 1.0`은 옛 엔진이다: `reproduce_old.json`의 `conditioning_match`·`sparsity_match`가 `results/m0`와 비트 동일해야 한다.
+- `--arm-equal`은 (seed 8, both)·(seed 15, reversed)를 인프로세스로 다시 돌려 풀 행과 비트 동일한지 본다. 폭주 검사 임계는 휴지 100 Hz, 냄새 창 150 Hz(D.4).
 
 ### 학습 중 보기
 
