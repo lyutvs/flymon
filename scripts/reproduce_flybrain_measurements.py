@@ -21,6 +21,7 @@ from flymon.brain.connectome import Connectome
 from flymon.brain.engine_cpu import Engine
 from flymon.brain.measure import chance_jaccard, jaccard, kc_sparsity, mbon_baseline_multi
 from flymon.brain.plasticity import Plasticity
+from flymon.brain.pool_bench import refuse_old_engine_output
 from flymon.brain.stimuli import design_odor_pair, total_drive
 
 
@@ -28,6 +29,7 @@ COMPARTMENTS_OUT = Path("results/summary/compartments.json")
 
 
 def cmd_sparsity(a):
+    refuse_old_engine_output(a.out, a.kc_kc_scale)
     conn = Connectome.load(a.npz)
     pops = Populations.from_connectome(conn)
     comps = compartments(conn, pops, Params().core_frac)
@@ -37,7 +39,7 @@ def cmd_sparsity(a):
     odor_a, odor_b = design_odor_pair(pops, k=a.k, seed=a.odor_seed)
     grid = []
     for kc_thresh, apl, hold in itertools.product(a.kc_thresh, a.apl_scale, a.mbon_hold):
-        p = Params(kc_thresh=kc_thresh, apl_scale=apl, mbon_hold_frac=hold)
+        p = Params(kc_thresh=kc_thresh, apl_scale=apl, mbon_hold_frac=hold, kc_kc_scale=a.kc_kc_scale)
         eng = Engine(conn, pops, p, seed=0)
         rows = []
         for s in range(a.seeds):
@@ -51,9 +53,10 @@ def cmd_sparsity(a):
         # baseline depends on every Params in the grid; several seeds because the raw mean is
         # unstable when the FR1 clique saturates a few MBONs (the gate reads the trimmed mean)
         rest = mbon_baseline_multi(eng, pops, seeds=range(100, 100 + a.rest_seeds), ms=a.rest_ms)
-        grid.append({"kc_thresh": kc_thresh, "apl_scale": apl, "mbon_hold_frac": hold, **mean, **rest})
+        grid.append({"kc_thresh": kc_thresh, "apl_scale": apl, "mbon_hold_frac": hold, "kc_kc_scale": a.kc_kc_scale,
+                     "sparsity_seeds": [100 + s for s in range(a.seeds)], **mean, **rest})
         print(json.dumps(grid[-1]), flush=True)
-    d = Params()
+    d = Params(kc_kc_scale=a.kc_kc_scale)
     default_row = [g for g in grid if (g["kc_thresh"], g["apl_scale"], g["mbon_hold_frac"])
                    == (d.kc_thresh, d.apl_scale, d.mbon_hold_frac)]
     base = (default_row[0] if default_row else
@@ -98,9 +101,10 @@ def _cond_worker(args):
 
 def cmd_conditioning(a):
     from multiprocessing import Pool
+    refuse_old_engine_output(a.out, a.kc_kc_scale)
     params_dict = dict(learn_rate=a.learn_rate, kc_trace_scale=a.kc_trace_scale, da_trace_scale=a.da_trace_scale,
                        recovery_per_pulse=a.recovery, kc_thresh=a.kc_thresh, apl_scale=a.apl_scale,
-                       da_baseline_ms=a.da_baseline_ms)
+                       da_baseline_ms=a.da_baseline_ms, kc_kc_scale=a.kc_kc_scale)
     kw = dict(trials=a.trials, present_ms=a.present_ms, settle_ms=a.settle_ms)
     viz = None
     if a.viz:
@@ -112,7 +116,7 @@ def cmd_conditioning(a):
         viz = (str(uuid.uuid4()), a.viz_every)
         rr.init("flymon-conditioning", recording_id=viz[0], spawn=True)   # opens the viewer; workers join this recording
     jobs = [(a.npz, params_dict, s, a.strength, a.k, a.odor_seed, a.punish_type, a.reward_type, kw, viz)
-            for s in range(a.seeds)]
+            for s in range(a.seed_start, a.seed_start + a.seeds)]
     with Pool(a.jobs) as pool:
         per_seed = dict(pool.map(_cond_worker, jobs))
     params_out = dict(params_dict, punish_type=a.punish_type, reward_type=a.reward_type, settle_ms=a.settle_ms)
@@ -132,10 +136,12 @@ def main():
     s.add_argument("--strength", type=float, default=0.35); s.add_argument("--seeds", type=int, default=3)
     s.add_argument("--k", type=int, default=8); s.add_argument("--odor-seed", type=int, default=0)
     s.add_argument("--rest-seeds", type=int, default=3); s.add_argument("--rest-ms", type=float, default=3000.0)
+    s.add_argument("--kc-kc-scale", type=float, default=Params().kc_kc_scale)   # 1.0 = the M0/M0b engine
     s.set_defaults(fn=cmd_sparsity)
     c = sub.add_parser("conditioning")
     c.add_argument("--npz", default="data/malecns.npz"); c.add_argument("--out", default="results/m0/conditioning.json")
-    c.add_argument("--seeds", type=int, default=8)
+    c.add_argument("--seeds", type=int, default=8); c.add_argument("--seed-start", type=int, default=0)   # M0c judges on seeds 8-15
+    c.add_argument("--kc-kc-scale", type=float, default=Params().kc_kc_scale)
     c.add_argument("--jobs", type=int, default=min(4, os.cpu_count() or 1))   # each worker holds a full connectome
     c.add_argument("--trials", type=int, default=12); c.add_argument("--present-ms", type=float, default=800.0)
     c.add_argument("--strength", type=float, default=0.35); c.add_argument("--k", type=int, default=8); c.add_argument("--odor-seed", type=int, default=0)

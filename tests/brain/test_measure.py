@@ -92,16 +92,31 @@ def test_mbon_baseline_is_measured_per_params(synthetic_connectome):
     assert len(out) == 2
 
 
+def _gate_row(path: str, p: Params) -> dict:
+    d = json.loads(Path(path).read_text())
+    pick = [g for g in d["grid"] if g["kc_thresh"] == p.kc_thresh and g["apl_scale"] == p.apl_scale
+            and g.get("mbon_hold_frac") == p.mbon_hold_frac and g.get("kc_kc_scale", 1.0) == p.kc_kc_scale]
+    assert pick, f"no sparsity grid row in {path} for {p.kc_thresh}/{p.apl_scale}/{p.mbon_hold_frac}/kc_kc_scale={p.kc_kc_scale}"
+    return pick[0]
+
+
 @pytest.mark.skipif(not Path("results/m0/sparsity.json").exists(), reason="gate not yet run on real data")
 def test_real_sparsity_gate_recorded():
-    """The grid row that the frozen Params() defaults select must itself meet the spec 5 gate
-    (KC sparsity 3-7%, overlap at or below chance, trimmed MBON baseline 3-4 Hz)."""
-    d = json.loads(Path("results/m0/sparsity.json").read_text())
-    p = Params()
-    pick = [g for g in d["grid"] if g["kc_thresh"] == p.kc_thresh and g["apl_scale"] == p.apl_scale
-            and g.get("mbon_hold_frac") == p.mbon_hold_frac]
-    assert pick, "no sparsity grid row for the current Params() defaults"
-    g = pick[0]
+    """M0 (the old engine, kc_kc_scale=1.0; its rows predate the key): the grid row for the frozen defaults
+    must itself meet the spec 5 gate (KC sparsity 3-7%, overlap at or below chance, trimmed MBON baseline 3-4 Hz)."""
+    g = _gate_row("results/m0/sparsity.json", Params(kc_kc_scale=1.0))
+    assert 0.03 <= g["frac_active_A"] <= 0.07 and 0.03 <= g["frac_active_B"] <= 0.07
+    assert g["jaccard"] <= g["chance"]
+    assert 3.0 <= g["mbon_hz_rest_trimmed"] <= 4.0
+
+
+@pytest.mark.skipif(not Path("results/m0c/sparsity.json").exists(), reason="M0c gate not yet run on real data")
+def test_real_m0c_sparsity_gate_recorded():
+    """M0c (spec D.4, the new engine = Params() defaults): sparsity 3-7% for both odours, overlap at or below chance,
+    trimmed MBON baseline over 8 rest seeds within 3-4 Hz. Pre-registered; if the run fails a term this test is kept
+    and marked strict xfail with the recorded reason, never relaxed (D.4)."""
+    g = _gate_row("results/m0c/sparsity.json", Params())
+    assert g["kc_kc_scale"] == 0.0 and g["sparsity_seeds"] == [100, 101, 102] and len(g["rest_seeds"]) >= 8
     assert 0.03 <= g["frac_active_A"] <= 0.07 and 0.03 <= g["frac_active_B"] <= 0.07
     assert g["jaccard"] <= g["chance"]
     assert 3.0 <= g["mbon_hz_rest_trimmed"] <= 4.0

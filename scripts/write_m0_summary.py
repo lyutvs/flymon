@@ -2,7 +2,8 @@
 """Write results/summary/m0.json from the M0 gate outputs.
 
 Reads the data manifest and the two gate result files, picks the sparsity grid
-row matching the current Params() defaults, checks that row against the M0 gate
+row matching the M0 engine (Params() defaults with kc_kc_scale=1.0: M0 predates the KC->KC
+removal of spec appendix D and its files are that engine's immutable record), checks that row against the M0 gate
 (spec 5: KC sparsity 3-7%, overlap at or below chance, trimmed MBON baseline 3-4 Hz) and
 freezes those defaults into the summary. A row that fails the gate is never
 frozen. The conditioning block carries the graded gate statistics (`n_flip`, per-arm `mean_dD`) and,
@@ -54,9 +55,9 @@ def main() -> None:
     man = _load(MANIFEST)
     sp = _load(SPARSITY)
     co = _load(CONDITIONING)
-    p = Params()
+    p = Params(kc_kc_scale=1.0)       # M0 is the old engine's record; rows without the key predate it (spec D.5)
     pick = [g for g in sp["grid"] if g["kc_thresh"] == p.kc_thresh and g["apl_scale"] == p.apl_scale
-            and g.get("mbon_hold_frac") == p.mbon_hold_frac]
+            and g.get("mbon_hold_frac") == p.mbon_hold_frac and g.get("kc_kc_scale", 1.0) == p.kc_kc_scale]
     if not pick:
         print(f"no sparsity grid row for kc_thresh={p.kc_thresh} apl_scale={p.apl_scale} "
               f"mbon_hold_frac={p.mbon_hold_frac} in {SPARSITY}")
