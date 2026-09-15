@@ -1,7 +1,9 @@
 """M0b budget extrapolation (spec C.6), throughput rows, exact-reproduction checks against the M0 result files, and the gate."""
 from __future__ import annotations
 
+import os
 import statistics
+import sys
 import time
 
 from .pool_jobs import phase_timing_job
@@ -99,10 +101,12 @@ def refuse_old_engine_output(out: str, kc_kc_scale: float) -> None:
     under those paths with another engine refuses (SystemExit 2); pass an explicit --out under results/m0c/."""
     if kc_kc_scale == 1.0 or not out:
         return
-    norm = str(out).replace("\\", "/")
-    if norm.startswith(OLD_ENGINE_DIRS) or norm in OLD_ENGINE_FILES:
-        raise SystemExit(f"refusing to write {out} with kc_kc_scale={kc_kc_scale}: that path holds the old engine's "
-                         f"(kc_kc_scale=1.0) immutable reference (spec D.5); use --out results/m0c/... or --kc-kc-scale 1.0")
+    rel = os.path.relpath(os.path.abspath(str(out)), os.getcwd()).replace(os.sep, "/")
+    if rel.startswith(OLD_ENGINE_DIRS) or rel in OLD_ENGINE_FILES:
+        print(f"refusing to write {out} with kc_kc_scale={kc_kc_scale}: that path holds the old engine's "
+              f"(kc_kc_scale=1.0) immutable reference (spec D.5); use --out results/m0c/... or --kc-kc-scale 1.0",
+              file=sys.stderr)
+        raise SystemExit(2)
 
 
 def exact_match(pool_per_seed: dict, m0_per_seed: dict) -> dict:

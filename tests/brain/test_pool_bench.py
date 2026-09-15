@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from flymon.brain.circuits import Populations
@@ -111,12 +113,15 @@ def test_m0c_gate_terms_and_composition():
     assert not m0c_gate(row, baseline, runaway, equivalence, {"gate_ok": True, "limit_hours": 80.0}, cond)["throughput_ok"]
 
 
-def test_refuse_old_engine_output_guards_the_immutable_references():
+def test_refuse_old_engine_output_guards_the_immutable_references(capsys):
     """Spec D.5: results/m0*, results/summary/m0.json and m0b.json are the old engine's (kc_kc_scale 1.0) bit-exact
     references and git-ignored; no script writes there with another engine."""
-    for out in ("results/m0/sparsity.json", "results/m0/x.json", "results/m0b/throughput.json", "results/summary/m0.json", "results/summary/m0b.json"):
-        with pytest.raises(SystemExit, match="old engine"):
+    for out in ("results/m0/sparsity.json", "results/m0/x.json", "./results/m0/x.json", "results/m0b/throughput.json",
+                "results/summary/m0.json", "results/summary/m0b.json", os.path.abspath("results/summary/m0b.json")):
+        with pytest.raises(SystemExit) as e:                     # spec D.5: exit code 2, message on stderr
             refuse_old_engine_output(out, 0.0)
+        assert e.value.code == 2
+        assert "old engine" in capsys.readouterr().err
         refuse_old_engine_output(out, 1.0)                       # the old engine may write its own files
     for out in ("results/m0c/sparsity.json", "results/summary/m0c.json", "/tmp/x.json", ""):
         refuse_old_engine_output(out, 0.0)                       # new paths, empty (unused) paths: fine

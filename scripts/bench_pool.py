@@ -79,7 +79,7 @@ def cmd_reproduce(a):
     m0_sp = json.loads(Path(a.m0_sparsity).read_text()) if a.m0_sparsity and Path(a.m0_sparsity).exists() else None
     p = Params(kc_kc_scale=a.kc_kc_scale)
     seeds = list(range(a.seed_start, a.seed_start + a.seeds))
-    with FlyPool(npz, p, [FlySpec()] * a.workers, workers=a.workers) as pool:
+    with FlyPool(npz, p, [FlySpec()] * a.workers, workers=a.workers, punish_type=a.punish_type, reward_type=a.reward_type) as pool:
         jobs = [dict(seed=s, arm=arm, strength=a.strength, k=a.k, odor_seed=a.odor_seed, trials=a.trials,
                      present_ms=a.present_ms, settle_ms=a.settle_ms, punish_type=a.punish_type, reward_type=a.reward_type)
                 for s in seeds for arm in ARMS]
