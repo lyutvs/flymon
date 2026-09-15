@@ -26,7 +26,8 @@ from flymon.brain.engine_cpu import Engine
 from flymon.brain.plasticity import Plasticity
 from flymon.brain.stimuli import design_odor_pair
 from flymon.brain.fly_pool import FlyPool, FlySpec
-from flymon.brain.pool_bench import FLOAT_KEYS, budget_table, exact_match, m0b_gate, refuse_old_engine_output, throughput_row
+from flymon.brain.pool_bench import (FLOAT_KEYS, budget_table, exact_match, m0b_gate, match_sparsity_row,
+                                     refuse_old_engine_output, throughput_row)
 from flymon.brain.pool_jobs import baseline_job, conditioning_arm_job, odor_runaway_job, rss_job, sparsity_job
 from flymon.brain.presentation import decide
 
@@ -111,7 +112,9 @@ def cmd_reproduce(a):
         remote = pool.decide_batch([(0, [odor_a, odor_b], 7)], a.strength, settle_ms=200.0, read_ms=600.0, idx=pops.mbon)[0]
         # pool == in-process for whole conditioning arms (spec D.5): two (seed, arm) pairs re-run here, bit for bit
         arm_pairs = [(seeds[0], "both"), (seeds[-1], "reversed")] if a.arm_equal else []
-        ro = Readout.from_compartments(compartments(conn, pops, p.core_frac), a.punish_type, a.reward_type)
+        # the readout is built only for --arm-equal: from_compartments raises on overlapping or missing
+        # compartments, and a run that never re-runs an arm must not fail for a readout it does not use
+        ro = Readout.from_compartments(compartments(conn, pops, p.core_frac), a.punish_type, a.reward_type) if arm_pairs else None
         arm_rows = {}
         for sd, arm in arm_pairs:
             got = run_arm(eng, pl, pops, ro, odor_a, odor_b, a.strength, sd, arm, trials=a.trials, present_ms=a.present_ms,
@@ -132,14 +135,7 @@ def cmd_reproduce(a):
                     "seeds_with_kc_over_sat": int(sum(r["n_kc_over_sat"] > 0 for r in runaway_rows)),
                     "max_n_kc_over_sat": max([r["n_kc_over_sat"] for r in runaway_rows], default=0)}
     cond_match = exact_match(per_seed, {k: v for k, v in m0_cond["per_seed"].items() if int(k) in seeds}) if m0_cond else {"ok": False, "note": "no reference file"}
-    sp_match = {"ok": False, "note": "no reference file"}
-    if m0_sp and sp_rows:
-        row = [g for g in m0_sp["grid"] if (g["kc_thresh"], g["apl_scale"], g.get("mbon_hold_frac"), g.get("kc_kc_scale", 1.0))
-               == (p.kc_thresh, p.apl_scale, p.mbon_hold_frac, p.kc_kc_scale)][0]   # rows without the key are the M0 engine (1.0)
-        keys = ("frac_active_A", "frac_active_B", "jaccard", "chance", "mbon_hz_A", "mbon_hz_B")
-        diffs = {k: abs(sparsity[k] - row[k]) for k in keys}
-        diffs["mbon_hz_rest_trimmed"] = abs(baseline["mbon_hz_rest_trimmed"] - row["mbon_hz_rest_trimmed"])
-        sp_match = {"diffs": diffs, "max_abs_diff": max(diffs.values()), "ok": max(diffs.values()) == 0.0, "cpu_row": {k: row[k] for k in keys + ("mbon_hz_rest_trimmed",)}}
+    sp_match = match_sparsity_row(sparsity, baseline, m0_sp, p)   # never raises: an unmeasured term is a note, not a lost run
     out = {"params": {**dataclasses.asdict(p), "punish_type": a.punish_type, "reward_type": a.reward_type, "settle_ms": a.settle_ms,
                       "present_ms": a.present_ms, "trials": a.trials}, "strength": a.strength, "odor_seed": a.odor_seed,
            "workers": a.workers, "seeds": seeds, "conditioning": cond, "conditioning_match": cond_match, "sparsity": sparsity, "sparsity_match": sp_match,

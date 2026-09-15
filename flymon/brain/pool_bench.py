@@ -124,6 +124,36 @@ def exact_match(pool_per_seed: dict, m0_per_seed: dict) -> dict:
             "max_abs_diff": worst, "ok": n > 0 and n_equal == n}
 
 
+SPARSITY_MATCH_KEYS = ("frac_active_A", "frac_active_B", "jaccard", "chance", "mbon_hz_A", "mbon_hz_B")
+
+
+def match_sparsity_row(sparsity: dict, baseline: dict, reference: dict | None, p) -> dict:
+    """Compare the pool's sparsity and baseline means with the reference sparsity grid row for these Params
+    (rows without `kc_kc_scale` are the M0 engine, 1.0). Every term this run did not measure is reported as a
+    note and left out of `diffs` instead of raising: `--sparsity-seeds 0` or `--rest-seeds 0` is a legitimate
+    run shape, and a comparison crash here would throw away hours of pool work before the results are written."""
+    if not reference:
+        return {"ok": False, "note": "no reference file"}
+    if not sparsity.get("per_seed"):
+        return {"ok": False, "note": "no sparsity seeds in this run"}
+    rows = [g for g in reference["grid"] if (g["kc_thresh"], g["apl_scale"], g.get("mbon_hold_frac"), g.get("kc_kc_scale", 1.0))
+            == (p.kc_thresh, p.apl_scale, p.mbon_hold_frac, p.kc_kc_scale)]
+    if not rows:
+        return {"ok": False, "note": f"no reference grid row for kc_thresh={p.kc_thresh} apl_scale={p.apl_scale} "
+                                     f"mbon_hold_frac={p.mbon_hold_frac} kc_kc_scale={p.kc_kc_scale}"}
+    row = rows[0]
+    diffs = {k: abs(sparsity[k] - row[k]) for k in SPARSITY_MATCH_KEYS}
+    out = {"diffs": diffs, "cpu_row": {k: row[k] for k in SPARSITY_MATCH_KEYS}}
+    if baseline.get("mbon_hz_rest_trimmed") is None:
+        out["note"] = "no rest seeds in this run: trimmed baseline not compared"
+    else:
+        diffs["mbon_hz_rest_trimmed"] = abs(baseline["mbon_hz_rest_trimmed"] - row["mbon_hz_rest_trimmed"])
+        out["cpu_row"]["mbon_hz_rest_trimmed"] = row["mbon_hz_rest_trimmed"]
+    out["max_abs_diff"] = max(diffs.values())
+    out["ok"] = out["max_abs_diff"] == 0.0 and "note" not in out
+    return out
+
+
 def m0b_gate(budget: dict, conditioning_match: dict, sparsity_match: dict, decide_equal: bool) -> dict:
     return {"throughput_ok": bool(budget["gate_ok"]), "conditioning_exact_ok": bool(conditioning_match["ok"]),
             "sparsity_exact_ok": bool(sparsity_match["ok"]), "decide_equal_ok": bool(decide_equal),

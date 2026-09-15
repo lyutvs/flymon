@@ -5,7 +5,7 @@ from flymon.brain.config import Params
 from flymon.brain.connectome import Connectome
 from flymon.brain.fly_pool import FlyPool, FlySpec
 from flymon.brain.pool_bench import (DECISIONS, EVAL_DECISIONS, budget_hours, budget_hours_e2e, budget_table, exact_match,
-                        m0b_gate, m0c_gate, refuse_old_engine_output, throughput_row)
+                        m0b_gate, m0c_gate, match_sparsity_row, refuse_old_engine_output, throughput_row)
 
 A = {"ORN_DM1": 1.0, "ORN_DA1": 1.0}
 
@@ -120,3 +120,35 @@ def test_refuse_old_engine_output_guards_the_immutable_references():
         refuse_old_engine_output(out, 1.0)                       # the old engine may write its own files
     for out in ("results/m0c/sparsity.json", "results/summary/m0c.json", "/tmp/x.json", ""):
         refuse_old_engine_output(out, 0.0)                       # new paths, empty (unused) paths: fine
+
+
+def _sp_row(**kw):
+    r = {"kc_thresh": Params().kc_thresh, "apl_scale": Params().apl_scale, "mbon_hold_frac": Params().mbon_hold_frac,
+         "kc_kc_scale": 0.0, "frac_active_A": 0.064, "frac_active_B": 0.049, "jaccard": 0.025, "chance": 0.028,
+         "mbon_hz_A": 15.7, "mbon_hz_B": 18.1, "mbon_hz_rest_trimmed": 3.3}
+    r.update(kw)
+    return r
+
+
+def _pool_sparsity():
+    return {"frac_active_A": 0.064, "frac_active_B": 0.049, "jaccard": 0.025, "chance": 0.028,
+            "mbon_hz_A": 15.7, "mbon_hz_B": 18.1, "per_seed": [{"frac_active_A": 0.064}]}
+
+
+def test_match_sparsity_row_never_raises_on_a_run_that_skipped_a_measurement():
+    """`--rest-seeds 0` (no trimmed baseline) or `--sparsity-seeds 0` (no sparsity rows) is a legitimate run shape;
+    the comparison reports the shortfall and is never the thing that loses a multi-hour pool run's results."""
+    p = Params()
+    ref = {"grid": [_sp_row()]}
+    full = match_sparsity_row(_pool_sparsity(), {"mbon_hz_rest_trimmed": 3.3}, ref, p)
+    assert full["ok"] is True and full["max_abs_diff"] == 0.0 and set(full["diffs"]) >= {"jaccard", "mbon_hz_rest_trimmed"}
+    no_rest = match_sparsity_row(_pool_sparsity(), {"mbon_hz_rest_trimmed": None, "per_seed": []}, ref, p)
+    assert no_rest["ok"] is False and "mbon_hz_rest_trimmed" not in no_rest["diffs"] and "rest seeds" in no_rest["note"]
+    assert no_rest["max_abs_diff"] == 0.0                                   # the terms it did measure still agree
+    no_sp = match_sparsity_row({"per_seed": []}, {"mbon_hz_rest_trimmed": 3.3}, ref, p)
+    assert no_sp == {"ok": False, "note": "no sparsity seeds in this run"}
+    assert match_sparsity_row(_pool_sparsity(), {"mbon_hz_rest_trimmed": 3.3}, None, p)["note"] == "no reference file"
+    # the M0 files predate the key: they are the 1.0 engine and never match the new engine's Params()
+    old_only = {"grid": [{k: v for k, v in _sp_row().items() if k != "kc_kc_scale"}]}
+    assert "no reference grid row" in match_sparsity_row(_pool_sparsity(), {"mbon_hz_rest_trimmed": 3.3}, old_only, p)["note"]
+    assert match_sparsity_row(_pool_sparsity(), {"mbon_hz_rest_trimmed": 3.3}, old_only, Params(kc_kc_scale=1.0))["ok"] is True

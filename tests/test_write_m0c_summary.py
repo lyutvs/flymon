@@ -107,3 +107,19 @@ def test_compose_refuses_wrong_identity_or_short_runs(bad, match):
     kw.update(bad(kw))
     with pytest.raises(SystemExit, match=match):
         w.compose(Params(), kw["sp"], kw["old"], kw["new"], kw["reported"], kw["th"])
+
+
+def test_main_refuses_to_write_over_an_old_engine_summary(monkeypatch, tmp_path):
+    """Spec D.5: results/summary/m0.json and m0b.json are the old engine's immutable record. The guard runs on the
+    raw --out before any input is read, so the refusal costs nothing and does not depend on what exists: with every
+    input pointed at a missing file, an old-engine --out still fails on the guard, a new one on the missing input."""
+    missing: list[str] = []
+    for k in ("sparsity", "reproduce-old", "reproduce", "reproduce-reported", "throughput"):
+        missing += [f"--{k}", str(tmp_path / f"{k}.json")]
+    for out in ("results/summary/m0.json", "results/summary/m0b.json", "results/m0/sparsity.json"):
+        monkeypatch.setattr("sys.argv", ["write_m0c_summary.py", "--out", out, *missing])
+        with pytest.raises(SystemExit, match="old engine"):
+            w.main()
+    monkeypatch.setattr("sys.argv", ["write_m0c_summary.py", "--out", str(tmp_path / "m0c.json"), *missing])
+    with pytest.raises(SystemExit, match="missing input"):   # a new path gets past the guard, on to the inputs
+        w.main()

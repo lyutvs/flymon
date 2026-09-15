@@ -22,7 +22,7 @@ import subprocess
 from pathlib import Path
 
 from flymon.brain.config import Params
-from flymon.brain.pool_bench import budget_table, m0c_gate
+from flymon.brain.pool_bench import budget_table, m0c_gate, refuse_old_engine_output
 
 
 def _load(path: str) -> dict:
@@ -98,7 +98,7 @@ def compose(p: Params, sp: dict, old: dict, new: dict, reported: dict | None, th
     row = pick_row(sp["grid"], p)
     baseline = {"mbon_hz_rest_trimmed": row["mbon_hz_rest_trimmed"], "mbon_hz_rest_trimmed_sd": row["mbon_hz_rest_trimmed_sd"],
                 "per_seed": row.get("mbon_hz_rest_trimmed_per_seed"), "rest_seeds": row["rest_seeds"], "rest_ms": row["rest_ms"],
-                "pool_diff": new["sparsity_match"]["diffs"]["mbon_hz_rest_trimmed"] if new["sparsity_match"].get("diffs") else None}
+                "pool_diff": (new["sparsity_match"].get("diffs") or {}).get("mbon_hz_rest_trimmed")}
     runaway = {"rest_seeds": [r.get("seed", 100 + i) for i, r in enumerate(new["baseline"]["per_seed"])],
                "rest_n_kc_over_sat_per_seed": [r["runaway"]["n_kc_over_sat"] for r in new["baseline"]["per_seed"]],
                "rest_n_over_sat_per_seed": [r["runaway"]["n_over_sat"] for r in new["baseline"]["per_seed"]],
@@ -138,6 +138,7 @@ def main() -> None:
     ap.add_argument("--out", default="results/summary/m0c.json")
     ap.add_argument("--limit-hours", type=float, default=60.0)
     a = ap.parse_args()
+    refuse_old_engine_output(a.out, Params().kc_kc_scale)   # spec D.5: never over the old engine's summaries
     reported = json.loads(Path(a.reproduce_reported).read_text()) if Path(a.reproduce_reported).exists() else None
     paths = {"sparsity": a.sparsity, "reproduce_old": a.reproduce_old, "reproduce": a.reproduce, "throughput": a.throughput,
              **({"reproduce_reported": a.reproduce_reported} if reported is not None else {})}
