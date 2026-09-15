@@ -437,11 +437,12 @@ def test_load_state_rejects_non_finite_or_negative_weights(pool):
 
 def test_constructor_validates_before_spawning_and_caps_variants(synthetic_npz, tmp_path):
     import multiprocessing as mp
+    children_before = len(mp.active_children())        # the module-scoped pool's workers may be alive
     with pytest.raises(FileNotFoundError):
         FlyPool(tmp_path / "missing.npz", P, [FlySpec()], workers=1, timeout_s=30)
-    assert mp.active_children() == [] or all(not c.name.startswith("SpawnPoolWorker") for c in mp.active_children()) or True
     with pytest.raises(ValueError, match="max_variants"):
         FlyPool(synthetic_npz, P, [FlySpec(shuffle_seed=s) for s in range(5)], workers=1, timeout_s=30, max_variants=4)
+    assert len(mp.active_children()) == children_before  # neither failure spawned (and leaked) a worker
 ```
 
 - [ ] **Step 3: 실패 확인** — Run: `uv run pytest tests/brain/test_fly_pool.py -q` — Expected: `ModuleNotFoundError: No module named 'flymon.brain.fly_pool'`.
