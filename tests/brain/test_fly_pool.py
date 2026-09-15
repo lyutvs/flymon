@@ -1,3 +1,5 @@
+import concurrent.futures
+
 import numpy as np
 import pytest
 
@@ -145,9 +147,30 @@ def test_conditioning_arm_job_leaves_the_worker_weights_reset(synthetic_npz):
         assert one.run_jobs(weights_frac_job, [{}])[0] == pytest.approx(1.0)  # ... and left the worker reset
 
 
+def test_batches_are_serialized_across_threads(pool):
+    """Two concurrent decide_batch calls must not interleave on the pool: same answer as a sequential call."""
+    def go():
+        return pool.decide_batch([(0, [A], 5)], 1.0, settle_ms=20, read_ms=50)[0]
+
+    with concurrent.futures.ThreadPoolExecutor(2) as ex:
+        a, b = [f.result() for f in [ex.submit(go), ex.submit(go)]]
+    np.testing.assert_array_equal(a, b)
+    np.testing.assert_array_equal(a, go())
+
+
+def _rss_by_pid(samples):
+    by = {}
+    for s in samples:
+        by[s["pid"]] = max(by.get(s["pid"], 0.0), s["rss_GB"])
+    return by
+
+
 def test_rss_job_reports_a_monotone_peak_per_worker(pool):
-    first = pool.run_jobs(rss_job, [{}] * pool.n_workers)
-    assert len(first) == pool.n_workers and all(v > 0 for v in first)
-    second = pool.run_jobs(rss_job, [{}] * pool.n_workers, shuffle_seed=7)
-    assert len(second) == pool.n_workers
-    assert min(second) >= min(first)      # peak RSS never falls, and building a variant cannot lower it
+    first = pool.run_jobs(rss_job, [{}] * (4 * pool.n_workers))
+    assert len(first) == 4 * pool.n_workers
+    assert all(r["pid"] > 0 and r["rss_GB"] > 0 for r in first)
+    second = pool.run_jobs(rss_job, [{}] * (4 * pool.n_workers), shuffle_seed=7)
+    before, after = _rss_by_pid(first), _rss_by_pid(second)
+    both = set(before) & set(after)
+    assert both                                                  # some worker was sampled in both rounds
+    assert all(after[pid] >= before[pid] for pid in both)         # peak RSS never falls, per process

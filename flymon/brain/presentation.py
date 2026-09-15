@@ -6,6 +6,10 @@ is off and the weights are untouched. reinforce: one presentation of conditionin
 with the weights frozen so the dopamine baseline adapts to the odour-evoked DAN level, then the DAN
 pulse, the gap, and one recovery step (spec 3.1). Whether a DAN is driven at all is the caller's
 decision (spec 3.4 table; C-PAM / C-PPL arms simply never pass that channel).
+
+Neither function restores a quiescent engine on exit: `decide` returns with the last candidate's drive
+still set and `reinforce` leaves `pl.enabled` at the flag it was given. Every entry point starts with
+`_fresh`, so callers must not assume the engine is idle between calls.
 """
 from __future__ import annotations
 

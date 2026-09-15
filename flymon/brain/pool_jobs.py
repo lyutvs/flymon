@@ -4,6 +4,7 @@ worker's current plastic-weight fraction. Module-level so the pool can pickle th
 signature fn(engine, plasticity, pops, comps, readout, **kwargs); every job leaves the worker's weights reset."""
 from __future__ import annotations
 
+import os
 import time
 
 from .conditioning import run_arm
@@ -53,6 +54,7 @@ def sparsity_job(eng, pl, pops, comps, ro, seed: int, strength: float = 0.35, k:
     """One seed of the M0 sparsity row (measure.kc_sparsity for both odours), plasticity off."""
     pl.reset_weights()
     pl.set_enabled(False)
+    pl.quiet_dan()
     a, b = design_odor_pair(pops, k=k, seed=odor_seed)
     ra = kc_sparsity(eng, pops, a, strength, seed=seed)
     rb = kc_sparsity(eng, pops, b, strength, seed=seed)
@@ -78,13 +80,16 @@ def baseline_job(eng, pl, pops, comps, ro, seed: int, ms: float = 3000.0, sat_hz
                          "spike_share_over_sat": float(counts[over].sum() / max(int(counts.sum()), 1))})
 
 
-def rss_job(eng, pl, pops, comps, ro) -> float:
-    """Peak resident set size of this worker process in GB; the engine for the requested wiring variant
-    is built before the job runs, so calling it before and after a new variant measures that variant."""
+def rss_job(eng, pl, pops, comps, ro) -> dict:
+    """{"pid", "rss_GB"}: peak resident set size of this worker process in GB. The engine for the requested
+    wiring variant is built before the job runs, so sampling before and after a new variant measures that
+    variant — but pair the samples by pid, because the pool does not pin one task per worker. ru_maxrss is a
+    peak, so such a difference is a high-water-mark delta, not the live footprint of the variant."""
     import resource
     import sys
     rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    return rss / 1e9 if sys.platform == "darwin" else rss * 1024 / 1e9      # macOS reports bytes, Linux kB
+    rss_gb = rss / 1e9 if sys.platform == "darwin" else rss * 1024 / 1e9    # macOS reports bytes, Linux kB
+    return {"pid": os.getpid(), "rss_GB": rss_gb}
 
 
 def weights_frac_job(eng, pl, pops, comps, ro) -> float:

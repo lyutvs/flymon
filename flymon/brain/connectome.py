@@ -130,6 +130,11 @@ def shuffle_kc_mbon(conn: Connectome, kc: np.ndarray, mbon: np.ndarray, seed: in
     m = is_kc[conn.pre] & is_mb[conn.post]
     if not m.any():
         raise ValueError("no KC->MBON edges to shuffle")
+    signs = np.unique(conn.sign[kc])
+    if signs.size != 1 or signs[0] == 0:
+        raise ValueError("shuffle_kc_mbon needs a sign-homogeneous, non-zero Kenyon cell population "
+                         "(build_csc keeps and signs edges by their presynaptic cell); "
+                         f"got signs {signs.tolist()}")
     perm = np.random.default_rng(int(seed)).permutation(len(kc))
     mapping = np.arange(conn.N, dtype=conn.pre.dtype)
     mapping[kc] = kc[perm]

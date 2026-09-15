@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import dataclasses
 import multiprocessing as mp
+import threading
 
 import numpy as np
 
@@ -87,6 +88,12 @@ def _job(args):
 
 
 class FlyPool:
+    """W worker processes serving any fly; the parent holds one plastic weight vector per fly.
+
+    Every public call is serialized by an internal lock; from asyncio, run them in a single executor
+    thread (`loop.run_in_executor`) so the event loop never blocks on a 10-second batch.
+    """
+
     def __init__(self, npz, params: Params, flies, workers: int = 16, punish_type: str = "PPL105",
                  reward_type: str = "PAM08", timeout_s: float = 3600.0, max_variants: int = 4):
         self.flies = [f if isinstance(f, FlySpec) else FlySpec(**f) for f in flies]
@@ -101,6 +108,7 @@ class FlyPool:
         pops = Populations.from_connectome(conn)
         validate_populations(conn, pops, compartments(conn, pops, params.core_frac), punish_type, reward_type)
         del conn, pops
+        self._lock = threading.Lock()
         self.timeout_s = float(timeout_s)
         self.n_workers = max(1, min(int(workers), len(self.flies)))
         ctx = mp.get_context("spawn")
@@ -118,7 +126,8 @@ class FlyPool:
     def _map(self, fn, items):
         if not items:
             return []
-        return self.pool.map_async(fn, items, chunksize=1).get(self.timeout_s)
+        with self._lock:
+            return self.pool.map_async(fn, items, chunksize=1).get(self.timeout_s)
 
     @property
     def n_flies(self) -> int:
@@ -143,8 +152,10 @@ class FlyPool:
         jobs = [dict(w=self.w[f], shuffle_seed=self.flies[f].shuffle_seed, odor=o, strength=strength, dan=d,
                      pulse_ms=float(pm), seed=int(s), settle_ms=settle_ms, gap_ms=gap_ms, enabled=self.flies[f].enabled)
                 for f, o, d, pm, s in requests]
-        for (f, *_), w in zip(requests, self._map(_reinforce_job, jobs)):
-            self.w[f] = w
+        new = self._map(_reinforce_job, jobs)      # _map takes the lock and releases it; it is not re-entrant
+        with self._lock:
+            for (f, *_), w in zip(requests, new):
+                self.w[f] = w
 
     # ---- measurements and protocols on the workers --------------------------------------------
     def run_jobs(self, fn, kwargs_list, shuffle_seed=None):

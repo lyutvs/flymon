@@ -59,6 +59,14 @@ def cmd_throughput(a):
     _write(a.out, {"steps": a.steps, "warm": a.warm, "repeats": a.repeats, "strength": a.strength, "odor_seed": a.odor_seed, "rows": rows})
 
 
+def _rss_by_pid(samples) -> dict:
+    """Peak RSS per worker process: the pool does not pin one task per worker, so samples must be paired by pid."""
+    by: dict = {}
+    for s in samples:
+        by[s["pid"]] = max(by.get(s["pid"], 0.0), s["rss_GB"])
+    return by
+
+
 def cmd_reproduce(a):
     npz = _npz(a)
     t0 = time.perf_counter()
@@ -77,10 +85,12 @@ def cmd_reproduce(a):
         cond["channel_specific_seeds"] = channel_specific_seeds(cond["per_seed"])
         sp_rows = pool.run_jobs(sparsity_job, [dict(seed=100 + s, strength=a.strength, k=a.k, odor_seed=a.odor_seed) for s in range(a.rest_seeds)])
         base_rows = pool.run_jobs(baseline_job, [dict(seed=100 + s, ms=a.rest_ms) for s in range(a.rest_seeds)])
-        rss_before = pool.run_jobs(rss_job, [{}] * a.workers)
-        rss_after = pool.run_jobs(rss_job, [{}] * a.workers, shuffle_seed=1_000_003)      # builds one C-shuf variant per worker
-        memory = {"worker_rss_GB": float(np.mean(rss_before)), "worker_rss_GB_max": float(max(rss_before)),
-                  "variant_rss_GB": float(np.mean(np.subtract(rss_after, rss_before)))}
+        rss_before = _rss_by_pid(pool.run_jobs(rss_job, [{}] * (4 * a.workers)))
+        rss_after = _rss_by_pid(pool.run_jobs(rss_job, [{}] * (4 * a.workers), shuffle_seed=1_000_003))  # builds one C-shuf variant on every worker it reaches
+        both = sorted(set(rss_before) & set(rss_after))
+        memory = {"worker_rss_GB": float(np.mean(list(rss_before.values()))), "worker_rss_GB_max": float(max(rss_before.values())),
+                  "variant_rss_GB": float(np.mean([rss_after[p] - rss_before[p] for p in both])) if both else None,
+                  "n_workers": a.workers, "n_workers_sampled_before": len(rss_before), "n_workers_sampled_both": len(both)}
         conn = Connectome.load(npz)
         pops = Populations.from_connectome(conn)
         odor_a, odor_b = design_odor_pair(pops, k=a.k, seed=a.odor_seed)
@@ -122,7 +132,8 @@ def cmd_summary(a):
     out = {"params_frozen": dataclasses.asdict(Params()), "throughput": th["rows"], "budget": budget,
            "conditioning": {k: co[k] for k in ("n_seeds", "n_flip", "n_flip_disc", "noplast_max_abs_dD", "channel_specific_seeds", "arms")},
            "conditioning_match": rp["conditioning_match"], "sparsity_match": rp["sparsity_match"], "decide_equal": rp["decide_equal"],
-           "runaway": rp["baseline"]["runaway"], "memory": rp.get("memory"), "gate": gate, "generated_at": dt.datetime.now(dt.timezone.utc).isoformat()}
+           "runaway": rp["baseline"]["runaway"], "memory": rp.get("memory"),
+           "reproduce_wall_clock_s": rp.get("wall_clock_s"), "reproduce_workers": rp.get("workers"), "gate": gate, "generated_at": dt.datetime.now(dt.timezone.utc).isoformat()}
     print(f"M0b gate {'PASS' if gate['passed'] else 'FAIL'}: baseline {budget['baseline_hours']:.1f} h (limit {budget['limit_hours']}), "
           f"conditioning_exact={gate['conditioning_exact_ok']} sparsity_exact={gate['sparsity_exact_ok']} decide_equal={gate['decide_equal_ok']}")
     _write(a.out, out)
