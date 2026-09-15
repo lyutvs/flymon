@@ -32,6 +32,10 @@ class Params:
                                    # (frozen at 1.5: 1.0 leaves KC overlap above chance)
     kc_norm_clip: tuple = (0.5, 3.0)
     balance_hemispheres: bool = True
+    kc_kc_scale: float = 0.0       # multiplier on KC->KC edge weights; 0 removes them from the CSC.
+                                   # KC axo-axonic contacts act through mAChR-B and suppress neighbouring
+                                   # KCs (Manoim et al. 2022), so fast excitation is the wrong sign; 0 is
+                                   # the first-order stand-in. 1.0 reproduces the M0/M0b engine (spec D).
 
     # --- plasticity (spec 3.1, tuned in Task 9 within these defaults) ---
     learn_rate: float = 3e-4

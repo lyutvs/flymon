@@ -28,7 +28,7 @@ class Engine:
         self.p = params
         self.conn, self.pops = conn, pops
         self.N = conn.N
-        self.csc = build_csc(conn, params, pops.apl)
+        self.csc = build_csc(conn, params, pops.apl, pops.kc)
         self.on_step = None
 
         # thresholds: KC thresholds normalised by their PN input (our design decision)

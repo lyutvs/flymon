@@ -26,3 +26,4 @@ def test_our_design_defaults():
     assert p.kc_thresh == 1.5
     assert p.sign_override == (("lLN1", -1), ("lLN2", -1))
     assert p.min_weight == 5
+    assert p.kc_kc_scale == 0.0   # KC->KC fast excitation removed (spec appendix D)

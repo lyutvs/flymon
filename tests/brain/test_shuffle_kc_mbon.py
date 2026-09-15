@@ -43,8 +43,8 @@ def test_shuffle_preserves_kc_input_per_mbon_at_the_csc_level(synthetic_connecto
     c = synthetic_connectome()
     pops = Populations.from_connectome(c)
     p = Params(min_weight=1, balance_hemispheres=False)
-    csc0 = build_csc(c, p, pops.apl)
-    csc1 = build_csc(shuffle_kc_mbon(c, pops.kc, pops.mbon, seed=3), p, pops.apl)
+    csc0 = build_csc(c, p, pops.apl, pops.kc)
+    csc1 = build_csc(shuffle_kc_mbon(c, pops.kc, pops.mbon, seed=3), p, pops.apl, pops.kc)
     np.testing.assert_allclose(_kc_input_per_mbon(csc0, pops, c.N), _kc_input_per_mbon(csc1, pops, c.N), rtol=1e-6)
 
 

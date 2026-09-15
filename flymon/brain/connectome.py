@@ -1,6 +1,7 @@
 """Connectome arrays, our npz schema, sign/hemisphere corrections, CSC out-edge build."""
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, replace
 from pathlib import Path
 
@@ -97,9 +98,21 @@ class CSC:
         return np.repeat(np.arange(self.N, dtype=np.int32), np.diff(self.ptr))
 
 
-def build_csc(conn: Connectome, params: Params, apl_idx: np.ndarray) -> CSC:
+def build_csc(conn: Connectome, params: Params, apl_idx: np.ndarray, kc_idx: np.ndarray) -> CSC:
+    """Signed mV out-edges. Edges below `min_weight` synapses or from sign-0 cells are dropped; APL
+    out-edges are scaled by `apl_scale`; KC->KC edges are scaled by `kc_kc_scale` and, when that is 0,
+    dropped from the CSC altogether (spec appendix D). Right-hemisphere inputs get the hemisphere factor."""
+    if not math.isfinite(params.kc_kc_scale):
+        raise ValueError(f"kc_kc_scale must be finite, got {params.kc_kc_scale!r}")
     sign, _ = apply_sign_override(conn, params)
     keep = (conn.w >= params.min_weight) & (sign[conn.pre] != 0)
+    kc_kc = None
+    if params.kc_kc_scale != 1.0:      # 1.0 is the M0/M0b engine: no mask, no multiply, bit-identical CSC
+        is_kc = np.zeros(conn.N, bool)
+        is_kc[np.asarray(kc_idx, dtype=np.int64)] = True
+        kc_kc = is_kc[conn.pre] & is_kc[conn.post]
+        if params.kc_kc_scale == 0.0:
+            keep &= ~kc_kc
     pre, post = conn.pre[keep], conn.post[keep]
     # float32 end to end and in-place masked multiplies: at 100M+ edges each float64 temporary
     # costs ~1 GB, and np.where would allocate a second full-length array per correction
@@ -113,6 +126,9 @@ def build_csc(conn: Connectome, params: Params, apl_idx: np.ndarray) -> CSC:
     is_apl[apl_idx] = True
     m = is_apl[pre]
     mv[m] *= np.float32(params.apl_scale)
+    if kc_kc is not None and params.kc_kc_scale != 0.0:
+        m = kc_kc[keep]
+        mv[m] *= np.float32(params.kc_kc_scale)
     order = np.argsort(pre, kind="stable")
     pre, post, mv = pre[order], post[order], mv[order]
     counts = np.bincount(pre, minlength=conn.N)
