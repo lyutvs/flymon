@@ -1,12 +1,13 @@
 """Functions that run on a FlyPool worker (`FlyPool.run_jobs`): phase timing, the M0 conditioning arm,
-the M0 sparsity seed, the resting baseline with the runaway set, and the peak RSS of the worker. Module-level so the pool can pickle them;
+the M0 sparsity seed, the resting baseline with the runaway set, the peak RSS of the worker and the
+worker's current plastic-weight fraction. Module-level so the pool can pickle them;
 signature fn(engine, plasticity, pops, comps, readout, **kwargs); every job leaves the worker's weights reset."""
 from __future__ import annotations
 
 import time
 
 from .conditioning import run_arm
-from .measure import chance_jaccard, jaccard, kc_sparsity
+from .measure import chance_jaccard, jaccard, kc_sparsity, mbon_baseline
 from .stimuli import design_odor_pair, present
 
 
@@ -42,8 +43,10 @@ def conditioning_arm_job(eng, pl, pops, comps, ro, seed: int, arm: str, strength
                          punish_type: str = "PPL105", reward_type: str = "PAM08") -> dict:
     """One (seed, arm) of the M0 conditioning, exactly as scripts/reproduce_flybrain_measurements.py runs it."""
     a, b = design_odor_pair(pops, k=k, seed=odor_seed)
-    return run_arm(eng, pl, pops, ro, a, b, strength, seed, arm, trials=trials, present_ms=present_ms,
-                   settle_ms=settle_ms, punish_type=punish_type, reward_type=reward_type)
+    result = run_arm(eng, pl, pops, ro, a, b, strength, seed, arm, trials=trials, present_ms=present_ms,
+                     settle_ms=settle_ms, punish_type=punish_type, reward_type=reward_type)
+    pl.reset_weights()      # run_arm resets only on entry; the next job on this worker must not inherit a trained brain
+    return result
 
 
 def sparsity_job(eng, pl, pops, comps, ro, seed: int, strength: float = 0.35, k: int = 8, odor_seed: int = 0) -> dict:
@@ -69,15 +72,10 @@ def baseline_job(eng, pl, pops, comps, ro, seed: int, ms: float = 3000.0, sat_hz
     pl.quiet_dan()
     counts = eng.run(ms)
     pl.set_enabled(True)
-    sec = ms / 1000.0
-    hz = counts[pops.mbon] / sec
-    keep = hz <= sat_hz
-    over = (counts / sec) > sat_hz
-    types = eng.conn.type[pops.mbon]
-    return {"mbon_hz": float(hz.mean()), "mbon_hz_trimmed": float(hz[keep].mean()) if keep.any() else 0.0,
-            "n_saturated": int((~keep).sum()), "n_types_active": int(len(set(types[hz > 0].tolist()))),
-            "runaway": {"sat_hz": sat_hz, "n_over_sat": int(over.sum()), "n_kc_over_sat": int(over[pops.kc].sum()),
-                        "spike_share_over_sat": float(counts[over].sum() / max(int(counts.sum()), 1))}}
+    over = (counts / (ms / 1000.0)) > sat_hz
+    return dict(mbon_baseline(eng, pops, seed, ms, sat_hz, counts=counts),
+                runaway={"sat_hz": sat_hz, "n_over_sat": int(over.sum()), "n_kc_over_sat": int(over[pops.kc].sum()),
+                         "spike_share_over_sat": float(counts[over].sum() / max(int(counts.sum()), 1))})
 
 
 def rss_job(eng, pl, pops, comps, ro) -> float:
@@ -87,3 +85,9 @@ def rss_job(eng, pl, pops, comps, ro) -> float:
     import sys
     rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     return rss / 1e9 if sys.platform == "darwin" else rss * 1024 / 1e9      # macOS reports bytes, Linux kB
+
+
+def weights_frac_job(eng, pl, pops, comps, ro) -> float:
+    """The worker's current plastic-weight fraction (mean w / w0) without touching anything — a probe for
+    the contract that every job leaves the worker's weights reset."""
+    return pl.weights_frac()

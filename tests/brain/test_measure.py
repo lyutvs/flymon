@@ -50,6 +50,19 @@ def test_trimmed_baseline_all_saturated_is_zero(synthetic_connectome):
     assert base["n_saturated"] == len(pops.mbon) and base["mbon_hz_trimmed"] == 0.0
 
 
+def test_mbon_baseline_from_supplied_counts_matches_the_plain_call(synthetic_connectome):
+    """Passing the counts of the same rest window gives the identical dict: one definition of the
+    trimmed-mean/saturation convention, reused by callers that need the raw counts too (pool_jobs.baseline_job)."""
+    c = synthetic_connectome()
+    pops = Populations.from_connectome(c)
+    eng = Engine(c, pops, Params(min_weight=1, balance_hemispheres=False), seed=0)
+    plain = mbon_baseline(eng, pops, seed=0, ms=500, sat_hz=100.0)
+    eng.reset(0)
+    eng.clear_drive()
+    counts = eng.run(500)
+    assert mbon_baseline(eng, pops, 0, 500, 100.0, counts=counts) == plain
+
+
 def test_mbon_baseline_multi_averages_over_seeds(synthetic_connectome):
     c = synthetic_connectome()
     pops = Populations.from_connectome(c)

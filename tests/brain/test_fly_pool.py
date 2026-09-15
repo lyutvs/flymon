@@ -7,7 +7,8 @@ from flymon.brain.connectome import Connectome, shuffle_kc_mbon
 from flymon.brain.engine_cpu import Engine
 from flymon.brain.plasticity import Plasticity
 from flymon.brain.fly_pool import FlyPool, FlySpec
-from flymon.brain.pool_jobs import phase_timing_job
+from flymon.brain.pool_jobs import (baseline_job, conditioning_arm_job, phase_timing_job, rss_job,
+                                    sparsity_job, weights_frac_job)
 from flymon.brain.presentation import decide
 
 P = Params(noise_mv=0.15, min_weight=1, balance_hemispheres=False, kc_thresh=0.5, learn_rate=0.05)
@@ -114,3 +115,39 @@ def test_constructor_validates_before_spawning_and_caps_variants(synthetic_npz, 
     with pytest.raises(ValueError, match="max_variants"):
         FlyPool(synthetic_npz, P, [FlySpec(shuffle_seed=s) for s in range(5)], workers=1, timeout_s=30, max_variants=4)
     assert len(mp.active_children()) == children_before  # neither failure spawned (and leaked) a worker
+
+
+ARM_KEYS = {"arm", "seed", "D_pre", "D_post", "dD", "counts", "weights_frac", "w_frac_a_core", "w_frac_p_core"}
+
+
+def test_sparsity_job(pool):
+    r = pool.run_jobs(sparsity_job, [dict(seed=100, strength=1.0, k=2, odor_seed=0)])[0]
+    assert set(r) == {"frac_active_A", "frac_active_B", "jaccard", "chance", "mbon_hz_A", "mbon_hz_B"}
+    assert all(np.isfinite(v) for v in r.values())
+    assert 0.0 <= r["frac_active_A"] <= 1.0 and 0.0 <= r["frac_active_B"] <= 1.0 and r["jaccard"] >= 0.0
+
+
+def test_baseline_job(pool):
+    r = pool.run_jobs(baseline_job, [dict(seed=100, ms=200.0)])[0]
+    assert set(r) == {"mbon_hz", "mbon_hz_trimmed", "n_saturated", "n_types_active", "runaway"}
+    assert set(r["runaway"]) == {"sat_hz", "n_over_sat", "n_kc_over_sat", "spike_share_over_sat"}
+    assert 0.0 <= r["runaway"]["spike_share_over_sat"] <= 1.0
+    assert np.isfinite(r["mbon_hz"]) and np.isfinite(r["mbon_hz_trimmed"])
+
+
+def test_conditioning_arm_job_leaves_the_worker_weights_reset(synthetic_npz):
+    kw = dict(seed=1, strength=1.0, k=2, odor_seed=0, trials=3, present_ms=150.0, settle_ms=50.0)
+    with FlyPool(synthetic_npz, P, [FlySpec()], workers=1, timeout_s=120) as one:
+        both, noplast = one.run_jobs(conditioning_arm_job, [dict(kw, arm="both"), dict(kw, arm="noplast")])
+        assert ARM_KEYS <= set(both) and ARM_KEYS <= set(noplast)
+        assert noplast["dD"] == 0.0 and noplast["weights_frac"] == pytest.approx(1.0)
+        assert both["weights_frac"] < 1.0                                    # the "both" arm learned
+        assert one.run_jobs(weights_frac_job, [{}])[0] == pytest.approx(1.0)  # ... and left the worker reset
+
+
+def test_rss_job_reports_a_monotone_peak_per_worker(pool):
+    first = pool.run_jobs(rss_job, [{}] * pool.n_workers)
+    assert len(first) == pool.n_workers and all(v > 0 for v in first)
+    second = pool.run_jobs(rss_job, [{}] * pool.n_workers, shuffle_seed=7)
+    assert len(second) == pool.n_workers
+    assert min(second) >= min(first)      # peak RSS never falls, and building a variant cannot lower it

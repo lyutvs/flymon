@@ -35,16 +35,22 @@ def kc_sparsity(engine: Engine, pops: Populations, odor, strength: float, seed: 
 
 
 def mbon_baseline(engine: Engine, pops: Populations, seed: int, ms: float = 1000.0,
-                  sat_hz: float = 100.0) -> dict:
+                  sat_hz: float = 100.0, counts: np.ndarray | None = None) -> dict:
     """Resting MBON rates.
 
     A self-sustaining cholinergic clique (FR1) saturates a few MBONs on the real
     connectome, so the raw mean is unstable; the gate uses the trimmed mean over
     cells at or below `sat_hz`.
+
+    `counts` lets a caller that already ran the resting window (and wants the raw spike counts for
+    its own statistics, e.g. the M0b runaway set) reuse this one definition of the convention
+    instead of copying it: pass the per-neuron counts of a `ms`-long rest run and the engine is
+    left untouched. When it is None the engine is reset to `seed` and run here, as usual.
     """
-    engine.reset(seed)
-    engine.clear_drive()
-    counts = engine.run(ms)
+    if counts is None:
+        engine.reset(seed)
+        engine.clear_drive()
+        counts = engine.run(ms)
     hz = counts[pops.mbon] / (ms / 1000.0)
     types = engine.conn.type[pops.mbon]
     keep = hz <= sat_hz
