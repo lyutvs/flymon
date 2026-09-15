@@ -1,7 +1,7 @@
 """Connectome arrays, our npz schema, sign/hemisphere corrections, CSC out-edge build."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import numpy as np
@@ -118,3 +118,21 @@ def build_csc(conn: Connectome, params: Params, apl_idx: np.ndarray) -> CSC:
     counts = np.bincount(pre, minlength=conn.N)
     ptr = np.concatenate([[0], np.cumsum(counts)]).astype(np.int64)
     return CSC(ptr=ptr, tgt=post.astype(np.int32), w=mv)
+
+
+def shuffle_kc_mbon(conn: Connectome, kc: np.ndarray, mbon: np.ndarray, seed: int) -> Connectome:
+    """C-shuf control (spec 4.1): permute the presynaptic Kenyon cell of every KC->MBON edge with one
+    permutation over the KC population, so the odour code reaches the MBONs through scrambled wiring.
+    Edge count, the weight multiset and every MBON's total KC input are preserved; every other edge is
+    untouched. Returns a new Connectome (arrays other than `pre` are shared)."""
+    is_kc = np.zeros(conn.N, bool); is_kc[kc] = True
+    is_mb = np.zeros(conn.N, bool); is_mb[mbon] = True
+    m = is_kc[conn.pre] & is_mb[conn.post]
+    if not m.any():
+        raise ValueError("no KC->MBON edges to shuffle")
+    perm = np.random.default_rng(int(seed)).permutation(len(kc))
+    mapping = np.arange(conn.N, dtype=conn.pre.dtype)
+    mapping[kc] = kc[perm]
+    pre = conn.pre.copy()
+    pre[m] = mapping[pre[m]]
+    return replace(conn, pre=pre)
