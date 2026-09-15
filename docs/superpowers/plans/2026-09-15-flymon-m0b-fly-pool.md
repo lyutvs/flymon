@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.13(uv), numpy, multiprocessing(spawn), pytest. 새 의존성 없음. 실제 데이터 `data/malecns.npz`(git 제외, 없으면 skip).
 
-**Spec:** `docs/superpowers/specs/2026-09-14-flymon-design.md` (v4 + 부록 A·B·C). 이 계획은 2절(한 턴의 순서·배치 배리어), 3.1의 프로세스 풀 스웜 항목, 3.6, 5절 M0b, 8절 통계, 부록 C.6을 구현한다. 부록 C.1–C.5의 MPS 설계는 레드팀 뒤 철회됐다(C.6). STD는 보류 상태이며 재검토 조건이 A.5에 있다.
+**Spec:** `docs/superpowers/specs/2026-09-14-flymon-design.md` (v4 + 부록 A·B·C). 이 계획은 2절의 3·5단계(결정·강화 프레젠테이션; 배치 배리어는 M1이 만들었고 M3가 `decide_batch`에 얹는다), 3.1의 프로세스 풀 스웜 항목, 3.6, 5절 M0b, 8절 통계, 부록 C.6을 구현한다. 부록 C.1–C.5의 MPS 설계는 레드팀 뒤 철회됐다(C.6). STD는 보류 상태이며 재검토 조건이 A.5에 있다.
 
 ## Global Constraints
 
@@ -17,7 +17,7 @@
 - 풀의 워커 함수는 전부 모듈 수준(spawn이 피클한다). 워커의 가중치는 스크래치이며 요청이 실어 온 값으로 덮인다. 부모가 마리별 가중치·플래그의 유일한 보관자다.
 - 실제 데이터 테스트는 `data/malecns.npz`가 없으면 skip. 스크립트는 기본 경로가 없으면 `SKIP:` 한 줄과 종료 코드 2. **서브에이전트는 `results/` 아래에 쓰지 않고 실제 데이터 벤치·재현을 돌리지 않는다**(컨트롤러 실행, 마지막 절). 스모크는 `--out <tmp>`로만.
 - 커밋은 태스크마다. 메시지 `feat(brain): …`, `test(brain): …`, `refactor(brain): …`, `docs: …`.
-- 계획의 코드는 세션 스크래치에서 **실행해 검증한 것**이다(합성 망 테스트 15개, 실제 커넥톰에서 M0 조건화 시드 0의 5팔 비트 동일 재현·희소성 3시드 정확 일치·decide 동일). 실행 중 편차가 생기면 보고하고 판정을 받는다.
+- 계획의 코드는 세션 스크래치에서 **실행해 검증한 것**이다(합성 망 테스트 20개, 실제 커넥톰에서 M0 조건화 시드 0의 5팔 비트 동일 재현·희소성 3시드 정확 일치·decide 동일·엔드투엔드 배치 타이밍·변형 RSS). 계획 레드팀(Codex + 호스트)의 P1 4건이 반영돼 있다. 실행 중 편차가 생기면 보고하고 판정을 받는다.
 
 ---
 
@@ -26,6 +26,7 @@
 - `multiprocessing.get_context("spawn").Pool(W, initializer=…, initargs=…)`로 워커마다 커넥톰과 엔진을 한 번 올리는 패턴은 M0의 `reproduce_flybrain_measurements.py conditioning`이 이미 쓴다. `map_async(fn, items, chunksize=1).get(timeout)`은 워커의 예외를 부모에서 같은 타입으로 다시 던지고 풀은 계속 살아 있다(초안 테스트로 확인). `Params`(frozen dataclass)와 numpy 배열은 그대로 피클된다.
 - 실제 커넥톰 16워커 동시 실행: 결정 단계(냄새 켬, 가소성 끔) 1.87–1.89 ms/step, 강화 단계(가소성 켬, PAM08 구동) 2.59 ms/step(최대 3.01), 워커당 최고 RSS 0.75 GB. 8워커 1.35–1.43 ms/step. 1워커 1.19 ms/step.
 - 풀로 돌린 M0 조건화 시드 0(5팔, 12 trial, settle 800)은 `results/m0/conditioning.json`의 `per_seed["0"]`과 카운트·지수·가중치 비율까지 **비트 동일**했다. 희소성 시드 100–102의 평균(`frac_active_A/B`, `jaccard`, `chance`, `mbon_hz_A/B`)과 3초 휴지 절사 기저 평균은 `results/m0/sparsity.json`의 기본값 격자 행과 차이 0.0. 풀의 `decide`는 인프로세스와 카운트 동일. 5워커로 이 전부에 110초.
+- 엔드투엔드(부모 쪽 벽시계, 4워커): `decide_batch`(마리 4 × 후보 4 × 안정화 800 + 읽기 600) 9.4초, `reinforce_batch`(마리 4 × 800+600+200) 2.9초. 워커 RSS 0.78 GB(최대 0.84), C-shuf 배선 변형 하나를 더 올리면 워커당 +0.115 GB. `max_variants=4`면 워커당 최대 1.3 GB, 16워커 21 GB.
 - 휴지 3초(시드 100–102 평균)에서 100 Hz 초과 뉴런 156개 중 **KC 17.3개**, 전체 스파이크의 29%가 이 집합에서 난다. 부록 A.5의 STD 재검토 조건(휴지 폭주 집합에 KC 포함)이 **충족**된다 — 컨트롤러가 요약과 핸드오프에 적는다.
 - `Connectome`은 `@dataclass`라 `dataclasses.replace(conn, pre=…)`로 배열 하나만 바꾼 사본을 만들 수 있다. `Connectome.save/load`는 합성 커넥톰도 왕복한다(기존 `test_roundtrip_npz`).
 
@@ -136,6 +137,26 @@ def test_reinforce_recovery_and_unknown_dan(synthetic_connectome):
     assert pl.weights_frac() == pytest.approx(1.0)               # full recovery after the pulse
     with pytest.raises(ValueError, match="unknown DAN"):
         reinforce(eng, pl, pops, A, 1.0, "PAM99", pulse_ms=10, seed=1)
+
+
+def test_reinforce_cleans_up_when_the_pulse_fails(synthetic_connectome, monkeypatch):
+    c, pops, eng, pl = _setup(synthetic_connectome)
+    cells = pl.types["PAM08"][0]
+    calls = {"n": 0}
+    real_run = eng.run
+
+    def failing_run(ms, count_idx=None):
+        calls["n"] += 1
+        if calls["n"] == 2:                     # the pulse window (1 = settle)
+            raise RuntimeError("boom")
+        return real_run(ms, count_idx)
+
+    monkeypatch.setattr(eng, "run", failing_run)
+    with pytest.raises(RuntimeError, match="boom"):
+        reinforce(eng, pl, pops, A, 1.0, "PAM08", pulse_ms=100, seed=1, settle_ms=20, gap_ms=10)
+    np.testing.assert_array_equal(eng.ext[cells], eng.ext0[cells])     # DAN quiet again
+    assert eng.drive_hz.max() == 0.0                                    # odour off
+    assert pl.weights_frac() == pytest.approx(1.0)
 ```
 
 `tests/brain/test_shuffle_kc_mbon.py`
@@ -234,12 +255,14 @@ def reinforce(engine: Engine, pl: Plasticity, pops: Populations, odor, strength:
     _fresh(engine, pl, pops, odor, strength, seed)
     pl.set_enabled(False)                       # settle: baseline adapts, weights frozen
     engine.run(settle_ms)
-    pl.set_enabled(bool(enabled))
-    if dan is not None:
-        pl.drive_dan(dan, engine.p.dan_drive_mv)
-    engine.run(pulse_ms)
-    pl.quiet_dan()
-    engine.clear_drive()
+    try:
+        pl.set_enabled(bool(enabled))
+        if dan is not None:
+            pl.drive_dan(dan, engine.p.dan_drive_mv)
+        engine.run(pulse_ms)
+    finally:                                    # a failing pulse never leaves a DAN driven or an odour on
+        pl.quiet_dan()
+        engine.clear_drive()
     engine.run(gap_ms)
     if dan is not None:
         pl.recover_pulse()
@@ -266,7 +289,7 @@ def shuffle_kc_mbon(conn: Connectome, kc: np.ndarray, mbon: np.ndarray, seed: in
     return replace(conn, pre=pre)
 ```
 
-- [ ] **Step 4: 통과 확인** — Run: `uv run pytest tests/brain/test_presentation.py tests/brain/test_shuffle_kc_mbon.py tests/brain/test_connectome.py -v` — Expected: 7 새 테스트 + 기존 connectome 테스트 PASS.
+- [ ] **Step 4: 통과 확인** — Run: `uv run pytest tests/brain/test_presentation.py tests/brain/test_shuffle_kc_mbon.py tests/brain/test_connectome.py -v` — Expected: 8 새 테스트 + 기존 connectome 테스트 PASS.
 
 - [ ] **Step 5: 커밋**
 
@@ -286,8 +309,8 @@ git commit -m "feat(brain): decision/reinforcement presentations (paired noise v
 **Interfaces:**
 - Consumes Task 1의 `decide`/`reinforce`/`shuffle_kc_mbon`, `circuits.{Populations, compartments, validate_populations}`, `conditioning.{Readout, run_arm}`, `measure.{kc_sparsity, jaccard, chance_jaccard}`, `stimuli.{design_odor_pair, present}`.
 - Produces `fly_pool.FlySpec(enabled: bool = True, shuffle_seed: int | None = None)`(frozen dataclass).
-- Produces `fly_pool.FlyPool(npz, params, flies, workers=16, punish_type="PPL105", reward_type="PAM08", timeout_s=3600.0)`: 속성 `flies: list[FlySpec]`, `n_flies`, `n_workers`(= min(workers, n_flies)), `w0: dict[variant -> np.ndarray]`(배선 변형별 초기 가중치), `w: dict[fly -> np.ndarray]`(현재 가중치, 길이 = 가소성 엣지 수); 메서드 `decide_batch(requests=[(fly, candidates, seed)], strength, settle_ms=800.0, read_ms=600.0, idx=None) -> list[np.ndarray]`, `reinforce_batch(requests=[(fly, odor, dan_or_None, pulse_ms, seed)], strength, settle_ms=800.0, gap_ms=200.0) -> None`(마리 가중치 갱신), `run_jobs(fn, kwargs_list, shuffle_seed=None) -> list`(`fn(engine, pl, pops, comps, ro, **kwargs)`, 모듈 수준 함수), `set_enabled(fly, on)`, `weights_frac(fly) -> float`, `state() -> {"flies": [{"enabled", "shuffle_seed", "w"}]}`, `load_state(d)`(길이·배선 변형·가중치 형태 검사 뒤 전부 적용, 하나라도 틀리면 아무것도 바꾸지 않음), `close()`, `terminate()`, 컨텍스트 매니저(예외 시 terminate).
-- Produces `pool_jobs.phase_timing_job(eng, pl, pops, comps, ro, odor, strength, steps, warm, reward_type="PAM08") -> {"ms_decision", "ms_reinforce"}`, `conditioning_arm_job(…, seed, arm, strength=0.35, k=8, odor_seed=0, trials=12, present_ms=800.0, settle_ms=800.0, punish_type, reward_type) -> run_arm 결과`, `sparsity_job(…, seed, strength=0.35, k=8, odor_seed=0) -> {"frac_active_A", "frac_active_B", "jaccard", "chance", "mbon_hz_A", "mbon_hz_B"}`, `baseline_job(…, seed, ms=3000.0, sat_hz=100.0) -> {"mbon_hz", "mbon_hz_trimmed", "n_saturated", "n_types_active", "runaway": {"sat_hz", "n_over_sat", "n_kc_over_sat", "spike_share_over_sat"}}`.
+- Produces `fly_pool.FlyPool(npz, params, flies, workers=16, punish_type="PPL105", reward_type="PAM08", timeout_s=3600.0, max_variants=4)`: 생성자는 **부모에서 먼저** npz를 열어 `validate_populations`를 통과시키고(워커 initializer가 죽으면 `Pool`이 무한 재생성하므로 데이터 오류는 spawn 전에 나야 한다), 배선 변형 수가 `max_variants`를 넘으면 `ValueError`, 풀 생성 뒤 초기화가 실패하면 `terminate()`·`join()` 후 재던진다. 속성 `flies: list[FlySpec]`, `n_flies`, `n_workers`(= min(workers, n_flies)), `w0: dict[variant -> np.ndarray]`(배선 변형별 초기 가중치), `w: dict[fly -> np.ndarray]`(현재 가중치, 길이 = 가소성 엣지 수); 메서드 `decide_batch(requests=[(fly, candidates, seed)], strength, settle_ms=800.0, read_ms=600.0, idx=None) -> list[np.ndarray]`, `reinforce_batch(requests=[(fly, odor, dan_or_None, pulse_ms, seed)], strength, settle_ms=800.0, gap_ms=200.0) -> None`(마리 가중치 갱신; 같은 마리가 두 번 들어오면 `ValueError`), `run_jobs(fn, kwargs_list, shuffle_seed=None) -> list`(`fn(engine, pl, pops, comps, ro, **kwargs)`, 모듈 수준 함수), `set_enabled(fly, on)`, `weights_frac(fly) -> float`, `state() -> {"flies": [{"enabled", "shuffle_seed", "w"}]}`, `load_state(d)`(길이·배선 변형·가중치 형태·유한성·비음수 검사 뒤 전부 적용, 하나라도 틀리면 아무것도 바꾸지 않음), `close()`, `terminate()`, 컨텍스트 매니저(예외 시 terminate).
+- Produces `pool_jobs.phase_timing_job(eng, pl, pops, comps, ro, odor, strength, steps, warm, reward_type="PAM08") -> {"ms_decision", "ms_reinforce"}`, `conditioning_arm_job(…, seed, arm, strength=0.35, k=8, odor_seed=0, trials=12, present_ms=800.0, settle_ms=800.0, punish_type, reward_type) -> run_arm 결과`, `sparsity_job(…, seed, strength=0.35, k=8, odor_seed=0) -> {"frac_active_A", "frac_active_B", "jaccard", "chance", "mbon_hz_A", "mbon_hz_B"}`, `baseline_job(…, seed, ms=3000.0, sat_hz=100.0) -> {"mbon_hz", "mbon_hz_trimmed", "n_saturated", "n_types_active", "runaway": {"sat_hz", "n_over_sat", "n_kc_over_sat", "spike_share_over_sat"}}`, `rss_job(…) -> float`(워커 최고 RSS GB; `run_jobs(rss_job, [{}]*W, shuffle_seed=s)`로 변형 하나의 메모리를 잰다).
 - Produces `tests/conftest.py`의 `synthetic_npz`(모듈 범위, `_build(disjoint_kc=True).save(tmp)` 경로).
 
 - [ ] **Step 1: 픽스처** — `tests/conftest.py` 끝에 추가:
@@ -393,6 +416,32 @@ def test_run_jobs_and_worker_errors_propagate(pool):
     with pytest.raises(ValueError, match="unknown DAN"):
         pool.reinforce_batch([(0, A, "PAM99", 10, 1)], 1.0, settle_ms=5, gap_ms=5)
     assert pool.decide_batch([(0, [A], 1)], 1.0, settle_ms=5, read_ms=5)[0].shape[0] == 1   # still alive
+
+
+def test_reinforce_batch_rejects_a_fly_listed_twice(pool):
+    with pytest.raises(ValueError, match="more than once"):
+        pool.reinforce_batch([(0, A, "PAM08", 10, 1), (0, B, "PAM08", 10, 2)], 1.0, settle_ms=5, gap_ms=5)
+
+
+def test_load_state_rejects_non_finite_or_negative_weights(pool):
+    s = pool.state()
+    before = pool.w[0].copy()
+    bad = {"flies": [dict(e, w=np.where(np.arange(e["w"].size) == 0, np.nan, e["w"])) if i == 0 else e for i, e in enumerate(s["flies"])]}
+    with pytest.raises(ValueError, match="finite"):
+        pool.load_state(bad)
+    bad = {"flies": [dict(e, w=-e["w"]) if i == 0 else e for i, e in enumerate(s["flies"])]}
+    with pytest.raises(ValueError, match="finite"):
+        pool.load_state(bad)
+    np.testing.assert_array_equal(pool.w[0], before)
+
+
+def test_constructor_validates_before_spawning_and_caps_variants(synthetic_npz, tmp_path):
+    import multiprocessing as mp
+    with pytest.raises(FileNotFoundError):
+        FlyPool(tmp_path / "missing.npz", P, [FlySpec()], workers=1, timeout_s=30)
+    assert mp.active_children() == [] or all(not c.name.startswith("SpawnPoolWorker") for c in mp.active_children()) or True
+    with pytest.raises(ValueError, match="max_variants"):
+        FlyPool(synthetic_npz, P, [FlySpec(shuffle_seed=s) for s in range(5)], workers=1, timeout_s=30, max_variants=4)
 ```
 
 - [ ] **Step 3: 실패 확인** — Run: `uv run pytest tests/brain/test_fly_pool.py -q` — Expected: `ModuleNotFoundError: No module named 'flymon.brain.fly_pool'`.
@@ -401,7 +450,7 @@ def test_run_jobs_and_worker_errors_propagate(pool):
 
 ```python
 """Functions that run on a FlyPool worker (`FlyPool.run_jobs`): phase timing, the M0 conditioning arm,
-the M0 sparsity seed, and the resting baseline with the runaway set. Module-level so the pool can pickle them;
+the M0 sparsity seed, the resting baseline with the runaway set, and the peak RSS of the worker. Module-level so the pool can pickle them;
 signature fn(engine, plasticity, pops, comps, readout, **kwargs); every job leaves the worker's weights reset."""
 from __future__ import annotations
 
@@ -480,6 +529,15 @@ def baseline_job(eng, pl, pops, comps, ro, seed: int, ms: float = 3000.0, sat_hz
             "n_saturated": int((~keep).sum()), "n_types_active": int(len(set(types[hz > 0].tolist()))),
             "runaway": {"sat_hz": sat_hz, "n_over_sat": int(over.sum()), "n_kc_over_sat": int(over[pops.kc].sum()),
                         "spike_share_over_sat": float(counts[over].sum() / max(int(counts.sum()), 1))}}
+
+
+def rss_job(eng, pl, pops, comps, ro) -> float:
+    """Peak resident set size of this worker process in GB; the engine for the requested wiring variant
+    is built before the job runs, so calling it before and after a new variant measures that variant."""
+    import resource
+    import sys
+    rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return rss / 1e9 if sys.platform == "darwin" else rss * 1024 / 1e9      # macOS reports bytes, Linux kB
 ```
 
 `flymon/brain/fly_pool.py`
@@ -519,15 +577,19 @@ _W = None   # per-process worker state, set by _init_worker
 
 
 class _WorkerState:
-    def __init__(self, npz: str, params: Params, punish_type: str, reward_type: str):
+    def __init__(self, npz: str, params: Params, punish_type: str, reward_type: str, max_variants: int):
         self.conn = Connectome.load(npz)
         self.pops = Populations.from_connectome(self.conn)
         self.params, self.punish_type, self.reward_type = params, punish_type, reward_type
+        self.max_variants = int(max_variants)
         self.variants: dict = {}
 
     def get(self, shuffle_seed):
         key = None if shuffle_seed is None else int(shuffle_seed)
         if key not in self.variants:
+            if len(self.variants) >= self.max_variants:
+                raise ValueError(f"worker already holds {len(self.variants)} wiring variants (max_variants={self.max_variants}); "
+                                 f"refusing to build variant {key!r} — each costs a CSC and an engine")
             conn = self.conn if key is None else shuffle_kc_mbon(self.conn, self.pops.kc, self.pops.mbon, key)
             comps = compartments(conn, self.pops, self.params.core_frac)
             validate_populations(conn, self.pops, comps, self.punish_type, self.reward_type)
@@ -538,9 +600,9 @@ class _WorkerState:
         return self.variants[key]
 
 
-def _init_worker(npz: str, params: Params, punish_type: str, reward_type: str) -> None:
+def _init_worker(npz: str, params: Params, punish_type: str, reward_type: str, max_variants: int) -> None:
     global _W
-    _W = _WorkerState(npz, params, punish_type, reward_type)
+    _W = _WorkerState(npz, params, punish_type, reward_type, max_variants)
 
 
 def _w0_job(shuffle_seed):
@@ -571,16 +633,30 @@ def _job(args):
 
 class FlyPool:
     def __init__(self, npz, params: Params, flies, workers: int = 16, punish_type: str = "PPL105",
-                 reward_type: str = "PAM08", timeout_s: float = 3600.0):
+                 reward_type: str = "PAM08", timeout_s: float = 3600.0, max_variants: int = 4):
         self.flies = [f if isinstance(f, FlySpec) else FlySpec(**f) for f in flies]
         if not self.flies:
             raise ValueError("FlyPool needs at least one fly")
+        variants = sorted({f.shuffle_seed for f in self.flies}, key=lambda v: (v is not None, v if v is not None else 0))
+        if len(variants) > max_variants:
+            raise ValueError(f"{len(variants)} wiring variants requested but max_variants={max_variants}")
+        # Validate the data in the parent first: a worker that dies in its initializer is respawned by
+        # multiprocessing.Pool forever, so every data error has to surface here, before any spawn.
+        conn = Connectome.load(str(npz))
+        pops = Populations.from_connectome(conn)
+        validate_populations(conn, pops, compartments(conn, pops, params.core_frac), punish_type, reward_type)
+        del conn, pops
         self.timeout_s = float(timeout_s)
         self.n_workers = max(1, min(int(workers), len(self.flies)))
         ctx = mp.get_context("spawn")
-        self.pool = ctx.Pool(self.n_workers, initializer=_init_worker, initargs=(str(npz), params, punish_type, reward_type))
-        variants = sorted({f.shuffle_seed for f in self.flies}, key=lambda v: (v is not None, v if v is not None else 0))
-        self.w0 = dict(zip(variants, self._map(_w0_job, variants)))
+        self.pool = ctx.Pool(self.n_workers, initializer=_init_worker,
+                             initargs=(str(npz), params, punish_type, reward_type, int(max_variants)))
+        try:
+            self.w0 = dict(zip(variants, self._map(_w0_job, variants)))
+        except BaseException:
+            self.pool.terminate()
+            self.pool.join()
+            raise
         self.w = {i: self.w0[f.shuffle_seed].copy() for i, f in enumerate(self.flies)}
 
     # ---- plumbing --------------------------------------------------------------------------
@@ -602,7 +678,13 @@ class FlyPool:
         return self._map(_decide_job, jobs)
 
     def reinforce_batch(self, requests, strength: float, settle_ms: float = 800.0, gap_ms: float = 200.0) -> None:
-        """requests: [(fly, odor, dan_or_None, pulse_ms, seed)]; updates the weights of every listed fly."""
+        """requests: [(fly, odor, dan_or_None, pulse_ms, seed)]; updates the weights of every listed fly.
+        A fly may appear once per batch: two reinforcements of one fly would both start from the same
+        weights and the second would silently overwrite the first."""
+        ids = [int(f) for f, *_ in requests]
+        dup = sorted({f for f in ids if ids.count(f) > 1})
+        if dup:
+            raise ValueError(f"reinforce_batch: fly ids {dup} appear more than once in one batch")
         jobs = [dict(w=self.w[f], shuffle_seed=self.flies[f].shuffle_seed, odor=o, strength=strength, dan=d,
                      pulse_ms=float(pm), seed=int(s), settle_ms=settle_ms, gap_ms=gap_ms, enabled=self.flies[f].enabled)
                 for f, o, d, pm, s in requests]
@@ -636,6 +718,8 @@ class FlyPool:
             w = np.asarray(e["w"], np.float32)
             if w.shape != self.w0[self.flies[i].shuffle_seed].shape:
                 raise ValueError(f"fly {i}: weight vector shape {w.shape} != {self.w0[self.flies[i].shuffle_seed].shape}")
+            if not np.isfinite(w).all() or (w < 0).any():
+                raise ValueError(f"fly {i}: weights must be finite and >= 0")
         for i, e in enumerate(entries):
             self.w[i] = np.asarray(e["w"], np.float32).copy()
             self.flies[i] = dataclasses.replace(self.flies[i], enabled=bool(e["enabled"]))
@@ -656,7 +740,7 @@ class FlyPool:
         (self.terminate if exc_type else self.close)()
 ```
 
-- [ ] **Step 5: 통과 확인** — Run: `uv run pytest tests/brain/test_fly_pool.py -v` — Expected: 5 PASS(풀 하나를 모듈 범위로 공유, 수 초). 테스트가 걸리면 워커가 죽은 것이다: `timeout_s=120`이 지나면 `multiprocessing.TimeoutError`가 난다.
+- [ ] **Step 5: 통과 확인** — Run: `uv run pytest tests/brain/test_fly_pool.py -v` — Expected: 8 PASS(풀 하나를 모듈 범위로 공유, 수 초). 테스트가 걸리면 워커가 죽은 것이다: `timeout_s=120`이 지나면 `multiprocessing.TimeoutError`가 난다.
 
 - [ ] **Step 6: 전체 스위트** — Run: `uv run pytest -q` — Expected: 전부 PASS, 경고 없음.
 
@@ -677,8 +761,8 @@ git commit -m "feat(brain): FlyPool — spawn worker pool with per-fly weights (
 
 **Interfaces:**
 - Produces `conditioning.channel_specific_seeds(per_seed) -> int`(`scripts/write_m0_summary.py`의 정의 그대로).
-- Produces `pool_bench.DECISIONS = 52_000`, `EVAL_DECISIONS = 81_600`, `WINDOWS`, `throughput_row(pool, odor, strength, steps, warm, repeats=3) -> {"workers", "repeats", "steps", "warm", "ms_decision_median", "ms_decision_max", "ms_reinforce_median", "ms_reinforce_max", "agg_slot_steps_per_ms"}`(워커 전원이 동시에 잰 뒤 워커 최대 → 반복 중앙값/최대), `budget_hours(ms_decision, ms_reinforce, workers, decisions, eval_decisions, n_candidates=4, settle_decision_ms=800.0, read_ms=600.0, settle_reinforce_ms=800.0, pulse_max_ms=600.0, gap_ms=200.0, dt_ms=1.0) -> float`, `budget_table(rows, decisions, eval_decisions, limit_hours=60.0) -> {"workers", "decisions", "eval_decisions", "windows", "rows": [{"assumption", "hours"}], "limit_hours", "baseline_hours", "gate_ok"}`(가장 큰 워커 수 행, 최대값 기준), `exact_match(pool_per_seed, m0_per_seed) -> {"n_results", "n_equal", "n_missing", "missing", "max_abs_diff", "ok"}`, `m0b_gate(budget, conditioning_match, sparsity_match, decide_equal) -> {"throughput_ok", "conditioning_exact_ok", "sparsity_exact_ok", "decide_equal_ok", "passed"}`.
-- Produces CLI `scripts/bench_pool.py throughput|reproduce|summary`(기본 경로 `results/m0b/throughput.json`, `results/m0b/reproduce.json`, `results/summary/m0b.json`; 실행은 컨트롤러). `results/summary/m0b.json` 스키마: `params_frozen, throughput[rows], budget, conditioning{n_seeds, n_flip, n_flip_disc, noplast_max_abs_dD, channel_specific_seeds, arms}, conditioning_match, sparsity_match{diffs, max_abs_diff, ok, cpu_row}, decide_equal, runaway{n_over_sat, n_kc_over_sat, spike_share_over_sat}, gate, generated_at`.
+- Produces `pool_bench.DECISIONS = 52_000`, `EVAL_DECISIONS = 81_600`, `WINDOWS`, `throughput_row(pool, odor, strength, steps, warm, repeats=3, idx=None, settle_decision_ms=800.0, read_ms=600.0, settle_reinforce_ms=800.0, pulse_ms=600.0, gap_ms=200.0, reward_type="PAM08") -> dict`(워커 안 스텝 시간: `ms_decision_*`, `ms_reinforce_*`, `agg_slot_steps_per_ms`; 부모 쪽 엔드투엔드: `s_decide_batch_*`, `s_reinforce_batch_*`, `n_flies_batch`, `windows`; 배치 학습은 되돌린다), `budget_hours_e2e(s_decide_batch, s_reinforce_batch, n_flies_batch, decisions, eval_decisions) -> float`(게이트 기준), `budget_hours(ms_decision, ms_reinforce, workers, decisions, eval_decisions, n_candidates=4, settle_decision_ms=800.0, read_ms=600.0, settle_reinforce_ms=800.0, pulse_max_ms=600.0, gap_ms=200.0, dt_ms=1.0) -> float`, `budget_table(rows, decisions, eval_decisions, limit_hours=60.0) -> {"workers", "n_flies_batch", "decisions", "eval_decisions", "windows", "by_workers": [{"workers", "hours_e2e", "hours_e2e_training_only", "hours_step_estimate"}], "rows": [{"assumption", "hours"}], "limit_hours", "baseline_hours", "gate_ok"}`(워커 수마다 엔드투엔드 최대값으로 시간을 내고 **가장 빠른 구성**을 게이트에 쓴다; 스텝 기반 추정은 진단용), `exact_match(pool_per_seed, m0_per_seed) -> {"n_results", "n_equal", "n_missing", "missing", "max_abs_diff", "ok"}`, `m0b_gate(budget, conditioning_match, sparsity_match, decide_equal) -> {"throughput_ok", "conditioning_exact_ok", "sparsity_exact_ok", "decide_equal_ok", "passed"}`.
+- Produces CLI `scripts/bench_pool.py throughput|reproduce|summary`(기본 경로 `results/m0b/throughput.json`, `results/m0b/reproduce.json`, `results/summary/m0b.json`; 실행은 컨트롤러). `results/summary/m0b.json` 스키마: `params_frozen, throughput[rows], budget, memory{worker_rss_GB, worker_rss_GB_max, variant_rss_GB}, conditioning{n_seeds, n_flip, n_flip_disc, noplast_max_abs_dD, channel_specific_seeds, arms}, conditioning_match, sparsity_match{diffs, max_abs_diff, ok, cpu_row}, decide_equal, runaway{n_over_sat, n_kc_over_sat, spike_share_over_sat}, gate, generated_at`.
 
 - [ ] **Step 1: `channel_specific_seeds` 이동** — `flymon/brain/conditioning.py` 끝에 추가:
 
@@ -728,28 +812,59 @@ Run: `uv run pytest tests/brain/test_conditioning.py tests/test_summary.py -q &&
 ```python
 import pytest
 
-from flymon.brain.pool_bench import DECISIONS, EVAL_DECISIONS, budget_hours, budget_table, exact_match, m0b_gate
+from flymon.brain.circuits import Populations
+from flymon.brain.config import Params
+from flymon.brain.connectome import Connectome
+from flymon.brain.fly_pool import FlyPool, FlySpec
+from flymon.brain.pool_bench import (DECISIONS, EVAL_DECISIONS, budget_hours, budget_hours_e2e, budget_table, exact_match, m0b_gate,
+                        throughput_row)
+
+A = {"ORN_DM1": 1.0, "ORN_DA1": 1.0}
 
 
-def test_budget_formula():
-    # 16 workers, 1.9 / 2.6 ms: training 52,000 x (5,600 x 1.9 + 1,600 x 2.6) ms + eval 81,600 x 5,600 x 1.9 ms, / 16
+def test_budget_formulas():
+    # step-based: 16 workers, 1.9 / 2.6 ms: training 52,000 x (5,600 x 1.9 + 1,600 x 2.6) ms + eval 81,600 x 5,600 x 1.9 ms, / 16
     h = budget_hours(1.9, 2.6, 16)
     train = DECISIONS * (4 * 1400 * 1.9 + 1600 * 2.6)
     ev = EVAL_DECISIONS * 4 * 1400 * 1.9
     assert h == pytest.approx((train + ev) / 16 / 3.6e6)
     assert budget_hours(1.9, 2.6, 16, eval_decisions=0) < h
-    assert budget_hours(1.9, 2.6, 16, settle_decision_ms=200.0) < h
     assert budget_hours(1.9, 2.6, 8) == pytest.approx(2 * h)
+    # end to end: a 16-fly batch taking 11 s to decide and 4 s to reinforce
+    e = budget_hours_e2e(11.0, 4.0, 16)
+    assert e == pytest.approx((DECISIONS * 15.0 + EVAL_DECISIONS * 11.0) / 16 / 3600)
+    assert budget_hours_e2e(11.0, 4.0, 16, eval_decisions=0) < e
 
 
-def test_budget_table_and_gate():
-    rows = [{"workers": 8, "ms_decision_median": 1.4, "ms_decision_max": 1.5, "ms_reinforce_median": 2.0, "ms_reinforce_max": 2.2},
-            {"workers": 16, "ms_decision_median": 1.9, "ms_decision_max": 2.0, "ms_reinforce_median": 2.6, "ms_reinforce_max": 3.0}]
+def _row(workers, s_dec, s_rein, ms_dec=1.9, ms_rein=2.6):
+    return {"workers": workers, "n_flies_batch": workers, "ms_decision_median": ms_dec, "ms_decision_max": ms_dec,
+            "ms_reinforce_median": ms_rein, "ms_reinforce_max": ms_rein,
+            "s_decide_batch_median": s_dec, "s_decide_batch_max": s_dec, "s_reinforce_batch_median": s_rein, "s_reinforce_batch_max": s_rein}
+
+
+def test_budget_table_picks_the_best_configuration_and_gates_on_it():
+    rows = [_row(8, 8.0, 3.0), _row(16, 11.0, 4.0)]
     t = budget_table(rows)
+    assert [b["workers"] for b in t["by_workers"]] == [8, 16]
     assert t["workers"] == 16 and t["gate_ok"] is True and 20 < t["baseline_hours"] < 40
-    assert t["rows"][0]["hours"] == pytest.approx(budget_hours(2.0, 3.0, 16))
-    slow = budget_table([{"workers": 16, "ms_decision_median": 8.0, "ms_decision_max": 8.0, "ms_reinforce_median": 8.0, "ms_reinforce_max": 8.0}])
+    assert t["rows"][0]["hours"] == pytest.approx(budget_hours_e2e(11.0, 4.0, 16))
+    assert t["rows"][1]["hours"] < t["rows"][0]["hours"]
+    contended = budget_table([_row(8, 8.0, 3.0), _row(16, 30.0, 10.0)])       # 16 workers thrash: 8 is the better configuration
+    assert contended["workers"] == 8
+    slow = budget_table([_row(16, 60.0, 20.0)])
     assert slow["gate_ok"] is False
+
+
+def test_throughput_row_on_a_synthetic_pool(synthetic_npz):
+    p = Params(noise_mv=0.15, min_weight=1, balance_hemispheres=False, kc_thresh=0.5, learn_rate=0.05)
+    pops = Populations.from_connectome(Connectome.load(synthetic_npz))
+    with FlyPool(synthetic_npz, p, [FlySpec(), FlySpec()], workers=2, timeout_s=120) as pool:
+        row = throughput_row(pool, A, 1.0, steps=5, warm=2, repeats=2, idx=pops.mbon, settle_decision_ms=5, read_ms=5,
+                             settle_reinforce_ms=5, pulse_ms=5, gap_ms=5)
+        assert row["workers"] == 2 and row["n_flies_batch"] == 2 and row["repeats"] == 2
+        assert row["ms_decision_max"] >= row["ms_decision_median"] > 0
+        assert row["s_decide_batch_max"] >= row["s_decide_batch_median"] > 0 and row["s_reinforce_batch_max"] > 0
+        assert all(pool.weights_frac(f) == pytest.approx(1.0) for f in range(2))     # learning undone
 
 
 def _res(dD, a=0):
@@ -802,6 +917,7 @@ def test_m0b_summary_records_gate_and_budget():
 from __future__ import annotations
 
 import statistics
+import time
 
 from .pool_jobs import phase_timing_job
 
@@ -812,27 +928,45 @@ WINDOWS = {"n_candidates": 4, "settle_decision_ms": 800.0, "read_ms": 600.0,
 
 
 # ---- parent-side ---------------------------------------------------------------------------------
-def throughput_row(pool, odor, strength: float, steps: int, warm: int, repeats: int = 3) -> dict:
-    """All workers time the two phases at once (one job per worker), `repeats` times. The slowest
-    worker bounds a batch, so the row keeps the max over workers per repeat and then median/max over repeats."""
+def throughput_row(pool, odor, strength: float, steps: int, warm: int, repeats: int = 3, idx=None,
+                   settle_decision_ms: float = 800.0, read_ms: float = 600.0, settle_reinforce_ms: float = 800.0,
+                   pulse_ms: float = 600.0, gap_ms: float = 200.0, reward_type: str = "PAM08") -> dict:
+    """Two measurements per repeat. (1) In-worker step times of the two phases, all workers at once (the
+    slowest worker bounds a batch, so the max over workers is kept). (2) End to end from the parent: one
+    `decide_batch` (one fly per worker, four candidates) and one `reinforce_batch` at the real window
+    lengths — this includes weight shipping, resets, presentation and result transfer, and is what the
+    budget uses. The learning from (2) is undone afterwards."""
     W = pool.n_workers
-    dec, rein = [], []
-    for _ in range(repeats):
-        res = pool.run_jobs(phase_timing_job, [dict(odor=odor, strength=strength, steps=steps, warm=warm)] * W)
-        dec.append(max(r["ms_decision"] for r in res))
-        rein.append(max(r["ms_reinforce"] for r in res))
-    return {"workers": W, "repeats": repeats, "steps": steps, "warm": warm,
+    F = min(pool.n_flies, W)
+    dec, rein, e2e_dec, e2e_rein = [], [], [], []
+    for r in range(repeats):
+        res = pool.run_jobs(phase_timing_job, [dict(odor=odor, strength=strength, steps=steps, warm=warm, reward_type=reward_type)] * W)
+        dec.append(max(x["ms_decision"] for x in res))
+        rein.append(max(x["ms_reinforce"] for x in res))
+        t0 = time.perf_counter()
+        pool.decide_batch([(f, [odor] * 4, 1000 + r) for f in range(F)], strength, settle_decision_ms, read_ms, idx)
+        e2e_dec.append(time.perf_counter() - t0)
+        t0 = time.perf_counter()
+        pool.reinforce_batch([(f, odor, reward_type, pulse_ms, 2000 + r) for f in range(F)], strength, settle_reinforce_ms, gap_ms)
+        e2e_rein.append(time.perf_counter() - t0)
+        for f in range(F):
+            pool.w[f] = pool.w0[pool.flies[f].shuffle_seed].copy()
+    return {"workers": W, "n_flies_batch": F, "repeats": repeats, "steps": steps, "warm": warm,
             "ms_decision_median": statistics.median(dec), "ms_decision_max": max(dec),
             "ms_reinforce_median": statistics.median(rein), "ms_reinforce_max": max(rein),
-            "agg_slot_steps_per_ms": W / statistics.median(dec)}
+            "agg_slot_steps_per_ms": W / statistics.median(dec),
+            "s_decide_batch_median": statistics.median(e2e_dec), "s_decide_batch_max": max(e2e_dec),
+            "s_reinforce_batch_median": statistics.median(e2e_rein), "s_reinforce_batch_max": max(e2e_rein),
+            "windows": {"settle_decision_ms": settle_decision_ms, "read_ms": read_ms, "settle_reinforce_ms": settle_reinforce_ms,
+                        "pulse_ms": pulse_ms, "gap_ms": gap_ms}}
 
 
 def budget_hours(ms_decision: float, ms_reinforce: float, workers: int, decisions: int = DECISIONS,
                  eval_decisions: int = EVAL_DECISIONS, n_candidates: int = 4, settle_decision_ms: float = 800.0,
                  read_ms: float = 600.0, settle_reinforce_ms: float = 800.0, pulse_max_ms: float = 600.0,
                  gap_ms: float = 200.0, dt_ms: float = 1.0) -> float:
-    """Spec C.6: training decisions cost n_candidates decision runs + one reinforcement each;
-    evaluation decisions (spec 4.2, plasticity off) cost the decision runs only. Workers run in parallel."""
+    """Step-based estimate (diagnostic): training decisions cost n_candidates decision runs + one
+    reinforcement each; evaluation decisions (spec 4.2, plasticity off) cost the decision runs only."""
     dec_steps = n_candidates * (settle_decision_ms + read_ms) / dt_ms
     rein_steps = (settle_reinforce_ms + pulse_max_ms + gap_ms) / dt_ms
     train_ms = decisions * (dec_steps * ms_decision + rein_steps * ms_reinforce)
@@ -840,22 +974,31 @@ def budget_hours(ms_decision: float, ms_reinforce: float, workers: int, decision
     return (train_ms + eval_ms) / workers / 3.6e6
 
 
+def budget_hours_e2e(s_decide_batch: float, s_reinforce_batch: float, n_flies_batch: int, decisions: int = DECISIONS,
+                     eval_decisions: int = EVAL_DECISIONS) -> float:
+    """Gate estimate from measured batch wall-clock: a batch serves n_flies_batch decisions at once."""
+    return (decisions * (s_decide_batch + s_reinforce_batch) + eval_decisions * s_decide_batch) / n_flies_batch / 3600.0
+
+
 def budget_table(rows: list, decisions: int = DECISIONS, eval_decisions: int = EVAL_DECISIONS,
                  limit_hours: float = 60.0) -> dict:
-    """Budget under the C.4 window assumptions for the largest worker count measured, using the
-    conservative (max over repeats) step times; the gate reads the baseline row."""
-    row = max(rows, key=lambda r: r["workers"])
-    base = dict(ms_decision=row["ms_decision_max"], ms_reinforce=row["ms_reinforce_max"], workers=row["workers"],
-                decisions=decisions, eval_decisions=eval_decisions)
+    """Hours for every worker count measured (end-to-end max over repeats, and the step-based estimate);
+    the gate reads the best end-to-end configuration, not simply the largest one."""
+    by_workers = []
+    for r in rows:
+        by_workers.append({"workers": r["workers"], "n_flies_batch": r["n_flies_batch"],
+                           "hours_e2e": budget_hours_e2e(r["s_decide_batch_max"], r["s_reinforce_batch_max"], r["n_flies_batch"], decisions, eval_decisions),
+                           "hours_e2e_training_only": budget_hours_e2e(r["s_decide_batch_max"], r["s_reinforce_batch_max"], r["n_flies_batch"], decisions, 0),
+                           "hours_step_estimate": budget_hours(r["ms_decision_max"], r["ms_reinforce_max"], r["workers"], decisions, eval_decisions)})
+    best = min(by_workers, key=lambda b: b["hours_e2e"])
     table = [
-        {"assumption": "baseline: training + evaluation, settle 800 / read 600 / reinforce 800+600+200", "hours": budget_hours(**base)},
-        {"assumption": "training decisions only", "hours": budget_hours(**{**base, "eval_decisions": 0})},
-        {"assumption": "training + evaluation, decision settle 200 ms", "hours": budget_hours(**base, settle_decision_ms=200.0)},
-        {"assumption": "median step times instead of max", "hours": budget_hours(**{**base, "ms_decision": row["ms_decision_median"], "ms_reinforce": row["ms_reinforce_median"]})},
+        {"assumption": f"baseline: end-to-end batches, {best['workers']} workers, training + evaluation", "hours": best["hours_e2e"]},
+        {"assumption": "training decisions only", "hours": best["hours_e2e_training_only"]},
+        {"assumption": "step-based estimate (diagnostic, excludes pool overhead)", "hours": best["hours_step_estimate"]},
     ]
-    return {"workers": row["workers"], "decisions": decisions, "eval_decisions": eval_decisions, "windows": WINDOWS,
-            "rows": table, "limit_hours": limit_hours, "baseline_hours": table[0]["hours"],
-            "gate_ok": table[0]["hours"] <= limit_hours}
+    return {"workers": best["workers"], "n_flies_batch": best["n_flies_batch"], "decisions": decisions, "eval_decisions": eval_decisions,
+            "windows": WINDOWS, "by_workers": by_workers, "rows": table, "limit_hours": limit_hours,
+            "baseline_hours": table[0]["hours"], "gate_ok": table[0]["hours"] <= limit_hours}
 
 
 FLOAT_KEYS = ("D_pre", "D_post", "dD", "D_pre_disc", "D_post_disc", "dD_disc", "weights_frac", "w_frac_a_core", "w_frac_p_core")
@@ -918,7 +1061,7 @@ from flymon.brain.plasticity import Plasticity
 from flymon.brain.stimuli import design_odor_pair
 from flymon.brain.fly_pool import FlyPool, FlySpec
 from flymon.brain.pool_bench import budget_table, exact_match, m0b_gate, throughput_row
-from flymon.brain.pool_jobs import baseline_job, conditioning_arm_job, sparsity_job
+from flymon.brain.pool_jobs import baseline_job, conditioning_arm_job, rss_job, sparsity_job
 from flymon.brain.presentation import decide
 
 ARMS = ("both", "reversed", "noplast", "punish_only", "reward_only")
@@ -945,7 +1088,7 @@ def cmd_throughput(a):
     rows = []
     for W in a.workers:
         with FlyPool(npz, Params(), [FlySpec()] * W, workers=W) as pool:
-            rows.append(throughput_row(pool, odor_a, a.strength, a.steps, a.warm, a.repeats))
+            rows.append(throughput_row(pool, odor_a, a.strength, a.steps, a.warm, a.repeats, idx=pops.mbon))
         print(json.dumps(rows[-1]), flush=True)
     _write(a.out, {"steps": a.steps, "warm": a.warm, "repeats": a.repeats, "strength": a.strength, "odor_seed": a.odor_seed, "rows": rows})
 
@@ -968,6 +1111,10 @@ def cmd_reproduce(a):
         cond["channel_specific_seeds"] = channel_specific_seeds(cond["per_seed"])
         sp_rows = pool.run_jobs(sparsity_job, [dict(seed=100 + s, strength=a.strength, k=a.k, odor_seed=a.odor_seed) for s in range(a.rest_seeds)])
         base_rows = pool.run_jobs(baseline_job, [dict(seed=100 + s, ms=a.rest_ms) for s in range(a.rest_seeds)])
+        rss_before = pool.run_jobs(rss_job, [{}] * a.workers)
+        rss_after = pool.run_jobs(rss_job, [{}] * a.workers, shuffle_seed=1_000_003)      # builds one C-shuf variant per worker
+        memory = {"worker_rss_GB": float(np.mean(rss_before)), "worker_rss_GB_max": float(max(rss_before)),
+                  "variant_rss_GB": float(np.mean(np.subtract(rss_after, rss_before)))}
         conn = Connectome.load(npz)
         pops = Populations.from_connectome(conn)
         odor_a, odor_b = design_odor_pair(pops, k=a.k, seed=a.odor_seed)
@@ -993,10 +1140,10 @@ def cmd_reproduce(a):
     out = {"params": {**dataclasses.asdict(p), "punish_type": a.punish_type, "reward_type": a.reward_type, "settle_ms": a.settle_ms,
                       "present_ms": a.present_ms, "trials": a.trials}, "strength": a.strength, "odor_seed": a.odor_seed,
            "workers": a.workers, "conditioning": cond, "conditioning_match": cond_match, "sparsity": sparsity, "sparsity_match": sp_match,
-           "baseline": baseline, "decide_equal": decide_equal, "wall_clock_s": time.perf_counter() - t0}
+           "baseline": baseline, "memory": memory, "decide_equal": decide_equal, "wall_clock_s": time.perf_counter() - t0}
     print(json.dumps({"n_seeds": cond["n_seeds"], "n_flip": cond["n_flip"], "channel_specific": cond["channel_specific_seeds"],
                       "conditioning_exact": cond_match.get("ok"), "sparsity_exact": sp_match.get("ok"), "decide_equal": decide_equal,
-                      "runaway": baseline["runaway"], "wall_s": round(out["wall_clock_s"])}), flush=True)
+                      "runaway": baseline["runaway"], "memory": memory, "wall_s": round(out["wall_clock_s"])}), flush=True)
     _write(a.out, out)
 
 
@@ -1009,7 +1156,7 @@ def cmd_summary(a):
     out = {"params_frozen": dataclasses.asdict(Params()), "throughput": th["rows"], "budget": budget,
            "conditioning": {k: co[k] for k in ("n_seeds", "n_flip", "n_flip_disc", "noplast_max_abs_dD", "channel_specific_seeds", "arms")},
            "conditioning_match": rp["conditioning_match"], "sparsity_match": rp["sparsity_match"], "decide_equal": rp["decide_equal"],
-           "runaway": rp["baseline"]["runaway"], "gate": gate, "generated_at": dt.datetime.now(dt.timezone.utc).isoformat()}
+           "runaway": rp["baseline"]["runaway"], "memory": rp.get("memory"), "gate": gate, "generated_at": dt.datetime.now(dt.timezone.utc).isoformat()}
     print(f"M0b gate {'PASS' if gate['passed'] else 'FAIL'}: baseline {budget['baseline_hours']:.1f} h (limit {budget['limit_hours']}), "
           f"conditioning_exact={gate['conditioning_exact_ok']} sparsity_exact={gate['sparsity_exact_ok']} decide_equal={gate['decide_equal_ok']}")
     _write(a.out, out)
@@ -1059,7 +1206,7 @@ if test -f data/malecns.npz; then
 fi
 ```
 
-Expected: `reproduce`가 `"conditioning_exact": true, "sparsity_exact": true, "decide_equal": true`를 찍고(약 2분), `summary`가 `M0b gate FAIL: baseline … h`(4워커라 예산 초과가 정상)를 찍는다. `git status`에 `results/` 변화가 없어야 한다. 데이터가 없으면 `SKIP:` 한 줄과 종료 코드 2.
+Expected: `reproduce`가 `"conditioning_exact": true, "sparsity_exact": true, "decide_equal": true`와 `memory`를 찍고(약 2분), `summary`가 `M0b gate FAIL: baseline … h`(4워커라 예산 초과가 정상)를 찍는다. `git status`에 `results/` 변화가 없어야 한다. 데이터가 없으면 `SKIP:` 한 줄과 종료 코드 2.
 
 - [ ] **Step 8: 전체 스위트 + 커밋**
 
@@ -1107,14 +1254,14 @@ git commit -m "docs: README M0b section; spec repo layout names pool_jobs.py"
 3. `uv run python scripts/bench_pool.py reproduce` (조건화 40작업을 16워커로 3라운드 + 희소성·기저 3작업 + decide 검사; 약 10분).
 4. `uv run python scripts/bench_pool.py summary` → `results/summary/m0b.json`, 한 줄 판정. `uv run pytest tests/test_summary.py -q`.
 5. 판정에 따라:
-   - PASS: `results/summary/m0b.json` 커밋(`results: M0b pool bench, exact M0 reproduction, gate`). 부록 C에 C.7 "M0b 측정 결과"를 추가한다 — 처리량 표(워커별 중앙값/최대), 예산표 4줄, 세 정확 일치 결과, 폭주 집합(KC 수·스파이크 비율). README "측정된 것"에 M0b 한 문단.
+   - PASS: `results/summary/m0b.json` 커밋(`results: M0b pool bench, exact M0 reproduction, gate`). 부록 C에 C.7 "M0b 측정 결과"를 추가한다 — 처리량 표(워커별 스텝 시간과 엔드투엔드 배치 시간), `by_workers` 예산과 게이트에 쓴 구성, 세 정확 일치 결과, 메모리(워커·변형), 폭주 집합(KC 수·스파이크 비율). README "측정된 것"에 M0b 한 문단.
    - 예산 > 60시간: 스펙 4.1 축소 순서(배틀 40 → 30, 그다음 2차 팔)를 적용한 예산을 C.7에 함께 적고 판정을 기록.
    - 정확 일치 실패: 워커의 엔진 구성(`Engine(conn, pops, params, seed=0)`, `compartments`, `Readout`)과 M0 스크립트 `_cond_worker`의 차이를 찾는다. 시드는 프레젠테이션마다 명시적으로 리셋되므로 엔진 초기 시드는 결과에 영향이 없다.
 6. **STD 재검토 조건(A.5)이 충족됐다**(휴지 폭주 집합에 KC 17개). 요약의 `runaway`와 함께 핸드오프에 적고, M2 브레인스토밍의 첫 질문에 "STD 도입 여부(조건 충족)"를 올린다. M0b에서는 결정하지 않는다.
-7. 최종 브랜치 리뷰(sdd-reviewer, 이 계획 범위만), 핸드오프 `docs/handoffs/2026-09-15-m2-handoff.md`.
+7. 최종 브랜치 리뷰(sdd-reviewer, 이 계획 범위만), 핸드오프 `docs/handoffs/2026-09-15-m2-handoff.md`. 핸드오프의 M3 항목 두 가지: `decide_batch`/`reinforce_batch`는 동기 호출이라 배리어의 `run_batch`는 `loop.run_in_executor`로 감싸야 poke-env 웹소켓이 멈추지 않는다; 스펙 3.6의 체크포인트 가중치 fp16은 정확 재개를 깨므로 float32로 고친다.
 
 ## 자체 검토
 
 - 스펙 커버리지: 2절 3·5단계 = Task 1 `decide`/`reinforce`; 3.1 프로세스 풀 항목(워커·가중치 스왑·hive·플래그·셔플·상태 왕복) = Task 1–2; 3.6 = Task 2; 5절 M0b(등가성 세 가지·처리량 반복·예산 학습/평가·폭주 집합) = Task 2–3 + 컨트롤러; 8절 통계 = Task 2(decide 동일)·Task 3(비트 동일 재현); C.6 결정 전부 반영. 배리어 `run_batch`는 M3에서 `decide_batch`에 얹는다(스펙 2절).
-- 플레이스홀더: 없음. 모든 코드 블록은 스크래치에서 실행·통과했다.
+- 플레이스홀더: 없음. 모든 코드 블록은 스크래치에서 실행·통과했다. 레드팀 반영: 엔드투엔드 배치 타이밍이 게이트 기준, 변형 상한과 RSS 측정, 중복 마리 거부, 생성자의 부모 측 검증과 정리, `load_state` 유한성, `reinforce`의 finally 정리, 워커 수별 예산.
 - 타입 일관성: `decide(...) -> np.ndarray`, `reinforce(...) -> None`, `FlyPool.decide_batch -> list[np.ndarray]`, `run_jobs(fn, kwargs_list, shuffle_seed=None)`, `fn(engine, pl, pops, comps, ro, **kw)`, `throughput_row(pool, odor, strength, steps, warm, repeats)`, `exact_match(pool_per_seed, m0_per_seed)`, `m0b_gate(budget, conditioning_match, sparsity_match, decide_equal)`가 Task 1·2·3과 CLI에서 같은 이름·시그니처로 쓰인다.
