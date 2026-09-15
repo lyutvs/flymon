@@ -95,3 +95,11 @@ def _build(n_orn=20, n_alpn=10, n_kc=40, n_mbon=4, n_dan=4, n_dn=6, n_mn=4, seed
 @pytest.fixture
 def synthetic_connectome():
     return _build
+
+
+@pytest.fixture(scope="module")
+def synthetic_npz(tmp_path_factory):
+    """The disjoint-KC synthetic connectome saved as an npz, for pool workers that load from disk."""
+    path = tmp_path_factory.mktemp("conn") / "synthetic.npz"
+    _build(disjoint_kc=True).save(path)
+    return path
