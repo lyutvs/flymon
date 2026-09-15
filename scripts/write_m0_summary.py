@@ -21,6 +21,7 @@ import json
 import sys
 from pathlib import Path
 
+from flymon.brain.conditioning import channel_specific_seeds
 from flymon.brain.config import Params
 
 MANIFEST = Path("data/malecns.manifest.json")
@@ -34,35 +35,6 @@ def _load(path: Path) -> dict:
         print(f"missing input: {path} (run the M0 gate first)")
         raise SystemExit(2)
     return json.loads(path.read_text())
-
-
-def _drop(pre: float, post: float) -> float:
-    """Fraction of a naive probe response lost after training (0 when there was nothing to lose)."""
-    return 0.0 if pre == 0 else (pre - post) / pre
-
-
-def channel_specific_seeds(per_seed: dict) -> int:
-    """Seeds where both dopamine channels depress the odour they were actually paired with.
-
-    Read off the raw probe counts, not the composite index. Per seed, all three must hold:
-      - `both` (reward PAM08 on the CS-): the approach core's minus-odour response drops more
-        than its plus-odour response;
-      - `reversed` (reward on the CS+): the other way round;
-      - `reversed` (punishment PPL105 on the CS-): the aversive core's minus-odour response drops
-        more than it does in `both`, where the same channel was paired with the other odour.
-    """
-    n = 0
-    for rec in per_seed.values():
-        both, rev = rec["both"]["counts"], rec["reversed"]["counts"]
-        p_minus_both = _drop(both["pre_minus"]["P"], both["post_minus"]["P"])
-        p_plus_both = _drop(both["pre_plus"]["P"], both["post_plus"]["P"])
-        p_plus_rev = _drop(rev["pre_plus"]["P"], rev["post_plus"]["P"])
-        p_minus_rev = _drop(rev["pre_minus"]["P"], rev["post_minus"]["P"])
-        a_minus_both = _drop(both["pre_minus"]["A"], both["post_minus"]["A"])
-        a_minus_rev = _drop(rev["pre_minus"]["A"], rev["post_minus"]["A"])
-        if p_minus_both > p_plus_both and p_plus_rev > p_minus_rev and a_minus_rev > a_minus_both:
-            n += 1
-    return n
 
 
 def index_flip_ok(co: dict) -> bool:

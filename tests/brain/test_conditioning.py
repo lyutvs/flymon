@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 
 from flymon.brain.circuits import Populations, compartments
-from flymon.brain.conditioning import (D, D_graded, Readout, arms, disc, disc_graded, probe, run_arm,
-                                       train_block)
+from flymon.brain.conditioning import (D, D_graded, Readout, arms, channel_specific_seeds, disc, disc_graded,
+                                       probe, run_arm, train_block)
 from flymon.brain.config import Params
 from flymon.brain.engine_cpu import Engine
 from flymon.brain.plasticity import Plasticity
@@ -207,24 +207,9 @@ def test_real_conditioning_gate():
     assert np.sign(d["arms"]["punish_only"]["mean_dD"] + d["arms"]["reward_only"]["mean_dD"]) == np.sign(both)
 
 
-def _channel_specific_seeds(per_seed: dict) -> int:
-    """Same definition as scripts/write_m0_summary.channel_specific_seeds (scripts/ is not an
-    importable package, so the small helper is duplicated here on purpose)."""
-    def drop(pre, post):
-        return 0.0 if pre == 0 else (pre - post) / pre
-    n = 0
-    for rec in per_seed.values():
-        both, rev = rec["both"]["counts"], rec["reversed"]["counts"]
-        if (drop(both["pre_minus"]["P"], both["post_minus"]["P"]) > drop(both["pre_plus"]["P"], both["post_plus"]["P"])
-                and drop(rev["pre_plus"]["P"], rev["post_plus"]["P"]) > drop(rev["pre_minus"]["P"], rev["post_minus"]["P"])
-                and drop(rev["pre_minus"]["A"], rev["post_minus"]["A"]) > drop(both["pre_minus"]["A"], both["post_minus"]["A"])):
-            n += 1
-    return n
-
-
 @pytest.mark.skipif(not Path("results/m0/conditioning.json").exists(), reason="gate not yet run on real data")
 def test_real_conditioning_channel_specificity():
     """What M0 did show: each dopamine channel depresses the odour it was paired with, read off the
     raw probe counts. This is a separate, weaker claim than the failed composite criterion above."""
     d = json.loads(Path("results/m0/conditioning.json").read_text())
-    assert _channel_specific_seeds(d["per_seed"]) == d["n_seeds"] == 8
+    assert channel_specific_seeds(d["per_seed"]) == d["n_seeds"] == 8
