@@ -241,10 +241,15 @@
   "spike_share_over_sat": 0.2879927456142108
  },
  "memory": {
-  "worker_rss_GB": 0.6029680639999999,
-  "worker_rss_GB_max": 0.689569792,
-  "variant_rss_GB": 0.043512831999999994
+  "worker_rss_GB": 0.57197568,
+  "worker_rss_GB_max": 0.794083328,
+  "variant_rss_GB": 0.14801203200000002,
+  "n_workers": 16,
+  "n_workers_sampled_before": 16,
+  "n_workers_sampled_both": 16
  },
+ "reproduce_wall_clock_s": 423.7172905000043,
+ "reproduce_workers": 16,
  "gate": {
   "throughput_ok": true,
   "conditioning_exact_ok": true,
@@ -252,5 +257,5 @@
   "decide_equal_ok": true,
   "passed": true
  },
- "generated_at": "2026-09-15T06:09:05.184390+00:00"
+ "generated_at": "2026-09-15T06:27:45.129206+00:00"
 }
