@@ -211,7 +211,7 @@
 
 ```
 flymon/
-  brain/    data_build.py  engine_cpu.py  presentation.py  fly_pool.py  pool_bench.py  circuits.py  odors.py  plasticity.py  readout.py
+  brain/    data_build.py  engine_cpu.py  presentation.py  fly_pool.py  pool_jobs.py  pool_bench.py  circuits.py  odors.py  plasticity.py  readout.py
   battle/   fly_coach_player.py  coach.py  router.py  attribution.py  barrier.py  pool.py  validate_pool.py  schedule.py  opponents.py
   agent.py  train.py  evaluate.py  analyze.py  checkpoint.py
 scripts/    install_showdown.sh  reproduce_flybrain_measurements.py  bench_pool.py  pilot_no_brain.py  serve_human_challenge.py

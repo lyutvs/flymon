@@ -135,6 +135,16 @@ PASS / PARTIAL / FAIL 한 줄을 찍고 `gate` 블록에 그대로 기록한다)
 - 팔은 한 번에 하나씩 돌린다(상대 계정 이름이 팔 사이에 겹친다). 팔당 1,600배틀은 수 분이다.
 - `tests/battle/test_server.py`·`test_fly_coach_player.py`는 서버가 설치돼 있지 않으면 skip된다.
 
+### M0b 프로세스 풀 스웜
+
+    uv run python scripts/bench_pool.py throughput            # 워커 4/8/16, 결정·강화 단계 ms/step 3회 → results/m0b/throughput.json
+    uv run python scripts/bench_pool.py reproduce             # M0 조건화 5팔×8시드를 풀로 재실행(비트 동일 검사), 희소성·기저·폭주 집합 → results/m0b/reproduce.json (16워커, 약 10분)
+    uv run python scripts/bench_pool.py summary               # 예산표(스펙 C.6)·정확 일치·게이트 → results/summary/m0b.json
+
+- 스웜은 `flymon/brain/fly_pool.py`의 워커 프로세스 풀이다. 워커마다 CPU 엔진 하나, 마리별로는 KC→MBON 가중치·켬/끔·배선 변형만 남고 부모가 보관한다.
+- 결정은 후보를 같은 시드로 순차 제시해 잡음을 짝짓는다(`flymon/brain/presentation.py`). 강화는 M0 `train_block`의 한 프레젠테이션과 같다.
+- MPS 배치 엔진은 스파이크와 레드팀 뒤 채택하지 않았다(스펙 부록 C.6).
+
 ### 학습 중 보기
 
     uv sync --extra viz
