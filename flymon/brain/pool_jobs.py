@@ -1,11 +1,13 @@
 """Functions that run on a FlyPool worker (`FlyPool.run_jobs`): phase timing, the M0 conditioning arm,
-the M0 sparsity seed, the resting baseline with the runaway set, the peak RSS of the worker and the
-worker's current plastic-weight fraction. Module-level so the pool can pickle them;
+the M0 sparsity seed, the resting baseline with the runaway set, the odour-window runaway check, the peak RSS
+of the worker and the worker's current plastic-weight fraction. Module-level so the pool can pickle them;
 signature fn(engine, plasticity, pops, comps, readout, **kwargs); every job leaves the worker's weights reset."""
 from __future__ import annotations
 
 import os
 import time
+
+import numpy as np
 
 from .conditioning import run_arm
 from .measure import chance_jaccard, jaccard, kc_sparsity, mbon_baseline
@@ -78,6 +80,34 @@ def baseline_job(eng, pl, pops, comps, ro, seed: int, ms: float = 3000.0, sat_hz
     return dict(mbon_baseline(eng, pops, seed, ms, sat_hz, counts=counts),
                 runaway={"sat_hz": sat_hz, "n_over_sat": int(over.sum()), "n_kc_over_sat": int(over[pops.kc].sum()),
                          "spike_share_over_sat": float(counts[over].sum() / max(int(counts.sum()), 1))})
+
+
+def odor_runaway_job(eng, pl, pops, comps, ro, seed: int, which: str = "B", strength: float = 0.35, k: int = 8,
+                     odor_seed: int = 0, settle_ms: float = 800.0, read_ms: float = 600.0, sat_hz: float = 150.0) -> dict:
+    """The M0c runaway check under odour (spec D.4): present odour A or B of the designed pair for a decision
+    window (settle, then read), plasticity off, and count the neurons - and the Kenyon cells among them -
+    whose rate over the read window exceeds sat_hz. The KCab-p clique (spec D.1) fires at 160-250 Hz when odour
+    B ignites it while PN-driven Kenyon cells top out near 113 Hz, so sat_hz is 150 (the pre-registered
+    amendment in D.4); the count above 100 Hz and the five highest KC rates are reported alongside."""
+    if which not in ("A", "B"):
+        raise ValueError(f"which must be 'A' or 'B', got {which!r}")
+    pl.reset_weights()
+    pl.set_enabled(False)
+    pl.quiet_dan()
+    a, b = design_odor_pair(pops, k=k, seed=odor_seed)
+    eng.reset(seed)
+    eng.clear_drive()
+    present(eng, pops, a if which == "A" else b, strength)
+    eng.run(settle_ms)
+    counts = eng.run(read_ms)
+    pl.set_enabled(True)
+    hz = counts / (read_ms / 1000.0)
+    over = hz > sat_hz
+    kc_hz = hz[pops.kc]
+    return {"seed": seed, "which": which, "sat_hz": sat_hz, "n_over_sat": int(over.sum()),
+            "n_kc_over_sat": int(over[pops.kc].sum()), "n_kc_over_100": int((kc_hz > 100.0).sum()),
+            "kc_hz_top5": [float(x) for x in np.sort(kc_hz)[::-1][:5]],
+            "frac_active_kc": float((kc_hz > 0).mean()), "kc_spikes": int(counts[pops.kc].sum())}
 
 
 def rss_job(eng, pl, pops, comps, ro) -> dict:

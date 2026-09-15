@@ -9,7 +9,7 @@ from flymon.brain.connectome import Connectome, shuffle_kc_mbon
 from flymon.brain.engine_cpu import Engine
 from flymon.brain.plasticity import Plasticity
 from flymon.brain.fly_pool import FlyPool, FlySpec
-from flymon.brain.pool_jobs import (baseline_job, conditioning_arm_job, phase_timing_job, rss_job,
+from flymon.brain.pool_jobs import (baseline_job, conditioning_arm_job, odor_runaway_job, phase_timing_job, rss_job,
                                     sparsity_job, weights_frac_job)
 from flymon.brain.presentation import decide
 
@@ -135,6 +135,21 @@ def test_baseline_job(pool):
     assert set(r["runaway"]) == {"sat_hz", "n_over_sat", "n_kc_over_sat", "spike_share_over_sat"}
     assert 0.0 <= r["runaway"]["spike_share_over_sat"] <= 1.0
     assert np.isfinite(r["mbon_hz"]) and np.isfinite(r["mbon_hz_trimmed"])
+
+
+def test_odor_runaway_job(pool):
+    """One seed of the odour-window runaway check (spec D.4): counts over the read window, KC subset, and
+    the odour actually presented (A or B of the designed pair)."""
+    rb = pool.run_jobs(odor_runaway_job, [dict(seed=100, which="B", strength=1.0, k=2, odor_seed=0, settle_ms=200.0, read_ms=600.0)])[0]
+    ra = pool.run_jobs(odor_runaway_job, [dict(seed=100, which="A", strength=1.0, k=2, odor_seed=0, settle_ms=200.0, read_ms=600.0)])[0]
+    assert set(rb) == {"seed", "which", "sat_hz", "n_over_sat", "n_kc_over_sat", "n_kc_over_100", "kc_hz_top5", "frac_active_kc", "kc_spikes"}
+    assert rb["which"] == "B" and ra["which"] == "A" and rb["seed"] == 100 and rb["sat_hz"] == 150.0
+    assert 0 <= rb["n_kc_over_sat"] <= rb["n_kc_over_100"] and rb["n_kc_over_sat"] <= rb["n_over_sat"]
+    assert 0.0 <= rb["frac_active_kc"] <= 1.0 and len(rb["kc_hz_top5"]) == 5 and rb["kc_hz_top5"] == sorted(rb["kc_hz_top5"], reverse=True)
+    assert rb["n_kc_over_sat"] == int(sum(h > 150.0 for h in rb["kc_hz_top5"])) or rb["n_kc_over_sat"] > 5
+    with pytest.raises(ValueError, match="which"):
+        pool.run_jobs(odor_runaway_job, [dict(seed=100, which="C", strength=1.0, k=2)])
+    assert pool.run_jobs(weights_frac_job, [{}])[0] == 1.0     # the job leaves the worker's weights reset
 
 
 def test_conditioning_arm_job_leaves_the_worker_weights_reset(synthetic_npz):

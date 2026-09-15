@@ -89,6 +89,22 @@ def budget_table(rows: list, decisions: int = DECISIONS, eval_decisions: int = E
 FLOAT_KEYS = ("D_pre", "D_post", "dD", "D_pre_disc", "D_post_disc", "dD_disc", "weights_frac", "w_frac_a_core", "w_frac_p_core")
 
 
+OLD_ENGINE_DIRS = ("results/m0/", "results/m0b/")
+OLD_ENGINE_FILES = ("results/summary/m0.json", "results/summary/m0b.json", "results/summary/compartments.json")
+
+
+def refuse_old_engine_output(out: str, kc_kc_scale: float) -> None:
+    """The M0/M0b result files are the old engine's (kc_kc_scale 1.0) immutable, bit-exact references
+    (spec D.5) and results/m0* is git-ignored, so an overwrite is unrecoverable. Any script that would write
+    under those paths with another engine refuses (SystemExit 2); pass an explicit --out under results/m0c/."""
+    if kc_kc_scale == 1.0 or not out:
+        return
+    norm = str(out).replace("\\", "/")
+    if norm.startswith(OLD_ENGINE_DIRS) or norm in OLD_ENGINE_FILES:
+        raise SystemExit(f"refusing to write {out} with kc_kc_scale={kc_kc_scale}: that path holds the old engine's "
+                         f"(kc_kc_scale=1.0) immutable reference (spec D.5); use --out results/m0c/... or --kc-kc-scale 1.0")
+
+
 def exact_match(pool_per_seed: dict, m0_per_seed: dict) -> dict:
     """Bit-for-bit comparison of the pool's conditioning results with results/m0/conditioning.json:
     every seed and arm, the four raw probe count pairs and the float indices."""
@@ -112,3 +128,28 @@ def m0b_gate(budget: dict, conditioning_match: dict, sparsity_match: dict, decid
     return {"throughput_ok": bool(budget["gate_ok"]), "conditioning_exact_ok": bool(conditioning_match["ok"]),
             "sparsity_exact_ok": bool(sparsity_match["ok"]), "decide_equal_ok": bool(decide_equal),
             "passed": bool(budget["gate_ok"] and conditioning_match["ok"] and sparsity_match["ok"] and decide_equal)}
+
+
+def m0c_gate(sparsity_row: dict, baseline: dict, runaway: dict, equivalence: dict, budget: dict,
+             conditioning: dict, limit_hours: float = 60.0) -> dict:
+    """The M0c gate (spec D.4), every term pre-registered. `sparsity_row` is the results/m0c sparsity grid row
+    for Params(); `baseline` has "mbon_hz_rest_trimmed" over the 8 rest seeds; `runaway` has the per-seed KC
+    counts at rest and under odour B; `equivalence` has the three checks against the old engine and the pool;
+    `budget` is budget_table(); `conditioning` is the judged (seeds 8-15) summary. PASS = sparsity and baseline
+    and runaway and equivalence and throughput; the conditioning criterion is recorded, not gated on. The runaway
+    term includes its pre-registered sample sizes (8 rest seeds, 64 odour seeds): a shorter run cannot pass."""
+    sparsity_ok = (0.03 <= sparsity_row["frac_active_A"] <= 0.07 and 0.03 <= sparsity_row["frac_active_B"] <= 0.07
+                   and sparsity_row["jaccard"] <= sparsity_row["chance"])
+    baseline_ok = 3.0 <= baseline["mbon_hz_rest_trimmed"] <= 4.0
+    rest, odor = runaway["rest_n_kc_over_sat_per_seed"], runaway["odor_B_n_kc_over_sat_per_seed"]
+    runaway_ok = (len(rest) >= 8 and len(odor) >= 64 and max(rest) == 0 and max(odor) == 0)   # sample sizes are part of the definition
+    equivalence_ok = bool(equivalence["old_conditioning"]["ok"] and equivalence["old_sparsity"]["ok"]
+                          and equivalence["arm_equal"]["ok"] and equivalence["decide_equal"])
+    throughput_ok = bool(budget["gate_ok"]) and budget["limit_hours"] == limit_hours
+    both, rev = conditioning["arms"]["both"]["mean_dD"], conditioning["arms"]["reversed"]["mean_dD"]
+    flip_ok = (conditioning["n_flip"] == conditioning["n_seeds"] and abs(both) >= 0.3 and abs(rev) >= 0.3
+               and (both > 0) != (rev > 0))
+    return {"sparsity_ok": bool(sparsity_ok), "baseline_ok": bool(baseline_ok), "runaway_ok": bool(runaway_ok),
+            "equivalence_ok": equivalence_ok, "throughput_ok": throughput_ok,
+            "conditioning_index_flip_ok": bool(flip_ok), "channel_specific_seeds": int(conditioning["channel_specific_seeds"]),
+            "passed": bool(sparsity_ok and baseline_ok and runaway_ok and equivalence_ok and throughput_ok)}

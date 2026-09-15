@@ -4,8 +4,8 @@ from flymon.brain.circuits import Populations
 from flymon.brain.config import Params
 from flymon.brain.connectome import Connectome
 from flymon.brain.fly_pool import FlyPool, FlySpec
-from flymon.brain.pool_bench import (DECISIONS, EVAL_DECISIONS, budget_hours, budget_hours_e2e, budget_table, exact_match, m0b_gate,
-                        throughput_row)
+from flymon.brain.pool_bench import (DECISIONS, EVAL_DECISIONS, budget_hours, budget_hours_e2e, budget_table, exact_match,
+                        m0b_gate, m0c_gate, refuse_old_engine_output, throughput_row)
 
 A = {"ORN_DM1": 1.0, "ORN_DA1": 1.0}
 
@@ -75,3 +75,48 @@ def test_exact_match_and_gate():
     assert m0b_gate(budget, {"ok": True}, {"ok": True}, True)["passed"] is True
     assert m0b_gate(budget, {"ok": False}, {"ok": True}, True)["passed"] is False
     assert m0b_gate({"gate_ok": False}, {"ok": True}, {"ok": True}, True)["passed"] is False
+
+
+def _m0c_inputs():
+    row = {"frac_active_A": 0.064, "frac_active_B": 0.049, "jaccard": 0.025, "chance": 0.028}
+    baseline = {"mbon_hz_rest_trimmed": 3.2}
+    runaway = {"rest_n_kc_over_sat_per_seed": [0] * 8, "odor_B_n_kc_over_sat_per_seed": [0] * 64}
+    equivalence = {"old_conditioning": {"ok": True}, "old_sparsity": {"ok": True}, "arm_equal": {"ok": True}, "decide_equal": True}
+    budget = {"gate_ok": True, "limit_hours": 60.0}
+    cond = {"n_seeds": 8, "n_flip": 5, "channel_specific_seeds": 7,
+            "arms": {"both": {"mean_dD": 0.0}, "reversed": {"mean_dD": 1.49}}}
+    return row, baseline, runaway, equivalence, budget, cond
+
+
+def test_m0c_gate_terms_and_composition():
+    row, baseline, runaway, equivalence, budget, cond = _m0c_inputs()
+    g = m0c_gate(row, baseline, runaway, equivalence, budget, cond)
+    assert set(g) == {"sparsity_ok", "baseline_ok", "runaway_ok", "equivalence_ok", "throughput_ok",
+                      "conditioning_index_flip_ok", "channel_specific_seeds", "passed"}
+    assert g["passed"] is True and g["conditioning_index_flip_ok"] is False and g["channel_specific_seeds"] == 7
+    # the conditioning criterion is recorded, never gated on
+    cond8 = dict(cond, n_flip=8, arms={"both": {"mean_dD": -0.4}, "reversed": {"mean_dD": 1.0}})
+    assert m0c_gate(row, baseline, runaway, equivalence, budget, cond8)["conditioning_index_flip_ok"] is True
+    # every gate term fails the composite on its own
+    assert not m0c_gate(dict(row, frac_active_B=0.02), baseline, runaway, equivalence, budget, cond)["passed"]
+    assert not m0c_gate(dict(row, jaccard=0.03), baseline, runaway, equivalence, budget, cond)["passed"]
+    assert not m0c_gate(row, {"mbon_hz_rest_trimmed": 2.94}, runaway, equivalence, budget, cond)["baseline_ok"]
+    assert not m0c_gate(row, baseline, dict(runaway, odor_B_n_kc_over_sat_per_seed=[0] * 63 + [52]), equivalence, budget, cond)["runaway_ok"]
+    assert not m0c_gate(row, baseline, dict(runaway, rest_n_kc_over_sat_per_seed=[0, 52, 0]), equivalence, budget, cond)["runaway_ok"]
+    # the sample sizes are part of the pre-registered definition: a short run cannot pass
+    assert not m0c_gate(row, baseline, dict(runaway, rest_n_kc_over_sat_per_seed=[0] * 3), equivalence, budget, cond)["runaway_ok"]
+    assert not m0c_gate(row, baseline, dict(runaway, odor_B_n_kc_over_sat_per_seed=[0] * 32), equivalence, budget, cond)["runaway_ok"]
+    assert not m0c_gate(row, baseline, runaway, dict(equivalence, arm_equal={"ok": False}), budget, cond)["equivalence_ok"]
+    assert not m0c_gate(row, baseline, runaway, equivalence, {"gate_ok": False, "limit_hours": 60.0}, cond)["throughput_ok"]
+    assert not m0c_gate(row, baseline, runaway, equivalence, {"gate_ok": True, "limit_hours": 80.0}, cond)["throughput_ok"]
+
+
+def test_refuse_old_engine_output_guards_the_immutable_references():
+    """Spec D.5: results/m0*, results/summary/m0.json and m0b.json are the old engine's (kc_kc_scale 1.0) bit-exact
+    references and git-ignored; no script writes there with another engine."""
+    for out in ("results/m0/sparsity.json", "results/m0/x.json", "results/m0b/throughput.json", "results/summary/m0.json", "results/summary/m0b.json"):
+        with pytest.raises(SystemExit, match="old engine"):
+            refuse_old_engine_output(out, 0.0)
+        refuse_old_engine_output(out, 1.0)                       # the old engine may write its own files
+    for out in ("results/m0c/sparsity.json", "results/summary/m0c.json", "/tmp/x.json", ""):
+        refuse_old_engine_output(out, 0.0)                       # new paths, empty (unused) paths: fine

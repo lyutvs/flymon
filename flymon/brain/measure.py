@@ -73,6 +73,7 @@ def mbon_baseline_multi(engine: Engine, pops: Populations, seeds, ms: float = 30
         "mbon_hz_rest": float(np.mean([r["mbon_hz"] for r in runs])),
         "mbon_hz_rest_trimmed": float(trimmed.mean()),
         "mbon_hz_rest_trimmed_sd": float(trimmed.std()),
+        "mbon_hz_rest_trimmed_per_seed": [float(x) for x in trimmed],
         "mbon_n_saturated": float(np.mean([r["n_saturated"] for r in runs])),
         "mbon_types_active_rest": float(np.mean([r["n_types_active"] for r in runs])),
         "rest_seeds": seeds,
