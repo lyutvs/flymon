@@ -1,0 +1,51 @@
+
+== synthetic fixtures ==
+  [ok] working, specific learning -> PASS                         got PASS             want PASS
+  [ok] no learning, only non-associative drift -> FAIL            got FAIL             want FAIL
+  [ok] full generalisation to Y (non-specific) -> FAIL            got FAIL             want FAIL
+  [ok] big non-associative drift, no associative part -> FAIL     got FAIL             want FAIL
+  [ok] naive preference far from 0 -> NAIVE_REGRESSED             got NAIVE_REGRESSED  want NAIVE_REGRESSED
+  [ok] protocol check: bimodal P(X), working -> PASS              got PASS             want PASS
+  [ok] protocol check: bimodal P(X), no learning -> FAIL          got FAIL             want FAIL
+  [ok] protocol check: reward works, punish does nothing -> FAIL  got FAIL             want FAIL
+       (X-only presentation drift, no DAN: reward_level median 2.28, reward_assoc median 0.00)
+  [ok] X-only presentation drift, NO DAN effect -> FAIL (level alone would pass) got FAIL             want FAIL
+  [ok]   ...and the literal spec-5 level gate alone WOULD have passed it got True             want True
+  [ok] X-only presentation drift PLUS specific learning -> PASS   got PASS             want PASS
+       (reward works, punish inert, stage-2 presentation erodes MBON13 of X: reward_level 3.42, punish_drop -1.51, reward_assoc 3.20, punish_assoc -0.22)
+  [ok] reward works, punish inert, presentation mimics punishment -> FAIL got FAIL             want FAIL
+  [ok]   ...and both literal spec-5 level gates alone WOULD have passed it got True             want True
+  [ok] no learning, R and no-DAN brains NOT bit-identical -> FAIL got FAIL             want FAIL
+  [ok] every readout cell dead after training -> FAIL (not UNDEFINED) got FAIL             want FAIL
+  [ok] statistics undefined in most flies -> UNDEFINED            got UNDEFINED        want UNDEFINED
+  [ok] one gate 0.1 short of the bar -> BAND                      got BAND             want BAND
+  [ok] one gate exactly 0.2 short (0.80) -> BAND (inclusive)      got BAND             want BAND
+  [ok] one gate 0.21 short (0.79) -> FAIL                         got FAIL             want FAIL
+  [ok] punish gate exactly 0.2 short (-0.80) -> BAND              got BAND             want BAND
+  [ok] noplast identical -> ok                                    got True             want True
+  [ok] noplast off by one spike -> not ok                         got False            want False
+  [ok] overall: noplast broken -> STOP_MACHINE                    got STOP_MACHINE     want STOP_MACHINE
+  [ok] overall: control fails -> STOP_PROTOCOL                    got STOP_PROTOCOL    want STOP_PROTOCOL
+  [ok] overall: one gate FAIL -> FAIL                             got FAIL             want FAIL
+  [ok] overall: all evaluable PASS (>=2) -> PASS                  got PASS             want PASS
+  [ok] overall: only one evaluable -> UNDECIDED                   got UNDECIDED        want UNDECIDED
+  [ok] overall: a BAND pair -> UNDECIDED                          got UNDECIDED        want UNDECIDED
+
+== mutations (a surviving mutation means the rule is not tested) ==
+  [ok] M1 flip dV sign changes a verdict                          got True             want True
+  [ok] M2 remove no-DAN contrast changes a verdict                got True             want True
+  [ok] M3 drop associative gates changes a verdict                got True             want True
+  [ok] M5 neuter the protocol check lets 'no learning' through    got True             want True
+  [ok] M6 revert sd=0 limit turns dead-readout FAIL into something else got True             want True
+  [ok] M4 disable noplast check lets a broken machine through     got True             want True
+
+== M0c raw data (protocol-check pair: X = odour b, Y = odour a; seeds stand in for probe seeds) ==
+   M0c has no paired no-DAN brain; two stand-ins bound it: noplast (zero drift) and punish_only
+   (b got no DAN while PPL105 drove a - the largest non-associative loss on record).
+   conditioning_seeds0-7.json   N=noplast      v2 d'_delta  0.85 | v3 effect-size d'(dV_R1-dV_N)  0.85 | v3 SIGN reward 1.000 punish 1.000 -> PASS
+   conditioning_seeds0-7.json   N=punish_only  v2 d'_delta  0.85 | v3 effect-size d'(dV_R1-dV_N)  1.13 | v3 SIGN reward 0.938 punish 1.000 -> PASS
+   conditioning.json            N=noplast      v2 d'_delta  0.97 | v3 effect-size d'(dV_R1-dV_N)  0.97 | v3 SIGN reward 0.938 punish 1.000 -> PASS
+   conditioning.json            N=punish_only  v2 d'_delta  0.97 | v3 effect-size d'(dV_R1-dV_N)  2.06 | v3 SIGN reward 1.000 punish 1.000 -> PASS
+  [ok] M0c: protocol check PASSES on all 4 stand-in combinations (real working protocol) got True             want True
+
+ALL CHECKS PASSED
