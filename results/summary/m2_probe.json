@@ -1,8 +1,8 @@
 {
  "milestone": "M2 first measurement (spec appendix E) \u2014 record, not a gate",
- "written_utc": "2026-09-16T07:05:36+00:00",
- "git_commit": "86c780595e8ed7ae850d5fdda04c56d181b6e690",
- "git_dirty": true,
+ "written_utc": "2026-09-16T07:09:35+00:00",
+ "git_commit": "d29133deaf81314268659b6e826fc0e368eef05e",
+ "git_dirty": false,
  "inputs_sha256": {
   "candidate_map": "03b43f9101c551e19c2649f1a747d549b07256de59a18a5217b9543f94e192a2",
   "candidate_map_meta": "7fa9aba0a34cad4dbe73b400e77da2d75de61818e32fc1271dd7eeb472e87510",
