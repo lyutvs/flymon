@@ -1,0 +1,1365 @@
+{
+ "milestone": "M2 first measurement (spec appendix E) \u2014 record, not a gate",
+ "written_utc": "2026-09-16T07:05:36+00:00",
+ "git_commit": "86c780595e8ed7ae850d5fdda04c56d181b6e690",
+ "git_dirty": true,
+ "inputs_sha256": {
+  "candidate_map": "03b43f9101c551e19c2649f1a747d549b07256de59a18a5217b9543f94e192a2",
+  "candidate_map_meta": "7fa9aba0a34cad4dbe73b400e77da2d75de61818e32fc1271dd7eeb472e87510",
+  "kc_code": "b30b912e81498b42200d7952ee34e4c26a0452d37e6337d3250912e440017713",
+  "all51_drive": "6d8a5dbfb785d5a45762c07ab2718e4e51700a2a2f11822932ece682ac4ebef3",
+  "sep_grid": "40732a4e33bdfbab765fe6914da224e9f7009a37bddbfe70bf30285a1217b83f",
+  "vocab": "1cba8a3553c674766f548e41f187b01462aa60d027f9ba49d863af0627588036"
+ },
+ "engine": {
+  "kc_kc_scale": 0.0,
+  "kc_thresh": 1.5,
+  "strength": 0.35,
+  "settle_ms": 800.0,
+  "read_ms": 600.0,
+  "sub_ms": 200.0
+ },
+ "encoder": {
+  "status": "provisional \u2014 spec 3.3 as written, implemented in results/m2/scratch/m2_probe.py",
+  "n_channels": 41,
+  "glomeruli_per_candidate": [
+   6,
+   7,
+   8
+  ],
+  "channels": {
+   "myhp:low": "ORN_VC1",
+   "myhp:mid": "ORN_VM6v",
+   "myhp:high": "ORN_DM3",
+   "opphp:low": "ORN_VA3",
+   "opphp:mid": "ORN_VM5v",
+   "opphp:high": "ORN_DL4",
+   "pow:lt60": "ORN_VA7l",
+   "pow:60to89": "ORN_DA4m",
+   "pow:ge90": "ORN_VA6",
+   "move:ELECTRIC": "ORN_VM6m",
+   "move:FIRE": "ORN_DP1m",
+   "move:GRASS": "ORN_VC2",
+   "move:GROUND": "ORN_VA4",
+   "move:NORMAL": "ORN_DM5",
+   "move:PSYCHIC": "ORN_VM3",
+   "move:ROCK": "ORN_DM6",
+   "move:WATER": "ORN_VL1",
+   "my:DRAGON": "ORN_VA7m",
+   "my:FIGHTING": "ORN_D",
+   "my:FIRE": "ORN_VC5",
+   "my:FLYING": "ORN_DM4",
+   "my:GRASS": "ORN_VM1",
+   "my:GROUND": "ORN_VC3",
+   "my:ICE": "ORN_DC3",
+   "my:NORMAL": "ORN_VC4",
+   "my:POISON": "ORN_VL2p",
+   "my:PSYCHIC": "ORN_DM2",
+   "my:ROCK": "ORN_DM1",
+   "my:WATER": "ORN_DL1",
+   "opp:DRAGON": "ORN_DL2v",
+   "opp:FIGHTING": "ORN_VM7v",
+   "opp:FIRE": "ORN_DC1",
+   "opp:FLYING": "ORN_DA4l",
+   "opp:GRASS": "ORN_DP1l",
+   "opp:GROUND": "ORN_DA3",
+   "opp:ICE": "ORN_VM7d",
+   "opp:NORMAL": "ORN_VM2",
+   "opp:POISON": "ORN_DA2",
+   "opp:PSYCHIC": "ORN_DL5",
+   "opp:ROCK": "ORN_VM4",
+   "opp:WATER": "ORN_VA2"
+  }
+ },
+ "sample": {
+  "n_turns": 16,
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207
+  ],
+  "source": "flymon.battle.pool, deterministic turns; NOT real battle logs"
+ },
+ "d6_ruling": {
+  "a_runaway": {
+   "condition": "any KC above 150 Hz for a 200 ms window of the candidate presentation",
+   "fired": false,
+   "n_presentations": 328,
+   "n_over": 0,
+   "max_kc_sub_window_hz": 150.0,
+   "margin_hz": 0.0,
+   "caveat": "measured on 7 grid-aligned 200 ms tiles, not a sliding window, and the maximum equals the threshold exactly (margin 0.0 Hz). D.6 does not fix the window alignment; a sliding 200 ms window and a larger sample can flip this."
+  },
+  "b_candidate_ratio": {
+   "condition": "within-turn candidate KC spike-count ratio > 2.0",
+   "fired": true,
+   "turns_over": [
+    0,
+    6,
+    8
+   ],
+   "n_turns_over": 3,
+   "n_turns": 16,
+   "ratio_mean_over_turns": 1.333179444599864,
+   "ratio_max": 2.498405951115834,
+   "per_turn": {
+    "0": {
+     "mean": 1.800328147695493,
+     "max": 2.1117415975556524
+    },
+    "1": {
+     "mean": 1.2715949498842551,
+     "max": 1.3297918473547268
+    },
+    "2": {
+     "mean": 1.0565439548694426,
+     "max": 1.1257512713823394
+    },
+    "3": {
+     "mean": 1.2072749184199854,
+     "max": 1.3495985176034588
+    },
+    "4": {
+     "mean": 1.1342865383228198,
+     "max": 1.3649449618966978
+    },
+    "5": {
+     "mean": 1.0336717798055566,
+     "max": 1.0995660559305689
+    },
+    "6": {
+     "mean": 2.1313040352682364,
+     "max": 2.498405951115834
+    },
+    "7": {
+     "mean": 1.2444278126123345,
+     "max": 1.2917594654788418
+    },
+    "8": {
+     "mean": 1.803009341469255,
+     "max": 2.3055822906641
+    },
+    "9": {
+     "mean": 1.1976818434432865,
+     "max": 1.3286516853932584
+    },
+    "10": {
+     "mean": 1.3293414766231388,
+     "max": 1.4922206506364921
+    },
+    "11": {
+     "mean": 1.2381418282318275,
+     "max": 1.4689518132141084
+    },
+    "12": {
+     "mean": 1.316932504523007,
+     "max": 1.6154168412232928
+    },
+    "13": {
+     "mean": 1.254689196693277,
+     "max": 1.422463768115942
+    },
+    "14": {
+     "mean": 1.1014068733115607,
+     "max": 1.193076693524321
+    },
+    "15": {
+     "mean": 1.2102359124243485,
+     "max": 1.4982098595428257
+    }
+   }
+  },
+  "c_learning_unit_test": {
+   "condition": "the M2 learning unit test fails",
+   "status": "unmeasured",
+   "fired": null,
+   "expected_input": "results/m2/learning_unit_test.json",
+   "present": false,
+   "note": "the learning unit test (naive d' ~ 0, d' >= 1 after 20 rewards, drop after 20 punishments) has not been run. The first write-up of this investigation (2026-09-16) recorded the 3% sparsity check under this label and called it passed; that was wrong and is corrected here."
+  },
+  "sparsity_floor_check": {
+   "note": "D.6 third bullet, a SEPARATE item from (c)",
+   "floor": 0.03,
+   "n_below_floor": 0,
+   "min": 0.030757874015748032,
+   "median": 0.07123523622047244,
+   "max": 0.11048228346456693,
+   "spec5_band": [
+    0.05,
+    0.09
+   ],
+   "n_in_spec5_band": 220,
+   "frac_in_spec5_band": 0.6707317073170732,
+   "n_presentations": 328
+  }
+ },
+ "std_condition_fired": true,
+ "std_condition_fired_by": [
+  "b_candidate_ratio"
+ ],
+ "kc_code_separation": {
+  "between": 0.5876097833409782,
+  "within": 0.8375069338399105,
+  "chance": 0.03512489046535732,
+  "count_corr": 0.8413240396964755
+ },
+ "glomerulus_drive_51": {
+  "protocol": "matched total ORN drive, 4 seeds",
+  "min": 1.75,
+  "median": 763.75,
+  "max": 5016.75,
+  "max_over_min": 2866.714285714286,
+  "cv": 0.9870226643060261,
+  "n_ge_200_spikes": 38
+ },
+ "engine_axis_grid": {
+  "note": "APL mode x kc_thresh; mean KC-Jaccard separation moved 0.227-0.290 while candidate KC activity moved 3.0%-21.5%. Scope: APL gain and the GLOBAL kc_thresh multiplier only \u2014 the KC threshold normalisation RULE and its clip bounds (spec D.2, D.7) were not varied.",
+  "cells": {
+   "th1.5_spiking": {
+    "kc_frac_med": 0.07111220472440945,
+    "kc_frac_min": 0.030757874015748032,
+    "kc_frac_max": 0.10974409448818898,
+    "margins": {
+     "0": 0.4013592649970314,
+     "1": 0.2301047154502548,
+     "2": 0.44051388033772376,
+     "3": 0.0974265008898989,
+     "4": 0.21166612910638882,
+     "5": 0.0925570143666713,
+     "6": 0.19933214493765472,
+     "7": 0.2711230506747082,
+     "8": 0.4002103699743701,
+     "9": 0.17653599112490148,
+     "10": 0.2557506638681861,
+     "11": 0.19207591185221684,
+     "12": -0.007301107155557651,
+     "13": 0.4343819858293031,
+     "14": 0.3958359804817291,
+     "15": 0.15126099568215146
+    }
+   },
+   "th1.5_graded 0.02": {
+    "kc_frac_med": 0.03678641732283464,
+    "kc_frac_min": 0.014025590551181102,
+    "kc_frac_max": 0.0671751968503937,
+    "margins": {
+     "0": 0.3903693785142755,
+     "1": 0.16320285044148308,
+     "2": 0.39539269781075737,
+     "3": 0.09936416616590549,
+     "4": 0.22439651401410676,
+     "5": 0.03876514778401596,
+     "6": 0.22184752798305823,
+     "7": 0.32846721129134343,
+     "8": 0.4399015983853026,
+     "9": 0.19281214814317937,
+     "10": 0.2606017135204408,
+     "11": 0.2193246537326552,
+     "12": 0.031443801311569985,
+     "13": 0.41867803908117385,
+     "14": 0.4300305114564565,
+     "15": 0.1823235449618571
+    }
+   },
+   "th1.5_graded 0.1": {
+    "kc_frac_med": 0.029896653543307086,
+    "kc_frac_min": 0.0034448818897637795,
+    "kc_frac_max": 0.05167322834645669,
+    "margins": {
+     "0": 0.3615359690021413,
+     "1": 0.3274690280974803,
+     "2": 0.4357808649168834,
+     "3": 0.11053446385244092,
+     "4": 0.25243675908116675,
+     "5": 0.2956038940092228,
+     "6": 0.1491662904372837,
+     "7": 0.2557714309490866,
+     "8": 0.38549389447685045,
+     "9": 0.22942395415801697,
+     "10": 0.22995623134462773,
+     "11": 0.18230482352776134,
+     "12": -0.00850048484925614,
+     "13": 0.3544145229813388,
+     "14": 0.38922239620295024,
+     "15": 0.15535897007345545
+    }
+   },
+   "th1.0_spiking": {
+    "kc_frac_med": 0.1419783464566929,
+    "kc_frac_min": 0.06299212598425197,
+    "kc_frac_max": 0.2268700787401575,
+    "margins": {
+     "0": 0.3857465506690436,
+     "1": 0.229408628940295,
+     "2": 0.4363979109595003,
+     "3": 0.1238228363594529,
+     "4": 0.22017899161367205,
+     "5": 0.04990684182573435,
+     "6": 0.10058384300440126,
+     "7": 0.25030944722368054,
+     "8": 0.4131552599931672,
+     "9": 0.19471184737391356,
+     "10": 0.27284205128909855,
+     "11": 0.209593946626627,
+     "12": 0.1462407478281974,
+     "13": 0.4160313269346572,
+     "14": 0.34765215950157313,
+     "15": 0.2067168854745537
+    }
+   },
+   "th1.0_graded 0.02": {
+    "kc_frac_med": 0.04478346456692913,
+    "kc_frac_min": 0.018454724409448817,
+    "kc_frac_max": 0.07455708661417323,
+    "margins": {
+     "0": 0.5211761444928458,
+     "1": 0.24731802962565963,
+     "2": 0.4204018170836454,
+     "3": 0.1293707864515814,
+     "4": 0.28462700961393717,
+     "5": 0.05717045422991274,
+     "6": 0.11328259051860978,
+     "7": 0.2715794617810771,
+     "8": 0.43313353754477085,
+     "9": 0.1939012248123464,
+     "10": 0.2441770263431805,
+     "11": 0.22317458364283926,
+     "12": -0.040354894949889086,
+     "13": 0.333598820738337,
+     "14": 0.4165511268789058,
+     "15": 0.1945165596312911
+    }
+   },
+   "th1.0_graded 0.1": {
+    "kc_frac_med": 0.03986220472440945,
+    "kc_frac_min": 0.006151574803149607,
+    "kc_frac_max": 0.0654527559055118,
+    "margins": {
+     "0": 0.36361856646018725,
+     "1": 0.1597780928833743,
+     "2": 0.41166915185289343,
+     "3": 0.12934947087854698,
+     "4": 0.23647423853532273,
+     "5": 0.07937364621975884,
+     "6": 0.12728314563530801,
+     "7": 0.27988698387942934,
+     "8": 0.38507483395126413,
+     "9": 0.22151166736603956,
+     "10": 0.2539312923204604,
+     "11": 0.21184542304411036,
+     "12": 0.06175875098587913,
+     "13": 0.45224957263175464,
+     "14": 0.40525469070881714,
+     "15": 0.19630573135960117
+    }
+   },
+   "th0.75_spiking": {
+    "kc_frac_med": 0.21481299212598426,
+    "kc_frac_min": 0.08562992125984252,
+    "kc_frac_max": 0.3184055118110236,
+    "margins": {
+     "0": 0.3557802107251202,
+     "1": 0.19255540076283806,
+     "2": 0.3758936644480295,
+     "3": 0.13074051490309835,
+     "4": 0.21456133105333797,
+     "5": 0.037840421808566393,
+     "6": 0.11183747010678757,
+     "7": 0.20178317958036696,
+     "8": 0.40662190150824445,
+     "9": 0.15501443430578665,
+     "10": 0.23424337697460673,
+     "11": 0.2075084758993201,
+     "12": 0.09183416758196394,
+     "13": 0.39836270113850153,
+     "14": 0.3739453445300388,
+     "15": 0.1494874155666761
+    }
+   },
+   "th0.75_graded 0.02": {
+    "kc_frac_med": 0.04675196850393701,
+    "kc_frac_min": 0.02436023622047244,
+    "kc_frac_max": 0.07726377952755906,
+    "margins": {
+     "0": 0.46593732676058275,
+     "1": 0.2493013123036799,
+     "2": 0.4213227664401622,
+     "3": 0.09310473006966014,
+     "4": 0.3087294983197525,
+     "5": 0.15914907287674018,
+     "6": 0.19741980465667885,
+     "7": 0.2695515333027001,
+     "8": 0.4389163379239192,
+     "9": 0.21302230114930099,
+     "10": 0.28998765683967875,
+     "11": 0.19239199838839682,
+     "12": 0.26372975945932764,
+     "13": 0.37326002739996494,
+     "14": 0.4917801182729439,
+     "15": 0.2144537729973468
+    }
+   },
+   "th0.75_graded 0.1": {
+    "kc_frac_med": 0.04822834645669291,
+    "kc_frac_min": 0.0073818897637795275,
+    "kc_frac_max": 0.07923228346456693,
+    "margins": {
+     "0": 0.3239971537121865,
+     "1": 0.2144901596068049,
+     "2": 0.3966779844307068,
+     "3": 0.06608010997537073,
+     "4": 0.22058142074556986,
+     "5": 0.06524699716648585,
+     "6": 0.13638684539513007,
+     "7": 0.2532679602103072,
+     "8": 0.3982908906633048,
+     "9": 0.1880791670992893,
+     "10": 0.2631922513529078,
+     "11": 0.21946107917680335,
+     "12": -0.024658221107274447,
+     "13": 0.40235554744004937,
+     "14": 0.4146100731690927,
+     "15": 0.15654642152336173
+    }
+   }
+  }
+ },
+ "vocabulary_comparison": {
+  "status": "EXPLORATORY \u2014 withdrawn as a basis for choosing an encoder",
+  "why": "two independent red-team passes (results/m2/red-team/) found it (i) confounded \u2014 glomerulus selection rule, vocabulary structure, channel duplication and presentation strength all changed together; (ii) measured on the within-turn axis while the pre-registered primary criterion (spec 4.3 #1) judges the opponent-type axis, which is absent from these turns; (iii) drawn from the same 16 turns used to pick the glomeruli, leaving no holdout (spec 4.4).",
+  "cells": {
+   "D1 opp12 + move8x2 = 28ch @0.35": {
+    "n_channels": 28,
+    "kc_frac_med": 0.04921259842519685,
+    "kc_frac_min": 0.023622047244094488,
+    "kc_frac_max": 0.07947834645669291,
+    "margin_mean": 0.559919843223079,
+    "margin_min": 0.3904343804317583,
+    "margins": {
+     "0": 0.6033157378602783,
+     "1": 0.5798841626654871,
+     "2": 0.5619485515594842,
+     "3": 0.4953779255640691,
+     "4": 0.5916640919460154,
+     "5": 0.4659283882848632,
+     "6": 0.6255188688096509,
+     "7": 0.4059495744886617,
+     "8": 0.7738601138360469,
+     "9": 0.5572452170452507,
+     "10": 0.5599143556204973,
+     "11": 0.6006102689471395,
+     "12": 0.5537809369865025,
+     "13": 0.3904343804317583,
+     "14": 0.6058979594739886,
+     "15": 0.5873869580495699
+    },
+    "channels": {
+     "opp:DRAGON": [
+      "ORN_VA6"
+     ],
+     "opp:FIGHTING": [
+      "ORN_VA7l"
+     ],
+     "opp:FIRE": [
+      "ORN_VM7d"
+     ],
+     "opp:FLYING": [
+      "ORN_DM4"
+     ],
+     "opp:GRASS": [
+      "ORN_VA2"
+     ],
+     "opp:GROUND": [
+      "ORN_VA5"
+     ],
+     "opp:ICE": [
+      "ORN_VM7v"
+     ],
+     "opp:NORMAL": [
+      "ORN_VC3"
+     ],
+     "opp:POISON": [
+      "ORN_VL2a"
+     ],
+     "opp:PSYCHIC": [
+      "ORN_DA4m"
+     ],
+     "opp:ROCK": [
+      "ORN_DC2"
+     ],
+     "opp:WATER": [
+      "ORN_VC2"
+     ],
+     "move:ELECTRIC": [
+      "ORN_DL5",
+      "ORN_DL1"
+     ],
+     "move:FIRE": [
+      "ORN_VM6v",
+      "ORN_VL1"
+     ],
+     "move:GRASS": [
+      "ORN_VM5v",
+      "ORN_D"
+     ],
+     "move:GROUND": [
+      "ORN_VC1",
+      "ORN_DP1l"
+     ],
+     "move:NORMAL": [
+      "ORN_VA3",
+      "ORN_DL2v"
+     ],
+     "move:PSYCHIC": [
+      "ORN_DM1",
+      "ORN_DC4"
+     ],
+     "move:ROCK": [
+      "ORN_DA4l",
+      "ORN_VA7m"
+     ],
+     "move:WATER": [
+      "ORN_DA2",
+      "ORN_DL2d"
+     ]
+    }
+   },
+   "D1 opp12 + move8x2 = 28ch @0.5": {
+    "n_channels": 28,
+    "kc_frac_med": 0.05917814960629921,
+    "kc_frac_min": 0.029035433070866142,
+    "kc_frac_max": 0.10482283464566929,
+    "margin_mean": 0.6127503380754571,
+    "margin_min": 0.4826168028612676,
+    "margins": {
+     "0": 0.667242051221081,
+     "1": 0.5760759696116342,
+     "2": 0.6571681178879439,
+     "3": 0.5662598198139978,
+     "4": 0.5921595962411252,
+     "5": 0.5669435876567356,
+     "6": 0.6773339417072427,
+     "7": 0.4826168028612676,
+     "8": 0.7738723541750587,
+     "9": 0.6345935963108676,
+     "10": 0.6151990674756498,
+     "11": 0.6802368149923306,
+     "12": 0.5583939707016528,
+     "13": 0.5039753601143665,
+     "14": 0.623171568054808,
+     "15": 0.62876279038155
+    },
+    "channels": {
+     "opp:DRAGON": [
+      "ORN_VA6"
+     ],
+     "opp:FIGHTING": [
+      "ORN_VA7l"
+     ],
+     "opp:FIRE": [
+      "ORN_VM7d"
+     ],
+     "opp:FLYING": [
+      "ORN_DM4"
+     ],
+     "opp:GRASS": [
+      "ORN_VA2"
+     ],
+     "opp:GROUND": [
+      "ORN_VA5"
+     ],
+     "opp:ICE": [
+      "ORN_VM7v"
+     ],
+     "opp:NORMAL": [
+      "ORN_VC3"
+     ],
+     "opp:POISON": [
+      "ORN_VL2a"
+     ],
+     "opp:PSYCHIC": [
+      "ORN_DA4m"
+     ],
+     "opp:ROCK": [
+      "ORN_DC2"
+     ],
+     "opp:WATER": [
+      "ORN_VC2"
+     ],
+     "move:ELECTRIC": [
+      "ORN_DL5",
+      "ORN_DL1"
+     ],
+     "move:FIRE": [
+      "ORN_VM6v",
+      "ORN_VL1"
+     ],
+     "move:GRASS": [
+      "ORN_VM5v",
+      "ORN_D"
+     ],
+     "move:GROUND": [
+      "ORN_VC1",
+      "ORN_DP1l"
+     ],
+     "move:NORMAL": [
+      "ORN_VA3",
+      "ORN_DL2v"
+     ],
+     "move:PSYCHIC": [
+      "ORN_DM1",
+      "ORN_DC4"
+     ],
+     "move:ROCK": [
+      "ORN_DA4l",
+      "ORN_VA7m"
+     ],
+     "move:WATER": [
+      "ORN_DA2",
+      "ORN_DL2d"
+     ]
+    }
+   },
+   "D2 my12 opp12 + move8x2 = 40ch @0.35": {
+    "n_channels": 40,
+    "kc_frac_med": 0.06434547244094488,
+    "kc_frac_min": 0.0359251968503937,
+    "kc_frac_max": 0.10802165354330709,
+    "margin_mean": 0.5330821700742197,
+    "margin_min": 0.3181829052160122,
+    "margins": {
+     "0": 0.5621336150313906,
+     "1": 0.5129994106463505,
+     "2": 0.5196038392350388,
+     "3": 0.7130915103046596,
+     "4": 0.4718325351827817,
+     "5": 0.4976660188968047,
+     "6": 0.5171860675332172,
+     "7": 0.3617974229333441,
+     "8": 0.5618253051503512,
+     "9": 0.5550989886130562,
+     "10": 0.5791272346626806,
+     "11": 0.682363378918236,
+     "12": 0.4545268568881235,
+     "13": 0.5690229061544052,
+     "14": 0.3181829052160122,
+     "15": 0.652856725821062
+    },
+    "channels": {
+     "my:DRAGON": [
+      "ORN_VA6"
+     ],
+     "my:FIGHTING": [
+      "ORN_VA7l"
+     ],
+     "my:FIRE": [
+      "ORN_VM7d"
+     ],
+     "my:FLYING": [
+      "ORN_DM4"
+     ],
+     "my:GRASS": [
+      "ORN_VA2"
+     ],
+     "my:GROUND": [
+      "ORN_VA5"
+     ],
+     "my:ICE": [
+      "ORN_VM7v"
+     ],
+     "my:NORMAL": [
+      "ORN_VC3"
+     ],
+     "my:POISON": [
+      "ORN_VL2a"
+     ],
+     "my:PSYCHIC": [
+      "ORN_DA4m"
+     ],
+     "my:ROCK": [
+      "ORN_DC2"
+     ],
+     "my:WATER": [
+      "ORN_VC2"
+     ],
+     "opp:DRAGON": [
+      "ORN_DL5"
+     ],
+     "opp:FIGHTING": [
+      "ORN_VM6v"
+     ],
+     "opp:FIRE": [
+      "ORN_VM5v"
+     ],
+     "opp:FLYING": [
+      "ORN_VC1"
+     ],
+     "opp:GRASS": [
+      "ORN_VA3"
+     ],
+     "opp:GROUND": [
+      "ORN_DM1"
+     ],
+     "opp:ICE": [
+      "ORN_DA4l"
+     ],
+     "opp:NORMAL": [
+      "ORN_DA2"
+     ],
+     "opp:POISON": [
+      "ORN_DL1"
+     ],
+     "opp:PSYCHIC": [
+      "ORN_VL1"
+     ],
+     "opp:ROCK": [
+      "ORN_D"
+     ],
+     "opp:WATER": [
+      "ORN_DP1l"
+     ],
+     "move:ELECTRIC": [
+      "ORN_DL2v",
+      "ORN_VL2p"
+     ],
+     "move:FIRE": [
+      "ORN_DC4",
+      "ORN_DM2"
+     ],
+     "move:GRASS": [
+      "ORN_VA7m",
+      "ORN_DC3"
+     ],
+     "move:GROUND": [
+      "ORN_DL2d",
+      "ORN_DP1m"
+     ],
+     "move:NORMAL": [
+      "ORN_VA4",
+      "ORN_DM3"
+     ],
+     "move:PSYCHIC": [
+      "ORN_DC1",
+      "ORN_VM6m"
+     ],
+     "move:ROCK": [
+      "ORN_VC5",
+      "ORN_DL4"
+     ],
+     "move:WATER": [
+      "ORN_VM1",
+      "ORN_VM3"
+     ]
+    }
+   },
+   "D2 my12 opp12 + move8x2 = 40ch @0.5": {
+    "n_channels": 40,
+    "kc_frac_med": 0.08427657480314961,
+    "kc_frac_min": 0.045275590551181105,
+    "kc_frac_max": 0.1451771653543307,
+    "margin_mean": 0.5634210500481055,
+    "margin_min": 0.31835771091000736,
+    "margins": {
+     "0": 0.628000577361331,
+     "1": 0.5782450740747025,
+     "2": 0.5700700076600986,
+     "3": 0.7006443388721657,
+     "4": 0.4942508931936478,
+     "5": 0.5709136140322333,
+     "6": 0.5731472973029315,
+     "7": 0.3814588566352168,
+     "8": 0.6110258798622602,
+     "9": 0.6183916159817685,
+     "10": 0.6314094308815714,
+     "11": 0.724006396840055,
+     "12": 0.429032333463557,
+     "13": 0.5765794146323682,
+     "14": 0.31835771091000736,
+     "15": 0.6092033590657728
+    },
+    "channels": {
+     "my:DRAGON": [
+      "ORN_VA6"
+     ],
+     "my:FIGHTING": [
+      "ORN_VA7l"
+     ],
+     "my:FIRE": [
+      "ORN_VM7d"
+     ],
+     "my:FLYING": [
+      "ORN_DM4"
+     ],
+     "my:GRASS": [
+      "ORN_VA2"
+     ],
+     "my:GROUND": [
+      "ORN_VA5"
+     ],
+     "my:ICE": [
+      "ORN_VM7v"
+     ],
+     "my:NORMAL": [
+      "ORN_VC3"
+     ],
+     "my:POISON": [
+      "ORN_VL2a"
+     ],
+     "my:PSYCHIC": [
+      "ORN_DA4m"
+     ],
+     "my:ROCK": [
+      "ORN_DC2"
+     ],
+     "my:WATER": [
+      "ORN_VC2"
+     ],
+     "opp:DRAGON": [
+      "ORN_DL5"
+     ],
+     "opp:FIGHTING": [
+      "ORN_VM6v"
+     ],
+     "opp:FIRE": [
+      "ORN_VM5v"
+     ],
+     "opp:FLYING": [
+      "ORN_VC1"
+     ],
+     "opp:GRASS": [
+      "ORN_VA3"
+     ],
+     "opp:GROUND": [
+      "ORN_DM1"
+     ],
+     "opp:ICE": [
+      "ORN_DA4l"
+     ],
+     "opp:NORMAL": [
+      "ORN_DA2"
+     ],
+     "opp:POISON": [
+      "ORN_DL1"
+     ],
+     "opp:PSYCHIC": [
+      "ORN_VL1"
+     ],
+     "opp:ROCK": [
+      "ORN_D"
+     ],
+     "opp:WATER": [
+      "ORN_DP1l"
+     ],
+     "move:ELECTRIC": [
+      "ORN_DL2v",
+      "ORN_VL2p"
+     ],
+     "move:FIRE": [
+      "ORN_DC4",
+      "ORN_DM2"
+     ],
+     "move:GRASS": [
+      "ORN_VA7m",
+      "ORN_DC3"
+     ],
+     "move:GROUND": [
+      "ORN_DL2d",
+      "ORN_DP1m"
+     ],
+     "move:NORMAL": [
+      "ORN_VA4",
+      "ORN_DM3"
+     ],
+     "move:PSYCHIC": [
+      "ORN_DC1",
+      "ORN_VM6m"
+     ],
+     "move:ROCK": [
+      "ORN_VC5",
+      "ORN_DL4"
+     ],
+     "move:WATER": [
+      "ORN_VM1",
+      "ORN_VM3"
+     ]
+    }
+   },
+   "D3 opp12 + move8x3 = 36ch @0.35": {
+    "n_channels": 36,
+    "kc_frac_med": 0.058686023622047244,
+    "kc_frac_min": 0.02952755905511811,
+    "kc_frac_max": 0.10211614173228346,
+    "margin_mean": 0.6144097658891607,
+    "margin_min": 0.46456818665429667,
+    "margins": {
+     "0": 0.621776144231299,
+     "1": 0.6118446399327727,
+     "2": 0.7040248844857504,
+     "3": 0.5316560574936975,
+     "4": 0.6104134268231313,
+     "5": 0.6136474201560715,
+     "6": 0.6428766216673426,
+     "7": 0.6243442025071049,
+     "8": 0.71350350850467,
+     "9": 0.6241815256362305,
+     "10": 0.600012758525051,
+     "11": 0.5619575037855131,
+     "12": 0.6399373491751855,
+     "13": 0.46456818665429667,
+     "14": 0.6629984411974141,
+     "15": 0.6028135834510393
+    },
+    "channels": {
+     "opp:DRAGON": [
+      "ORN_VA6"
+     ],
+     "opp:FIGHTING": [
+      "ORN_VA7l"
+     ],
+     "opp:FIRE": [
+      "ORN_VM7d"
+     ],
+     "opp:FLYING": [
+      "ORN_DM4"
+     ],
+     "opp:GRASS": [
+      "ORN_VA2"
+     ],
+     "opp:GROUND": [
+      "ORN_VA5"
+     ],
+     "opp:ICE": [
+      "ORN_VM7v"
+     ],
+     "opp:NORMAL": [
+      "ORN_VC3"
+     ],
+     "opp:POISON": [
+      "ORN_VL2a"
+     ],
+     "opp:PSYCHIC": [
+      "ORN_DA4m"
+     ],
+     "opp:ROCK": [
+      "ORN_DC2"
+     ],
+     "opp:WATER": [
+      "ORN_VC2"
+     ],
+     "move:ELECTRIC": [
+      "ORN_DL5",
+      "ORN_DL1",
+      "ORN_VA4"
+     ],
+     "move:FIRE": [
+      "ORN_VM6v",
+      "ORN_VL1",
+      "ORN_DC1"
+     ],
+     "move:GRASS": [
+      "ORN_VM5v",
+      "ORN_D",
+      "ORN_VC5"
+     ],
+     "move:GROUND": [
+      "ORN_VC1",
+      "ORN_DP1l",
+      "ORN_VM1"
+     ],
+     "move:NORMAL": [
+      "ORN_VA3",
+      "ORN_DL2v",
+      "ORN_VL2p"
+     ],
+     "move:PSYCHIC": [
+      "ORN_DM1",
+      "ORN_DC4",
+      "ORN_DM2"
+     ],
+     "move:ROCK": [
+      "ORN_DA4l",
+      "ORN_VA7m",
+      "ORN_DC3"
+     ],
+     "move:WATER": [
+      "ORN_DA2",
+      "ORN_DL2d",
+      "ORN_DP1m"
+     ]
+    }
+   },
+   "D3 opp12 + move8x3 = 36ch @0.5": {
+    "n_channels": 36,
+    "kc_frac_med": 0.07541830708661418,
+    "kc_frac_min": 0.03641732283464567,
+    "kc_frac_max": 0.12992125984251968,
+    "margin_mean": 0.6946133761259585,
+    "margin_min": 0.5423720123627077,
+    "margins": {
+     "0": 0.7513160669030617,
+     "1": 0.6882558070777113,
+     "2": 0.8109391162686496,
+     "3": 0.5940345973027115,
+     "4": 0.6091861877940982,
+     "5": 0.6835387351453471,
+     "6": 0.721047435148684,
+     "7": 0.6821184018310512,
+     "8": 0.7775686507583309,
+     "9": 0.7211716095616033,
+     "10": 0.6881822318823472,
+     "11": 0.6973844093551086,
+     "12": 0.7012124466393216,
+     "13": 0.5423720123627077,
+     "14": 0.7272366098847033,
+     "15": 0.7182497000999
+    },
+    "channels": {
+     "opp:DRAGON": [
+      "ORN_VA6"
+     ],
+     "opp:FIGHTING": [
+      "ORN_VA7l"
+     ],
+     "opp:FIRE": [
+      "ORN_VM7d"
+     ],
+     "opp:FLYING": [
+      "ORN_DM4"
+     ],
+     "opp:GRASS": [
+      "ORN_VA2"
+     ],
+     "opp:GROUND": [
+      "ORN_VA5"
+     ],
+     "opp:ICE": [
+      "ORN_VM7v"
+     ],
+     "opp:NORMAL": [
+      "ORN_VC3"
+     ],
+     "opp:POISON": [
+      "ORN_VL2a"
+     ],
+     "opp:PSYCHIC": [
+      "ORN_DA4m"
+     ],
+     "opp:ROCK": [
+      "ORN_DC2"
+     ],
+     "opp:WATER": [
+      "ORN_VC2"
+     ],
+     "move:ELECTRIC": [
+      "ORN_DL5",
+      "ORN_DL1",
+      "ORN_VA4"
+     ],
+     "move:FIRE": [
+      "ORN_VM6v",
+      "ORN_VL1",
+      "ORN_DC1"
+     ],
+     "move:GRASS": [
+      "ORN_VM5v",
+      "ORN_D",
+      "ORN_VC5"
+     ],
+     "move:GROUND": [
+      "ORN_VC1",
+      "ORN_DP1l",
+      "ORN_VM1"
+     ],
+     "move:NORMAL": [
+      "ORN_VA3",
+      "ORN_DL2v",
+      "ORN_VL2p"
+     ],
+     "move:PSYCHIC": [
+      "ORN_DM1",
+      "ORN_DC4",
+      "ORN_DM2"
+     ],
+     "move:ROCK": [
+      "ORN_DA4l",
+      "ORN_VA7m",
+      "ORN_DC3"
+     ],
+     "move:WATER": [
+      "ORN_DA2",
+      "ORN_DL2d",
+      "ORN_DP1m"
+     ]
+    }
+   },
+   "D4 my12 opp12 + move8x1 = 32ch @0.35": {
+    "n_channels": 32,
+    "kc_frac_med": 0.05241141732283464,
+    "kc_frac_min": 0.026820866141732284,
+    "kc_frac_max": 0.11343503937007875,
+    "margin_mean": 0.45835724902393193,
+    "margin_min": 0.17415264776771266,
+    "margins": {
+     "0": 0.4850224684941726,
+     "1": 0.3800348223877551,
+     "2": 0.5200035107644753,
+     "3": 0.7036676898205754,
+     "4": 0.43117674895773694,
+     "5": 0.44869157618364014,
+     "6": 0.4878406148501771,
+     "7": 0.22625579850346145,
+     "8": 0.4296739684537104,
+     "9": 0.4571074238795646,
+     "10": 0.4569120612913495,
+     "11": 0.6822859715187899,
+     "12": 0.4423183167422045,
+     "13": 0.511369087419736,
+     "14": 0.17415264776771266,
+     "15": 0.4972032773478495
+    },
+    "channels": {
+     "my:DRAGON": [
+      "ORN_VA6"
+     ],
+     "my:FIGHTING": [
+      "ORN_VA7l"
+     ],
+     "my:FIRE": [
+      "ORN_VM7d"
+     ],
+     "my:FLYING": [
+      "ORN_DM4"
+     ],
+     "my:GRASS": [
+      "ORN_VA2"
+     ],
+     "my:GROUND": [
+      "ORN_VA5"
+     ],
+     "my:ICE": [
+      "ORN_VM7v"
+     ],
+     "my:NORMAL": [
+      "ORN_VC3"
+     ],
+     "my:POISON": [
+      "ORN_VL2a"
+     ],
+     "my:PSYCHIC": [
+      "ORN_DA4m"
+     ],
+     "my:ROCK": [
+      "ORN_DC2"
+     ],
+     "my:WATER": [
+      "ORN_VC2"
+     ],
+     "opp:DRAGON": [
+      "ORN_DL5"
+     ],
+     "opp:FIGHTING": [
+      "ORN_VM6v"
+     ],
+     "opp:FIRE": [
+      "ORN_VM5v"
+     ],
+     "opp:FLYING": [
+      "ORN_VC1"
+     ],
+     "opp:GRASS": [
+      "ORN_VA3"
+     ],
+     "opp:GROUND": [
+      "ORN_DM1"
+     ],
+     "opp:ICE": [
+      "ORN_DA4l"
+     ],
+     "opp:NORMAL": [
+      "ORN_DA2"
+     ],
+     "opp:POISON": [
+      "ORN_DL1"
+     ],
+     "opp:PSYCHIC": [
+      "ORN_VL1"
+     ],
+     "opp:ROCK": [
+      "ORN_D"
+     ],
+     "opp:WATER": [
+      "ORN_DP1l"
+     ],
+     "move:ELECTRIC": [
+      "ORN_DL2v"
+     ],
+     "move:FIRE": [
+      "ORN_DC4"
+     ],
+     "move:GRASS": [
+      "ORN_VA7m"
+     ],
+     "move:GROUND": [
+      "ORN_DL2d"
+     ],
+     "move:NORMAL": [
+      "ORN_VA4"
+     ],
+     "move:PSYCHIC": [
+      "ORN_DC1"
+     ],
+     "move:ROCK": [
+      "ORN_VC5"
+     ],
+     "move:WATER": [
+      "ORN_VM1"
+     ]
+    }
+   },
+   "D4 my12 opp12 + move8x1 = 32ch @0.5": {
+    "n_channels": 32,
+    "kc_frac_med": 0.06508366141732283,
+    "kc_frac_min": 0.0406003937007874,
+    "kc_frac_max": 0.14271653543307086,
+    "margin_mean": 0.47363749820357004,
+    "margin_min": 0.13388180275411676,
+    "margins": {
+     "0": 0.4976998987999504,
+     "1": 0.4272889104903777,
+     "2": 0.5322189306825431,
+     "3": 0.7044209197778943,
+     "4": 0.41409364428840023,
+     "5": 0.5171713280295214,
+     "6": 0.5303440415728709,
+     "7": 0.243139721458839,
+     "8": 0.5264953870413996,
+     "9": 0.49483905587606297,
+     "10": 0.47345622946486315,
+     "11": 0.7065500860150015,
+     "12": 0.42679100593240743,
+     "13": 0.4838732003370075,
+     "14": 0.13388180275411676,
+     "15": 0.4659358087358645
+    },
+    "channels": {
+     "my:DRAGON": [
+      "ORN_VA6"
+     ],
+     "my:FIGHTING": [
+      "ORN_VA7l"
+     ],
+     "my:FIRE": [
+      "ORN_VM7d"
+     ],
+     "my:FLYING": [
+      "ORN_DM4"
+     ],
+     "my:GRASS": [
+      "ORN_VA2"
+     ],
+     "my:GROUND": [
+      "ORN_VA5"
+     ],
+     "my:ICE": [
+      "ORN_VM7v"
+     ],
+     "my:NORMAL": [
+      "ORN_VC3"
+     ],
+     "my:POISON": [
+      "ORN_VL2a"
+     ],
+     "my:PSYCHIC": [
+      "ORN_DA4m"
+     ],
+     "my:ROCK": [
+      "ORN_DC2"
+     ],
+     "my:WATER": [
+      "ORN_VC2"
+     ],
+     "opp:DRAGON": [
+      "ORN_DL5"
+     ],
+     "opp:FIGHTING": [
+      "ORN_VM6v"
+     ],
+     "opp:FIRE": [
+      "ORN_VM5v"
+     ],
+     "opp:FLYING": [
+      "ORN_VC1"
+     ],
+     "opp:GRASS": [
+      "ORN_VA3"
+     ],
+     "opp:GROUND": [
+      "ORN_DM1"
+     ],
+     "opp:ICE": [
+      "ORN_DA4l"
+     ],
+     "opp:NORMAL": [
+      "ORN_DA2"
+     ],
+     "opp:POISON": [
+      "ORN_DL1"
+     ],
+     "opp:PSYCHIC": [
+      "ORN_VL1"
+     ],
+     "opp:ROCK": [
+      "ORN_D"
+     ],
+     "opp:WATER": [
+      "ORN_DP1l"
+     ],
+     "move:ELECTRIC": [
+      "ORN_DL2v"
+     ],
+     "move:FIRE": [
+      "ORN_DC4"
+     ],
+     "move:GRASS": [
+      "ORN_VA7m"
+     ],
+     "move:GROUND": [
+      "ORN_DL2d"
+     ],
+     "move:NORMAL": [
+      "ORN_VA4"
+     ],
+     "move:PSYCHIC": [
+      "ORN_DC1"
+     ],
+     "move:ROCK": [
+      "ORN_VC5"
+     ],
+     "move:WATER": [
+      "ORN_VM1"
+     ]
+    }
+   }
+  }
+ },
+ "red_team": {
+  "runs": [
+   {
+    "external_model": "gpt-5.6-sol",
+    "verdict": "RETHINK",
+    "findings": "20 (P0 5, P1 9, P2 5, P3 1)"
+   },
+   {
+    "external_model": "gpt-6-astra",
+    "verdict": "RETHINK",
+    "findings": "19 (P0 3, P1 10, P2 5, P3 1)"
+   }
+  ],
+  "record": "results/m2/red-team/"
+ }
+}
