@@ -254,3 +254,26 @@ def test_load_kc_thresholds_returns_float32_in_kc_order(synthetic_connectome, tm
     assert got.dtype == np.float32
     np.testing.assert_array_equal(got, v_th)
     assert sha == hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+# ---- pool = in-process in every new mode --------------------------------------------------------------------
+def test_pool_decide_equals_in_process_in_every_new_mode(synthetic_npz, tmp_path):
+    c = Connectome.load(synthetic_npz)
+    pops = Populations.from_connectome(c)
+    base = dict(noise_mv=0.15, min_weight=1, balance_hemispheres=False, kc_thresh=0.5)
+    ref = Engine(c, pops, Params(**base), seed=0)
+    v_th = ref.v_th[pops.kc].astype(np.float32).copy()
+    v_th[ref.kc_pn_input > 0] *= np.float32(0.9)
+    path, sha = save_kc_thresholds(tmp_path / "theta.npz", c.bodyId[pops.kc], v_th)
+    A = {"ORN_DM1": 1.0, "ORN_DA1": 1.0}
+    B = {"ORN_VA2": 1.0, "ORN_DM6": 1.0}
+    for extra in (dict(apl_mode="graded", apl_r_max=0.3), dict(orn_std=True),
+                  dict(kc_thresh_mode="homeostatic", kc_thresh_file=str(path), kc_thresh_sha256=sha),
+                  dict(apl_mode="graded", apl_r_max=0.3, orn_std=True)):
+        p = Params(**base, **extra)
+        eng = Engine(c, pops, p, seed=0)
+        pl = Plasticity(eng, pops, compartments(c, pops, p.core_frac))
+        expected = decide(eng, pl, pops, [A, B], 1.0, seed=7, settle_ms=50, read_ms=300)
+        with FlyPool(synthetic_npz, p, [FlySpec()], workers=1, timeout_s=120) as pool:
+            got = pool.decide_batch([(0, [A, B], 7)], 1.0, settle_ms=50, read_ms=300)[0]
+        np.testing.assert_array_equal(got, expected, err_msg=str(extra))

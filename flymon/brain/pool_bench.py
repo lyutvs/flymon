@@ -109,6 +109,25 @@ def refuse_old_engine_output(out: str, kc_kc_scale: float) -> None:
         raise SystemExit(2)
 
 
+PRE_M0D_DIRS = ("results/m0/", "results/m0b/", "results/m0c/")
+PRE_M0D_FILES = ("results/summary/m0.json", "results/summary/m0b.json", "results/summary/m0c.json",
+                 "results/summary/compartments.json")
+
+
+def refuse_modified_engine_output(out: str, params) -> None:
+    """Spec H.2: an engine with any M0d mode on (graded APL, ORN depression, homeostatic thresholds) never writes
+    under the M0/M0b/M0c reference trees or summaries (SystemExit 2); its results go under results/m0d/."""
+    modified = params.apl_mode != "spiking" or params.orn_std or params.kc_thresh_mode != "pn_norm"
+    if not modified or not out:
+        return
+    rel = os.path.relpath(os.path.abspath(str(out)), os.getcwd()).replace(os.sep, "/")
+    if rel.startswith(PRE_M0D_DIRS) or rel in PRE_M0D_FILES:
+        print(f"refusing to write {out} with M0d modes on (apl_mode={params.apl_mode}, orn_std={params.orn_std}, "
+              f"kc_thresh_mode={params.kc_thresh_mode}): that path holds a pre-M0d engine's reference; use results/m0d/",
+              file=sys.stderr)
+        raise SystemExit(2)
+
+
 def exact_match(pool_per_seed: dict, m0_per_seed: dict) -> dict:
     """Bit-for-bit comparison of the pool's conditioning results with results/m0/conditioning.json:
     every seed and arm, the four raw probe count pairs and the float indices."""

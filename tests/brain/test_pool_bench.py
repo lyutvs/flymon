@@ -7,7 +7,8 @@ from flymon.brain.config import Params
 from flymon.brain.connectome import Connectome
 from flymon.brain.fly_pool import FlyPool, FlySpec
 from flymon.brain.pool_bench import (DECISIONS, EVAL_DECISIONS, budget_hours, budget_hours_e2e, budget_table, exact_match,
-                        m0b_gate, m0c_gate, match_sparsity_row, refuse_old_engine_output, throughput_row)
+                        m0b_gate, m0c_gate, match_sparsity_row, refuse_modified_engine_output, refuse_old_engine_output,
+                        throughput_row)
 
 A = {"ORN_DM1": 1.0, "ORN_DA1": 1.0}
 
@@ -125,6 +126,24 @@ def test_refuse_old_engine_output_guards_the_immutable_references(capsys):
         refuse_old_engine_output(out, 1.0)                       # the old engine may write its own files
     for out in ("results/m0c/sparsity.json", "results/summary/m0c.json", "/tmp/x.json", ""):
         refuse_old_engine_output(out, 0.0)                       # new paths, empty (unused) paths: fine
+
+
+def test_refuse_modified_engine_output_guards_every_pre_m0d_reference(capsys):
+    """Spec H.2: an engine with any M0d mode on never writes under the M0/M0b/M0c reference trees or summaries."""
+    modified = (Params(apl_mode="graded"), Params(orn_std=True),
+                Params(kc_thresh_mode="homeostatic", kc_thresh_file="x.npz", kc_thresh_sha256="0" * 64))
+    for p in modified:
+        for out in ("results/m0/x.json", "results/m0b/x.json", "results/m0c/sparsity.json", "./results/m0c/x.json",
+                    "results/summary/m0.json", "results/summary/m0b.json", "results/summary/m0c.json",
+                    "results/summary/compartments.json", os.path.abspath("results/summary/m0c.json")):
+            with pytest.raises(SystemExit) as e:
+                refuse_modified_engine_output(out, p)
+            assert e.value.code == 2
+            assert "M0d" in capsys.readouterr().err
+        for out in ("results/m0d/sparsity.json", "results/summary/m0d.json", "/tmp/x.json", ""):
+            refuse_modified_engine_output(out, p)
+    for out in ("results/m0c/sparsity.json", "results/summary/m0c.json"):
+        refuse_modified_engine_output(out, Params())         # the M0c engine may still write its own files
 
 
 def _sp_row(**kw):
