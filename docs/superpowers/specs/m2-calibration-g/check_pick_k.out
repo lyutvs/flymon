@@ -1,0 +1,8 @@
+PASS nearest grid point within 0.5 pp -> no bisection
+PASS off by > 0.5 pp and bracketed -> nearest 2.25 and bracket (2.0, 2.25)
+PASS bisection midpoint wins when closest
+PASS bisection midpoint loses when farther
+PASS target below the grid range -> endpoint 3.0, no bracket
+PASS target above range, within tolerance -> 1.75, no bracket
+PASS exact tie -> smaller k, bracket returned
+PASS non-monotone medians -> first bracket in kc_thresh order
