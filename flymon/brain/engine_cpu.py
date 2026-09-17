@@ -27,6 +27,7 @@ import numpy as np
 from .circuits import Populations
 from .config import Params
 from .connectome import Connectome, build_csc
+from .thresholds import load_kc_thresholds
 
 APL_MODES = ("spiking", "graded")
 KC_THRESH_MODES = ("pn_norm", "homeostatic")
@@ -52,6 +53,10 @@ class Engine:
         if med > 0:
             lo, hi = params.kc_norm_clip
             self.v_th[pops.kc] = params.v_thresh * params.kc_thresh * np.clip(pn_in[pops.kc] / med, lo, hi)
+        self.kc_pn_input = pn_in[pops.kc]          # total PN->KC synapses per KC, in KC order
+        if params.kc_thresh_mode == "homeostatic":
+            self.v_th[pops.kc] = load_kc_thresholds(params.kc_thresh_file, params.kc_thresh_sha256,
+                                                    conn.bodyId[pops.kc], self.v_th[pops.kc], self.kc_pn_input > 0)
 
         # tonic drive: MBON hold (our design decision); everything else 0 until set_ext
         self.ext0 = np.zeros(self.N, np.float32)

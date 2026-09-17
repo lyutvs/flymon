@@ -12,6 +12,7 @@ from flymon.brain.engine_cpu import Engine
 from flymon.brain.fly_pool import FlyPool, FlySpec
 from flymon.brain.plasticity import Plasticity
 from flymon.brain.presentation import decide
+from flymon.brain.thresholds import load_kc_thresholds, save_kc_thresholds
 
 BASE = dict(noise_mv=0.0, min_weight=1, balance_hemispheres=False, mbon_hold_frac=0.0)
 
@@ -182,3 +183,74 @@ def test_orn_depression_leaves_other_sources_at_full_weight_and_reset_restores_i
     eng.reset(seed=4)
     assert (eng._std_r == 1.0).all()
     assert all(x.size == 0 for x in eng._std_delay)
+
+
+# ---- homeostatic KC thresholds ------------------------------------------------------------------------------
+def _theta_file(tmp_path, eng, c, pops, scale=1.2):
+    v_th = eng.v_th[pops.kc].astype(np.float32).copy()
+    movable = eng.kc_pn_input > 0
+    v_th[movable] *= np.float32(scale)
+    path = tmp_path / "theta.npz"
+    return save_kc_thresholds(path, c.bodyId[pops.kc], v_th), v_th
+
+
+def test_homeostatic_thresholds_load_into_the_kcs_only(synthetic_connectome, tmp_path):
+    ref, c, pops = _engine(synthetic_connectome)
+    (path, sha), v_th = _theta_file(tmp_path, ref, c, pops)
+    eng, _, _ = _engine(synthetic_connectome, kc_thresh_mode="homeostatic", kc_thresh_file=str(path), kc_thresh_sha256=sha)
+    np.testing.assert_array_equal(eng.v_th[pops.kc], v_th)
+    others = np.setdiff1d(np.arange(c.N), pops.kc)
+    np.testing.assert_array_equal(eng.v_th[others], ref.v_th[others])
+
+
+def test_homeostatic_file_is_validated(synthetic_connectome, tmp_path):
+    ref, c, pops = _engine(synthetic_connectome)
+    (path, sha), v_th = _theta_file(tmp_path, ref, c, pops)
+    ids = c.bodyId[pops.kc]
+    mk = lambda **kw: _engine(synthetic_connectome, kc_thresh_mode="homeostatic", **kw)
+    with pytest.raises(ValueError, match="kc_thresh_file"):
+        mk()
+    with pytest.raises(ValueError, match="sha256"):
+        mk(kc_thresh_file=str(path), kc_thresh_sha256="0" * 64)
+    with pytest.raises(ValueError, match="sha256"):
+        mk(kc_thresh_file=str(path))
+    bad = tmp_path / "bad_ids.npz"
+    p2, s2 = save_kc_thresholds(bad, ids[::-1], v_th)
+    with pytest.raises(ValueError, match="body ids"):
+        mk(kc_thresh_file=str(p2), kc_thresh_sha256=s2)
+    neg = v_th.copy(); neg[0] = -1.0
+    p3, s3 = save_kc_thresholds(tmp_path / "neg.npz", ids, neg)
+    with pytest.raises(ValueError, match="positive"):
+        mk(kc_thresh_file=str(p3), kc_thresh_sha256=s3)
+    short = tmp_path / "short.npz"
+    p4, s4 = save_kc_thresholds(short, ids[:-1], v_th[:-1])
+    with pytest.raises(ValueError, match="KCs"):
+        mk(kc_thresh_file=str(p4), kc_thresh_sha256=s4)
+
+
+def test_homeostatic_file_must_keep_the_rule_for_kcs_without_pn_input(synthetic_connectome, tmp_path):
+    ref, c, pops = _engine(synthetic_connectome)
+    zero = np.flatnonzero(ref.kc_pn_input == 0)
+    if zero.size == 0:                                        # make one: drop every PN->KC edge onto the first KC
+        c0 = synthetic_connectome()
+        k0 = int(Populations.from_connectome(c0).kc[0])
+        keep = ~(np.isin(c0.pre, Populations.from_connectome(c0).alpn) & (c0.post == k0))
+        c = Connectome(bodyId=c0.bodyId, type=c0.type, cls=c0.cls, sc=c0.sc, nt=c0.nt, sign=c0.sign, side=c0.side,
+                       pre=c0.pre[keep], post=c0.post[keep], w=c0.w[keep])
+        pops = Populations.from_connectome(c)
+        ref = Engine(c, pops, Params(**BASE), seed=1)
+        zero = np.flatnonzero(ref.kc_pn_input == 0)
+    v_th = ref.v_th[pops.kc].astype(np.float32).copy()
+    v_th[zero[0]] *= np.float32(2.0)
+    path, sha = save_kc_thresholds(tmp_path / "moved.npz", c.bodyId[pops.kc], v_th)
+    with pytest.raises(ValueError, match="no PN input"):
+        Engine(c, pops, Params(**BASE, kc_thresh_mode="homeostatic", kc_thresh_file=str(path), kc_thresh_sha256=sha))
+
+
+def test_load_kc_thresholds_returns_float32_in_kc_order(synthetic_connectome, tmp_path):
+    ref, c, pops = _engine(synthetic_connectome)
+    (path, sha), v_th = _theta_file(tmp_path, ref, c, pops)
+    got = load_kc_thresholds(str(path), sha, c.bodyId[pops.kc], ref.v_th[pops.kc], ref.kc_pn_input > 0)
+    assert got.dtype == np.float32
+    np.testing.assert_array_equal(got, v_th)
+    assert sha == hashlib.sha256(path.read_bytes()).hexdigest()
