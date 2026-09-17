@@ -37,6 +37,18 @@ class Params:
                                    # KCs (Manoim et al. 2022), so fast excitation is the wrong sign; 0 is
                                    # the first-order stand-in. 1.0 reproduces the M0/M0b engine (spec D).
 
+    # --- M0d engine modes (spec appendix H.2); every default keeps the M0c engine bit-identical ---
+    apl_mode: str = "spiking"      # "graded": APL never spikes and releases apl_release(v) per step (Amin et al. 2020)
+    apl_r_max: float = 0.333       # graded release at saturation, spike equivalents per step (spiking cap 333 Hz)
+    apl_v_mid: float = 11.0        # sigmoid midpoint, mV above rest (GGN model, Ray et al. 2020: -40 mV mid, -51 mV rest)
+    apl_slope: float = 5.0         # sigmoid slope, mV
+    orn_std: bool = False          # presynaptic depression of receptor out-edges (Nagel et al. 2015)
+    orn_std_f: float = 0.78        # resource kept per spike
+    orn_std_tau_ms: float = 893.0  # recovery time constant
+    kc_thresh_mode: str = "pn_norm"   # "homeostatic": per-KC thresholds from kc_thresh_file (spec H.3)
+    kc_thresh_file: str = ""
+    kc_thresh_sha256: str = ""
+
     # --- plasticity (spec 3.1, tuned in Task 9 within these defaults) ---
     learn_rate: float = 3e-4
     kc_trace_ms: float = 200.0

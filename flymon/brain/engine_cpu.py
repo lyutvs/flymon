@@ -9,6 +9,12 @@ Refractory:                a spike sets refrac = refrac_steps() and the cell is 
 Membrane floor:            v is clamped at >= -v_thresh, so inhibition cannot drive a cell
                            arbitrarily far below rest (our design decision).
 Receptors (sensory classes) ignore the membrane and fire as Poisson sources at drive_hz.
+M0d modes (spec appendix H.2, all off by default):
+  apl_mode "graded"          APL never spikes; each step it queues r = apl_r_max / (1 + exp(-(v - apl_v_mid) / apl_slope))
+                             from its updated membrane, delivered through its out-edges after the synaptic delay.
+  orn_std                    each receptor carries a resource R (1 at reset); a receptor spike delivers its out-edges
+                             scaled by R, then R <- orn_std_f * R; every step R <- R + (1 - R) * dt / orn_std_tau_ms.
+  kc_thresh_mode "homeostatic"  KC thresholds come from a validated file (flymon.brain.thresholds).
 Reproduction target for the design decisions (MBON hold, KC threshold normalisation, APL scale):
 flybrain FINDINGS.md; constants: Shiu et al. 2024.
 """
@@ -22,9 +28,13 @@ from .circuits import Populations
 from .config import Params
 from .connectome import Connectome, build_csc
 
+APL_MODES = ("spiking", "graded")
+KC_THRESH_MODES = ("pn_norm", "homeostatic")
+
 
 class Engine:
     def __init__(self, conn: Connectome, pops: Populations, params: Params, seed: int = 0):
+        _validate_modes(params)
         self.p = params
         self.conn, self.pops = conn, pops
         self.N = conn.N
@@ -131,3 +141,14 @@ class Engine:
         for _ in range(int(round(ms / self.p.dt))):
             counts[self.step()] += 1
         return counts
+
+
+def _validate_modes(p: Params) -> None:
+    if p.apl_mode not in APL_MODES:
+        raise ValueError(f"apl_mode must be one of {APL_MODES}, got {p.apl_mode!r}")
+    if p.kc_thresh_mode not in KC_THRESH_MODES:
+        raise ValueError(f"kc_thresh_mode must be one of {KC_THRESH_MODES}, got {p.kc_thresh_mode!r}")
+    if p.apl_mode == "graded" and not (p.apl_r_max > 0 and p.apl_slope > 0):
+        raise ValueError(f"graded APL needs apl_r_max > 0 and apl_slope > 0, got {p.apl_r_max}, {p.apl_slope}")
+    if p.orn_std and not (0 < p.orn_std_f <= 1 and p.orn_std_tau_ms > 0):
+        raise ValueError(f"orn_std needs 0 < orn_std_f <= 1 and orn_std_tau_ms > 0, got {p.orn_std_f}, {p.orn_std_tau_ms}")
