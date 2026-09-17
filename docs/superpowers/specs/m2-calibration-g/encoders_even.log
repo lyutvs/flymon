@@ -1,0 +1,15 @@
+E0: 41 channels, 41 glomeruli, 18 (a) + 21 (b) pairs
+E1: 41 channels, 41 glomeruli, 18 (a) + 21 (b) pairs
+E2: 32 channels, 40 glomeruli, 18 (a) + 21 (b) pairs
+E3: 20 channels, 36 glomeruli, 18 (a) + 21 (b) pairs
+E0: 41 channels, 41 glomeruli, 18 (a) + 21 (b) pairs
+E1: 41 channels, 41 glomeruli, 18 (a) + 21 (b) pairs
+E2: 32 channels, 40 glomeruli, 18 (a) + 21 (b) pairs
+E3: 20 channels, 36 glomeruli, 18 (a) + 21 (b) pairs
+E0 done 1124s  (a) 4/18  (b) 9/21  score 0.222  KC<3% 0.000  KC 5-9% 0.681  eligible True
+E1 done 1000s  (a) 8/18  (b) 3/21  score 0.143  KC<3% 0.000  KC 5-9% 0.731  eligible True
+E2 done 870s  (a) 4/18  (b) 3/21  score 0.143  KC<3% 0.000  KC 5-9% 0.801  eligible True
+E3 done 1236s  (a) 7/18  (b) 4/21  score 0.190  KC<3% 0.022  KC 5-9% 0.659  eligible True
+
+selection: {"winner": null, "why": "best score 0.222 < 0.5 - stop for a user decision"}
+wrote results/summary/m2_encoders.json

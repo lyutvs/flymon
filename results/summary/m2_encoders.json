@@ -1,0 +1,68 @@
+{
+ "even": {
+  "written_utc": "2026-09-17T03:19:40+00:00",
+  "git_commit": "175f887d841c7a8ca9b6ed5e4c7d63d2c9f52923",
+  "git_dirty": true,
+  "code_sha256": "7319aff8ed5c0c468ae556d87c7daf0cee689c534b20e74c45396fc69ac022d9",
+  "raw": {
+   "E0": "c40aaf7d406d1c8d478d59cf2215c563e79e93b5d30bf488f2cac81acec4efe5",
+   "E1": "2b3a65f24e2888992790f188b16eaaa0d72a807846ef72d35caaeffe8e017171",
+   "E2": "6ac597ace065d6b9b157d973dd746c48acb8c59502aa543d28a4fa8b7c9e02d2",
+   "E3": "22f68247a4600428572a47769ccfd7c347064037afbb222ec0237db8475979ca"
+  },
+  "scores": {
+   "E0": {
+    "rate_a": 0.2222222222222222,
+    "rate_b": 0.42857142857142855,
+    "score": 0.2222222222222222,
+    "n_a": 18,
+    "n_b": 21,
+    "testable_a": 4,
+    "testable_b": 9,
+    "kc_below_3pct": 0.0,
+    "kc_in_5_9pct": 0.6810897435897436,
+    "eligible": true
+   },
+   "E1": {
+    "rate_a": 0.4444444444444444,
+    "rate_b": 0.14285714285714285,
+    "score": 0.14285714285714285,
+    "n_a": 18,
+    "n_b": 21,
+    "testable_a": 8,
+    "testable_b": 3,
+    "kc_below_3pct": 0.0,
+    "kc_in_5_9pct": 0.7307692307692307,
+    "eligible": true
+   },
+   "E2": {
+    "rate_a": 0.2222222222222222,
+    "rate_b": 0.14285714285714285,
+    "score": 0.14285714285714285,
+    "n_a": 18,
+    "n_b": 21,
+    "testable_a": 4,
+    "testable_b": 3,
+    "kc_below_3pct": 0.0,
+    "kc_in_5_9pct": 0.8012820512820513,
+    "eligible": true
+   },
+   "E3": {
+    "rate_a": 0.3888888888888889,
+    "rate_b": 0.19047619047619047,
+    "score": 0.19047619047619047,
+    "n_a": 18,
+    "n_b": 21,
+    "testable_a": 7,
+    "testable_b": 4,
+    "kc_below_3pct": 0.022435897435897436,
+    "kc_in_5_9pct": 0.6586538461538461,
+    "eligible": true
+   }
+  },
+  "decision": {
+   "winner": null,
+   "why": "best score 0.222 < 0.5 - stop for a user decision"
+  }
+ }
+}
