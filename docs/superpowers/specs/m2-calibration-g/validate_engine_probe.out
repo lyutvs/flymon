@@ -1,0 +1,73 @@
+PASS  dprime: 1 seed is undefined
+PASS  dprime: sd 0, mean 0 -> 0.0
+PASS  dprime: sd 0, mean > 0 -> +inf
+PASS  dprime: sd 0, mean < 0 -> -inf
+PASS  dprime: ordinary value
+PASS  dv round-trips the fixture probe
+PASS  pair_stats: change, not level (offset pair is not testable)
+PASS  pair_stats: level would pass on the same pair
+PASS  pair_stats: sd-0 change gives +inf / -inf, m = +inf, testable
+PASS  pair_stats: no change anywhere -> r = p = 0, not testable
+PASS  pair_stats: punishment moving the wrong way -> m = -inf
+PASS  pair_stats: 1 seed -> None
+PASS  pair_stats: mismatched seed counts raise
+PASS  pair_stats: m = r when -p is larger
+PASS  pair_stats: m equal to the bar is testable (>=)
+PASS  pair_stats: m just below the bar is not testable
+PASS  [bootstrap] clear improvement + bar -> GO_M0D
+PASS  [bootstrap] T_b 11/21 (0.524) -> GO_M0D
+PASS  [bootstrap] T_b 10/21 (0.476) -> PROMISING
+PASS  [bootstrap] F_a 2 -> GO_M0D
+PASS  [bootstrap] F_a 1 -> PROMISING
+PASS  [bootstrap] identical arms with bar -> SPARSITY (no improvement at delta 0)
+PASS  [bootstrap] only S-match has the bar -> SPARSITY
+PASS  [bootstrap] nothing -> NO_EFFECT
+PASS  [bootstrap] +inf clipped: no improvement
+PASS  [signflip] clear improvement + bar -> GO_M0D
+PASS  [signflip] T_b 11/21 (0.524) -> GO_M0D
+PASS  [signflip] T_b 10/21 (0.476) -> PROMISING
+PASS  [signflip] F_a 2 -> GO_M0D
+PASS  [signflip] F_a 1 -> PROMISING
+PASS  [signflip] identical arms with bar -> SPARSITY (no improvement at delta 0)
+PASS  [signflip] only S-match has the bar -> SPARSITY
+PASS  [signflip] nothing -> NO_EFFECT
+PASS  [signflip] +inf clipped: no improvement
+PASS  bootstrap: CI lower exactly 0 is not an improvement (strict >)
+PASS  bootstrap: any uniformly positive delta improves (documented property)
+PASS  bootstrap: deterministic
+PASS  signflip: all 8 turns positive -> p = 1/256
+PASS  signflip: one positive turn, rest 0 -> p = 0.5
+PASS  signflip: one negative turn among 8 still improves
+PASS  [bootstrap] missing arm -> INVALID
+PASS  [bootstrap] missing pair -> INVALID
+PASS  [bootstrap] extra pair -> INVALID
+PASS  [bootstrap] undefined d' -> INVALID
+PASS  [bootstrap] odd turn in pairs -> INVALID
+PASS  [bootstrap] activity match 0.6 pp -> INVALID
+PASS  [bootstrap] activity match -0.5 pp (boundary) -> valid
+PASS  [bootstrap] activity match missing -> INVALID
+PASS  [bootstrap] activity match NaN -> INVALID
+PASS  [bootstrap] NaN pair statistic -> INVALID
+PASS  [signflip] missing arm -> INVALID
+PASS  [signflip] missing pair -> INVALID
+PASS  [signflip] extra pair -> INVALID
+PASS  [signflip] undefined d' -> INVALID
+PASS  [signflip] odd turn in pairs -> INVALID
+PASS  [signflip] activity match 0.6 pp -> INVALID
+PASS  [signflip] activity match -0.5 pp (boundary) -> valid
+PASS  [signflip] activity match missing -> INVALID
+PASS  [signflip] activity match NaN -> INVALID
+PASS  [signflip] NaN pair statistic -> INVALID
+PASS  unknown test name raises
+PASS  raw: duplicate pair rows -> INVALID
+PASS  raw end-to-end: G testable everywhere, S-match not -> GO_M0D
+PASS  mutation: swapped arms changes GO_M0D
+PASS  mutation: no clipping turns +inf into an improvement (bootstrap)
+PASS  mutation: no clipping turns +inf into an improvement (signflip)
+PASS  mutation: level instead of change makes the offset pair testable
+PASS  mutation: dropping the naive filter changes F_a 1 -> GO_M0D
+PASS  mutation: accepting odd turns lets the odd-turn fixture through
+PASS  mutation: no match tolerance accepts a 0.6 pp mismatch
+PASS  mutation: F_a bar removed changes F_a 1
+
+71/71 checks passed

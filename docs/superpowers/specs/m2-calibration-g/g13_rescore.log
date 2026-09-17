@@ -1,0 +1,10 @@
+enc ax  n | test lvl>=2 chg>=2 | test&|pre|<.5 lvl&|pre|<.5 chg&|pre|<.5 | |pre|<.5 | turns(test)
+E0  a 18 |    4      6     10 |             2           2           2 |        5 | [0, 8, 10] dpre-check 18/18
+E0  b 21 |    9     11      7 |             2           3           1 |        8 | [6, 8, 10, 12, 14] dpre-check 21/21
+E1  a 18 |    8     10      4 |             1           1           0 |        2 | [0, 2, 4, 6, 8, 10] dpre-check 18/18
+E1  b 21 |    3      7      4 |             0           0           0 |        3 | [0, 2, 4] dpre-check 21/21
+E2  a 18 |    4      6      4 |             1           1           1 |        5 | [0, 2, 6, 8] dpre-check 18/18
+E2  b 21 |    3      7      2 |             1           1           1 |        3 | [4, 6] dpre-check 21/21
+E3  a 18 |    7     11      4 |             2           2           1 |        3 | [0, 4, 8, 10] dpre-check 18/18
+E3  b 21 |    4      7      1 |             0           1           0 |        7 | [4, 10, 12, 14] dpre-check 21/21
+reward-level pass | d_pre>+0.5: 38 / 56  | d_pre<-0.5: 16 / 64
