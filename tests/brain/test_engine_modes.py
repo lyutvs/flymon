@@ -120,6 +120,18 @@ def test_graded_release_is_queued_from_the_updated_membrane_and_delivered_after_
     assert eng.g[kc] == pytest.approx(w_apl_kc * r1 * (1 - 1 / 5.0), rel=1e-5)
 
 
+def test_graded_apl_membrane_keeps_the_floor(synthetic_connectome):
+    eng, c, pops = _engine(synthetic_connectome, apl_mode="graded")
+    eng.set_ext(pops.apl, -1000.0)
+    floor = -eng.p.v_thresh
+    for _ in range(5):
+        eng.step()
+        np.testing.assert_array_equal(eng.v[pops.apl], np.float32(floor))
+    r_floor = eng.apl_release(np.full(len(pops.apl), floor, np.float32))
+    assert np.isfinite(r_floor).all() and (r_floor > 0).all()
+    np.testing.assert_array_equal(eng._apl_release[-1], r_floor)
+
+
 def test_graded_apl_rejects_repeated_out_edge_targets(synthetic_connectome):
     c0 = synthetic_connectome()
     pops = Populations.from_connectome(c0)
@@ -175,10 +187,13 @@ def test_orn_depression_leaves_other_sources_at_full_weight_and_reset_restores_i
     kc = int(pops.kc[0])
     eng.set_drive_hz([o], 1e6)
     eng.set_ext([kc], 1000.0)
+    kc_fired = 0
     for _ in range(30):
         fired = eng.step()
         if kc in fired:
+            kc_fired += 1
             assert eng._std_delay[-1][fired == kc][0] == 1.0
+    assert kc_fired > 0
     assert eng._std_r[o] < 1.0
     eng.reset(seed=4)
     assert (eng._std_r == 1.0).all()
