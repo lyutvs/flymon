@@ -138,3 +138,47 @@ def test_graded_reset_clears_the_release_line(synthetic_connectome):
     eng.reset(seed=2)
     assert len(eng._apl_release) == eng.p.dly_steps()
     assert all((r == 0).all() for r in eng._apl_release)
+
+
+# ---- ORN->PN depression -------------------------------------------------------------------------------------
+def test_propagate_gain_scales_each_source(synthetic_connectome):
+    eng, c, pops = _engine(synthetic_connectome)
+    src = np.array([0, 5, 17])
+    gain = np.array([0.5, 1.0, 0.25], np.float32)
+    expect = sum(g * eng.propagate(np.array([s])) for s, g in zip(src, gain))
+    np.testing.assert_allclose(eng.propagate(src, gain), expect, atol=1e-5)
+
+
+def test_orn_depression_follows_the_discrete_rule_and_reaches_its_steady_state(synthetic_connectome):
+    f, tau = 0.78, 893.0
+    eng, c, pops = _engine(synthetic_connectome, orn_std=True, orn_std_f=f, orn_std_tau_ms=tau)
+    o = int(np.flatnonzero(c.cls == "olfactory")[0])
+    eng.set_drive_hz([o], 1e6)                                # p = 1 whenever not refractory: every 3rd step
+    k = 1.0 / tau
+    r, gains = 1.0, []
+    for _ in range(3000):
+        fired = eng.step()
+        if o in fired:
+            gains.append(float(eng._std_delay[-1][fired == o][0]))
+            assert gains[-1] == pytest.approx(r, rel=1e-5)
+            r *= f
+        r += (1.0 - r) * k
+        assert eng._std_r[o] == pytest.approx(r, rel=1e-5)
+    a = (1.0 - k) ** 3
+    assert gains[-1] == pytest.approx((1.0 - a) / (1.0 - f * a), rel=1e-4)   # delivered gain at steady state
+
+
+def test_orn_depression_leaves_other_sources_at_full_weight_and_reset_restores_it(synthetic_connectome):
+    eng, c, pops = _engine(synthetic_connectome, orn_std=True)
+    o = int(np.flatnonzero(c.cls == "olfactory")[0])
+    kc = int(pops.kc[0])
+    eng.set_drive_hz([o], 1e6)
+    eng.set_ext([kc], 1000.0)
+    for _ in range(30):
+        fired = eng.step()
+        if kc in fired:
+            assert eng._std_delay[-1][fired == kc][0] == 1.0
+    assert eng._std_r[o] < 1.0
+    eng.reset(seed=4)
+    assert (eng._std_r == 1.0).all()
+    assert all(x.size == 0 for x in eng._std_delay)

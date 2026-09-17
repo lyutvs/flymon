@@ -70,6 +70,7 @@ class Engine:
             self._apl_edges = [(tgt[ptr[i]:ptr[i + 1]], w[ptr[i]:ptr[i + 1]]) for i in self.apl_idx]
             if any(np.unique(t).size != t.size for t, _ in self._apl_edges):   # g[tgt] += adds a repeated target once
                 raise ValueError("graded APL needs unique out-edge targets per APL cell")
+        self._orn_std = bool(params.orn_std)
 
         self._seed = seed
         self.reset(seed)
@@ -91,6 +92,9 @@ class Engine:
         if self._graded_apl:
             self._apl_release = deque([np.zeros(self.apl_idx.size, np.float32) for _ in range(self.p.dly_steps())],
                                       maxlen=self.p.dly_steps())
+        if self._orn_std:
+            self._std_r = np.ones(self.N, np.float32)          # stays 1 for every non-receptor
+            self._std_delay = deque([np.zeros(0, np.float32) for _ in range(self.p.dly_steps())], maxlen=self.p.dly_steps())
 
     def set_ext(self, idx, mv: float) -> None:
         self.ext[np.asarray(idx, dtype=np.int64)] = np.float32(mv)
@@ -105,8 +109,9 @@ class Engine:
         self.drive_hz[:] = 0.0
 
     # ---- dynamics ----------------------------------------------------------------------------
-    def propagate(self, src: np.ndarray) -> np.ndarray:
-        """Sum signed mV of every out-edge of the spiking sources into a dense [N] vector."""
+    def propagate(self, src: np.ndarray, gain: np.ndarray | None = None) -> np.ndarray:
+        """Sum signed mV of every out-edge of the spiking sources into a dense [N] vector; `gain` scales each
+        source's out-edges (ORN depression)."""
         out = np.zeros(self.N, np.float32)
         if src.size == 0:
             return out
@@ -114,14 +119,17 @@ class Engine:
         starts, ends = ptr[src], ptr[src + 1]
         idx = np.concatenate([tgt[a:b] for a, b in zip(starts, ends)])
         val = np.concatenate([w[a:b] for a, b in zip(starts, ends)])
+        if gain is not None:
+            val = val * np.repeat(np.asarray(gain, np.float32), ends - starts)
         # bincount, not np.add.at: the unbuffered ufunc path dominates per-step cost at 162k neurons
         return np.bincount(idx, weights=val, minlength=self.N).astype(np.float32)
 
     def step(self) -> np.ndarray:
         p = self.p
         arrived = self.delay.popleft()
+        arrived_gain = self._std_delay.popleft() if self._orn_std else None
         if arrived.size:
-            self.g += self.propagate(arrived)
+            self.g += self.propagate(arrived, arrived_gain)
         if self._graded_apl:
             r_in = self._apl_release.popleft()
             for k in np.flatnonzero(r_in):
@@ -149,6 +157,11 @@ class Engine:
         self.refrac[fired] = p.refrac_steps()
         self.last = fired
         self.delay.append(fired)          # delivered dly_steps steps from now
+        if self._orn_std:
+            self._std_delay.append(self._std_r[fired].copy())
+            rf = fired[self.is_receptor[fired]]
+            self._std_r[rf] *= np.float32(p.orn_std_f)
+            self._std_r[ri] += (1.0 - self._std_r[ri]) * np.float32(p.dt / p.orn_std_tau_ms)
         if self._graded_apl:
             self._apl_release.append(self.apl_release(self.v[self.apl_idx]))
         self.t_ms += p.dt
