@@ -83,3 +83,58 @@ def test_unknown_modes_are_rejected(synthetic_connectome):
         _engine(synthetic_connectome, orn_std=True, orn_std_f=1.5)
     with pytest.raises(ValueError, match="apl_r_max"):
         _engine(synthetic_connectome, apl_mode="graded", apl_r_max=0.0)
+
+
+# ---- graded APL ---------------------------------------------------------------------------------------------
+def test_graded_apl_never_spikes_and_the_spiking_control_does(synthetic_connectome):
+    for mode, expect_spikes in (("spiking", True), ("graded", False)):
+        eng, c, pops = _engine(synthetic_connectome, apl_mode=mode)
+        eng.set_ext(pops.apl, 1000.0)
+        fired_apl = any(np.isin(pops.apl, eng.step()).any() for _ in range(30))
+        assert fired_apl is expect_spikes, mode
+
+
+def test_apl_release_is_the_declared_sigmoid(synthetic_connectome):
+    eng, c, pops = _engine(synthetic_connectome, apl_mode="graded", apl_r_max=0.4)
+    v = np.array([-7.0, 0.0, 11.0, 30.0], np.float32)
+    np.testing.assert_allclose(eng.apl_release(v), 0.4 / (1.0 + np.exp(-(v - 11.0) / 5.0)), rtol=1e-6)
+    assert eng.apl_release(np.array([11.0], np.float32))[0] == pytest.approx(0.2)
+
+
+def test_graded_release_is_queued_from_the_updated_membrane_and_delivered_after_the_delay(synthetic_connectome):
+    eng, c, pops = _engine(synthetic_connectome, apl_mode="graded", apl_r_max=0.5)
+    apl = int(pops.apl[0])
+    kc = int(pops.kc[0])
+    ptr, tgt, w = eng.csc.ptr, eng.csc.tgt, eng.csc.w
+    w_apl_kc = float(w[ptr[apl]:ptr[apl + 1]][tgt[ptr[apl]:ptr[apl + 1]] == kc].sum())
+    assert w_apl_kc < 0                                       # GABA, scaled by apl_scale
+    eng.set_ext([apl], 100.0)
+    eng.step()                                                # step 1: v_apl = 5 mV, release queued
+    r1 = float(eng.apl_release(eng.v[[apl]])[0])
+    assert eng._apl_release[-1][0] == pytest.approx(r1)
+    assert eng.g[kc] == 0.0
+    eng.step()                                                # step 2: nothing has arrived yet
+    assert eng.g[kc] == 0.0
+    eng.step()                                                # step 3: release of step 1 arrives, then tau_syn decay
+    assert eng.g[kc] == pytest.approx(w_apl_kc * r1 * (1 - 1 / 5.0), rel=1e-5)
+
+
+def test_graded_apl_rejects_repeated_out_edge_targets(synthetic_connectome):
+    c0 = synthetic_connectome()
+    pops = Populations.from_connectome(c0)
+    apl, kc = int(pops.apl[0]), int(pops.kc[0])
+    c = Connectome(bodyId=c0.bodyId, type=c0.type, cls=c0.cls, sc=c0.sc, nt=c0.nt, sign=c0.sign, side=c0.side,
+                   pre=np.append(c0.pre, np.int32(apl)), post=np.append(c0.post, np.int32(kc)), w=np.append(c0.w, np.int32(5)))
+    Engine(c, pops, Params(**BASE), seed=1)                   # the spiking engine sums repeated edges in propagate
+    with pytest.raises(ValueError, match="unique out-edge targets"):
+        Engine(c, pops, Params(**BASE, apl_mode="graded"), seed=1)
+
+
+def test_graded_reset_clears_the_release_line(synthetic_connectome):
+    eng, c, pops = _engine(synthetic_connectome, apl_mode="graded")
+    eng.set_ext(pops.apl, 100.0)
+    for _ in range(5):
+        eng.step()
+    eng.reset(seed=2)
+    assert len(eng._apl_release) == eng.p.dly_steps()
+    assert all((r == 0).all() for r in eng._apl_release)

@@ -63,6 +63,14 @@ class Engine:
         self.receptor_idx = pops.sensory.astype(np.int64)
         self.drive_hz = np.zeros(self.N, np.float32)
 
+        self._graded_apl = params.apl_mode == "graded"
+        self.apl_idx = np.asarray(pops.apl, np.int64)
+        if self._graded_apl:                        # views into the CSC: APL out-edges are never plastic
+            ptr, tgt, w = self.csc.ptr, self.csc.tgt, self.csc.w
+            self._apl_edges = [(tgt[ptr[i]:ptr[i + 1]], w[ptr[i]:ptr[i + 1]]) for i in self.apl_idx]
+            if any(np.unique(t).size != t.size for t, _ in self._apl_edges):   # g[tgt] += adds a repeated target once
+                raise ValueError("graded APL needs unique out-edge targets per APL cell")
+
         self._seed = seed
         self.reset(seed)
 
@@ -80,6 +88,9 @@ class Engine:
         self.delay = deque([np.zeros(0, np.int64) for _ in range(self.p.dly_steps())], maxlen=self.p.dly_steps())
         self.last = np.zeros(0, np.int64)
         self.t_ms = 0.0
+        if self._graded_apl:
+            self._apl_release = deque([np.zeros(self.apl_idx.size, np.float32) for _ in range(self.p.dly_steps())],
+                                      maxlen=self.p.dly_steps())
 
     def set_ext(self, idx, mv: float) -> None:
         self.ext[np.asarray(idx, dtype=np.int64)] = np.float32(mv)
@@ -111,6 +122,11 @@ class Engine:
         arrived = self.delay.popleft()
         if arrived.size:
             self.g += self.propagate(arrived)
+        if self._graded_apl:
+            r_in = self._apl_release.popleft()
+            for k in np.flatnonzero(r_in):
+                tgt, w = self._apl_edges[k]
+                self.g[tgt] += w * r_in[k]
         dt_m = p.dt / p.tau_m
         dv = (-self.v + self.g + self.ext) * dt_m
         if p.noise_mv:
@@ -126,15 +142,24 @@ class Engine:
         hz = self.drive_hz[ri]
         pois = (self.rng.random(ri.size) < hz * (p.dt / 1000.0)) & free[ri]
         spk[ri] = pois
+        if self._graded_apl:
+            spk[self.apl_idx] = False     # non-spiking: no threshold, reset or refractory
         fired = np.flatnonzero(spk)
         self.v[fired] = p.v_reset
         self.refrac[fired] = p.refrac_steps()
         self.last = fired
         self.delay.append(fired)          # delivered dly_steps steps from now
+        if self._graded_apl:
+            self._apl_release.append(self.apl_release(self.v[self.apl_idx]))
         self.t_ms += p.dt
         if self.on_step is not None:
             self.on_step(self, fired)
         return fired
+
+    def apl_release(self, v: np.ndarray) -> np.ndarray:
+        """Graded APL release per step (spike equivalents) at membrane v, mV above rest."""
+        p = self.p
+        return (p.apl_r_max / (1.0 + np.exp(-(np.asarray(v, np.float32) - p.apl_v_mid) / p.apl_slope))).astype(np.float32)
 
     def run(self, ms: float, count_idx=None) -> np.ndarray:
         counts = np.zeros(self.N, np.int32)
