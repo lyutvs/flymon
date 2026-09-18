@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlyMon Live</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="bar">
+    <strong>FlyMon Live</strong>
+    <label>보는 마리 <select id="fly"></select></label>
+    <span id="battle" class="muted">배틀 없음</span>
+    <span id="turn"></span>
+    <button id="follow" type="button" hidden>최신 턴 따라가기</button>
+    <span id="ignored" class="muted" hidden></span>
+    <span id="conn" class="conn off">연결 안 됨</span>
+  </header>
+  <main>
+    <section class="battle-view">
+      <!-- the official battle renderer draws into these four divs (replay-embed.js from Showdown) -->
+      <div class="wrapper replay-wrapper">
+        <div class="battle"></div>
+        <div class="battle-log"></div>
+        <div class="replay-controls"></div>
+        <div class="replay-controls-2"></div>
+        <script type="text/plain" class="battle-log-data"></script>
+      </div>
+      <p id="battle-note" class="hint muted">배틀 화면을 불러오는 중</p>
+    </section>
+    <section class="side">
+      <div class="panel"><h2>① 이번 턴 결정</h2><div id="decision" class="muted">아직 결정 없음</div></div>
+      <div class="panel"><h2>② 이번 턴 결과 (귀속)</h2><div id="outcome" class="muted">결과 대기 중</div></div>
+    </section>
+    <section class="panel wide"><h2>③ 뇌 활동</h2><div id="brain" class="muted">뇌 미연결</div></section>
+    <section class="panel wide"><h2>④ 턴 타임라인</h2><div id="timeline" class="chips"></div></section>
+  </main>
+  <script>
+    // Showdown serves the renderer with a daily cache key, the same way its own replay pages do.
+    var daily = Math.floor(Date.now() / 1000 / 60 / 60 / 24);
+    document.write('<script src="https://play.pokemonshowdown.com/js/replay-embed.js?version' + daily + '"></' + 'script>');
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
