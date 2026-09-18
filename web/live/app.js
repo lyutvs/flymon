@@ -242,7 +242,9 @@ function render() {
 
   el("decision").innerHTML = t && t.decisions.length ? t.decisions.map(decisionHTML).join("") : "아직 결정 없음";
   el("outcome").innerHTML = t && t.outcomes.length ? t.outcomes.map(outcomeHTML).join("") : "결과 대기 중";
-  const cands = t && t.decisions.length ? t.decisions[t.decisions.length - 1].candidates : [];
+  // trace slots are the fly's candidates: a forced switch adds a coach decision with none
+  const flyDecisions = t ? t.decisions.filter((d) => d.decider === "fly") : [];
+  const cands = flyDecisions.length ? flyDecisions[flyDecisions.length - 1].candidates : [];
   el("brain").innerHTML = t && t.traces.length ?
     `<div class="groups">${t.traces.map((tr) => traceHTML(tr, cands)).join("")}</div>` : "뇌 미연결";
   el("timeline").innerHTML = turns.map((n) => chipHTML(n, b.turns.get(n), n === turn)).join("");
