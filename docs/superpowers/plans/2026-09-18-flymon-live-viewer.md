@@ -1,7 +1,7 @@
 # FlyMon 라이브 뷰어 구현 계획
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or
-> superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 배틀이 도는 동안 한 마리의 배틀 화면과 그 턴의 결정·귀속 기록을 한 페이지에서 보고, 뇌(M3)는 뷰어 수정 없이 붙일 수 있게 한다.
 
@@ -13,6 +13,11 @@
 브라우저(빌드 도구·프레임워크 없음, SVG 직접 그리기), Showdown `replay-embed.js`(Smogon 호스팅).
 
 **Spec:** `docs/superpowers/specs/2026-09-17-flymon-live-viewer-design.md` — 실행자는 계획과 스펙을 함께 읽는다.
+
+**상태: 완료 (2026-09-18)** — 태스크 1–7을 커밋 `66b8a3d`(이벤트·싱크) → `aeadbc9`(trace) → `3db07dc`(서버) →
+`bad4720`(플레이어) → `6997f42`(가짜 뇌·스크립트) → `dd18135`(페이지) → `1d2e0f2`(테스트 이름 충돌 수정) →
+`3427abf`(trace 라벨 수정)로 구현했다. 전체 `uv run pytest`는 **269 passed, 7 skipped**(스킵은 모두 실데이터·rerun 없는 기존 뇌 테스트).
+완료 기준 4개는 설계 문서 3절에 기록했다.
 
 ## Global Constraints
 
@@ -43,7 +48,7 @@
   `RecordingSink`(`.events`), `HttpEventSink(url, max_queue=10_000, batch=200, timeout_s=1.0, autostart=True)`
   (`.emit`, `.close(timeout_s)`, `.dropped`, `.sent`, `.q`)
 
-- [ ] **Step 1: 실패하는 테스트 쓰기**
+- [x] **Step 1: 실패하는 테스트 쓰기**
 
 `tests/live/test_events.py`:
 
@@ -199,12 +204,12 @@ def test_delivers_in_order_and_snapshots_on_emit(receiver):
     assert (sink.sent, sink.dropped) == (50, 0)
 ```
 
-- [ ] **Step 2: 실패 확인**
+- [x] **Step 2: 실패 확인**
 
 Run: `uv run pytest tests/live -q`
 Expected: FAIL — `ModuleNotFoundError: No module named 'flymon.live'`
 
-- [ ] **Step 3: 구현**
+- [x] **Step 3: 구현**
 
 `flymon/live/__init__.py`:
 
@@ -379,12 +384,12 @@ class HttpEventSink:
             self._count("dropped", len(items))
 ```
 
-- [ ] **Step 4: 통과 확인**
+- [x] **Step 4: 통과 확인**
 
 Run: `uv run pytest tests/live -q`
 Expected: PASS (14 passed)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add flymon/live/__init__.py flymon/live/events.py flymon/live/sink.py tests/live/test_events.py tests/live/test_sink.py
@@ -404,7 +409,7 @@ git commit -m "feat(live): viewer event contract and non-blocking sinks"
 - Produces: `WebSink(event_sink, fly)` — `scalar(path, t_ms, value)`, `bars(path, t_ms, values)`, `text(path, t_ms, msg)`,
   `flush(battle_tag, turn, phase, slot) -> dict | None`
 
-- [ ] **Step 1: 실패하는 테스트 쓰기**
+- [x] **Step 1: 실패하는 테스트 쓰기**
 
 `tests/live/test_trace.py`:
 
@@ -478,12 +483,12 @@ def test_tapping_into_a_web_sink_leaves_spikes_bit_identical(synthetic_connectom
     assert np.concatenate(observed).size > 0      # the stimulus really made spikes
 ```
 
-- [ ] **Step 2: 실패 확인**
+- [x] **Step 2: 실패 확인**
 
 Run: `uv run pytest tests/live/test_trace.py -q`
 Expected: FAIL — `ModuleNotFoundError: No module named 'flymon.live.trace'`
 
-- [ ] **Step 3: 구현**
+- [x] **Step 3: 구현**
 
 `flymon/live/trace.py`:
 
@@ -528,12 +533,12 @@ class WebSink:
         return event
 ```
 
-- [ ] **Step 4: 통과 확인**
+- [x] **Step 4: 통과 확인**
 
 Run: `uv run pytest tests/live/test_trace.py -q`
 Expected: PASS (3 passed)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add flymon/live/trace.py tests/live/test_trace.py
@@ -555,7 +560,7 @@ git commit -m "feat(live): WebSink turns one presentation into one trace event"
   `ViewerServer(port=8765, host="127.0.0.1", keep_battles=3, web_root=WEB_ROOT)`(`.start()`, `.stop()`, `.url`, `.hub`,
   컨텍스트 매니저), `WEB_ROOT`
 
-- [ ] **Step 1: 실패하는 테스트 쓰기**
+- [x] **Step 1: 실패하는 테스트 쓰기**
 
 `tests/live/test_viewer_server.py`:
 
@@ -688,12 +693,12 @@ def test_a_full_subscriber_is_dropped_not_blocking():
     assert sub.closed and not hub.subscribers
 ```
 
-- [ ] **Step 2: 실패 확인**
+- [x] **Step 2: 실패 확인**
 
 Run: `uv run pytest tests/live/test_viewer_server.py -q`
 Expected: FAIL — `ModuleNotFoundError: No module named 'flymon.live.server'`
 
-- [ ] **Step 3: 구현**
+- [x] **Step 3: 구현**
 
 `flymon/live/server.py`:
 
@@ -897,12 +902,12 @@ class ViewerServer:
         self.stop()
 ```
 
-- [ ] **Step 4: 통과 확인**
+- [x] **Step 4: 통과 확인**
 
 Run: `uv run pytest tests/live/test_viewer_server.py -q`
 Expected: PASS (7 passed)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add flymon/live/server.py tests/live/test_viewer_server.py
@@ -922,7 +927,7 @@ git commit -m "feat(live): loopback viewer server with SSE fan-out and bounded h
 - Produces: `FlyCoachPlayer(..., event_sink=None, turn_delay_s=0.0)`, `.emit_errors`;
   이벤트 `battle_start`/`protocol`/`decision`(+`detail`)/`outcome`/`battle_end`
 
-- [ ] **Step 1: 실패하는 테스트 쓰기**
+- [x] **Step 1: 실패하는 테스트 쓰기**
 
 `tests/battle/test_fly_coach_player.py` — 맨 위 import에 `import time`과
 `from flymon.live.sink import RecordingSink`를 더하고, 파일 끝에 붙인다:
@@ -1080,12 +1085,12 @@ async def test_detail_filled_by_the_batch_reaches_the_submitter_context():
     assert ctx == {"battle_tag": "b", "turn": 4, "detail": {"V": [0.5, -0.5], "slot": 0}}
 ```
 
-- [ ] **Step 2: 실패 확인**
+- [x] **Step 2: 실패 확인**
 
 Run: `uv run pytest tests/battle/test_fly_coach_player.py -q`
 Expected: FAIL — 새 테스트 7개가 `TypeError: __init__() got an unexpected keyword argument 'event_sink'` 등으로 실패
 
-- [ ] **Step 3: 구현**
+- [x] **Step 3: 구현**
 
 `flymon/battle/fly_coach_player.py`에 이 diff를 적용한다:
 
@@ -1228,12 +1233,12 @@ Expected: FAIL — 새 테스트 7개가 `TypeError: __init__() got an unexpecte
              self.barrier.unregister(self.player_id)
 ```
 
-- [ ] **Step 4: 통과 확인**
+- [x] **Step 4: 통과 확인**
 
 Run: `uv run pytest tests/battle/test_fly_coach_player.py tests/battle/test_barrier.py -q`
 Expected: PASS (23 passed — 기존 15개 + 새 8개)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add flymon/battle/fly_coach_player.py tests/battle/test_fly_coach_player.py tests/battle/test_barrier.py
@@ -1254,7 +1259,7 @@ git commit -m "feat(battle): player emits viewer events, provider detail and raw
   `scripts/live_battles.py`의 `parse_args(argv)`, `fly_name(fly_id)`, `free_port()`, `make_provider(kind, fly_id, sink)`,
   `run_fly(args, fly_id, sbs, cfg, sink)`, `run_battles(args, cfg, sink)`, `main(argv)`
 
-- [ ] **Step 1: 실패하는 테스트 쓰기**
+- [x] **Step 1: 실패하는 테스트 쓰기**
 
 `tests/live/test_fake_brain.py`:
 
@@ -1335,12 +1340,12 @@ async def test_one_fake_brain_battle_reaches_the_viewer(tmp_path):
     assert (tmp_path / "fly00.jsonl").exists()
 ```
 
-- [ ] **Step 2: 실패 확인**
+- [x] **Step 2: 실패 확인**
 
 Run: `uv run pytest tests/live/test_fake_brain.py tests/live/test_live_battles.py -q`
 Expected: FAIL — `ModuleNotFoundError: No module named 'flymon.live.fake_brain'`
 
-- [ ] **Step 3: 구현**
+- [x] **Step 3: 구현**
 
 `flymon/live/fake_brain.py`:
 
@@ -1553,12 +1558,12 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 
-- [ ] **Step 4: 통과 확인**
+- [x] **Step 4: 통과 확인**
 
 Run: `uv run pytest tests/live -q`
 Expected: PASS (27 passed)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add flymon/live/fake_brain.py scripts/live_viewer.py scripts/live_battles.py tests/live/test_fake_brain.py tests/live/test_live_battles.py
@@ -1576,7 +1581,7 @@ git commit -m "feat(live): fake brain on the viewer path, viewer and battle runn
 - Consumes: `GET /stream`(`event: state` 스냅샷 → `data:` 이벤트), `GET /state`(Task 3), 이벤트 형식(Task 1)
 - Produces: 없음(페이지가 끝점)
 
-- [ ] **Step 1: 페이지 쓰기**
+- [x] **Step 1: 페이지 쓰기**
 
 `web/live/index.html`:
 
@@ -1975,12 +1980,12 @@ stream.onerror = () => { el("conn").className = "conn off"; el("conn").textConte
 render();
 ```
 
-- [ ] **Step 2: 문법 확인**
+- [x] **Step 2: 문법 확인**
 
 Run: `node --check web/live/app.js`
 Expected: 출력 없음(성공). 페이지 동작은 Task 7의 완료 기준으로 확인한다.
 
-- [ ] **Step 3: 커밋**
+- [x] **Step 3: 커밋**
 
 ```bash
 git add web/live/index.html web/live/app.js web/live/style.css
@@ -1998,12 +2003,12 @@ git commit -m "feat(web): live page renders the battle in Showdown's own rendere
 - Consumes: Task 1–6 전부
 - Produces: 없음
 
-- [ ] **Step 1: 전체 테스트**
+- [x] **Step 1: 전체 테스트**
 
 Run: `uv sync && bash scripts/install_showdown.sh && uv run pytest -q`
 Expected: 기존 테스트 + 새 테스트 전부 통과(새 테스트 35개: live 27 + 플레이어 7 + 배리어 1)
 
-- [ ] **Step 2: 완료 기준 1 (가짜 뇌)**
+- [x] **Step 2: 완료 기준 1 (가짜 뇌)**
 
 ```bash
 uv run python scripts/live_viewer.py --port 8765 &
@@ -2014,23 +2019,23 @@ uv run python scripts/live_battles.py --flies 2 --battles 2 --provider fake-brai
 ① 후보별 막대(V·p·kc_active_frac), ③ 후보별 차트, ④ 턴 칩이 늘어남, 드롭다운으로 `fm-live-f01`을 고르면 그 마리 배틀로 바뀜.
 스크린샷을 `results/live-viewer/`(git 제외)에 남긴다.
 
-- [ ] **Step 3: 완료 기준 2 (뇌 없음)**
+- [x] **Step 3: 완료 기준 2 (뇌 없음)**
 
 ```bash
 uv run python scripts/live_battles.py --flies 1 --battles 1 --provider rnd --turn-delay 0.3 --viewer http://127.0.0.1:8765
 ```
 확인: ③이 "뇌 미연결", ①에 막대 없음.
 
-- [ ] **Step 4: 완료 기준 3 (뷰어가 죽어도 배틀은 산다)**
+- [x] **Step 4: 완료 기준 3 (뷰어가 죽어도 배틀은 산다)**
 
 배틀이 도는 중에 뷰어 서버를 `kill -TERM` 한다(백그라운드 프로세스는 SIGINT를 무시한다).
 확인: 스크립트가 `exit 0`, `dropped_events=<0보다 큰 수>` 출력, 배틀은 끝까지 진행.
 
-- [ ] **Step 5: 완료 기준 4 (렌더러 없음)**
+- [x] **Step 5: 완료 기준 4 (렌더러 없음)**
 
 페이지 콘솔에서 `Replays.battle = null` 로 만든 뒤 이벤트가 오면, 배틀 화면 자리에 안내 문구가 뜨고 ①②③④는 계속 동작.
 
-- [ ] **Step 6: 설계 문서에 결과 기록하고 커밋**
+- [x] **Step 6: 설계 문서에 결과 기록하고 커밋**
 
 ```bash
 git add docs/superpowers/specs/2026-09-17-flymon-live-viewer-design.md
