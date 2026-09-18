@@ -138,7 +138,7 @@ scripts/
 | `tests/live/test_events.py` | type별 필수 필드 누락 시 `ValueError`, `v` = 1 |
 | `tests/live/test_sink.py` | 서버 없음: emit 1,000회가 짧은 시간 안에 끝나고 예외 없음, 큐 가득 → dropped 증가, 서버 있음: 보낸 순서대로 도착 |
 | `tests/live/test_trace.py` | `WebSink`와 `RerunSink`의 메서드 시그니처 동일, flush 1회 = trace 이벤트 1개·점 보존·비움, 작은 합성 망에서 `SpikeTap`+`WebSink` 유무로 스파이크 비트 동일 |
-| `tests/live/test_server.py` | 127.0.0.1 바인딩, POST → `/state`·SSE 순서, 마리별 최근 배틀 `keep_battles`개 보관, 깨진 JSON → 400 이후에도 정상 |
+| `tests/live/test_viewer_server.py` | 127.0.0.1 바인딩, POST → `/state`·SSE 순서, 마리별 최근 배틀 `keep_battles`개 보관, 깨진 JSON → 400 이후에도 정상 |
 | `tests/battle/test_fly_coach_player.py`(추가) | 기본값: emit 0회, `RecordingSink`: JSONL 레코드마다 같은 내용 이벤트, `battle_start`가 맨 앞·`battle_end` 뒤에 결정/결과 없음, 예외 던지는 싱크로도 배틀 완료, `protocol`이 `|init|battle`로 시작하고 `|request|`를 담지 않음 |
 | `tests/battle/test_barrier.py`(추가) | 배치 실행기가 채운 `context["detail"]`이 submit한 쪽 context에 보인다 |
 | `tests/live/test_live_battles.py` | 1마리·1배틀·`fake-brain`, 인프로세스 ViewerServer의 `/state`에 5개 type 모두 존재 |

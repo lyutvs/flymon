@@ -546,7 +546,7 @@ git commit -m "feat(live): WebSink turns one presentation into one trace event"
 
 **Files:**
 - Create: `flymon/live/server.py`
-- Test: `tests/live/test_server.py`
+- Test: `tests/live/test_viewer_server.py` (이름이 `test_server.py`면 `tests/battle/test_server.py`와 모듈 이름이 겹쳐 전체 수집이 실패한다)
 
 **Interfaces:**
 - Consumes: `REQUIRED`·`VERSION`·`to_json`(Task 1)
@@ -557,7 +557,7 @@ git commit -m "feat(live): WebSink turns one presentation into one trace event"
 
 - [ ] **Step 1: 실패하는 테스트 쓰기**
 
-`tests/live/test_server.py`:
+`tests/live/test_viewer_server.py`:
 
 ```python
 """Viewer server: loopback only, events in -> snapshot + SSE out in order, bounded memory, bad input survives."""
@@ -690,7 +690,7 @@ def test_a_full_subscriber_is_dropped_not_blocking():
 
 - [ ] **Step 2: 실패 확인**
 
-Run: `uv run pytest tests/live/test_server.py -q`
+Run: `uv run pytest tests/live/test_viewer_server.py -q`
 Expected: FAIL — `ModuleNotFoundError: No module named 'flymon.live.server'`
 
 - [ ] **Step 3: 구현**
@@ -899,13 +899,13 @@ class ViewerServer:
 
 - [ ] **Step 4: 통과 확인**
 
-Run: `uv run pytest tests/live/test_server.py -q`
+Run: `uv run pytest tests/live/test_viewer_server.py -q`
 Expected: PASS (7 passed)
 
 - [ ] **Step 5: 커밋**
 
 ```bash
-git add flymon/live/server.py tests/live/test_server.py
+git add flymon/live/server.py tests/live/test_viewer_server.py
 git commit -m "feat(live): loopback viewer server with SSE fan-out and bounded history"
 ```
 
