@@ -18,8 +18,14 @@
 
 - 공식 Showdown 클라이언트로 로컬 배틀을 실시간 관전할 수 있다: `http://localhost:<포트>/<battle_tag>` →
   `https://localhost--<포트>.psim.us/<battle_tag>`로 넘어가 진행 중인 배틀이 보였다. 클라이언트 코드·스프라이트는 인터넷에서 받는다.
-- psim.us 응답에 `X-Frame-Options`·CSP `frame-ancestors`가 없다 → iframe 삽입이 막히지 않을 공산이 크다. **iframe 안에서 관전이 되는지는
-  미확인**(태스크 1에서 확인).
+- **iframe 관전은 불가**(2026-09-17 확인): 응답에 `X-Frame-Options`·CSP는 없지만 공식 클라이언트가 스스로 "Loading client… IN FRAME.
+  Please visit Showdown directly."로 멈춘다.
+- **대신 배틀 화면을 우리 페이지에서 직접 그린다**(2026-09-18 확인): 리플레이 렌더러 `https://play.pokemonshowdown.com/js/replay-embed.js`를
+  우리 페이지에 싣고 `Replays.init()` → `Replays.battle.add(line)`로 프로토콜을 흘려 넣으면 배틀이 실시간으로 그려진다.
+  배틀을 바꿀 때는 `script.battle-log-data`를 비우고 `Replays.init()`을 다시 부른다. 애니메이션이 밀리면 `seekTurn(최신 턴)`으로 따라잡는다.
+  - **함정**: 이 렌더러는 전역 `$`(jQuery)를 쓴다. 우리 스크립트가 `const $ = ...`를 선언하면 전역을 가려 `Replays.init()`이
+    `Cannot read properties of null` 로 죽는다. 페이지 코드에서 `$`라는 이름을 쓰지 않는다.
+  - **위험**: `add`·`instantAdd`·`init`은 공개 계약이 아니고 스크립트는 매일 Smogon에서 새로 받는다. 없으면 기능 검사로 감지해 안내 문구를 띄운다.
 - 뇌 없는 배틀은 한 판에 약 1초 → 실시간으로 보려면 보는 마리를 일부러 늦춰야 한다.
 - `FlyCoachPlayer` JSONL 레코드는 모두 `battle_tag`·`turn`을 가진다. 강제 교체 턴은 같은 (battle_tag, turn)에 `decision`이 둘이다.
 - 결정 provider는 후보 인덱스(int)만 돌려준다. `context` dict는 직접 호출(`provider.decide`)과 배리어(`Request.context`) 경로를 모두 거친다.
@@ -34,8 +40,8 @@
 │ FlyMon Live │ 보는 마리 [fly 03 ▾] │ battle-gen1ou-14 · 턴 10 │ 뷰어 연결 ● │
 ├──────────────────────────────┬────────────────────────────────────────────┤
 │                              │ ① 이번 턴 결정                              │
-│  공식 Showdown 관전 화면      │   [초파리]  코치 주문: 공격                   │
-│  (iframe, 보는 마리의 배틀 방) │   후보: 10만볼트 · 사이코키네시스 ✔          │
+│  공식 Showdown 배틀 화면      │   [초파리]  코치 주문: 공격                   │
+│  (우리 페이지 안, 프로토콜 실시간) │   후보: 10만볼트 · 사이코키네시스 ✔          │
 │                              │   ┄ detail이 오면: 후보별 막대 ┄             │
 │                              │ ② 이번 턴 결과 (귀속)                        │
 │                              │   사이코키네시스 → 직접 피해 34% · 효과 굉장함 │
@@ -48,12 +54,13 @@
 ```
 
 - **마리 선택**: 이벤트가 들어온 마리 목록. 기본값은 URL의 `?fly=<계정 이름>`, 없으면 처음 이벤트를 보낸 마리.
-  `live_battles.py`는 `--watch-fly` 마리의 `?fly=`가 붙은 주소를 출력한다. 선택한 마리의 `battle_start`가 오면 iframe을 그 방으로 옮긴다.
+  `live_battles.py`는 `--watch-fly` 마리의 `?fly=`가 붙은 주소를 출력한다. 보는 마리나 배틀이 바뀌면 렌더러를 다시 초기화하고
+  그 배틀의 프로토콜을 `instantAdd`로 한 번에 따라잡은 뒤 이어서 그린다.
 - **① ②**: 해당 마리의 가장 최근 턴. 강제 교체로 `decision`이 둘이면 둘 다 보인다.
-- **③**: 선택한 턴의 `trace`를 `phase`·`slot`별로 묶고, `kind`별로 그린다 — `scalar` 선 그래프, `bars` 막대(마지막 점, 재생 시 시간순), `text` 목록.
+- **③**: 선택한 턴의 `trace`를 `phase`·`slot`별로 묶고, `kind`별로 그린다 — `scalar` 선 그래프, `bars` 막대(마지막 점), `text` 목록.
   trace가 없으면 "뇌 미연결".
-- **④**: 턴을 누르면 그 턴의 ①②③을 보여준다. iframe은 실시간 그대로다(되감지 않음). "최신 따라가기"로 돌아간다.
-- **iframe 대체**: 태스크 1에서 iframe 관전이 안 되면 같은 방을 새 창으로 여는 링크를 둔다(결과를 이 절에 기록).
+- **④**: 턴을 누르면 그 턴의 ①②③을 보여준다. 배틀 화면은 실시간 그대로다(되감지 않음). "최신 따라가기"로 돌아간다.
+- **렌더러를 못 쓸 때**: 기능 검사가 실패하면 배틀 화면 자리에 안내 문구만 두고 ①②③④는 그대로 동작한다.
 - 외부 라이브러리 없음. 차트는 SVG를 직접 그린다.
 
 ## 4. 이벤트 형식 (뇌 접속 계약)
@@ -67,11 +74,14 @@
 | type | 시점 | 추가 필드 |
 |---|---|---|
 | `battle_start` | 플레이어가 새 배틀 방을 처음 볼 때 | — |
+| `protocol` | 배틀 메시지가 올 때마다 | `lines`(원시 프로토콜 줄, `|request|` 제외) |
 | `decision` | JSONL `decision` 레코드를 쓸 때 | `decider`, `coach_kind`, `candidates`, `chosen`, `detail`(선택) |
 | `outcome` | JSONL `outcome` 레코드를 쓸 때 | `outcome`(귀속 `Outcome` 전체), `detail`(선택) |
 | `trace` | 냄새 제시 하나가 끝날 때 | `phase`(`"decide"`·`"reinforce"`), `slot`(후보 번호 또는 `null`), `series` |
 | `battle_end` | 배틀 종료 콜백 | `won`(true/false/null), `turns` |
 
+- `protocol`은 페이지가 공식 렌더러로 배틀을 그리는 데 쓴다. `|request|`는 내 팀 시트라 뺀다(렌더러도 쓰지 않는다).
+  `battle_end` 뒤에도 서버가 방 메시지를 더 보내면 `protocol`이 더 올 수 있다.
 - `fly`는 플레이어 계정 이름이다(실행 안에서 유일). `turn`은 `battle_start`·`battle_end`에서 그때의 마지막 턴 값이다.
 - `decision`·`outcome`의 필드 값은 같은 순간의 JSONL 레코드와 같다(테스트로 고정).
 - **`detail`**: provider 또는 배치 실행기가 `context["detail"]`에 dict를 넣으면 플레이어가 `decision` 이벤트에 싣는다. 뷰어의 일반 규칙:
@@ -97,7 +107,7 @@ flymon/live/
                    POST /events(JSON 배열 또는 객체), GET /stream(SSE), GET /state(마리별 보관 이벤트), GET /(web/live 정적 파일)
   fake_brain.py    FakeBrainProvider(inner, event_sink, seed) — inner의 선택을 그대로 쓰고, context["detail"]에
                    합성 V·p를 넣고, 후보마다 합성 trace를 WebSink로 보낸다. 실험에 쓰지 않는다
-web/live/          index.html · app.js · style.css
+web/live/          index.html(렌더러 wrapper + replay-embed 로드) · app.js(`$` 이름 금지) · style.css
 scripts/
   live_viewer.py   ViewerServer 실행(--port 8765), 주소 출력
   live_battles.py  Showdown 서버(빈 포트) + FlyCoachPlayer N마리, --flies --battles --provider rnd|max|fake-brain
@@ -106,6 +116,7 @@ scripts/
   __init__(..., event_sink=None, turn_delay_s=0.0) — None이면 emit 호출 없음, 0이면 대기 없음
   _log·_close_turn에서 JSONL 레코드와 같은 내용으로 emit, 새 방이면 battle_start, _battle_finished_callback에서 battle_end
   choose_move에서 context를 만든 뒤 provider/배리어가 채운 context.get("detail")을 decision 이벤트에 싣는다
+  _handle_battle_message에서 원시 프로토콜 줄을 protocol 이벤트로 내보낸다(`|request|` 제외)
   turn_delay_s > 0이면 주문을 돌려주기 전에 asyncio.sleep
 ```
 
@@ -128,23 +139,23 @@ scripts/
 | `tests/live/test_sink.py` | 서버 없음: emit 1,000회가 짧은 시간 안에 끝나고 예외 없음, 큐 가득 → dropped 증가, 서버 있음: 보낸 순서대로 도착 |
 | `tests/live/test_trace.py` | `WebSink`와 `RerunSink`의 메서드 시그니처 동일, flush 1회 = trace 이벤트 1개·점 보존·비움, 작은 합성 망에서 `SpikeTap`+`WebSink` 유무로 스파이크 비트 동일 |
 | `tests/live/test_server.py` | 127.0.0.1 바인딩, POST → `/state`·SSE 순서, 마리별 최근 배틀 `keep_battles`개 보관, 깨진 JSON → 400 이후에도 정상 |
-| `tests/battle/test_fly_coach_player.py`(추가) | 기본값: emit 0회, `RecordingSink`: JSONL 레코드마다 같은 내용 이벤트, `battle_start`가 첫 decision 앞·`battle_end`가 마지막, 예외 던지는 싱크로도 배틀 완료 |
+| `tests/battle/test_fly_coach_player.py`(추가) | 기본값: emit 0회, `RecordingSink`: JSONL 레코드마다 같은 내용 이벤트, `battle_start`가 맨 앞·`battle_end` 뒤에 결정/결과 없음, 예외 던지는 싱크로도 배틀 완료, `protocol`이 `|init|battle`로 시작하고 `|request|`를 담지 않음 |
 | `tests/battle/test_barrier.py`(추가) | 배치 실행기가 채운 `context["detail"]`이 submit한 쪽 context에 보인다 |
 | `tests/live/test_live_battles.py` | 1마리·1배틀·`fake-brain`, 인프로세스 ViewerServer의 `/state`에 5개 type 모두 존재 |
 
 ## 8. 완료 기준 (관찰 가능, 스크린샷을 `results/live-viewer/`(git 제외)에 남기고 경로를 원장에 기록)
 
 1. `live_viewer.py` + `live_battles.py --flies 2 --battles 2 --provider fake-brain --watch-fly 0 --turn-delay 2`:
-   iframe에 fly 0 배틀, 헤더 턴 = 배틀 화면 턴, ①② 채워짐, ③ 차트 생성, ④ 늘어남, 드롭다운 전환 시 iframe 방 변경.
+   페이지 안에 fly 0 배틀이 그려짐(렌더러 턴이 헤더 턴보다 2턴 이상 뒤처지지 않음), ①② 채워짐, ③ 차트 생성, ④ 늘어남, 드롭다운 전환 시 그 마리의 배틀로 교체.
 2. `--provider rnd`: ③ "뇌 미연결", ①에 막대 없음.
 3. 실행 도중 뷰어 서버 종료: 배틀 정상 종료, exit 0, 버린 이벤트 수 출력.
-4. iframe 관전 불가면 새 창 링크로 대체되고 3절에 기록.
+4. 렌더러 기능 검사 실패를 흉내 냈을 때 안내 문구가 뜨고 나머지 패널이 동작.
 5. 전체 `uv run pytest` 통과.
 
 ## 9. 진행
 
-- 태스크(계획서에서 확정): 1 iframe 관전 확인(버리는 스파이크) → 2 events·sink → 3 trace → 4 server → 5 플레이어 훅·배리어 detail →
-  6 fake_brain·live_battles → 7 web/live → 8 완료 기준 확인.
+- 태스크(계획서에서 확정): 1 events·sink → 2 trace → 3 server → 4 플레이어 훅(detail·protocol) → 5 fake_brain·실행 스크립트 →
+  6 web/live → 7 완료 기준 확인.
 - SDD 루프. 구현자는 이 워크트리의 오케스트레이션 워커(다른 세션이 `open-fly-brain-connectome`에 M0d를 커밋 중이라 격리), 리뷰·원장은 컨트롤러.
 - 확인용 배틀은 몇 판만 — 같은 기계의 M0d 실데이터 실행 부하를 늘리지 않는다.
 - `live-viewer` → `open-fly-brain-connectome` 병합은 M0d 세션이 태스크 경계에 있을 때 사용자에게 묻고 한다.
