@@ -101,7 +101,9 @@ class CSC:
 def build_csc(conn: Connectome, params: Params, apl_idx: np.ndarray, kc_idx: np.ndarray) -> CSC:
     """Signed mV out-edges. Edges below `min_weight` synapses or from sign-0 cells are dropped; APL
     out-edges are scaled by `apl_scale`; KC->KC edges are scaled by `kc_kc_scale` and, when that is 0,
-    dropped from the CSC altogether (spec appendix D). Right-hemisphere inputs get the hemisphere factor."""
+    dropped from the CSC altogether (spec appendix D). Right-hemisphere inputs get the hemisphere factor.
+    Edges whose *target* is an APL cell are scaled by `apl_input_scale`, after the hemisphere factor and the
+    `apl_scale` multiply; at 1.0 the multiply is skipped entirely (spec appendix H.3a)."""
     if not math.isfinite(params.kc_kc_scale):
         raise ValueError(f"kc_kc_scale must be finite, got {params.kc_kc_scale!r}")
     sign, _ = apply_sign_override(conn, params)

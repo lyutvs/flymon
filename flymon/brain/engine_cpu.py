@@ -15,6 +15,8 @@ M0d modes (spec appendix H.2, all off by default):
   orn_std                    each receptor carries a resource R (1 at reset); a receptor spike delivers its out-edges
                              scaled by R, then R <- orn_std_f * R; every step R <- R + (1 - R) * dt / orn_std_tau_ms.
   kc_thresh_mode "homeostatic"  KC thresholds come from a validated file (flymon.brain.thresholds).
+  apl_input_scale            every CSC edge whose target is an APL cell is scaled by this factor, applied after the
+                             hemisphere factor and `apl_scale`; 1.0 skips the multiply (spec appendix H.3a).
 Reproduction target for the design decisions (MBON hold, KC threshold normalisation, APL scale):
 flybrain FINDINGS.md; constants: Shiu et al. 2024.
 """
