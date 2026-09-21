@@ -7,7 +7,7 @@ import pytest
 
 from flymon.brain.circuits import Populations, compartments
 from flymon.brain.config import Params
-from flymon.brain.connectome import Connectome
+from flymon.brain.connectome import Connectome, build_csc
 from flymon.brain.engine_cpu import Engine
 from flymon.brain.fly_pool import FlyPool, FlySpec
 from flymon.brain.plasticity import Plasticity
@@ -84,6 +84,37 @@ def test_unknown_modes_are_rejected(synthetic_connectome):
         _engine(synthetic_connectome, orn_std=True, orn_std_f=1.5)
     with pytest.raises(ValueError, match="apl_r_max"):
         _engine(synthetic_connectome, apl_mode="graded", apl_r_max=0.0)
+
+
+# ---- apl_input_scale (spec H.3a.2) --------------------------------------------------------------------------
+def _csc_of(synthetic_connectome, **kw):
+    c = synthetic_connectome()
+    pops = Populations.from_connectome(c)
+    return build_csc(c, Params(**{**BASE, **kw}), pops.apl, pops.kc), c, pops
+
+
+def test_apl_input_scale_defaults_to_one_and_keeps_the_csc_bit_identical(synthetic_connectome):
+    assert Params().apl_input_scale == 1.0
+    a, _, _ = _csc_of(synthetic_connectome)
+    b, _, _ = _csc_of(synthetic_connectome, apl_input_scale=1.0)
+    assert np.array_equal(a.w, b.w) and np.array_equal(a.tgt, b.tgt) and np.array_equal(a.ptr, b.ptr)
+
+
+def test_apl_input_scale_scales_exactly_the_edges_into_apl(synthetic_connectome):
+    base, c, pops = _csc_of(synthetic_connectome)
+    scaled, _, _ = _csc_of(synthetic_connectome, apl_input_scale=0.25)
+    into_apl = np.isin(base.tgt, np.asarray(pops.apl, np.int64))
+    assert into_apl.any(), "the synthetic connectome must have edges into APL"
+    assert np.array_equal(scaled.w[into_apl], (base.w[into_apl] * np.float32(0.25)).astype(np.float32))
+    assert np.array_equal(scaled.w[~into_apl], base.w[~into_apl])
+
+
+@pytest.mark.parametrize("bad", [0.0, -0.5, 1.5, float("nan"), float("inf")])
+def test_apl_input_scale_outside_the_declared_range_is_rejected(synthetic_connectome, bad):
+    c = synthetic_connectome()
+    pops = Populations.from_connectome(c)
+    with pytest.raises(ValueError, match="apl_input_scale"):
+        Engine(c, pops, Params(**{**BASE, "apl_input_scale": bad}), seed=1)
 
 
 # ---- graded APL ---------------------------------------------------------------------------------------------

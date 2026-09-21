@@ -48,6 +48,9 @@ class Params:
     kc_thresh_mode: str = "pn_norm"   # "homeostatic": per-KC thresholds from kc_thresh_file (spec H.3)
     kc_thresh_file: str = ""
     kc_thresh_sha256: str = ""
+    apl_input_scale: float = 1.0   # multiplier on every CSC edge INTO an APL cell (spec H.3a.2); 1.0 = no multiply.
+                                   # Stands in for the summation saturation the point-neuron APL lacks: its membrane
+                                   # is the unattenuated sum of ~2,059 KC inputs. Valid range (0, 1].
 
     # --- plasticity (spec 3.1, tuned in Task 9 within these defaults) ---
     learn_rate: float = 3e-4

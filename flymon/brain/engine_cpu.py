@@ -20,6 +20,7 @@ flybrain FINDINGS.md; constants: Shiu et al. 2024.
 """
 from __future__ import annotations
 
+import math
 from collections import deque
 
 import numpy as np
@@ -195,3 +196,5 @@ def _validate_modes(p: Params) -> None:
         raise ValueError(f"graded APL needs apl_r_max > 0 and apl_slope > 0, got {p.apl_r_max}, {p.apl_slope}")
     if p.orn_std and not (0 < p.orn_std_f <= 1 and p.orn_std_tau_ms > 0):
         raise ValueError(f"orn_std needs 0 < orn_std_f <= 1 and orn_std_tau_ms > 0, got {p.orn_std_f}, {p.orn_std_tau_ms}")
+    if not (math.isfinite(p.apl_input_scale) and 0 < p.apl_input_scale <= 1):
+        raise ValueError(f"apl_input_scale must be finite and in (0, 1], got {p.apl_input_scale}")

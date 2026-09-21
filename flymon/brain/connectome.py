@@ -126,6 +126,9 @@ def build_csc(conn: Connectome, params: Params, apl_idx: np.ndarray, kc_idx: np.
     is_apl[apl_idx] = True
     m = is_apl[pre]
     mv[m] *= np.float32(params.apl_scale)
+    if params.apl_input_scale != 1.0:      # 1.0 is the pre-H.3a engine: no mask, no multiply, bit-identical CSC
+        m = is_apl[post]
+        mv[m] *= np.float32(params.apl_input_scale)
     if kc_kc is not None and params.kc_kc_scale != 0.0:
         m = kc_kc[keep]
         mv[m] *= np.float32(params.kc_kc_scale)
