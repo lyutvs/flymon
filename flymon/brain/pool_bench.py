@@ -115,16 +115,17 @@ PRE_M0D_FILES = ("results/summary/m0.json", "results/summary/m0b.json", "results
 
 
 def refuse_modified_engine_output(out: str, params) -> None:
-    """Spec H.2: an engine with any M0d mode on (graded APL, ORN depression, homeostatic thresholds) never writes
-    under the M0/M0b/M0c reference trees or summaries (SystemExit 2); its results go under results/m0d/."""
-    modified = params.apl_mode != "spiking" or params.orn_std or params.kc_thresh_mode != "pn_norm"
+    """Spec H.2: an engine with any M0d mode on (graded APL, ORN depression, homeostatic thresholds, scaled APL input)
+    never writes under the M0/M0b/M0c reference trees or summaries (SystemExit 2); its results go under results/m0d/."""
+    modified = (params.apl_mode != "spiking" or params.orn_std or params.kc_thresh_mode != "pn_norm"
+                or params.apl_input_scale != 1.0)
     if not modified or not out:
         return
     rel = os.path.relpath(os.path.abspath(str(out)), os.getcwd()).replace(os.sep, "/")
     if rel.startswith(PRE_M0D_DIRS) or rel in PRE_M0D_FILES:
         print(f"refusing to write {out} with M0d modes on (apl_mode={params.apl_mode}, orn_std={params.orn_std}, "
-              f"kc_thresh_mode={params.kc_thresh_mode}): that path holds a pre-M0d engine's reference; use results/m0d/",
-              file=sys.stderr)
+              f"kc_thresh_mode={params.kc_thresh_mode}, apl_input_scale={params.apl_input_scale}): that path holds "
+              f"a pre-M0d engine's reference; use results/m0d/", file=sys.stderr)
         raise SystemExit(2)
 
 
@@ -152,18 +153,21 @@ SPARSITY_MATCH_KEYS = ("frac_active_A", "frac_active_B", "jaccard", "chance", "m
 
 def match_sparsity_row(sparsity: dict, baseline: dict, reference: dict | None, p) -> dict:
     """Compare the pool's sparsity and baseline means with the reference sparsity grid row for these Params
-    (rows without `kc_kc_scale` are the M0 engine, 1.0). Every term this run did not measure is reported as a
+    (rows without `kc_kc_scale` or `apl_input_scale` are the M0 engine, 1.0). Every term this run did not measure is reported as a
     note and left out of `diffs` instead of raising: `--sparsity-seeds 0` or `--rest-seeds 0` is a legitimate
     run shape, and a comparison crash here would throw away hours of pool work before the results are written."""
     if not reference:
         return {"ok": False, "note": "no reference file"}
     if not sparsity.get("per_seed"):
         return {"ok": False, "note": "no sparsity seeds in this run"}
-    rows = [g for g in reference["grid"] if (g["kc_thresh"], g["apl_scale"], g.get("mbon_hold_frac"), g.get("kc_kc_scale", 1.0))
-            == (p.kc_thresh, p.apl_scale, p.mbon_hold_frac, p.kc_kc_scale)]
+    rows = [g for g in reference["grid"]
+            if (g["kc_thresh"], g["apl_scale"], g.get("mbon_hold_frac"), g.get("kc_kc_scale", 1.0),
+                g.get("apl_input_scale", 1.0))
+            == (p.kc_thresh, p.apl_scale, p.mbon_hold_frac, p.kc_kc_scale, p.apl_input_scale)]
     if not rows:
         return {"ok": False, "note": f"no reference grid row for kc_thresh={p.kc_thresh} apl_scale={p.apl_scale} "
-                                     f"mbon_hold_frac={p.mbon_hold_frac} kc_kc_scale={p.kc_kc_scale}"}
+                                     f"mbon_hold_frac={p.mbon_hold_frac} kc_kc_scale={p.kc_kc_scale} "
+                                     f"apl_input_scale={p.apl_input_scale}"}
     row = rows[0]
     diffs = {k: abs(sparsity[k] - row[k]) for k in SPARSITY_MATCH_KEYS}
     out = {"diffs": diffs, "cpu_row": {k: row[k] for k in SPARSITY_MATCH_KEYS}}

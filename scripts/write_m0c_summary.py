@@ -83,12 +83,15 @@ def validate_inputs(p: Params, sp: dict, old: dict, new: dict, reported: dict | 
 
 
 def pick_row(grid: list, p: Params) -> dict:
-    """The sparsity grid row for these Params. Rows without `kc_kc_scale` are the M0 engine (1.0)."""
-    rows = [g for g in grid if (g["kc_thresh"], g["apl_scale"], g.get("mbon_hold_frac"), g.get("kc_kc_scale", 1.0))
-            == (p.kc_thresh, p.apl_scale, p.mbon_hold_frac, p.kc_kc_scale)]
+    """The sparsity grid row for these Params. Rows without `kc_kc_scale` or `apl_input_scale` are the M0 engine (1.0)."""
+    rows = [g for g in grid
+            if (g["kc_thresh"], g["apl_scale"], g.get("mbon_hold_frac"), g.get("kc_kc_scale", 1.0),
+                g.get("apl_input_scale", 1.0))
+            == (p.kc_thresh, p.apl_scale, p.mbon_hold_frac, p.kc_kc_scale, p.apl_input_scale)]
     if not rows:
         raise SystemExit(f"no sparsity grid row for kc_thresh={p.kc_thresh} apl_scale={p.apl_scale} "
-                         f"mbon_hold_frac={p.mbon_hold_frac} kc_kc_scale={p.kc_kc_scale}")
+                         f"mbon_hold_frac={p.mbon_hold_frac} kc_kc_scale={p.kc_kc_scale} "
+                         f"apl_input_scale={p.apl_input_scale}")
     return rows[0]
 
 

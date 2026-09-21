@@ -176,3 +176,13 @@ def test_match_sparsity_row_never_raises_on_a_run_that_skipped_a_measurement():
     old_only = {"grid": [{k: v for k, v in _sp_row().items() if k != "kc_kc_scale"}]}
     assert "no reference grid row" in match_sparsity_row(_pool_sparsity(), {"mbon_hz_rest_trimmed": 3.3}, old_only, p)["note"]
     assert match_sparsity_row(_pool_sparsity(), {"mbon_hz_rest_trimmed": 3.3}, old_only, Params(kc_kc_scale=1.0))["ok"] is True
+
+
+def test_refuse_modified_engine_output_covers_apl_input_scale(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    refuse_modified_engine_output("results/m0c/sparsity.json", Params())          # default: allowed
+    with pytest.raises(SystemExit) as e:
+        refuse_modified_engine_output("results/m0c/sparsity.json", Params(apl_input_scale=0.5))
+    assert e.value.code == 2
+    assert "apl_input_scale=0.5" in capsys.readouterr().err
+    refuse_modified_engine_output("results/m0d/diag/x.json", Params(apl_input_scale=0.5))   # m0d path: allowed
