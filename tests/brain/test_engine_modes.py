@@ -117,6 +117,20 @@ def test_apl_input_scale_outside_the_declared_range_is_rejected(synthetic_connec
         Engine(c, pops, Params(**{**BASE, "apl_input_scale": bad}), seed=1)
 
 
+def test_apl_input_scale_matches_the_diagnostic_prototype_path(synthetic_connectome):
+    """Spec H.3a.2 test (6): the calibration scripts multiplied the finished CSC; the parameter must agree bit
+    for bit, or the operating point recorded in H.3a.7 does not carry over."""
+    c = synthetic_connectome()
+    pops = Populations.from_connectome(c)
+    s = 0.11863                                   # the adopted operating point's value (spec H.3a.7)
+    prototype = build_csc(c, Params(**BASE), pops.apl, pops.kc)
+    is_apl = np.zeros(c.N, bool)
+    is_apl[np.asarray(pops.apl, np.int64)] = True
+    prototype.w[is_apl[prototype.tgt]] *= np.float32(s)
+    implemented = build_csc(c, Params(**{**BASE, "apl_input_scale": s}), pops.apl, pops.kc)
+    assert np.array_equal(implemented.w, prototype.w)
+
+
 # ---- graded APL ---------------------------------------------------------------------------------------------
 def test_graded_apl_never_spikes_and_the_spiking_control_does(synthetic_connectome):
     for mode, expect_spikes in (("spiking", True), ("graded", False)):
@@ -323,3 +337,18 @@ def test_pool_decide_equals_in_process_in_every_new_mode(synthetic_npz, tmp_path
         with FlyPool(synthetic_npz, p, [FlySpec()], workers=1, timeout_s=120) as pool:
             got = pool.decide_batch([(0, [A, B], 7)], 1.0, settle_ms=50, read_ms=300)[0]
         np.testing.assert_array_equal(got, expected, err_msg=str(extra))
+
+
+def test_pool_decide_equals_in_process_with_apl_input_scale(synthetic_npz, tmp_path):
+    """Every engine mode has to survive the spawn boundary identically (spec H.2 test 5)."""
+    params = Params(**{**BASE, "apl_mode": "graded", "apl_r_max": 0.333, "apl_input_scale": 0.25})
+    conn = Connectome.load(synthetic_npz)
+    pops = Populations.from_connectome(conn)
+    eng = Engine(conn, pops, params, seed=7)
+    pl = Plasticity(eng, pops, compartments(conn, pops, params.core_frac))
+    ro = sorted(pops.receptor_types)[:2]
+    odors = [{ro[0]: 1.0}, {ro[1]: 1.0}]
+    in_process = decide(eng, pl, pops, odors, strength=0.35, seed=11, settle_ms=20.0, read_ms=20.0)
+    with FlyPool(synthetic_npz, params, [FlySpec()], workers=1) as pool:
+        pooled = pool.decide_batch([(0, odors, 11)], strength=0.35, settle_ms=20.0, read_ms=20.0)[0]
+    assert np.array_equal(np.asarray(pooled), np.asarray(in_process))
