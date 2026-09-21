@@ -133,8 +133,10 @@ def test_apl_input_scale_matches_the_diagnostic_prototype_path(synthetic_connect
 
 
 def test_apl_input_scale_matches_the_prototype_with_hemisphere_balancing(synthetic_connectome):
-    """The calibration runs had balance_hemispheres on; BASE turns it off, so the equivalence has to be
-    pinned in both settings or the multiply's position relative to the hemisphere factor is untested."""
+    """The same equivalence with balance_hemispheres on, where BASE turns it off: a guard against the
+    APL-input mask widening once another correction is in play. It does NOT pin the multiply's position
+    relative to the hemisphere factor — the synthetic APL is on the left, so no edge carries both
+    multiplies; that ordering is pinned by the real-connectome test below."""
     c = synthetic_connectome()
     pops = Populations.from_connectome(c)
     s = 0.11863
@@ -374,16 +376,26 @@ def test_pool_decide_equals_in_process_in_every_new_mode(synthetic_npz, tmp_path
         np.testing.assert_array_equal(got, expected, err_msg=str(extra))
 
 
-def test_pool_decide_equals_in_process_with_apl_input_scale(synthetic_npz, tmp_path):
-    """Every engine mode has to survive the spawn boundary identically (spec H.2 test 5)."""
-    params = Params(**{**BASE, "apl_mode": "graded", "apl_r_max": 0.333, "apl_input_scale": 0.25})
+def test_pool_decide_equals_in_process_with_apl_input_scale(synthetic_npz):
+    """Every engine mode has to survive the spawn boundary identically (spec H.2 test 5). The regime is
+    chosen so the parameter is observable: at the brief's settings the synthetic KCs never spike, the APL
+    membrane never leaves rest and every apl_input_scale gives the same spike counts, so the first
+    assertion below pins that dropping the parameter at the spawn boundary would actually be visible."""
+    kw = {**BASE, "apl_mode": "graded", "apl_r_max": 0.333, "kc_thresh": 0.2}
+    params = Params(**{**kw, "apl_input_scale": 0.25})
     conn = Connectome.load(synthetic_npz)
     pops = Populations.from_connectome(conn)
-    eng = Engine(conn, pops, params, seed=7)
-    pl = Plasticity(eng, pops, compartments(conn, pops, params.core_frac))
     ro = sorted(pops.receptor_types)[:2]
     odors = [{ro[0]: 1.0}, {ro[1]: 1.0}]
-    in_process = decide(eng, pl, pops, odors, strength=0.35, seed=11, settle_ms=20.0, read_ms=20.0)
-    with FlyPool(synthetic_npz, params, [FlySpec()], workers=1) as pool:
-        pooled = pool.decide_batch([(0, odors, 11)], strength=0.35, settle_ms=20.0, read_ms=20.0)[0]
-    assert np.array_equal(np.asarray(pooled), np.asarray(in_process))
+
+    def in_process(p):
+        eng = Engine(conn, pops, p, seed=7)
+        pl = Plasticity(eng, pops, compartments(conn, pops, p.core_frac))
+        return np.asarray(decide(eng, pl, pops, odors, strength=3.0, seed=11, settle_ms=50.0, read_ms=300.0))
+
+    scaled = in_process(params)
+    assert not np.array_equal(scaled, in_process(Params(**{**kw, "apl_input_scale": 1.0}))), \
+        "apl_input_scale has no effect in this regime, so the pool comparison below cannot fail"
+    with FlyPool(synthetic_npz, params, [FlySpec()], workers=1, timeout_s=120) as pool:
+        pooled = pool.decide_batch([(0, odors, 11)], strength=3.0, settle_ms=50.0, read_ms=300.0)[0]
+    assert np.array_equal(np.asarray(pooled), scaled)
