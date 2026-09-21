@@ -28,6 +28,15 @@ from flymon.brain.stimuli import design_odor_pair, total_drive
 COMPARTMENTS_OUT = Path("results/summary/compartments.json")
 
 
+def grid_row(p: Params, seeds, mean: dict, rest: dict) -> dict:
+    """One sparsity-grid row, keyed by every engine setting `pool_bench.match_sparsity_row` reads, taken from the Params
+    the row was measured with — so a CLI that grows a flag for another engine field cannot write a row whose key
+    misses it (spec H.3a.2: apl_input_scale)."""
+    return {"kc_thresh": p.kc_thresh, "apl_scale": p.apl_scale, "mbon_hold_frac": p.mbon_hold_frac,
+            "kc_kc_scale": p.kc_kc_scale, "apl_input_scale": p.apl_input_scale, "sparsity_seeds": list(seeds),
+            **mean, **rest}
+
+
 def cmd_sparsity(a):
     refuse_old_engine_output(a.out, a.kc_kc_scale)
     conn = Connectome.load(a.npz)
@@ -53,8 +62,7 @@ def cmd_sparsity(a):
         # baseline depends on every Params in the grid; several seeds because the raw mean is
         # unstable when the FR1 clique saturates a few MBONs (the gate reads the trimmed mean)
         rest = mbon_baseline_multi(eng, pops, seeds=range(100, 100 + a.rest_seeds), ms=a.rest_ms)
-        grid.append({"kc_thresh": kc_thresh, "apl_scale": apl, "mbon_hold_frac": hold, "kc_kc_scale": a.kc_kc_scale,
-                     "sparsity_seeds": [100 + s for s in range(a.seeds)], **mean, **rest})
+        grid.append(grid_row(p, [100 + s for s in range(a.seeds)], mean, rest))
         print(json.dumps(grid[-1]), flush=True)
     d = Params(kc_kc_scale=a.kc_kc_scale)
     default_row = [g for g in grid if (g["kc_thresh"], g["apl_scale"], g["mbon_hold_frac"])

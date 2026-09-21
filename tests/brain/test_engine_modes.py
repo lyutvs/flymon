@@ -399,3 +399,28 @@ def test_pool_decide_equals_in_process_with_apl_input_scale(synthetic_npz):
     with FlyPool(synthetic_npz, params, [FlySpec()], workers=1, timeout_s=120) as pool:
         pooled = pool.decide_batch([(0, odors, 11)], strength=3.0, settle_ms=50.0, read_ms=300.0)[0]
     assert np.array_equal(np.asarray(pooled), scaled)
+
+
+def test_apl_input_scale_order_is_pinned_without_the_real_connectome(synthetic_connectome):
+    """The real-connectome order test skips on checkouts without data/malecns.npz. Here the synthetic APL moves to the
+    right hemisphere and its input edges get many distinct weights, so its inputs carry both float32 multiplies and
+    the two orders give different weights: the parameter must come after the hemisphere factor."""
+    import dataclasses
+    from flymon.brain.connectome import hemisphere_scale
+    c = synthetic_connectome()
+    pops = Populations.from_connectome(c)
+    side = c.side.copy()
+    side[pops.apl] = "R"
+    w = c.w.copy()
+    into = np.isin(c.post, pops.apl)
+    w[into] = 5 + np.arange(int(into.sum())) % 97
+    c = dataclasses.replace(c, side=side, w=w)
+    s = np.float32(0.11863)
+    h = np.float32(hemisphere_scale(c))
+    plain = build_csc(c, Params(**BASE), pops.apl, pops.kc)                        # no hemisphere factor
+    into_csc = np.isin(plain.tgt, pops.apl)
+    after = (plain.w[into_csc] * h) * s
+    before = (plain.w[into_csc] * s) * h
+    assert h != 1 and not np.array_equal(after, before), "this fixture must be able to tell the orders apart"
+    got = build_csc(c, Params(**{**BASE, "balance_hemispheres": True, "apl_input_scale": float(s)}), pops.apl, pops.kc)
+    assert np.array_equal(got.w[into_csc], after)
