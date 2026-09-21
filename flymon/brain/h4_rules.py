@@ -49,6 +49,8 @@ def teach_choice(rows: list, t: str, arm: str, spec) -> dict:
     CS+ = odour a (M0c), "ba" exchanges the odours. Naive counts do not depend on the arm or the order."""
     slot = "plus" if arm == "punish_only" else "minus"
     ab = [r for r in rows if r["arm"] == arm and r["order"] == "ab"]
+    if sorted(int(r["seed"]) for r in ab) != sorted(spec.teach_seeds):      # else median([]) -> NaN -> odour a, silently
+        raise ValueError(f"{arm} naive (order ab) rows must cover the seeds {list(spec.teach_seeds)} once each")
     naive = {"a": float(np.median([r["pre"]["plus"][t] for r in ab])),
              "b": float(np.median([r["pre"]["minus"][t] for r in ab]))}
     m0c = "a" if slot == "plus" else "b"
@@ -99,14 +101,15 @@ def check_rows(rows: list, expected: list) -> list:
 
 
 def combo_stats(rows: list, z: dict, expected: list, spec) -> dict:
-    """pair_stats for every row, the INVALID reasons and, when there are none, the aggregate."""
+    """pair_stats for every well-formed row, the INVALID reasons and, when there are none, the aggregate. A row whose
+    probes are not the report seeds is a reason, not a pair_stats call (unequal A / P lengths would raise in dv)."""
     reasons = check_rows(rows, expected)
     n = len(spec.report_seeds)
-    short = [(r["axis"], r["turn"], r["x"], r["y"]) for r in rows
-             if any(len(r["report"][ph][k]) != n for ph in ("pre", "R1", "R2") for k in ("A", "P"))]
+    key = lambda r: (r["axis"], int(r["turn"]), r["x"], r["y"])
+    short = {key(r) for r in rows if any(len(r["report"][ph][k]) != n for ph in ("pre", "R1", "R2") for k in ("A", "P"))}
     if short:
         reasons.append(f"{len(short)} pairs whose report probes are not the {n} report seeds")
-    stats = {(r["axis"], int(r["turn"]), r["x"], r["y"]): pair_stats(r["report"], z, spec.testable_min) for r in rows}
+    stats = {key(r): pair_stats(r["report"], z, spec.testable_min) for r in rows if key(r) not in short}
     undefined = [k for k, s in stats.items() if s is None]
     if undefined:
         reasons.append(f"{len(undefined)} pairs with an undefined d'")

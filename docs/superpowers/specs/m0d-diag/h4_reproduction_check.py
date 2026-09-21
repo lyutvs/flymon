@@ -113,7 +113,8 @@ def main() -> int:
     for p, r in zip(pick, o_rows[:-1]):
         g, sel = g12[pair_key(p)], r["select"]
         checks = {"pre": sel["pre"]["MBON13"] == g["pre"]["A"] and sel["pre"]["MBON05"] == g["pre"]["P"],
-                  "R1": all(sel["reward"][k]["R1"]["MBON13"] == g["reward"][k]["R1"]["A"]
+                  "R1": bool(g["reward"]) and set(sel["reward"]) == set(g["reward"])
+                  and all(sel["reward"][k]["R1"]["MBON13"] == g["reward"][k]["R1"]["A"]
                             and sel["reward"][k]["R1"]["MBON05"] == g["reward"][k]["R1"]["P"] for k in g["reward"]),
                   "kc": r["kc"]["x"]["frac"] == g["kc"]["frac_x"] and r["kc"]["y"]["frac"] == g["kc"]["frac_y"]
                   and r["kc"]["x"]["spikes"] == g["kc"]["spikes_x"] and r["kc"]["y"]["spikes"] == g["kc"]["spikes_y"]}

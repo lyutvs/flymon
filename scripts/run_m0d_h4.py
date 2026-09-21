@@ -14,10 +14,10 @@ finished run replaces it again, with the same verdict from the cache) only by a 
 --pairs, clean hashed files, the declared configuration, and an outcome that is neither INVALID nor the mid-run stop
 on two passing types in a pool (the stops for the user's decision after a selection are complete results).
 Exit codes: 0 done (whatever the outcome); 2 refused before measuring anything — not at the repository root, dirty
-hashed files, an NPZ other than the declared connectome, no usable block "h3", core pools or an H.3 measurement key
-other than block "h3"'s, a pair list other than the declared one, a block "h3" without three adopted combinations or
-with a C3 threshold file that fails its sha256. A reactivity that differs from block "h3"'s guard raises: the run stops
-with a traceback before any oracle and writes nothing.
+hashed files, --pairs below 1, an NPZ other than the declared connectome, no usable block "h3", core pools or an H.3
+measurement key other than block "h3"'s, a pair list other than the declared one, a block "h3" without three adopted
+combinations or with a C3 threshold file that fails its sha256. A reactivity that differs from block "h3"'s guard
+raises: the run stops with a traceback before any oracle and writes nothing.
 """
 from __future__ import annotations
 
@@ -116,6 +116,12 @@ def md_report(res: dict) -> str:
         else:
             cells += ["", "", ""]
         L.append("| " + " | ".join(cells) + " |")
+    L += ["", "teaching per type (reading 4; the untaught odour's decreases are recorded, not judged):", ""]
+    for name, c in res["h4"]["combos"].items():
+        for t, tc in c["teach"].items():
+            L.append(f"- {name} {t}: taught odour {tc['odour']}, order {tc['order']}, arm {tc['arm']}, decreased "
+                     f"{tc['n_decreased']}/{len(res['spec'].teach_seeds)}, teachable {tc['teachable']}, untaught "
+                     f"decreased {tc['untaught_n_decreased']}")
     L += ["", f"selection: {res['h4'].get('selection')}", ""] + [f"- {n}" for n in res["notes"]]
     return "\n".join(L) + "\n"
 
@@ -133,6 +139,8 @@ def main(argv=None, spec: H4Spec | None = None, summary_spec: H4Spec = SPEC, req
     ap.add_argument("--allow-dirty", action="store_true")
     ap.add_argument("--pairs", type=int, default=None)          # verification only: the first N pairs of each axis
     a = ap.parse_args(argv)
+    if a.pairs is not None and a.pairs < 1:                     # 0 would run every pair, a negative N drop the last
+        return refuse(f"--pairs must be at least 1, got {a.pairs}")
     if a.smoke and a.pairs is None:
         a.pairs = 1
 

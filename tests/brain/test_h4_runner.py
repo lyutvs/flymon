@@ -61,6 +61,19 @@ def test_invalid_rows_make_the_run_invalid_without_a_selection():
     m = Scripted(rows=lambda n, rows: rows[:-1] if n == "C3" else rows)
     out = run(m)
     assert out["outcome"] == R.INVALID and set(out["invalid"]) == {"C3"} and out["selection"] is None
+    assert out["combos"]["C3"]["records"] is None and out["combos"]["C0"]["records"] is not None
+
+
+def test_malformed_probes_make_the_run_invalid_and_get_no_records():
+    def mangle(n, rows):                                   # one pair's R1 has 7 A probes and 8 P probes: dv would raise
+        if n != "C1":
+            return rows
+        r0 = rows[0]
+        return [dict(r0, report=dict(r0["report"], R1={"A": r0["report"]["R1"]["A"][:7], "P": r0["report"]["R1"]["P"]}))] \
+            + rows[1:]
+    out = run(Scripted(rows=mangle))
+    assert out["outcome"] == R.INVALID and set(out["invalid"]) == {"C1"} and out["selection"] is None
+    assert out["combos"]["C1"]["records"] is None
 
 
 @pytest.mark.parametrize("testable, outcome", [((2, 2), R.STOP_LOW_T_B), ((5, 1), R.STOP_NO_ELIGIBLE)])

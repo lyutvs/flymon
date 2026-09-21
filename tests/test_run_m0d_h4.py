@@ -99,6 +99,13 @@ def test_a_complete_run_writes_block_h4_through_both_guards_and_resumes_from_the
                and set(c["records"]) == {"naive_floor", "single_type", "report_halves"} for c in h4["combos"].values())
     assert "winner_below_bar" in h4["selection"]
     assert s["h4"]["notes"] == list(SPEC.notes) and s["h4"]["h3_run_id"] == "h3-test"
+    md = _reports(root)[0].with_suffix(".md").read_text()                # reading 16: the teach records, per type
+    for name, c in h4["combos"].items():
+        for t in POOLS["A"] + POOLS["P"]:
+            tc = c["teach"][t]
+            assert (f"- {name} {t}: taught odour {tc['odour']}, order {tc['order']}, arm {tc['arm']}, decreased "
+                    f"{tc['n_decreased']}/2, teachable {tc['teachable']}, untaught decreased "
+                    f"{tc['untaught_n_decreased']}") in md, (name, t)
     written = sorted(str(p.relative_to(root)) for p in (root / "results/m0d/h4").rglob("*") if p.is_file())
     for f in written + ["results/summary/m0d.json"]:
         assert ("old", f) in seen and ("mod", f) in seen, f
@@ -138,10 +145,13 @@ def _edit_h3(root, fn):
 
 
 @pytest.mark.parametrize("case", ["connectome", "digest", "pools", "measure_key", "not_adopted", "malformed", "no_block",
-                                  "dirty", "root"])
+                                  "dirty", "root", "pairs_zero", "pairs_negative"])
 def test_every_refusal_exits_2_before_measuring_or_writing(workdir, monkeypatch, synthetic_npz, case):
     root, main, _, spec = workdir
-    kw, restore = {}, lambda: None
+    kw, restore, extra = {}, lambda: None, []
+    h3_cache = lambda: sorted(str(p.relative_to(root)) for p in (root / "results/m0d/h3/cache").rglob("*"))
+    cache_before = h3_cache()
+    assert cache_before                                                  # the fixture filled H.3's cache
     if case == "connectome":
         bad = dataclasses.replace(spec, h3=dataclasses.replace(spec.h3, connectome_sha256="0" * 64))
         kw = dict(spec_=bad, summary_spec=bad)
@@ -159,10 +169,15 @@ def test_every_refusal_exits_2_before_measuring_or_writing(workdir, monkeypatch,
         (root / "results/summary/m0d.json").write_text("{}")
     if case == "dirty":
         monkeypatch.setattr(run, "git_state", lambda **k: dict(CLEAN, dirty_hashed=["flymon/brain/h4_rules.py"]))
+    if case in ("pairs_zero", "pairs_negative"):                          # 0 would run every pair, -1 drop the last
+        extra = ["--pairs", "0" if case == "pairs_zero" else "-1"]
+    summary_before = (root / "results/summary/m0d.json").read_bytes()
     if case == "root":
         assert run.main(["--npz", str(synthetic_npz)], spec=spec) == 2                  # not at the repository root
     else:
-        assert main(**kw) == 2
+        assert main(*extra, **kw) == 2
+    assert (root / "results/summary/m0d.json").read_bytes() == summary_before
+    assert h3_cache() == cache_before
     restore()
     assert not (root / "results/m0d/h4").exists()
 

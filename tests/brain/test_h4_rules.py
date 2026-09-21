@@ -61,6 +61,18 @@ def test_teach_choice_judges_the_odour_the_type_answers(arm, naive_a, naive_b, o
                                 (naive_a if slot == "plus" else naive_b) > 0)
 
 
+def test_teach_choice_refuses_naive_rows_that_miss_the_ab_order_or_a_seed():
+    rows = _rows("punish_only", "ab", [0] * 8, [25] * 8, [0] * 8, [20] * 8) + _rows("punish_only", "ba", [25] * 8,
+                                                                                     [0] * 8, [20] * 8, [0] * 8)
+    assert R.teach_choice(rows, "T", "punish_only", SPEC)["odour"] == "b"
+    with pytest.raises(ValueError, match="naive"):                          # no "ab" rows: no silent NaN -> odour a
+        R.teach_choice([r for r in rows if r["order"] == "ba"], "T", "punish_only", SPEC)
+    with pytest.raises(ValueError, match="naive"):
+        R.teach_choice([r for r in rows if not (r["order"] == "ab" and r["seed"] == SEEDS[0])], "T", "punish_only", SPEC)
+    with pytest.raises(ValueError, match="naive"):
+        R.teach_choice(rows, "T", "reward_only", SPEC)                     # no rows of this arm
+
+
 # ---- readout ---------------------------------------------------------------------------------------------------------
 POOLS = {"A": ["MA1", "MA2"], "P": ["MP1", "MP2"]}
 
@@ -135,13 +147,21 @@ def test_combo_stats_names_every_invalid_row_set():
     assert "odd-turn rows present" in got and any("differ from the declared list" in r for r in got)
     short = [dict(r, report={k: {"A": v["A"][:1], "P": v["P"][:1]} for k, v in r["report"].items()}) for r in rows]
     got = R.combo_stats(short, Z, exp, SPEC)
-    assert got["aggregate"] is None and any("undefined d'" in r for r in got["reasons"])
-    assert any("not the 8 report seeds" in r for r in got["reasons"])
+    assert got["aggregate"] is None and got["reasons"] == [f"{len(rows)} pairs whose report probes are not the 8 report seeds"]
     seven = [dict(r, report={k: {"A": v["A"][:7], "P": v["P"][:7]} for k, v in r["report"].items()}) for r in rows]
     got = R.combo_stats(seven, Z, exp, SPEC)                                    # d' defined, still not the declared seeds
     assert got["aggregate"] is None and got["reasons"] == [f"{len(rows)} pairs whose report probes are not the 8 report seeds"]
     nanz = {"A": (0.0, float("nan")), "P": (0.0, 1.0)}
     assert any("NaN" in r for r in R.combo_stats(rows, nanz, exp, SPEC)["reasons"])
+
+
+def test_combo_stats_reports_mismatched_a_and_p_probes_as_invalid_not_a_crash():
+    rows = rows_for(3, 2)
+    exp = [(r["axis"], r["turn"], r["x"], r["y"]) for r in rows]
+    bad = dict(rows[0], report=dict(rows[0]["report"], R1={"A": rows[0]["report"]["R1"]["A"][:7],
+                                                           "P": rows[0]["report"]["R1"]["P"]}))
+    got = R.combo_stats([bad] + rows[1:], Z, exp, SPEC)                        # dv would raise on the 7 x 8 probe
+    assert got["aggregate"] is None and got["reasons"] == ["1 pairs whose report probes are not the 8 report seeds"]
 
 
 # ---- records ---------------------------------------------------------------------------------------------------------

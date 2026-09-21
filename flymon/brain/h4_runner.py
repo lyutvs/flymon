@@ -52,7 +52,7 @@ def reselect(m, ctx: Context, name: str, params) -> dict:
 def run_oracle(m, ctx: Context, name: str, params, r: dict) -> dict:
     rows = m.oracle(params, r["readout"], r["z"])
     r["oracle"] = combo_stats(rows, r["z"], ctx.expected, ctx.spec)
-    r["records"] = combo_records(rows, r["z"], ctx.spec)
+    r["records"] = None if r["oracle"]["reasons"] else combo_records(rows, r["z"], ctx.spec)    # none on INVALID rows
     agg = r["oracle"]["aggregate"]
     ctx.log(f"{name} oracle: " + (f"T_b {agg['testable_b']}/{agg['n_b']}  F_a {agg['F_a']}" if agg
                                   else f"INVALID {r['oracle']['reasons']}"))
