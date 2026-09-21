@@ -1,6 +1,7 @@
 """C3: homeostatic thresholds, cycles and the inherited-then-own-grid order (spec H.3a.6)."""
 import dataclasses
 import hashlib
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -194,6 +195,20 @@ def test_a_tampered_threshold_file_is_rewritten(c3ctx):
     np.savez(p.kc_thresh_file, kc_body_ids=IDS, v_th=RULE)                  # same name, other content
     again = files.params(c1_params(SPEC, 1.6, 0.2), theta)
     assert np.array_equal(theta_of(again), theta) and again.kc_thresh_sha256 == sha256_file(again.kc_thresh_file)
+
+
+def test_threshold_files_are_byte_identical_whenever_they_are_written(c3ctx):
+    files = c3ctx.extra["threshold_files"]
+    theta = RULE * np.float32(1.1)
+    p = files.params(c1_params(SPEC, 1.6, 0.2), theta)
+    with zipfile.ZipFile(p.kc_thresh_file) as z:
+        assert [i.filename for i in z.infolist()] == ["kc_body_ids.npy", "v_th.npy"]
+        assert all(i.date_time == (1980, 1, 1, 0, 0, 0) for i in z.infolist())
+    first = Path(p.kc_thresh_file).read_bytes()
+    Path(p.kc_thresh_file).unlink()
+    again = files.params(c1_params(SPEC, 1.6, 0.2), theta)
+    assert again.kc_thresh_sha256 == p.kc_thresh_sha256 and Path(again.kc_thresh_file).read_bytes() == first
+    assert np.array_equal(theta_of(again), theta)
 
 
 def test_run_c3_runs_every_cell_when_c1_was_dropped(c3ctx):

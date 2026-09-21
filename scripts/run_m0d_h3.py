@@ -187,6 +187,8 @@ def main(argv=None, spec: H3Spec | None = None, summary_spec: H3Spec = SPEC, req
         block = dict(res, report=str(report), report_sha256=sha256_file(report))
         c3 = res["combos"].get("C3", {})
         if c3.get("status") == COMBO_ADOPTED:
+            assert c3["adopted"]["params"].kc_thresh_mode == "homeostatic", \
+                "invariant: an adopted C3 candidate has homeostatic thresholds (iteration 0 never stops)"
             src = Path(c3["adopted"]["params"].kc_thresh_file)
             copy = write_bytes(C3_THRESHOLDS_COPY, src.read_bytes(), guard_params)
             block["c3_thresholds"] = dict(path=str(copy), sha256=sha256_file(copy), source=str(src))

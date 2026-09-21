@@ -19,6 +19,7 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import io
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -53,6 +54,16 @@ def rule_thresholds(conn, pops, params) -> tuple[np.ndarray, np.ndarray]:
     return eng.v_th[np.asarray(pops.kc, np.int64)].astype(np.float32).copy(), eng.kc_pn_input > 0
 
 
+def npz_bytes(**arrays) -> bytes:
+    """np.savez's layout with fixed zip timestamps: the bytes depend only on the arrays (the sha is in the cache key)."""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as z:
+        for name, arr in arrays.items():
+            with z.open(zipfile.ZipInfo(f"{name}.npy", date_time=(1980, 1, 1, 0, 0, 0)), "w") as fh:
+                np.lib.format.write_array(fh, np.asanyarray(arr), allow_pickle=False)
+    return buf.getvalue()
+
+
 class ThresholdFiles:
     """Content-addressed threshold files: the name is the hash of the data, so a resumed run reuses the same file and
     therefore the same sha256 in Params (and the same cache keys)."""
@@ -67,9 +78,7 @@ class ThresholdFiles:
         path = self.root / f"theta-{name}.npz"
         p = dataclasses.replace(base, kc_thresh_mode="homeostatic", kc_thresh_file=str(path), kc_thresh_sha256="x")
         if not (path.exists() and self._holds(path, th)):          # a damaged or foreign file is rewritten
-            buf = io.BytesIO()
-            np.savez(buf, kc_body_ids=self.ids, v_th=th)
-            write_bytes(path, buf.getvalue(), [p])
+            write_bytes(path, npz_bytes(kc_body_ids=self.ids, v_th=th), [p])
         return dataclasses.replace(p, kc_thresh_sha256=sha256_file(path))
 
     def _holds(self, path, th) -> bool:

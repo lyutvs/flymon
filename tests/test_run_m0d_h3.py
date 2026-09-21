@@ -80,6 +80,7 @@ def test_a_complete_run_writes_everything_through_both_guards_and_resumes_from_t
     assert second["cache"]["misses"] == 0 and second["cache"]["hits"] > 0
     first = json.loads(reports[0].read_text())
     assert {k: c["status"] for k, c in first["combos"].items()} == {k: c["status"] for k, c in second["combos"].items()}
+    assert h3_store.canonical(first["combos"]) == h3_store.canonical(second["combos"])
 
 
 def test_the_runner_stops_at_the_first_dropped_combination(workdir):
