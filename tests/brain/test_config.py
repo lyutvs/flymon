@@ -27,3 +27,12 @@ def test_our_design_defaults():
     assert p.sign_override == (("lLN1", -1), ("lLN2", -1))
     assert p.min_weight == 5
     assert p.kc_kc_scale == 0.0   # KC->KC fast excitation removed (spec appendix D)
+
+
+def test_params_from_an_older_run_loads_with_apl_input_scale_one():
+    """Summaries written before H.3a have no apl_input_scale; they are the unscaled engine."""
+    import dataclasses
+    from flymon.brain.config import Params
+    old = dataclasses.asdict(Params())
+    old.pop("apl_input_scale")
+    assert Params(**old).apl_input_scale == 1.0
