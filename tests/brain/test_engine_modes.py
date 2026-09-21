@@ -1,6 +1,7 @@
 """M0d engine modes (spec appendix H.2): graded APL, ORN->PN depression, homeostatic KC thresholds.
 Every default must keep the M0c engine bit-identical."""
 import hashlib
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -128,6 +129,40 @@ def test_apl_input_scale_matches_the_diagnostic_prototype_path(synthetic_connect
     is_apl[np.asarray(pops.apl, np.int64)] = True
     prototype.w[is_apl[prototype.tgt]] *= np.float32(s)
     implemented = build_csc(c, Params(**{**BASE, "apl_input_scale": s}), pops.apl, pops.kc)
+    assert np.array_equal(implemented.w, prototype.w)
+
+
+def test_apl_input_scale_matches_the_prototype_with_hemisphere_balancing(synthetic_connectome):
+    """The calibration runs had balance_hemispheres on; BASE turns it off, so the equivalence has to be
+    pinned in both settings or the multiply's position relative to the hemisphere factor is untested."""
+    c = synthetic_connectome()
+    pops = Populations.from_connectome(c)
+    s = 0.11863
+    kw = {**BASE, "balance_hemispheres": True}
+    prototype = build_csc(c, Params(**kw), pops.apl, pops.kc)
+    is_apl = np.zeros(c.N, bool)
+    is_apl[np.asarray(pops.apl, np.int64)] = True
+    prototype.w[is_apl[prototype.tgt]] *= np.float32(s)
+    implemented = build_csc(c, Params(**{**kw, "apl_input_scale": s}), pops.apl, pops.kc)
+    assert np.array_equal(implemented.w, prototype.w)
+
+
+@pytest.mark.skipif(not Path("data/malecns.npz").exists(), reason="MaleCNS connectome not built")
+def test_apl_input_scale_is_applied_after_the_hemisphere_factor():
+    """Order matters only for edges carrying both float32 multiplies. The synthetic APL sits on the left and
+    every edge into it has one weight, so no synthetic fixture can see the order; the real connectome has
+    2683 such edges over 131 weights, and 1086 of them change if the multiply moves before the factor."""
+    c = Connectome.load("data/malecns.npz")
+    pops = Populations.from_connectome(c)
+    s = 0.11863
+    kw = {**BASE, "balance_hemispheres": True}
+    prototype = build_csc(c, Params(**kw), pops.apl, pops.kc)
+    is_apl = np.zeros(c.N, bool)
+    is_apl[np.asarray(pops.apl, np.int64)] = True
+    into_apl = is_apl[prototype.tgt]
+    assert (into_apl & (c.side[prototype.tgt] == "R")).any(), "no edge carries both multiplies"
+    prototype.w[into_apl] *= np.float32(s)
+    implemented = build_csc(c, Params(**{**kw, "apl_input_scale": s}), pops.apl, pops.kc)
     assert np.array_equal(implemented.w, prototype.w)
 
 
