@@ -221,3 +221,68 @@ def test_rank_score_is_the_normalised_minimum():
 ])
 def test_qualification_verdict(args, status, reasons):
     assert R.qualification_verdict(*args) == (status, reasons)
+
+
+# ---- C3 homeostasis -----------------------------------------------------------------------------------------------
+def test_homeostasis_step_updates_only_the_update_set_and_clips_to_the_rule_multiples():
+    rule = np.array([10.0, 10.0, 10.0, 10.0], np.float32)
+    theta = rule.copy()
+    a = np.array([0.062, 0.0, 1.0, 1.0])
+    upd = np.array([True, True, True, False])
+    t = R.homeostasis_step(theta, rule, a, upd, 0.1, 0.062, (0.25, 4.0))
+    assert t.dtype == np.float32
+    assert t[0] == 10.0 and t[1] == np.float32(9.0) and t[3] == 10.0
+    assert t[2] == np.float32(10.0 * (1 + 0.1 * (1 - 0.062) / 0.062))
+    for _ in range(40):
+        t = R.homeostasis_step(t, rule, a, upd, 0.1, 0.062, (0.25, 4.0))
+    assert t[2] == np.float32(40.0) and t[1] == np.float32(2.5) and t[0] == 10.0
+    assert R.boundary_share(t, rule, upd, (0.25, 4.0)) == pytest.approx(2 / 3)
+
+
+def test_homeostasis_done_needs_both_conditions_and_a_previous_iteration():
+    spec = SPEC
+    upd = np.ones(4, bool)
+    a = np.full(4, 0.0625)
+    th = np.full(4, 10.0, np.float32)
+    assert not R.homeostasis_done(a, None, th, upd, spec)["done"]
+    assert R.homeostasis_done(a, th * 1.04, th, upd, spec)["done"]
+    assert not R.homeostasis_done(a, th * 1.06, th, upd, spec)["done"]
+    assert not R.homeostasis_done(np.full(4, 0.0729), th, th, upd, spec)["done"]      # 7/96 is one step too far
+    assert R.homeostasis_done(np.full(4, 5 / 96), th, th, upd, spec)["done"]
+
+
+def test_theta_motion_counts_moving_and_oscillating_kcs():
+    upd = np.array([True, True, True, False])
+    t0 = np.array([10.0, 10.0, 10.0, 10.0])
+    t1 = np.array([11.0, 9.0, 10.2, 5.0])
+    t2 = np.array([10.0, 8.0, 10.3, 1.0])
+    assert R.theta_motion(None, None, t0, upd, 0.05) == dict(n_update=3, n_moving=None, n_oscillating=None)
+    assert R.theta_motion(None, t0, t1, upd, 0.05) == dict(n_update=3, n_moving=2, n_oscillating=None)
+    assert R.theta_motion(t0, t1, t2, upd, 0.05) == dict(n_update=3, n_moving=2, n_oscillating=1)
+
+
+def test_firing_fraction_counts_presentations():
+    rows = [dict(fired=[0, 2]), dict(fired=[2]), dict(fired=[]), dict(fired=[2, 3])]
+    assert R.firing_fraction(rows, 5).tolist() == [0.25, 0.0, 0.75, 0.25, 0.0]
+
+
+def test_cycle_stalled_needs_both_changes_small():
+    s = dataclasses.replace(SPEC)
+    assert R.cycle_stalled(dict(median_mv=12.5, median_kc_pct=6.0), dict(median_mv=12.4, median_kc_pct=6.1), s)
+    assert not R.cycle_stalled(dict(median_mv=12.5, median_kc_pct=6.0), dict(median_mv=12.2, median_kc_pct=6.1), s)
+    assert not R.cycle_stalled(dict(median_mv=12.5, median_kc_pct=6.0), dict(median_mv=12.4, median_kc_pct=6.3), s)
+
+
+# ---- records helpers ----------------------------------------------------------------------------------------------
+def test_half_split_error_flags_above_the_thresholds():
+    rows = [dict(odor=f"R{j:02d}", apl_v_mean=(20.0 if j < 24 else 10.0), kc_active_frac=0.06)
+            for j in range(48) for _ in (0, 1)]
+    h = R.half_split_error(rows, [f"R{j:02d}" for j in range(48)], 24, 4.70, 2.03)
+    assert h["membrane_mv"] == 10.0 and h["membrane_flag"] and h["kc_pp"] == 0.0 and not h["kc_flag"]
+
+
+def test_paired_boot_ci_is_paired_and_reproducible():
+    a = np.arange(10.0)
+    one = R.paired_boot_ci(a, a, R.iqr, 500, 7)
+    assert one["diff"] == 0.0 and one["ci"] == [0.0, 0.0]
+    assert R.paired_boot_ci(a, a - 1, np.mean, 500, 7) == R.paired_boot_ci(a, a - 1, np.mean, 500, 7)

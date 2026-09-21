@@ -228,3 +228,106 @@ def qualification_verdict(sparsity_ok: bool, overlap: str, guard_verdicts: list,
     if undecided:
         return INDETERMINATE, undecided
     return None, []
+
+
+# ================================================================ C3 homeostasis (H.3a.6)
+def firing_fraction(rows: list[dict], n_kc: int) -> np.ndarray:
+    """a_i: the fraction of presentations in which KC i (position in pops.kc) fired at least once."""
+    counts = np.zeros(n_kc, np.int64)
+    for p in rows:
+        counts[np.asarray(p["fired"], np.int64)] += 1
+    return counts / float(len(rows))
+
+
+def homeostasis_step(theta, rule, a, update, eta: float, target: float, clip: tuple) -> np.ndarray:
+    """theta_i <- theta_i (1 + eta (a_i - A0) / A0) on the update set, clipped to [clip lo, clip hi] x rule; the rest
+    of the KCs keep their value. Computed in float64, stored float32 (the threshold file's type)."""
+    t = np.asarray(theta, np.float64).copy()
+    r = np.asarray(rule, np.float64)
+    u = np.asarray(update, bool)
+    t[u] = t[u] * (1.0 + eta * (np.asarray(a, np.float64)[u] - target) / target)
+    t[u] = np.clip(t[u], clip[0] * r[u], clip[1] * r[u])
+    return t.astype(np.float32)
+
+
+def boundary_share(theta, rule, update, clip: tuple) -> float:
+    t = np.asarray(theta, np.float64)[np.asarray(update, bool)]
+    r = np.asarray(rule, np.float64)[np.asarray(update, bool)]
+    at = (t <= clip[0] * r * (1 + 1e-6)) | (t >= clip[1] * r * (1 - 1e-6))
+    return float(at.mean()) if at.size else 0.0
+
+
+def theta_motion(theta_prev2, theta_prev, theta, update, dtheta_max: float) -> dict:
+    """The homeostasis trajectory record (H.3a.6 probe): updated KCs still moving by >= dtheta_max, and those whose
+    last two updates had opposite signs (oscillating on the 1/96 firing grid). None when there is no history yet."""
+    u = np.asarray(update, bool)
+    if theta_prev is None:
+        return dict(n_update=int(u.sum()), n_moving=None, n_oscillating=None)
+    cur, prev = np.asarray(theta, np.float64)[u], np.asarray(theta_prev, np.float64)[u]
+    moving = np.abs(cur - prev) / prev >= dtheta_max
+    osc = None
+    if theta_prev2 is not None:
+        d1 = prev - np.asarray(theta_prev2, np.float64)[u]
+        osc = int((np.sign(d1) * np.sign(cur - prev) < 0).sum())
+    return dict(n_update=int(u.sum()), n_moving=int(moving.sum()), n_oscillating=osc)
+
+
+def homeostasis_done(a, theta_prev, theta, update, spec) -> dict:
+    """Both stop conditions: the median a_i over the update set within one grid step of A0, and the
+    dtheta_q-quantile of |dtheta/theta| against the previous iteration below dtheta_max (KCs held at a clip bound
+    contribute 0). With no previous iteration the second condition is not met."""
+    u = np.asarray(update, bool)
+    med = float(np.median(np.asarray(a, float)[u]))
+    median_ok = bool(abs(med - spec.homeo_target) <= spec.homeo_median_tol)
+    if theta_prev is None:
+        q, q_ok = None, False
+    else:
+        prev = np.asarray(theta_prev, np.float64)[u]
+        rel = np.abs(np.asarray(theta, np.float64)[u] - prev) / prev
+        q = float(np.percentile(rel, spec.homeo_dtheta_q))
+        q_ok = bool(q < spec.homeo_dtheta_max)
+    return dict(median_a=med, median_ok=median_ok, dtheta_q=q, dtheta_ok=q_ok, done=bool(median_ok and q_ok))
+
+
+def cycle_stalled(prev: dict, cur: dict, spec) -> bool:
+    """C3 cycles: both the membrane and the KC activity moved less than the stall thresholds."""
+    return bool(abs(cur["median_mv"] - prev["median_mv"]) < spec.c3_stall_mv
+                and abs(cur["median_kc_pct"] - prev["median_kc_pct"]) < spec.c3_stall_pp)
+
+
+# ================================================================ records (H.3a.8)
+def per_odor_means(rows: list[dict], key: str, odor_names: list, scale: float = 1.0) -> np.ndarray:
+    return np.array([scale * np.mean([p[key] for p in rows if p["odor"] == o]) for o in odor_names])
+
+
+def half_split_error(rows: list[dict], odor_names: list, half: int, mv_max: float, pp_max: float) -> dict:
+    """|median(first half) - median(second half)| of the per-odour membrane and KC active %, flagged above the
+    3-SD thresholds (recorded; the run continues)."""
+    v = per_odor_means(rows, "apl_v_mean", odor_names)
+    k = per_odor_means(rows, "kc_active_frac", odor_names, 100.0)
+    dv = float(abs(np.median(v[:half]) - np.median(v[half:])))
+    dk = float(abs(np.median(k[:half]) - np.median(k[half:])))
+    return dict(membrane_mv=dv, kc_pp=dk, membrane_flag=bool(dv > mv_max), kc_flag=bool(dk > pp_max))
+
+
+def iqr(x) -> float:
+    q1, q3 = np.percentile(np.asarray(x, float), [25, 75])
+    return float(q3 - q1)
+
+
+def log10_var(K) -> float:
+    return float(np.var(np.log10(np.maximum(np.asarray(K, float), 1))))
+
+
+def zero_count(K) -> float:
+    return float((np.asarray(K, float) == 0).sum())
+
+
+def paired_boot_ci(a, b, stat, draws: int, seed: int) -> dict:
+    """two_checks.boot_ci: 95% percentile CI of stat(A) - stat(B), resampling shared clusters (paired)."""
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    rng = np.random.default_rng(seed)
+    idx = rng.integers(0, len(a), size=(draws, len(a)))
+    d = np.array([stat(a[i]) - stat(b[i]) for i in idx])
+    lo, hi = np.percentile(d, [2.5, 97.5])
+    return dict(diff=float(stat(a) - stat(b)), ci=[float(lo), float(hi)], draws=int(draws), seed=int(seed))
