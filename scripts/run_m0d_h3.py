@@ -152,6 +152,9 @@ def main(argv=None, spec: H3Spec | None = None, summary_spec: H3Spec = SPEC, req
             if r["status"] == COMBO_ABORTED:
                 aborted = True
                 break
+            if name == "C1" and a.stop_after:                       # verification only: C3 would run every cell
+                print("== stopped after C1 stage 1 (--stop-after)", flush=True)
+                break
             if r["status"] == COMBO_ADOPTED and not a.no_records:
                 print(f"== {name} records", flush=True)
                 try:

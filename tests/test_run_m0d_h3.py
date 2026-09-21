@@ -110,6 +110,15 @@ def test_each_blocker_alone_keeps_the_summary_unwritten(workdir, monkeypatch, bl
     assert not (root / "results/summary/m0d.json").exists()
 
 
+def test_stop_after_stage1_ends_the_run_after_c1(workdir):
+    root, main, _, _ = workdir
+    assert main("--continue-after-drop", "--stop-after", "stage1") == 0
+    rep = json.loads(next((root / "results/m0d/h3/runs").glob("*.json")).read_text())
+    assert rep["combos"]["C1"]["status"] == "stopped_after_stage1" and "C3" not in rep["combos"]
+    assert rep["stopped_after"] is None
+    assert not (root / "results/summary/m0d.json").exists()
+
+
 def test_a_dirty_hashed_file_refuses_the_run(workdir, monkeypatch):
     root, main, _, _ = workdir
     monkeypatch.setattr(run, "git_state", lambda: dict(CLEAN, dirty_hashed=["flymon/brain/h3_rules.py"]))
