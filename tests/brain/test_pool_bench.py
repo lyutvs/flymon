@@ -186,3 +186,16 @@ def test_refuse_modified_engine_output_covers_apl_input_scale(tmp_path, monkeypa
     assert e.value.code == 2
     assert "apl_input_scale=0.5" in capsys.readouterr().err
     refuse_modified_engine_output("results/m0d/diag/x.json", Params(apl_input_scale=0.5))   # m0d path: allowed
+
+
+def test_match_sparsity_row_keys_on_apl_input_scale():
+    """A scaled-APL run must not be compared against the unscaled engine's reference row: the grid key includes
+    `apl_input_scale`, and rows written before the field existed read as the unscaled 1.0 engine."""
+    rest = {"mbon_hz_rest_trimmed": 3.3}
+    old_row = {"grid": [_sp_row()]}                                          # written before the key existed
+    assert match_sparsity_row(_pool_sparsity(), rest, old_row, Params())["ok"] is True
+    scaled = match_sparsity_row(_pool_sparsity(), rest, old_row, Params(apl_input_scale=0.5))
+    assert scaled["ok"] is False and "apl_input_scale=0.5" in scaled["note"]
+    scaled_row = {"grid": [_sp_row(apl_input_scale=0.5)]}
+    assert match_sparsity_row(_pool_sparsity(), rest, scaled_row, Params(apl_input_scale=0.5))["ok"] is True
+    assert match_sparsity_row(_pool_sparsity(), rest, scaled_row, Params())["ok"] is False   # and not the other way
