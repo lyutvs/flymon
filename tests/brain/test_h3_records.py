@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from flymon.brain.config import Params
-from flymon.brain.h3_records import clamped, collect, gain_control
+from flymon.brain.h3_records import ai_record, clamped, collect, gain_control
 from flymon.brain.h3_runner import Context, c1_params
 from flymon.brain.h3_spec import SPEC
 
@@ -36,6 +36,9 @@ def test_graded_records_cover_every_declared_item():
                         "apl_to_mbon_zero", "kc_to_apl_only"}
     assert set(rec["membrane"]["instantaneous"]) == {"p5", "p25", "p50", "p75", "p95"}
     assert rec["membrane"]["release"]["rel_share_in"] == 1.0
+    assert {k for k in rec["a_i"] if k.startswith("p")} == {"p25", "p50", "p75", "p90", "p99"}
+    one = ai_record(m.reference(p), N_KC, np.arange(N_KC) < 80, dataclasses.replace(SPEC, ai_quantiles=(50.0,)))
+    assert {k for k in one if k.startswith("p")} == {"p50"}                              # keys follow the spec
     assert sum(rec["apl_input"]["share"].values()) == pytest.approx(1.0)
     assert set(rec["guard_ci"]) == {n for k in POOLS for n in POOLS[k]}
     assert rec["gain_control"]["release_match_ok"] and "iqr_diff" in rec["gain_control"]

@@ -109,6 +109,7 @@ class H3Spec:
     half_split_mv: float = 4.70
     half_split_pp: float = 2.03
     apl_v_quantiles: tuple = (5.0, 25.0, 50.0, 75.0, 95.0)
+    ai_quantiles: tuple = (25.0, 50.0, 75.0, 90.0, 99.0)  # percentiles of the a_i distribution record (H.3a.8)
     callout_types: tuple = ("MBON05", "MBON13")
     ai_clip_mark: float = 0.49
 

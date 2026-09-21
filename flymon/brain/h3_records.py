@@ -45,9 +45,9 @@ def membrane_record(rows, spec) -> dict:
 
 def ai_record(rows, n_kc: int, update, spec) -> dict:
     a = firing_fraction(rows, n_kc)[np.asarray(update, bool)]
-    q = np.percentile(a, [25, 50, 75, 90, 99])
-    return dict(n_kc=int(a.size), share_zero=float((a == 0).mean()), q1=float(q[0]), median=float(q[1]),
-                q3=float(q[2]), p90=float(q[3]), p99=float(q[4]), max=float(a.max()),
+    q = np.percentile(a, spec.ai_quantiles)
+    return dict(n_kc=int(a.size), share_zero=float((a == 0).mean()),
+                **{f"p{p:g}": float(v) for p, v in zip(spec.ai_quantiles, q)}, max=float(a.max()),
                 n_ge_mark=int((a >= spec.ai_clip_mark).sum()))
 
 
