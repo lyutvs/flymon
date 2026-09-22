@@ -161,11 +161,13 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   conditioning criterion still fails, as predicted.
 - **M1 (battle environment, brain-free pilot): pass** — MAX − RND win rate 0.319 ≥ 0.15.
 - **M2 (encoder, readout, learning unit test): no-go — the test could not be built (2026-09-22).** Spec 5's learning
-  unit test (naive d′ ≈ 0, d′ ≥ 1 after 20 rewards, a drop after 20 punishments) never ran. On every encoder (E0–E3)
-  and engine (C0, C1, C3) we tried, too few candidate pairs reach the declared bar even under an idealised, perfectly
-  targeted weight edit: at best 7 of 21 opponent-type pairs (bar: half), and 2–3 of 21 when the edit is confined to
-  Kenyon cells active only for the taught odour, because the punishment readout (MBON13) is driven mostly by Kenyon
-  cells the two odours share. This is **not** a "no learning" result.
+  unit test (naive d′ ≈ 0, d′ ≥ 1 after 20 rewards, a drop after 20 punishments) never ran. On every encoder (E0–E3) and
+  engine (C0, C1, C3) we tried, too few candidate pairs are testable even under an idealised, perfectly targeted weight
+  edit. The encoder comparison's best score was 0.222 against a bar of 0.5 (E0: 4 of 18 within-turn and 9 of 21
+  opponent-type pairs; the score is the smaller rate). The engine comparison's best was 7 of 21 opponent-type pairs
+  (C3), against a bar of half the pairs plus at least two testable within-turn pairs with a naive d′ near 0. Confining
+  the edit to Kenyon cells active only for the taught odour left C3 with 2–3 of 21, because the punishment readout
+  (MBON13) is driven mostly by Kenyon cells the two odours share. This is **not** a "no learning" result.
   - Learning tests are limited to the designed odour pair (a mechanism control). The primary claim (type-conditional
     move preference, spec 4.3 criterion 1) is not supported in its current form and is reported as untested. M3 (agent
     loop), M4 (experiment) and the secondary claim (win-rate contribution) are on hold, not discarded. Whether to design
