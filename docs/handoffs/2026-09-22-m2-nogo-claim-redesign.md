@@ -40,7 +40,7 @@ D.6(부록 I.3, `m2_nogo.json`의 `d6`): **(a) 충족** — G.8 재판정(스펙
    - LHPV3c1 이득 또는 부호 — **미검증**. 포인터: H.1 제외 행("LHPV3c1 부호 변경"), H.4a.6 "선택지에 대한 함의", I.2.
    - KC→KC 억제 — **미검증**. 포인터: I.2, H.4a.8 마지막 항목.
    - 희소화 — **미검증**. 포인터: H.4a.7 첫 항목("희소성"), I.2, H.4a.8 마지막 항목.
-   H.8은 이 변경들을 "필요해지면 새 선언"으로 남겼다.
+   H.8은 그중 국소 APL·발화율 정규화·LHPV3c1 부호를 "필요해지면 새 선언"으로 남겼다; 인코더·KC→KC 억제·희소화는 부록 I.2가 이름 붙인다.
 3. **범위**(I.7, 사용자 결정): 학습 시험은 **설계쌍(기계 대조)으로 한정**한다(G.10에서 시험 가능, 보상 18.69 / 처벌 −6.27). 4.3 기준 1은 현재 형태로 지지되지 않으며
    **시험하지 않음**으로 적는다 — "타입 조건부 학습 안 됨"은 쓰지 않는다(4.3 끝 날짜 줄, I.5). **M3·M4와 2차 주장(승률 기여)은 보류**, 폐기가 아니다(I.6, I.7).
 4. **지킬 선언 습관**:
@@ -55,7 +55,7 @@ D.6(부록 I.3, `m2_nogo.json`의 `d6`): **(a) 충족** — G.8 재판정(스펙
 |---|---|---|
 | `flymon/brain/d6a.py` + `scripts/run_m2_d6a.py` | G.8의 D.6 (a) 판정(이동 200 ms 창, `judge()`), 실행 전 E.1 자기 검사 | `df8528f`, 스펙 G.8 |
 | `scripts/write_m2_nogo_summary.py` | no-go 사슬 파생·고리가 깨지면 쓰기 거부, sha256 `e4dfa912…` | `508aea9`, 부록 I 머리 |
-| `tests/test_m2_go.py` | strict xfail 두 개 — 새 go는 `test_m2_learning_unit_test_can_be_built`(어떤 조합이 T_b ≥ 0.5 ∧ F_a ≥ 2)와 `test_m2_go`(`results/summary/m2_learning.json` 판정 `PASS`)를 **XPASS**로 만들어야 한다. 삭제·완화하지 않는다(A.5 선례) | `508aea9`, I.7 |
+| `tests/test_m2_go.py` | strict xfail 두 개 — 새 go는 `test_m2_learning_unit_test_can_be_built`(어떤 조합이 T_b ≥ 0.5 ∧ F_a ≥ 2)와 `test_m2_go`(`results/summary/m2_learning.json` 판정 `PASS`)를 **XPASS**로 만들어야 한다. 삭제·완화하지 않는다(A.5 선례). `test_m2_learning_unit_test_can_be_built`는 `results/summary/m0d.json` 블록 `h4`만 읽는다. 새 선언이 엔진 선택을 다른 요약에 기록하면 이 테스트를 그 요약까지 읽도록 넓힌다(조건은 완화하지 않는다) — 기존 기록을 덮어써서 XPASS를 만들지 않는다. | `508aea9`, I.7 |
 | `scripts/run_m0d_h4.py`, `flymon/brain/h4_*`(`h4_spec`, `h4_pairs`, `h4_jobs`, `h4_measure`, `h4_rules`, `h4_formula`, `h4_runner`) | 판독 재선정 → 오라클 → 선택 | H.4, H.4a.5(`a77a5fd`) |
 | `docs/superpowers/specs/m0d-diag/h4_specificity_ceiling.py` (`--family freq`/`all`) | X 전용 편집 천장 | `ad77490`, `6a19e48`, H.4a.7–8 |
 | `docs/superpowers/specs/m0d-diag/h4_testability_diag.py` | 엔진 없이 H.4 기록에서 병목 진단 | H.4a.6 |

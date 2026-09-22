@@ -136,8 +136,8 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). M3·M4�
   편집을 X에만 활성인 KC로 제한한 천장(판독 규칙을 결과 전에 고정: C3 ≥ 14/21이면 새 선언, ≤ 10/21이면 no-go)은 특이성을 얻었으나(Y/X → 0) 처벌 조건이 무너져
   (−p ≥ 2인 쌍 C3 11 → 3 · 4) C3 `freq` 2/21 · `all` 3/21 → **no-go**. MBON13(처벌 판독)을 움직이는 X의 구동은 대부분 Y와 공유된 KC에 있다.
 - **안 된 것(M2 no-go — 시험 불성립, 2026-09-22, 스펙 부록 I)**: 스펙 5의 M2 학습 단위 시험(순진 d′ ≈ 0 → 보상 20회 뒤 d′ ≥ 1 → 처벌 20회 뒤 하락)은
-  **한 번도 돌지 않았다.** 시험한 인코더(E0–E3)와 엔진(C0·C1·C3)에서, 이상화한 특이적 가중치 감소로도 시험을 세울 수 있는 쌍이 선언된 기준(상대 타입 축 시험 가능
-  비율 ≥ 0.5 ∧ 순진 균형 턴 내 쌍 ≥ 2)에 못 미쳤다. 그래서 이것은 "학습 안 됨"(D.6 (c) 실패)이 **아니라** 시험 불성립이다. 사용자 결정으로 스펙이 이름 붙인
+  **한 번도 돌지 않았다.** 시험한 인코더(E0–E3)와 엔진(C0·C1·C3)에서, 이상화한 특이적 가중치 감소로도 시험을 세울 수 있는 쌍이 선언된 기준(엔진은 상대 타입 축 시험 가능
+  비율 ≥ 0.5 ∧ 순진 균형 턴 내 쌍 ≥ 2, 인코더는 두 축 중 낮은 시험 가능 비율 ≥ 0.5)에 못 미쳤다. 그래서 이것은 "학습 안 됨"(D.6 (c) 실패)이 **아니라** 시험 불성립이다. 사용자 결정으로 스펙이 이름 붙인
   3번 경로(범위 축소 / M2 no-go 기록 + 주장 재설계)를 택했다.
   - 학습 시험은 설계쌍(기계 대조)으로 한정한다. 0절의 1차 주장(상대 타입 조건부 선호 학습)은 4.3 기준 1이 현재 형태로 **지지되지 않는다** — 시험하지 않았다.
     M3(에이전트 루프)·M4(실험)와 2차 주장(승률 기여)은 **보류**(폐기 아님).
@@ -162,7 +162,7 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
 - **M1 (battle environment, brain-free pilot): pass** — MAX − RND win rate 0.319 ≥ 0.15.
 - **M2 (encoder, readout, learning unit test): no-go — the test could not be built (2026-09-22).** Spec 5's learning
   unit test (naive d′ ≈ 0, d′ ≥ 1 after 20 rewards, a drop after 20 punishments) never ran. On every encoder (E0–E3) and
-  engine (C0, C1, C3) we tried, too few candidate pairs are testable even under an idealised, perfectly targeted weight
+  engine (C0, C1, C3) we tried, too few candidate pairs are testable even under an idealised, maximally specific weight
   edit. The encoder comparison's best score was 0.222 against a bar of 0.5 (E0: 4 of 18 within-turn and 9 of 21
   opponent-type pairs; the score is the smaller rate). The engine comparison's best was 7 of 21 opponent-type pairs
   (C3), against a bar of half the pairs plus at least two testable within-turn pairs with a naive d′ near 0. Confining
