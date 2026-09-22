@@ -1,0 +1,215 @@
+{
+ "what": "spec appendix I: the M2 no-go record, derived by scripts/write_m2_nogo_summary.py",
+ "written_utc": "2026-09-22T08:34:11+00:00",
+ "git_commit": "508aea9861933913a566400f1664b50836b0d9c1",
+ "git_dirty": false,
+ "inputs_sha256": {
+  "results/summary/m2_oracle.json": "b06064a86b082fec8042038ce651d30adfe6fbc5f8fc698c627cdbb39d1e7536",
+  "results/summary/m2_encoders.json": "efd22bf39bbdf7dbba6ff49f63352fe77a325fe76a7fefa9fa443ab5a944e0dd",
+  "results/summary/m0d.json": "64f2c0bb804c613c4af271e099ae4e076610e17305b22fcf1d85ed6fa5a8b564",
+  "results/summary/m2_probe.json": "c734debed655ee09bdab4a0685578ff566ccffaa05750cc4d7d1b0b64841e56c",
+  "results/m0d/diag/h4_specificity_ceiling_summary.json": "01f677d25c4fcb49bf36626026477c3c2f2d32cfd3421369c195d7d44ef0df4e",
+  "results/m0d/diag/h4_specificity_ceiling_all_summary.json": "2d45877ce0330445b589e80b27fd516f267f7dd8abee490e7298751b934782dc",
+  "results/m2/d6a/g8.json": "fb99580211e9c514be1ff7c8457fd6d41bc60670f8f81f4dad004fc7562a6a1c"
+ },
+ "code_sha256": {
+  "scripts/write_m2_nogo_summary.py": "e4dfa912a843333fe6a5153963a75a7550c7c63172af3880dbe4944383f4c5f0",
+  "flymon/brain/d6a.py": "9303db489c7c9a001a31eba30b54705e3cc47c57c3bc54ac87858cb297788d51"
+ },
+ "name": "M2 no-go — 시험 불성립 (the learning unit test could not be built)",
+ "not_a_d6c_fail": true,
+ "learning_unit_test": {
+  "ran": false,
+  "summary": "results/summary/m2_learning.json"
+ },
+ "chain": {
+  "g10_oracle": {
+   "testable": 8,
+   "pairs": 34,
+   "odd_gate_pool": [
+    3,
+    16
+   ],
+   "even_pilot_pool": [
+    5,
+    18
+   ],
+   "design_pair_testable": true
+  },
+  "g12_encoders": {
+   "scores": {
+    "E0": 0.2222222222222222,
+    "E1": 0.14285714285714285,
+    "E2": 0.14285714285714285,
+    "E3": 0.19047619047619047
+   },
+   "best": 0.2222222222222222,
+   "winner": null,
+   "rule": "G.11 rule 4: best score < 0.5 -> stop and report"
+  },
+  "h4": {
+   "run_id": "20260921T174430Z-7986f4",
+   "commit": "a77a5fd8f3a00d8fb94a0560ea1ef44cff280055",
+   "outcome": "STOP_LOW_T_B",
+   "eligible": [
+    "C3"
+   ],
+   "combos": {
+    "C0": {
+     "testable_b": 4,
+     "n_b": 21,
+     "T_b": 0.19047619047619047,
+     "F_a": 1,
+     "testable_a": 3,
+     "n_a": 18
+    },
+    "C1": {
+     "testable_b": 2,
+     "n_b": 21,
+     "T_b": 0.09523809523809523,
+     "F_a": 0,
+     "testable_a": 2,
+     "n_a": 18
+    },
+    "C3": {
+     "testable_b": 7,
+     "n_b": 21,
+     "T_b": 0.3333333333333333,
+     "F_a": 2,
+     "testable_a": 4,
+     "n_a": 18
+    }
+   },
+   "bar": "T_b >= 0.5 and F_a >= 2 (G.14.4, H.4)"
+  },
+  "h4a8_ceiling": {
+   "rule": "H.4a.7 on C3: A iff testable (b) >= 14/21 and F_a >= 2; B iff <= 10/21; otherwise the user's call",
+   "families": {
+    "freq": {
+     "commit": "ad77490bee47f4e5d744092bace300cd85a4f4e1",
+     "script_sha256": "f1589bfe9f9d98ede5fbb1b725b2a001e1fca8c7bdb0bbe4f73d77e3b247ad07",
+     "C3": {
+      "testable_b": 2,
+      "n_b": 21,
+      "T_b": 0.09523809523809523,
+      "F_a": 0,
+      "testable_a": 2,
+      "n_a": 18
+     },
+     "C0": {
+      "testable_b": 2,
+      "n_b": 21,
+      "T_b": 0.09523809523809523,
+      "F_a": 1,
+      "testable_a": 2,
+      "n_a": 18
+     },
+     "reading": "B"
+    },
+    "all": {
+     "commit": "6a19e48afc2ca782ba6644da47693e6d6b8a1313",
+     "script_sha256": "8b6946d4474cd2c1a15d7373184d1831e2bca946e0fec943f008611b6e46a00c",
+     "C3": {
+      "testable_b": 3,
+      "n_b": 21,
+      "T_b": 0.14285714285714285,
+      "F_a": 0,
+      "testable_a": 3,
+      "n_a": 18
+     },
+     "C0": {
+      "testable_b": 4,
+      "n_b": 21,
+      "T_b": 0.19047619047619047,
+      "F_a": 1,
+      "testable_a": 2,
+      "n_a": 18
+     },
+     "reading": "B"
+    }
+   },
+   "reading": "B"
+  }
+ },
+ "d6": {
+  "a": {
+   "source": "G.8 re-judgement (E.7 #4), results/m2/d6a/g8.json",
+   "condition": "some KC has >= 31 spikes in a 200 ms window sliding by 1 ms over settle + read (> 150 Hz)",
+   "fired": true,
+   "n_presentations": 2624,
+   "n_over": 7,
+   "max_win_spikes": 31,
+   "max_win_hz": 155.0,
+   "margin_spikes": -1,
+   "over": [
+    {
+     "turn": 12,
+     "move": "Surf",
+     "seed": 403,
+     "max_win": 31
+    },
+    {
+     "turn": 12,
+     "move": "Surf",
+     "seed": 431,
+     "max_win": 31
+    },
+    {
+     "turn": 12,
+     "move": "Surf",
+     "seed": 434,
+     "max_win": 31
+    },
+    {
+     "turn": 12,
+     "move": "Surf",
+     "seed": 453,
+     "max_win": 31
+    },
+    {
+     "turn": 12,
+     "move": "Surf",
+     "seed": 454,
+     "max_win": 31
+    },
+    {
+     "turn": 12,
+     "move": "Surf",
+     "seed": 455,
+     "max_win": 31
+    },
+    {
+     "turn": 12,
+     "move": "Surf",
+     "seed": 460,
+     "max_win": 31
+    }
+   ],
+   "e2_record": {
+    "fired": false,
+    "n_presentations": 328,
+    "max_kc_sub_window_hz": 150.0,
+    "margin_hz": 0.0
+   }
+  },
+  "b": {
+   "source": "E.2, results/summary/m2_probe.json",
+   "fired": true,
+   "n_turns_over": 3,
+   "n_turns": 16,
+   "ratio_max": 2.498405951115834
+  },
+  "c": {
+   "status": "not measured",
+   "why": "spec 5's learning unit test never ran (F v3 withdrawn unrun, F v4 not written); G.1 and H.8: no G or H data judges (c)"
+  }
+ },
+ "std_condition_fired": true,
+ "decisions": {
+  "route": "3번 (범위 축소 / M2 no-go 기록 + 주장 재설계), G.14.4 row 5 and H.3a.10 ②, under the H.4a.7 rule",
+  "name": "M2 no-go — 시험 불성립, kept apart from F.7's FAIL (= D.6 (c) met)",
+  "claims": "learning tests limited to the design pair (a mechanism control); 4.3 criterion 1 is not supported in its current form and is reported as untested; M3 and M4 are on hold, not discarded",
+  "e3_std": "STD is not designed now; it is the first question of the next claim declaration",
+  "g8": "D.6 (a) re-judged by G.8 for the record"
+ }
+}
