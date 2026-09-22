@@ -2,10 +2,13 @@
 
 MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
 M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
+M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). M3·M4는 보류.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
 
 **M1 결과: 통과 (풀 게이트 MAX − RND 승률 0.319 ≥ 0.15, 95% CI [0.291, 0.344])**
+
+**M2 결과: no-go — 시험 불성립 (2026-09-22). 학습 단위 시험을 세울 쌍이 선언된 기준에 못 미쳐 시험이 돌지 않았다. "학습 안 됨"이 아니다 — 스펙 부록 I.**
 
 ## 측정된 것 / 우리가 정한 것 / 안 된 것
 
@@ -109,8 +112,71 @@ M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없�
   정의되지 않아 클립 하한을 받는다(KC→KC 제거 후 실질 영향 없음).
 - **실제 M2 첫 측정**(2026-09-16, 스펙 부록 E, 게이트 아님): 잠정 인코더 = 스펙 3.3 그대로(41채널), 팀 풀 16턴 × 짝지은 잡음 8시드, 328 프레젠테이션. **D.6 (a) 미충족(단 최대 서브창이 정확히 150.0 Hz로 여유 0, 격자 정렬 타일·8시드 — 이동 창과 64시드로 재판정 필요), (b) 충족**(16턴 중 3턴이 비율 2 초과, 최대 2.50), **(c) 미측정**(학습 단위 시험은 아직 안 돌았다). 후보 냄새 희소성은 3% 하한 위반 0건(최소 3.08%)이지만 스펙 5의 5~9% 대역은 328건 중 220건(67%)만 만족. MBON13은 실제 후보 냄새에 반응하나 16턴 중 4~5턴에서 무발화, MBON18·MBON21은 전 턴 무발화. 동일 총 ORN 구동에서 51 사구체의 KC 구동이 2~5017 스파이크(2867배)로 퍼지고 `corr(ORN, PN) = −0.015` — 스펙 3.3의 1/수용체수 균등화는 KC 수준에서 작동하지 않는다. 요약 `results/summary/m2_probe.json`, 원자료 `results/m2/`(git 제외).
 - **안 된 것(M2 첫 측정)**: 이 측정으로는 인코더 어휘를 고를 수 없다. 레드팀 2회(외부 모델 `gpt-5.6-sol`, `gpt-6-astra`) 모두 RETHINK. 네 가지가 각각 단독으로 근거를 무너뜨린다 — (1) 사전 등록 1차 기준(4.3 #1)이 판정하는 **상대 타입만 다른 상황 쌍이 데이터에 0개**, (2) 탐색/확인 세트 분리(4.4)가 소진됨(팀 풀 16마리 전부 사용, 홀드아웃 없음), (3) 어휘 비교가 교락됨(사구체 선택 규칙·어휘 구조·채널 복제 수·강도를 동시 변경), (4) 엔진 기각과 인코더 기각에 서로 다른 잣대(평균 vs 최소·실패 턴). 정정 두 건: D.6 (c)를 희소성 검사와 혼동해 "통과"라 적은 것, 그리고 "STD는 구동량 차이를 고치지 않는다"는 주장 — STD는 활동 의존 억압이라 오히려 구동 분산을 압축한다(스펙 E.3에서 철회). 엔진 근사 두 개는 M0d 후보로 기록만 했다: APL을 스파이킹 LIF로 둔 것(실제로는 비발화, Amin et al. 2020; 설계 강도에서 LIF 상한의 88.8%로 포화)과 ORN→PN 이득 제어 부재(Olsen et al. 2010).
+- **실제 M2 보정 — 오라클 상한**(2026-09-16, 스펙 G.10, D.6 (c) 판정 아님): 학습 대신 KC→MBON 가중치를 직접 깎아 "가르친 냄새에 최대로 특이적인 감소가 일어났다면
+  판독이 기준(보상 d′ ≥ +2, 처벌 하락 d′ ≤ −2)에 닿는가"를 쟀다. 후보쌍 **8/34**만 시험 가능했고(1채널 2/19, 2채널 6/15), 시험 가능한 쌍은 NORMAL 기술이 끼는 쌍에
+  몰렸다(7/8 — KC를 거의 구동하지 못하는 사구체가 만든 비대칭일 수 있다, 기전 미확인). F v3의 게이트 3쌍은 전부 시험 불가였다 — v3를 돌렸다면 학습 실패가 아니라
+  구조 때문에 FAIL이 났을 것이다. 순진 d′ ≈ 0 ∧ 시험 가능 ∧ 바닥 가드 통과인 홀수 턴 게이트 후보는 0쌍. 설계쌍은 시험 가능(보상 18.69 / 처벌 −6.27).
+  요약 `results/summary/m2_oracle.json`.
+- **실제 M2 인코더 비교**(2026-09-17, 스펙 G.12·G.13, 짝수 턴): 인코더 네 개(E0 스펙 3.3, E1 KC 구동 기준 배정, E2·E3 기술 채널 복제)의 점수 = min(턴 내 기술 축,
+  상대 타입 축의 시험 가능 비율)이 E0 0.222 · E1 0.143 · E2 0.143 · E3 0.190으로 모두 0.5 미만 → 사전 선언한 규칙대로 멈췄다. 처벌 판독(MBON13)이 늘 마지막 관문이고,
+  강한 사구체를 두 축이 나눠 갖는 제로섬이라 어느 하나만 고쳐서는 0.5에 닿지 않는다. 요약 `results/summary/m2_encoders.json`.
+- **안 된 것(엔진 전제 프로브, 스펙 G.14.8)**: 등급 APL(E.5)이 상대 타입 축 병목을 줄이는지 보려던 프로브는 스모크에서 설계 결함이 드러나 전체 실행 전에 중단했다.
+  등급 APL은 보상 판독 MBON05를 직접 억제하고(APL의 MBON 표적 1위), 활성을 맞춘 스파이킹 팔에서는 처벌 판독 MBON13이 바닥이라, 대비가 편차 완화가 아니라
+  판독 세포의 바닥 효과를 쟀을 것이다. 판정은 내지 않았다. 등급 APL을 그대로 바꿔 끼우는 것은 엔진 교정이 아니다 → M0d(스펙 부록 H).
+- **우리가 정한 것(M0d, 스펙 H.1–H.3a)**: 조합 C0 현재 엔진(대조) · C1 포화형 등급 APL + MBON 재조정 · C3 C1 + KC 활성 항상성 역치. C2(C1 + ORN→PN STD)는
+  문헌 상수(f 0.78, τ 893 ms)에서 ALPN 스파이크가 C1의 0.08–0.11배로 무너져 자격점이 없어 탈락했다(이 엔진·이 상수·이 탐색 범위에서). 모든 변경은 기본값 꺼짐이고,
+  엔진 기본값은 M0c 엔진 그대로다.
+- **실제 M0d 측정 — 작동점 고정**(2026-09-21, 스펙 H.3a.13): 세 조합 모두 채택. C1 `kc_thresh` 1.65 · `apl_input_scale` 0.137 · `mbon_hold_frac` 0.853
+  (기준 KC 활성 5.95%, 게이트 32시드 기저 3.66 Hz), C3 같은 `kc_thresh` + 항상성 역치 · `apl_input_scale` 0.609 · `mbon_hold_frac` 0.849(5.54%, 3.08 Hz),
+  세 조합 모두 폭주 0. 요약 `results/summary/m0d.json` 블록 `"h3"`.
+- **실제 M0d 측정 — 조합 선택**(2026-09-22, 스펙 H.4a.5, 짝수 턴 39쌍): 세 조합 모두 판독 A = MBON13, P = MBON05. 오라클로 시험 가능한 상대 타입 축 쌍
+  C3 **7/21**(F_a 2) · C0 4/21(F_a 1) · C1 2/21(F_a 0) → 자격은 C3 하나, T_b 0.333 < 0.5 → `STOP_LOW_T_B`. 요약 `results/summary/m0d.json` 블록 `"h4"`.
+- **실제 M0d 진단과 특이성 천장**(2026-09-22, 스펙 H.4a.6–H.4a.8, 선택에 쓴 짝수 턴 데이터의 사후 분석): 학습 세기·시드 잡음·판독 가중은 원인이 아니고, 판독 바닥은
+  C3가 대부분 고쳤다(바닥 통과 14쌍 중 시험 가능 7). 남은 한계는 편집된 시냅스의 X/Y 특이성 — 가르치지 않은 Y의 판독이 X의 54–80%만큼 같이 움직인다.
+  편집을 X에만 활성인 KC로 제한한 천장(판독 규칙을 결과 전에 고정: C3 ≥ 14/21이면 새 선언, ≤ 10/21이면 no-go)은 특이성을 얻었으나(Y/X → 0) 처벌 조건이 무너져
+  (−p ≥ 2인 쌍 C3 11 → 3 · 4) C3 `freq` 2/21 · `all` 3/21 → **no-go**. MBON13(처벌 판독)을 움직이는 X의 구동은 대부분 Y와 공유된 KC에 있다.
+- **안 된 것(M2 no-go — 시험 불성립, 2026-09-22, 스펙 부록 I)**: 스펙 5의 M2 학습 단위 시험(순진 d′ ≈ 0 → 보상 20회 뒤 d′ ≥ 1 → 처벌 20회 뒤 하락)은
+  **한 번도 돌지 않았다.** 시험한 인코더(E0–E3)와 엔진(C0·C1·C3)에서, 이상화한 특이적 가중치 감소로도 시험을 세울 수 있는 쌍이 선언된 기준(상대 타입 축 시험 가능
+  비율 ≥ 0.5 ∧ 순진 균형 턴 내 쌍 ≥ 2)에 못 미쳤다. 그래서 이것은 "학습 안 됨"(D.6 (c) 실패)이 **아니라** 시험 불성립이다. 사용자 결정으로 스펙이 이름 붙인
+  3번 경로(범위 축소 / M2 no-go 기록 + 주장 재설계)를 택했다.
+  - 학습 시험은 설계쌍(기계 대조)으로 한정한다. 0절의 1차 주장(상대 타입 조건부 선호 학습)은 4.3 기준 1이 현재 형태로 **지지되지 않는다** — 시험하지 않았다.
+    M3(에이전트 루프)·M4(실험)와 2차 주장(승률 기여)은 **보류**(폐기 아님).
+  - D.6: (a) 충족 — G.8 재판정(41냄새 × 64시드, 1 ms씩 움직이는 200 ms 창)에서 2624 제시 중 7건이 150 Hz 초과(최대 31 스파이크) · (b) 발동(E.2: 16턴 중 3턴이 비율 2 초과) · (c) 미측정. STD 재설계 여부는 새 주장 선언의 첫 질문으로 넘겼다.
+  - 원인을 하나로 귀속하지 않는다: 판독이 두 타입뿐, 오라클은 이상화된 편집이고 천장은 현재 KC 부호의 상한(인코더·국소 APL·발화율 정규화 같은 KC 부호 변경은
+    시험하지 않음), 짝수 턴 21쌍뿐, 채널→사구체 배정이 임의적(2867배), C0 대 C1·C3 기저 교락.
+  - 판정은 `scripts/write_m2_nogo_summary.py`가 기록된 요약에서 파생한다(한 고리라도 성립하지 않으면 쓰기를 거부). 요약 `results/summary/m2_nogo.json`.
+    M2 go 조건은 strict xfail 테스트 `tests/test_m2_go.py`로 남는다 — 조건이 충족되는 날 XPASS로 깨진다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
+
+## In English
+
+FlyMon runs a leaky integrate-and-fire simulation of the whole MaleCNS v1.0 fruit-fly connectome as the attacking-move
+chooser in a restricted task on Pokémon Showdown's Gen 1 OU rules (16 species, a constrained move pool), next to a
+heuristic coach. The ledger above separates what was measured, what we chose, and what did not work; this is its summary.
+
+- **M0 (engine, reproducing flybrain's measurements): partial pass.** Kenyon-cell sparsity, the MBON baseline and
+  channel-specific odour depression pass; the pre-registered composite-index flip does not (graded n_flip 0/8).
+- **M0c (KC→KC fast excitation removed): pass** on sparsity, baseline, runaway, equivalence and throughput; the
+  conditioning criterion still fails, as predicted.
+- **M1 (battle environment, brain-free pilot): pass** — MAX − RND win rate 0.319 ≥ 0.15.
+- **M2 (encoder, readout, learning unit test): no-go — the test could not be built (2026-09-22).** Spec 5's learning
+  unit test (naive d′ ≈ 0, d′ ≥ 1 after 20 rewards, a drop after 20 punishments) never ran. On every encoder (E0–E3)
+  and engine (C0, C1, C3) we tried, too few candidate pairs reach the declared bar even under an idealised, perfectly
+  targeted weight edit: at best 7 of 21 opponent-type pairs (bar: half), and 2–3 of 21 when the edit is confined to
+  Kenyon cells active only for the taught odour, because the punishment readout (MBON13) is driven mostly by Kenyon
+  cells the two odours share. This is **not** a "no learning" result.
+  - Learning tests are limited to the designed odour pair (a mechanism control). The primary claim (type-conditional
+    move preference, spec 4.3 criterion 1) is not supported in its current form and is reported as untested. M3 (agent
+    loop), M4 (experiment) and the secondary claim (win-rate contribution) are on hold, not discarded. Whether to design
+    short-term depression (ORN→PN) is the first question of the next claim declaration.
+  - Runaway and ratio conditions (spec D.6): (a) met — 7 of 2,624 presentations had a Kenyon cell above 150 Hz in some 200 ms window (maximum 31 spikes); (b) met — the within-turn candidate KC spike ratio exceeds
+    2 on 3 of 16 turns; (c) the learning unit test itself: not measured.
+  - We do not attribute the no-go to one cause: only two readout types, an idealised oracle whose ceiling bounds only the
+    current Kenyon-cell code (encoder and coding changes such as local APL or rate normalisation were not tested), 21
+    even-turn pairs, an arbitrary channel-to-glomerulus assignment, and a baseline confound between C0 and C1/C3.
+  - Derived by `scripts/write_m2_nogo_summary.py` into `results/summary/m2_nogo.json`; the M2 go condition stays in the
+    code as strict expected failures (`tests/test_m2_go.py`). Details: spec appendix I (in Korean).
 
 ## 실행
 
