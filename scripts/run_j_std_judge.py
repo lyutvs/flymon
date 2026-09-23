@@ -8,8 +8,9 @@ D.6 (a) and (b) on the judged engine; or one of J.11.6's self-checks.
     uv run python scripts/run_j_std_judge.py --smoke --allow-dirty --scan <a smoke scan report>   # minutes
 
 Run it from the repository root. The settings and their order come from --scan (results/summary/std_scan.json: a
-complete scan measured under this code's J key; outside --smoke a smoke scan or one measured with dirty hashed files
-is refused). The run report goes to <out>/runs/<run id>-judge.{json,md} (self-checks:
+complete scan measured under this code's J key; outside --smoke a smoke scan, one measured with dirty hashed files,
+one run under another J configuration (spec) or another procedure code (HASHED_FILES manifest key) is refused). The run
+report goes to <out>/runs/<run id>-judge.{json,md} (self-checks:
 <out>/selfcheck/<run id>-<i|ii>.json). results/summary/m2_engine.json is replaced only by a complete judgement (every
 pair, D.6 measured, no --smoke / --pairs / --no-d6, clean hashed files, the declared configuration) whose outcome is
 SELECTED, B or STOP_NO_OPERATING_POINT; a SELECTED one carries a `selection` with confirmed = false (H.5 sets it).
@@ -31,7 +32,8 @@ from flymon.brain import d6a, j_store
 from flymon.brain.config import Params
 from flymon.brain.fly_pool import FlyPool
 from flymon.brain.h3_measure import PoolMeasurer
-from flymon.brain.h3_store import ROOT, MeasureCache, code_key, git_state, sha256_file, write_bytes, write_json
+from flymon.brain.h3_store import (ROOT, MeasureCache, canonical, code_key, git_state, sha256_file, write_bytes,
+                                   write_json)
 from flymon.brain.h4_formula import pair_stats
 from flymon.brain.h4_measure import H4Measurer
 from flymon.brain.h4_pairs import pair_key
@@ -152,6 +154,12 @@ def main(argv=None, spec: JSpec | None = None, summary_spec: JSpec = SPEC, requi
         if not a.smoke and (scan.get("smoke") or scan.get("git", {}).get("dirty_hashed")):
             why = "a smoke run" if scan.get("smoke") else f"measured with dirty hashed files {scan['git']['dirty_hashed']}"
             return refuse(f"the scan is {why}: only a --smoke judgement may use it")
+        if not a.smoke and canonical(scan.get("spec")) != canonical(spec):
+            return refuse("the scan was run under another J configuration (its spec differs from this judgement's): "
+                          "its settings and order are not this configuration's")
+        if not a.smoke and scan.get("code", {}).get("key") != manifest["key"]:
+            return refuse(f"the scan was run under another procedure code {str(scan.get('code', {}).get('key'))[:12]}, "
+                          f"this code's is {manifest['key'][:12]} (HASHED_FILES: grid, tolerances, rules may differ)")
     t0 = time.time()
     deadline = None if a.max_hours is None else t0 + 3600.0 * a.max_hours
     s = build(a.npz, spec, out, deadline=deadline, log=lambda x: print(x, flush=True), pools=pools, pairs=pairs)

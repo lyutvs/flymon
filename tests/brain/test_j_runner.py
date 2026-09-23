@@ -190,3 +190,4 @@ def test_d6_on_other_seeds_is_recorded_but_not_judged():
     ctx = jctx()
     out = J.measure_d6(ScriptedJ(), ctx, Params(), d6a.SEEDS[:2], judged=False)
     assert out["a"] is None and out["b"]["n_turns"] == 1 and out["n_rows"] == 2
+    assert out["seed_block"] == "verification seeds (not judged)"

@@ -62,6 +62,27 @@ def test_the_judgement_refuses_a_smoke_or_dirty_scan_outside_smoke(tmp_path, mon
     assert JUDGE.main(["--scan", str(scan)], require_root=False) == 2 and "dirty hashed files" in capsys.readouterr().err
 
 
+@pytest.mark.skipif(not (ROOT / "data/malecns.npz").exists(), reason="MaleCNS connectome not built")
+@pytest.mark.parametrize("foreign", ["spec", "manifest"])
+def test_the_judgement_refuses_a_scan_from_another_configuration_or_procedure_code(foreign, tmp_path, monkeypatch,
+                                                                                    capsys):
+    """measure_key covers MEASURE_FILES only: j_spec.py / j_rules.py (grid, tolerances, order) are checked separately."""
+    monkeypatch.setattr(JUDGE, "git_state", lambda files: dict(commit="x", dirty_hashed=[], dirty_other=[]))
+    key = JUDGE.code_key("data/malecns.npz", files=JUDGE.MEASURE_FILES)["key"]
+    manifest = JUDGE.code_key("data/malecns.npz", files=JUDGE.HASHED_FILES)["key"]
+    spec = json.loads(JUDGE.canonical(JUDGE.SPEC))
+    if foreign == "spec":
+        spec["tie_tol"] = spec["tie_tol"] + 1.0
+    else:
+        manifest = "0" * 64
+    scan = tmp_path / "scan.json"
+    scan.write_text(json.dumps({"measure_key": key, "scan": {"outcome": "SCAN_COMPLETE"}, "smoke": False,
+                                "git": {"dirty_hashed": []}, "spec": spec, "code": {"key": manifest}}))
+    assert JUDGE.main(["--scan", str(scan)], require_root=False) == 2
+    err = capsys.readouterr().err
+    assert ("another J configuration" if foreign == "spec" else "another procedure code") in err
+
+
 def test_pairs_below_one_is_refused(capsys):
     assert JUDGE.main(["--pairs", "0"], require_root=False) == 2 and "--pairs" in capsys.readouterr().err
 

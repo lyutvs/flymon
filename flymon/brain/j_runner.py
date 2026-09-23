@@ -141,7 +141,9 @@ def measure_d6(jm, ctx: JContext, params, seeds=d6a.SEEDS, judged: bool = True) 
                over_spikes=d6a.OVER_SPIKES, rows=jm.d6(params, ctx.by_turn, seeds))
     b = d6b(raw, ctx.spec.d6b_ratio_limit)
     a = judge_d6a_declared(raw, params_json(params)) if judged else None
-    return dict(a=a, b=b, n_rows=len(raw["rows"]), seeds=raw["seeds"])
+    block = ("G.8's block (d6a.SEEDS 400-463), not E.2's 8 seeds (spec J.11.4-5, plan reading 10)"
+             if tuple(int(s) for s in seeds) == tuple(d6a.SEEDS) else "verification seeds (not judged)")
+    return dict(a=a, b=b, n_rows=len(raw["rows"]), seeds=raw["seeds"], seed_block=block)
 
 
 def stage2(m3, m4, jm, ctx: JContext, settings: list, order: list, with_d6: bool = True, d6_seeds=d6a.SEEDS) -> dict:
