@@ -6,7 +6,9 @@
 
 The pool is an interface (flymon.brain.fly_pool.FlyPool in a run, a fake in the tests): decide_batch, reinforce_batch,
 state, load_state. A checkpoint (records, X, the steps done, the pool's weights) is written after every step, so an
-interrupted run resumes at the next step with the same weights.
+interrupted run resumes at the next step with the same weights. The checkpoint also keeps the provenance of the run
+that measured the first step; run_pair returns it (not the caller's, when resuming) and whether every step was already
+done at the start (a replay: nothing measured now).
 """
 from __future__ import annotations
 
@@ -56,11 +58,16 @@ def train(pool, spec, pair: str, lay: list, x_odor: dict, dan: str, trial: int) 
 
 
 def run_pair(pool, spec, pair: str, odors: dict, cells: dict, with_n2: bool, fixed_x: str | None,
-             checkpoint=None, log=print) -> dict:
-    """checkpoint: an object with load() -> dict | None and save(dict) (b_store.Checkpoint in a run)."""
+             checkpoint=None, log=print, provenance: dict | None = None) -> dict:
+    """checkpoint: an object with load() -> dict | None and save(dict) (b_store.Checkpoint in a run). provenance: this
+    run's (e.g. git state and start time); it is kept only when this run measures the first step, else the stored one
+    is returned."""
     lay = layout(spec, with_n2)
     st = checkpoint.load() if checkpoint else None
     st = st or dict(records=[], x=None, done=[])
+    if not st["done"]:
+        st["provenance"] = provenance
+    replayed = all(s in st["done"] for s in steps(spec))
     if st["done"] and "weights" in st:
         pool.load_state(st["weights"])
     for step in steps(spec):
@@ -79,4 +86,5 @@ def run_pair(pool, spec, pair: str, odors: dict, cells: dict, with_n2: bool, fix
         if checkpoint:
             checkpoint.save(dict(st, weights=pool.state()))
         log(f"{pair}: {step} done")
-    return dict(pair=pair, x=st["x"], layout=lay, records=st["records"])
+    return dict(pair=pair, x=st["x"], layout=lay, records=st["records"], provenance=st.get("provenance"),
+                replayed=replayed)

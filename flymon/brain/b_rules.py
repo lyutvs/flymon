@@ -42,7 +42,14 @@ def v_of(counts: dict, spec) -> float:
 
 def check_records(records: list, brains: tuple, spec, seeds_of) -> list:
     """INVALID reasons: every (brain, fly, stage, seed) of the declared layout exactly once, finite counts. seeds_of(f)
-    is the declaration (spec.probe_seeds(pair, f)); the noplast brain is fly 0's seeds."""
+    is the declaration (spec.probe_seeds(pair, f)); the noplast brain is fly 0's seeds. A malformed record (a missing
+    key, counts without an odour or a readout type) is a reason too, never an exception."""
+    for r in records:
+        try:
+            [(r["brain"], int(r["fly"]), r["stage"], int(r["seed"]))]
+            [r["counts"][o][t] for o in ("a", "b") for t in (spec.a_type, spec.p_type)]
+        except (KeyError, TypeError, ValueError, IndexError) as e:
+            return [f"malformed probe record (missing or bad {e!r}): {str(r)[:120]}"]
     reasons = []
     keys = [(r["brain"], int(r["fly"]), r["stage"], int(r["seed"])) for r in records]
     if len(set(keys)) != len(keys):
@@ -166,20 +173,27 @@ def _boot_median(values, draws, rng) -> np.ndarray:
 
 def threshold(effect: list, null: list, step: float, spec, rng, cap: float) -> dict:
     """The smallest grid t >= 0 with P_null(median >= t) <= null_max; then the power at half the effect (the effect
-    values minus half their median, noise kept). `effect` and `null` are signed so that larger is better."""
-    nb, hb = _boot_median(null, spec.boot_draws, rng), _boot_median(
-        np.asarray(effect, float) - float(np.median(effect)) / 2.0, spec.boot_draws, rng)
+    values minus half their median, noise kept). `effect` and `null` are signed so that larger is better.
+    Non-finite values (d' at its sd = 0 limit) can make a bootstrap median NaN (+inf and -inf averaged): a NaN null
+    median counts as reaching every t and a NaN half-effect median as reaching none (both conservative); the counts of
+    non-finite inputs are recorded."""
+    nf = dict(n_nonfinite_null=int((~np.isfinite(np.asarray(null, float))).sum()),
+              n_nonfinite_effect=int((~np.isfinite(np.asarray(effect, float))).sum()))
+    with np.errstate(invalid="ignore"):                                 # inf - inf is the NaN handled below
+        nb, hb = _boot_median(null, spec.boot_draws, rng), _boot_median(
+            np.asarray(effect, float) - float(np.median(effect)) / 2.0, spec.boot_draws, rng)
+    p_null = lambda t: float(((nb >= t) | np.isnan(nb)).mean())
     t, n = None, 0
     while n * step <= cap:
         cand = round(n * step, 10)
-        if float((nb >= cand).mean()) <= spec.null_max:
+        if p_null(cand) <= spec.null_max:
             t = cand
             break
         n += 1
     if t is None:
-        return dict(t=None, p_null=None, power=None, ok=False)
-    power = float((hb >= t).mean())
-    return dict(t=t, p_null=float((nb >= t).mean()), power=power, ok=bool(power >= spec.power_min))
+        return dict(t=None, p_null=None, power=None, ok=False, **nf)
+    power = float((hb >= t).mean())                                 # NaN >= t is False: a NaN half effect never passes
+    return dict(t=t, p_null=p_null(t), power=power, ok=bool(power >= spec.power_min), **nf)
 
 
 def calibrate(records: list, x: str, spec, pair: str = "calibration") -> dict:

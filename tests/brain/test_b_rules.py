@@ -232,3 +232,33 @@ def test_a_threshold_that_half_the_effect_cannot_clear_is_not_ok():
     null = [-1.0, -0.5, 0.0, 0.3, 0.6, 0.9, 1.1, 1.3]
     th = B.threshold([1.0, 1.1, 1.15, 1.2, 1.2, 1.25, 1.3, 1.4], null, 0.05, SPEC, rng, 50.0)
     assert th["t"] is not None and th["p_null"] <= SPEC.null_max and th["power"] < SPEC.power_min and not th["ok"]
+
+
+def test_a_record_without_counts_an_odour_or_a_readout_type_is_invalid_not_an_exception():
+    import copy
+    base = records(reward=10, punish=25, n2=True, noise=4.0)
+    for cut in (lambda r: r.pop("counts"), lambda r: r["counts"].pop("a"), lambda r: r["counts"]["b"].pop(SPEC.p_type),
+                lambda r: r.pop("seed")):
+        recs = copy.deepcopy(base)
+        cut(recs[5])
+        v = verdict(recs)
+        assert v["status"] == B.INVALID and "malformed" in v["reasons"][0]
+        c = B.calibrate(recs, "b", SPEC)
+        assert c["status"] == B.INVALID and "malformed" in c["reasons"][0]
+
+
+def test_non_finite_null_medians_count_against_the_threshold():
+    """Five -inf and one +inf: a bootstrap median is +inf with P ~ 0.009 and NaN (+inf and -inf averaged) with P ~ 0.054.
+    Counting NaN as not reaching t (the old rule) gives t = 0 with P_null ~ 0.009; counting it as reaching every t
+    leaves no grid t with P_null <= 0.05 (conservative)."""
+    null = [-math.inf] * 5 + [math.inf]
+    th = B.threshold([5.0] * 8, null, 0.05, SPEC, np.random.default_rng(0), 50.0)
+    assert th["t"] is None and not th["ok"]
+    assert th["n_nonfinite_null"] == 6 and th["n_nonfinite_effect"] == 0
+    rng = np.random.default_rng(0)
+    with np.errstate(invalid="ignore"):
+        nb = np.median(np.asarray(null)[rng.integers(0, 6, size=(SPEC.boot_draws, 6))], axis=1)
+    assert float((nb >= 0).mean()) <= SPEC.null_max < float(((nb >= 0) | np.isnan(nb)).mean())   # the rules differ here
+    eff = B.threshold([math.inf, -math.inf] * 4, [0.0] * 8, 0.05, SPEC, np.random.default_rng(0), 50.0)
+    assert eff["t"] == 0.05 and eff["power"] == 0.0 and not eff["ok"]            # a NaN half effect never passes
+    assert eff["n_nonfinite_effect"] == 8 and eff["n_nonfinite_null"] == 0

@@ -48,7 +48,7 @@ def test_the_smoke_spec_is_not_the_declared_one():
 def _raw(tmp, pair, recs, key, name=None, **over):
     from flymon.brain.b_spec import SPEC
     from flymon.brain.h3_store import canonical
-    d = dict(run_id=f"r-{pair}", pair=pair, smoke=False, git=dict(dirty_hashed=[]), spec=json.loads(canonical(SPEC)),
+    d = dict(run_id=f"r-{pair}", pair=pair, smoke=False, measured_git=dict(dirty_hashed=[]), spec=json.loads(canonical(SPEC)),
              measure_key=key, x="b", records=recs)
     d.update(over)
     p = tmp / f"{name or pair}.json"
@@ -61,23 +61,44 @@ def test_the_writer_calibrates_then_judges_and_refuses_what_is_not_this_code_s_c
     key = SUM.code_key(str(NPZ), files=SUM.MEASURE_FILES)["key"]
     monkeypatch.chdir(tmp_path)
     cal = _raw(tmp_path, "calibration", records(reward=10, punish=25, n2=True, noise=4.0), key)
-    assert SUM.main(["test", cal, cal], npz=str(NPZ)) == 2 and "results/summary/b_calibration.json" in capsys.readouterr().err
-    assert SUM.main(["calibration", _raw(tmp_path, "calibration", [], key, name="smoke", smoke=True)], npz=str(NPZ)) == 2
-    assert SUM.main(["calibration", _raw(tmp_path, "calibration", [], "0" * 64, name="foreign")], npz=str(NPZ)) == 2
-    assert SUM.main(["calibration", _raw(tmp_path, "exploration", [], key, name="wrongpair")], npz=str(NPZ)) == 2
+    assert SUM.main(["test", cal, cal], npz=str(NPZ), require_root=False) == 2 and "results/summary/b_calibration.json" in capsys.readouterr().err
+    assert SUM.main(["calibration", _raw(tmp_path, "calibration", [], key, name="smoke", smoke=True)], npz=str(NPZ), require_root=False) == 2
+    assert SUM.main(["calibration", _raw(tmp_path, "calibration", [], "0" * 64, name="foreign")], npz=str(NPZ), require_root=False) == 2
+    assert SUM.main(["calibration", _raw(tmp_path, "exploration", [], key, name="wrongpair")], npz=str(NPZ), require_root=False) == 2
     flipped = _raw(tmp_path, "calibration", records(reward=10, punish=25, n2=True, noise=4.0), key, name="flipped",
                    x="a")
-    assert SUM.main(["calibration", flipped], npz=str(NPZ)) == 2 and "not the rule's" in capsys.readouterr().err
+    assert SUM.main(["calibration", flipped], npz=str(NPZ), require_root=False) == 2 and "not the rule's" in capsys.readouterr().err
+    pilot = records(reward=10, punish=25, n2=True, noise=4.0)
+    dirty = _raw(tmp_path, "calibration", pilot, key, name="dirty",
+                 measured_git=dict(dirty_hashed=["flymon/brain/b_runner.py"]))
+    assert SUM.main(["calibration", dirty], npz=str(NPZ), require_root=False) == 2
+    assert "dirty hashed files" in capsys.readouterr().err
+    old_shape = _raw(tmp_path, "calibration", pilot, key, name="oldshape", measured_git=None, git=dict(dirty_hashed=[]))
+    assert SUM.main(["calibration", old_shape], npz=str(NPZ), require_root=False) == 2
+    assert "no measured_git" in capsys.readouterr().err
+    from flymon.brain.b_spec import SPEC
+    from flymon.brain.h3_store import canonical
+    other = json.loads(canonical(SPEC)) | {"n_flies": SPEC.n_flies - 1}
+    assert SUM.main(["calibration", _raw(tmp_path, "calibration", pilot, key, name="otherspec", spec=other)],
+                    npz=str(NPZ), require_root=False) == 2 and "another spec" in capsys.readouterr().err
+    assert SUM.main(["calibration", cal], npz=str(NPZ)) == 2 and "repository root" in capsys.readouterr().err
     assert not Path("results/summary/b_calibration.json").exists()
-    assert SUM.main(["calibration", cal], npz=str(NPZ)) == 0
+    assert SUM.main(["calibration", cal], npz=str(NPZ), require_root=False) == 0
     c = json.loads(Path("results/summary/b_calibration.json").read_text())
     assert c["status"] == "CALIBRATED" and set(c["values"]) == {"reward", "punish", "choice"}
     ex = _raw(tmp_path, "exploration", records(reward=10, punish=25, pair="exploration"), key)
     co = _raw(tmp_path, "confirmation", records(reward=10, punish=25, seed=1, pair="confirmation"), key)
-    assert SUM.main(["test", ex, co], npz=str(NPZ)) == 0
+    cal_text = Path("results/summary/b_calibration.json").read_text()
+    for tamper, why in ((dict(measure_key="0" * 64), "not a calibration of this code"),
+                        (dict(rules_sha256={"flymon/brain/b_rules.py": "0" * 64}), "recalibrate")):
+        Path("results/summary/b_calibration.json").write_text(json.dumps(c | tamper))
+        assert SUM.main(["test", ex, co], npz=str(NPZ), require_root=False) == 2 and why in capsys.readouterr().err
+        assert not Path("results/summary/b_test.json").exists()
+    Path("results/summary/b_calibration.json").write_text(cal_text)
+    assert SUM.main(["test", ex, co], npz=str(NPZ), require_root=False) == 0
     t = json.loads(Path("results/summary/b_test.json").read_text())
     assert t["verdict"]["outcome"] == "PASS" and t["thresholds"] == c["values"]
     bad = _raw(tmp_path, "confirmation", records(drift_r=20, drift_p=20, seed=1, pair="confirmation"), key,
                name="drift")
-    assert SUM.main(["test", ex, bad], npz=str(NPZ)) == 0
+    assert SUM.main(["test", ex, bad], npz=str(NPZ), require_root=False) == 0
     assert json.loads(Path("results/summary/b_test.json").read_text())["verdict"]["outcome"] == "FAIL"

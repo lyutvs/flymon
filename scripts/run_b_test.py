@@ -7,8 +7,14 @@
 
 Run it from the repository root. The run checkpoints after every step under <out>/<pair>/checkpoint.npz and resumes
 from it (same code key only). The raw record goes to <out>/<pair>/<run id>.json; scripts/write_b_summary.py derives
-the summaries from it. Exit codes: 0 done, 2 refused before measuring (not at the root, dirty hashed files, not the
-declared connectome, unknown pair).
+the summaries from it. This script is itself a measurement file (flymon/brain/b_files.py): what it measures is part of
+the measurement key.
+
+The raw record carries the provenance of the run that MEASURED (the checkpoint keeps the git state and start time of the
+run that measured the first step): measured_git, measured_started_utc; written_git is this invocation's git state, and
+replayed is true when every step was already done in the checkpoint at the start (nothing measured by this invocation).
+scripts/write_b_summary.py refuses a raw whose measured_git has dirty hashed files. Exit codes: 0 done, 2 refused before
+measuring (not at the root, dirty hashed files, not the declared connectome, unknown pair).
 """
 from __future__ import annotations
 
@@ -73,7 +79,9 @@ def main(argv=None, spec: BSpec | None = None, require_root: bool = True) -> int
     npz_sha = code["files"]["npz:" + Path(a.npz).name]
     if npz_sha != H3_SPEC.connectome_sha256:
         return refuse(f"{a.npz} is not the declared connectome ({npz_sha[:12]})")
-    run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid.uuid4().hex[:6]
+    now = dt.datetime.now(dt.timezone.utc)
+    run_id = now.strftime("%Y%m%dT%H%M%SZ") + "-" + uuid.uuid4().hex[:6]
+    started_utc = now.isoformat(timespec="seconds")
     conn = Connectome.load(a.npz)
     pops = Populations.from_connectome(conn)
     oa, ob = design_odor_pair(pops, k=spec.k, seed=spec.pair_seed(a.pair))
@@ -86,11 +94,16 @@ def main(argv=None, spec: BSpec | None = None, require_root: bool = True) -> int
     with FlyPool(a.npz, Params(), [FlySpec(**f) for f in fly_specs(lay)], workers=a.workers,
                  timeout_s=POOL_TIMEOUT_S) as pool:
         res = run_pair(pool, spec, a.pair, odors, cells, with_n2, dict(spec.fixed_x).get(a.pair), checkpoint=ck,
-                       log=lambda s: print(s, flush=True))
-    raw = dict(run_id=run_id, pair=a.pair, pair_seed=spec.pair_seed(a.pair), smoke=a.smoke, git=git,
-               code=manifest, measure_key=code["key"], spec=spec, odors=odors, x=res["x"], layout=res["layout"],
+                       log=lambda s: print(s, flush=True), provenance=dict(git=git, started_utc=started_utc))
+    measured = res["provenance"] or {}
+    raw = dict(run_id=run_id, pair=a.pair, pair_seed=spec.pair_seed(a.pair), smoke=a.smoke,
+               measured_git=measured.get("git"), measured_started_utc=measured.get("started_utc"), written_git=git,
+               replayed=bool(res["replayed"]), code=manifest, measure_key=code["key"], spec=spec, odors=odors,
+               x=res["x"], layout=res["layout"],
                wall_s=round(time.time() - t0, 1), records=res["records"])
     path = write_json(out / a.pair / f"{run_id}.json", raw, [Params()])
+    if res["replayed"]:
+        print(f"note: every step was already in {ck.path}; nothing was measured now (replayed)", flush=True)
     print(f"wrote {path}: X = odour {res['x']}, {len(res['records'])} probe records, {raw['wall_s'] / 60:.1f} min",
           flush=True)
     return 0

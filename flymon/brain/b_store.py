@@ -49,7 +49,9 @@ def write_json(path, obj, params_list) -> Path:
 class Checkpoint:
     """<dir>/checkpoint.npz holding the progress (records, X, steps done, the code key; JSON) and the pool's weights, in
     ONE atomically replaced file: a step is either wholly recorded with its weights or not at all, so a resume never
-    applies a training trial twice. A checkpoint written under another code key is ignored (the run starts over)."""
+    applies a training trial twice. A checkpoint written under another code key is ignored (the run starts over). The
+    progress also keeps the provenance (git state, start time) of the run that measured its first step: a resumed or
+    replayed run reports the run that measured, not itself."""
 
     def __init__(self, directory, key: str, params_list):
         self.path, self.key, self.params = Path(directory) / "checkpoint.npz", key, params_list
@@ -62,13 +64,14 @@ class Checkpoint:
             if d.get("key") != self.key:
                 return None
             flies = [dict(enabled=bool(e), shuffle_seed=None, w=z[f"w{i}"].copy()) for i, e in enumerate(d["enabled"])]
-        return dict(records=d["records"], x=d["x"], done=d["done"], weights={"flies": flies})
+        return dict(records=d["records"], x=d["x"], done=d["done"], provenance=d.get("provenance"),
+                    weights={"flies": flies})
 
     def save(self, st: dict) -> None:
         import io
         flies = st["weights"]["flies"]
         prog = json.dumps(dict(key=self.key, records=st["records"], x=st["x"], done=st["done"],
-                               enabled=[bool(f["enabled"]) for f in flies])).encode()
+                               provenance=st.get("provenance"), enabled=[bool(f["enabled"]) for f in flies])).encode()
         buf = io.BytesIO()
         np.savez(buf, progress=np.frombuffer(prog, np.uint8),
                  **{f"w{i}": np.asarray(f["w"], np.float32) for i, f in enumerate(flies)})

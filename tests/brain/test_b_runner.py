@@ -117,3 +117,27 @@ def test_the_store_writes_only_its_declared_paths(tmp_path, monkeypatch):
     for bad in ("results/summary/m0d.json", "results/m2/x.json", "x.json"):
         with pytest.raises(SystemExit):
             write_json(bad, {"a": 1}, [Params()])
+
+
+def test_a_resumed_or_replayed_run_reports_the_provenance_of_the_run_that_measured(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    lay = layout(SMALL, False)
+    ck = Checkpoint("results/b/exploration/ck", "key1", [Params()])
+    first = dict(git=dict(commit="aaa", dirty_hashed=["flymon/brain/b_runner.py"]), started_utc="2026-09-23T01:00:00+00:00")
+    with pytest.raises(RuntimeError):
+        run_pair(FakePool(fly_specs(lay), fail_at=2), SMALL, "exploration", ODORS, CELLS, False, "b", checkpoint=ck,
+                 log=lambda s: None, provenance=first)
+    second = dict(git=dict(commit="bbb", dirty_hashed=[]), started_utc="2026-09-23T02:00:00+00:00")
+    got = run_pair(FakePool(fly_specs(lay)), SMALL, "exploration", ODORS, CELLS, False, "b", checkpoint=ck,
+                   log=lambda s: None, provenance=second)
+    assert got["provenance"] == first and not got["replayed"]                      # the dirty first run measured
+    third = dict(git=dict(commit="ccc", dirty_hashed=[]), started_utc="2026-09-23T03:00:00+00:00")
+    pool = FakePool(fly_specs(lay))
+    again = run_pair(pool, SMALL, "exploration", ODORS, CELLS, False, "b", checkpoint=ck, log=lambda s: None,
+                     provenance=third)
+    assert again["replayed"] and again["provenance"] == first and pool.n_reinforce == 0
+    assert again["records"] == got["records"]
+    fresh = run_pair(FakePool(fly_specs(lay)), SMALL, "exploration", ODORS, CELLS, False, "b",
+                     checkpoint=Checkpoint("results/b/exploration/ck2", "key1", [Params()]), log=lambda s: None,
+                     provenance=third)
+    assert fresh["provenance"] == third and not fresh["replayed"]
