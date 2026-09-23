@@ -37,16 +37,19 @@ def test_dprime_keeps_f5_s_limits():
 
 # ---- fixtures with a known answer ----------------------------------------------------------------------------------------
 def test_specific_associative_learning_passes():
-    """Reward 10 spikes of MBON05(X), then punishment 25 of MBON13(X): X's value falls below Y's, so the choice flips."""
+    """The reward arm loses 10 spikes of MBON05(X), the punishment arm 25 of MBON13(X) from naive: in the punishment arm
+    X's value falls below Y's, so the choice flips against N."""
     v = verdict(records(reward=10, punish=25))
     assert v["status"] == B.PASS and all(v["checks"].values()) and v["n_valid"] == 8
 
 
 def test_presentation_drift_without_dan_fails():
-    """F.6's first path: X-only drift passes spec 5's literal level test; the paired no-DAN contrast stops it."""
-    v = verdict(records(drift_r=20, drift_p=20))
-    assert v["status"] == B.FAIL and not v["checks"]["reward"] and not v["checks"]["punish"]
-    assert v["medians"]["r"] > 1                                        # the uncontrasted change would have passed
+    """F.6's first path: presentation-induced loss of X's MBON05 raises V(X) in every brain that saw X — an uncontrasted
+    change would pass the reward item; the paired no-DAN contrast stops it."""
+    v = verdict(records(drift_r=20))
+    assert v["status"] == B.FAIL and not v["checks"]["reward"] and v["medians"]["r"] > 1
+    v = verdict(records(drift_p=20))
+    assert v["status"] == B.FAIL and not v["checks"]["punish"] and v["medians"]["p"] < -1
 
 
 def test_full_generalisation_fails_on_y_specificity():
@@ -105,20 +108,21 @@ def test_an_x_that_is_not_the_rules_is_invalid():
 
 
 def test_the_recorded_items_on_a_hand_checkable_pair():
-    """One fly, two probe seeds. R pre: X MBON13 30 / 40, Y 20 / 20, MBON05 40 everywhere, so dV = 10 / sA, 20 / sA and
-    d' = 15 / (10 / sqrt 2) = 1.5 sqrt 2. R S1: X MBON05 0 on one seed of two (1/2); R S2: X MBON13 0 on both (1)."""
+    """One fly, two probe seeds. Naive: X MBON13 30 / 40, Y 20 / 20, MBON05 40 everywhere, so dV = 10 / sA, 20 / sA and
+    d' = 15 / (10 / sqrt 2) = 1.5 sqrt 2. Reward arm S1: X MBON05 0 on one seed of two (1/2); punishment arm S1: X MBON13
+    0 on both (1)."""
     spec = dataclasses.replace(SPEC, n_flies=1, n_probe=2, valid_min=1)
     s0, s1 = spec.probe_seeds("calibration", 0)
     A, P = spec.a_type, spec.p_type
     pre = {s0: {"b": {A: 30, P: 40}, "a": {A: 20, P: 40}}, s1: {"b": {A: 40, P: 40}, "a": {A: 20, P: 40}}}
-    R = {"pre": pre, "S1": {s0: {"b": {A: 30, P: 0}, "a": {A: 20, P: 40}}, s1: pre[s1]},
-         "S2": {s: {"b": {A: 0, P: 0}, "a": {A: 20, P: 40}} for s in (s0, s1)}}
-    recs = [dict(brain=b, fly=0, stage=st, seed=s, counts=(R[st][s] if b == "R" else pre[s]))
-            for b in ("R", "N", "noplast") for st in B.STAGES for s in (s0, s1)]
+    S1 = {"Rr": {s0: {"b": {A: 30, P: 0}, "a": {A: 20, P: 40}}, s1: pre[s1]},
+          "Rp": {s: {"b": {A: 0, P: 40}, "a": {A: 20, P: 40}} for s in (s0, s1)}}
+    recs = [dict(brain=b, fly=0, stage=st, seed=s, counts=(S1[b][s] if st == "S1" and b in S1 else pre[s]))
+            for b in ("Rr", "Rp", "N", "noplast") for st in B.STAGES for s in (s0, s1)]
     v = verdict(recs, spec=spec)
     assert v["status"] in (B.PASS, B.FAIL)
     assert math.isclose(v["recorded"]["naive_dprime"], 1.5 * math.sqrt(2.0))
-    assert v["recorded"]["floor_share_s1"] == 0.5 and v["recorded"]["floor_share_s2"] == 1.0
+    assert v["recorded"]["floor_share_reward"] == 0.5 and v["recorded"]["floor_share_punish"] == 1.0
 
 
 def test_too_few_valid_flies_is_invalid(monkeypatch):
@@ -157,7 +161,8 @@ def test_mutation_without_the_no_dan_contrast_lets_drift_pass(monkeypatch):
         out = orig(*a, **kw)
         return None if out is None else dict(out, reward=out["r"], punish=out["p"])
     monkeypatch.setattr(B, "fly_items", no_contrast)
-    assert verdict(records(drift_r=20, drift_p=20), th={**TH, "choice": -1.0})["status"] == B.PASS
+    assert verdict(records(drift_r=20))["checks"]["reward"]                  # drift alone now passes the reward item
+    assert verdict(records(drift_p=20))["checks"]["punish"]                  # ... and the punishment item
 
 
 def test_mutation_with_a_flipped_sign_fails_real_learning(monkeypatch):
@@ -211,8 +216,11 @@ def test_a_learning_pilot_calibrates_and_its_thresholds_meet_both_targets():
 
 
 def test_the_pilot_stops_without_an_effect_without_specificity_and_when_underpowered():
-    assert B.calibrate(records(n2=True), "b", SPEC)["status"] == B.NO_EFFECT
-    assert B.calibrate(records(reward=10, punish=25, spill=1.0, n2=True), "b", SPEC)["status"] == B.NO_EFFECT
+    none = B.calibrate(records(n2=True), "b", SPEC)["status"]
+    assert none in (B.NO_EFFECT, B.NOT_SPECIFIC, B.UNDERPOWERED)       # no learning never calibrates (NO_EFFECT is a sign check)
+    assert B.calibrate(records(reward=-10, punish=25, n2=True), "b", SPEC)["status"] == B.NO_EFFECT   # reward backwards
+    full = B.calibrate(records(reward=10, punish=25, spill=1.0, n2=True), "b", SPEC)["status"]
+    assert full in (B.NO_EFFECT, B.NOT_SPECIFIC)                         # full generalisation: dV does not move
     assert B.calibrate(records(reward=20, punish=25, spill=0.7, n2=True), "b", SPEC)["status"] == B.NOT_SPECIFIC
     weak = B.calibrate(records(reward=1, punish=1, n2=True, noise=6.0, seed=3), "b", SPEC)
     assert weak["status"] in (B.UNDERPOWERED, B.NO_EFFECT, B.NOT_SPECIFIC)          # a weak pilot never calibrates

@@ -18,6 +18,8 @@ class BSpec:
     pair_seeds: tuple = (("calibration", 23), ("exploration", 0), ("confirmation", 7))
     fixed_x: tuple = (("exploration", "b"),)     # F.4: MBON13 answers odour a 0-2 on every M0c seed
     x_tie: str = "b"                             # the naive rule's tie
+    calibration_candidates: tuple = (23, 27, 49)   # J.12.7: disjoint from 0 and 7; the first whose naive X MBON13
+    calibration_min_a: float = 20.0                #   median reaches this is the calibration pair (naive probes only)
     # ---- J.12.2: protocol (F.2) on C0 = Params() -------------------------------------------------------------------
     strength: float = 0.35
     n_flies: int = 8
@@ -31,7 +33,7 @@ class BSpec:
     train_settle_ms: float = 800.0
     train_gap_ms: float = 200.0
     probe_base: int = 400_000                    # + 10_000 p + 100 f + k
-    train_base: int = 4_000_000                  # + 100_000 p + 1000 f + t (R, N and noplast share it)
+    train_base: int = 4_000_000                  # + 100_000 p + 1000 f + t (Rr, Rp, N and noplast share it)
     train_base_n2: int = 4_500_000               # N' (calibration only)
     # ---- the readout (F.3) ----------------------------------------------------------------------------------------------
     a_type: str = "MBON13"

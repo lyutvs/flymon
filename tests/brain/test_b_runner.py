@@ -50,25 +50,25 @@ class FakePool:
 
 def test_layout_and_steps():
     lay = layout(SMALL, with_n2=True)
-    assert lay == [("R", 0), ("R", 1), ("N", 0), ("N", 1), ("N2", 0), ("N2", 1), ("noplast", 0)]
-    assert [f["enabled"] for f in fly_specs(lay)] == [True] * 6 + [False]
-    assert steps(SMALL) == ["pre", "reward:0", "reward:1", "reward:2", "S1", "punish:0", "punish:1", "punish:2", "S2"]
-    assert len(layout(SPEC, False)) == 17 and len(layout(SPEC, True)) == 25
+    assert lay == [("Rr", 0), ("Rr", 1), ("Rp", 0), ("Rp", 1), ("N", 0), ("N", 1), ("N2", 0), ("N2", 1), ("noplast", 0)]
+    assert [f["enabled"] for f in fly_specs(lay)] == [True] * 8 + [False]
+    assert steps(SMALL) == ["pre", "train:0", "train:1", "train:2", "S1"]
+    assert len(layout(SPEC, False)) == 25 and len(layout(SPEC, True)) == 33
 
 
-def test_a_run_records_every_declared_cell_and_gives_the_dan_only_to_r_and_noplast():
+def test_a_run_records_every_declared_cell_and_gives_each_arm_its_dan():
     lay = layout(SMALL, True)
     pool = FakePool(fly_specs(lay))
     out = run_pair(pool, SMALL, "calibration", ODORS, CELLS, True, None, log=lambda s: None)
     seeds = lambda f: SMALL.probe_seeds("calibration", f)
-    assert B.check_records(out["records"], ("R", "N", "N2", "noplast"), SMALL, seeds) == []
+    assert B.check_records(out["records"], ("Rr", "Rp", "N", "N2", "noplast"), SMALL, seeds) == []
     brain = {i: b for i, (b, _) in enumerate(lay)}
-    assert {(brain[i], d) for i, d, *_ in pool.reinforced} == {("R", "PAM08"), ("R", "PPL105"), ("noplast", "PAM08"),
-                                                               ("noplast", "PPL105"), ("N", None), ("N2", None)}
-    r0 = [s for i, d, p, s in pool.reinforced if i == 0]
-    n2 = [s for i, d, p, s in pool.reinforced if brain[i] == "N2" and lay[i][1] == 0]
-    assert r0 == [SMALL.train_seed("calibration", 0, t) for t in range(6)]            # punishment trials are 3..5
-    assert n2 == [SMALL.train_seed("calibration", 0, t, second_null=True) for t in range(6)]
+    assert {(brain[i], d) for i, d, *_ in pool.reinforced} == {("Rr", "PAM08"), ("Rp", "PPL105"), ("noplast", "PAM08"),
+                                                               ("N", None), ("N2", None)}
+    seeds_of = lambda b, f: [s for i, d, p, s in pool.reinforced if lay[i] == (b, f)]
+    assert seeds_of("Rr", 0) == seeds_of("Rp", 0) == seeds_of("N", 0) == [SMALL.train_seed("calibration", 0, t)
+                                                                           for t in range(3)]   # paired presentations
+    assert seeds_of("N2", 0) == [SMALL.train_seed("calibration", 0, t, second_null=True) for t in range(3)]
     assert all(p == SMALL.pulse_ms for _, _, p, _ in pool.reinforced)
     assert B.noplast_ok(out["records"])                                                # plasticity off: counts never move
 
@@ -87,14 +87,14 @@ def test_an_interrupted_run_resumes_to_the_uninterrupted_result(tmp_path, monkey
     whole = FakePool(fly_specs(lay))
     ref = run_pair(whole, SMALL, "calibration", ODORS, CELLS, True, None, log=lambda s: None)
     ck = Checkpoint("results/b/calibration/ck", "key1", [Params()])
-    broken = FakePool(fly_specs(lay), fail_at=5)                                     # dies in the punishment block
+    broken = FakePool(fly_specs(lay), fail_at=3)                                     # dies in the last trial
     with pytest.raises(RuntimeError):
         run_pair(broken, SMALL, "calibration", ODORS, CELLS, True, None, checkpoint=ck, log=lambda s: None)
     fresh = FakePool(fly_specs(lay))
     got = run_pair(fresh, SMALL, "calibration", ODORS, CELLS, True, None, checkpoint=ck, log=lambda s: None)
     assert got["records"] == ref["records"] and got["x"] == ref["x"]
     assert all(np.array_equal(fresh.w[i], whole.w[i]) for i in whole.w)
-    assert fresh.n_reinforce == 6 - 4                                                # only the two trials not yet done
+    assert fresh.n_reinforce == 1                                                    # only the trial not yet done
 
 
 def test_a_checkpoint_from_other_code_is_ignored(tmp_path, monkeypatch):
@@ -105,7 +105,7 @@ def test_a_checkpoint_from_other_code_is_ignored(tmp_path, monkeypatch):
     pool = FakePool(fly_specs(lay))
     run_pair(pool, SMALL, "exploration", ODORS, CELLS, False, "b", checkpoint=Checkpoint("results/b/x/ck", "new", [Params()]),
              log=lambda s: None)
-    assert pool.n_reinforce == 6                                                     # started over
+    assert pool.n_reinforce == 3                                                     # started over
 
 
 def test_the_store_writes_only_its_declared_paths(tmp_path, monkeypatch):
@@ -141,3 +141,18 @@ def test_a_resumed_or_replayed_run_reports_the_provenance_of_the_run_that_measur
                      checkpoint=Checkpoint("results/b/exploration/ck2", "key1", [Params()]), log=lambda s: None,
                      provenance=third)
     assert fresh["provenance"] == third and not fresh["replayed"]
+
+
+def test_the_calibration_pair_is_the_first_candidate_with_a_strong_naive_punishment_readout():
+    """J.12.7: naive probes only; the rule's X must reach calibration_min_a MBON13 spikes (median)."""
+    from b_fixtures import records
+    from flymon.brain.b_runner import screen_calibration
+    naive = {23: 9, 27: 25, 49: 40}
+    measure = lambda seed: [r for r in records(naive=dict(ax=naive[seed], px=40, ay=0, py=40), noise=0.0)
+                            if r["brain"] == "Rr" and r["stage"] == "pre"]
+    got = screen_calibration(SPEC, measure)
+    assert got["selected"] == 27 and got["met"] and [r["seed"] for r in got["rows"]] == [23, 27]
+    assert got["rows"][0]["naive_a"] == 9.0 and got["rows"][1]["x"] == "b"
+    weak = screen_calibration(SPEC, lambda seed: [r for r in records(naive=dict(ax=5, px=40, ay=0, py=40), noise=0.0)
+                                                  if r["brain"] == "Rr" and r["stage"] == "pre"])
+    assert weak["selected"] == 23 and not weak["met"] and len(weak["rows"]) == 3

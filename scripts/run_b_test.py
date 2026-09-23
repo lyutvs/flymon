@@ -29,7 +29,7 @@ from pathlib import Path
 import numpy as np
 
 from flymon.brain.b_files import HASHED_FILES, MEASURE_FILES
-from flymon.brain.b_runner import fly_specs, layout, run_pair
+from flymon.brain.b_runner import fly_specs, layout, probe, run_pair, screen_calibration
 from flymon.brain.b_spec import PAIRS, SPEC, BSpec
 from flymon.brain.b_store import Checkpoint, write_json
 from flymon.brain.circuits import Populations
@@ -84,19 +84,26 @@ def main(argv=None, spec: BSpec | None = None, require_root: bool = True) -> int
     started_utc = now.isoformat(timespec="seconds")
     conn = Connectome.load(a.npz)
     pops = Populations.from_connectome(conn)
-    oa, ob = design_odor_pair(pops, k=spec.k, seed=spec.pair_seed(a.pair))
-    odors, cells = {"a": oa, "b": ob}, type_cells(conn, (spec.a_type, spec.p_type))
+    pair_odors = lambda seed: dict(zip(("a", "b"), design_odor_pair(pops, k=spec.k, seed=seed)))
+    cells = type_cells(conn, (spec.a_type, spec.p_type))
     del conn
     with_n2 = a.pair == "calibration"
     lay = layout(spec, with_n2)
     t0 = time.time()
-    ck = Checkpoint(out / a.pair, code["key"] + ("-smoke" if a.smoke else ""), [Params()])
     with FlyPool(a.npz, Params(), [FlySpec(**f) for f in fly_specs(lay)], workers=a.workers,
                  timeout_s=POOL_TIMEOUT_S) as pool:
+        screening = None
+        if a.pair == "calibration":                     # J.12.7: naive probes of the reward-arm brains only
+            screening = screen_calibration(spec, lambda seed: probe(pool, spec, a.pair, lay[:spec.n_flies],
+                                                                    pair_odors(seed), cells, "pre"))
+            print(f"calibration pair: seed {screening['selected']} ({screening['rows']})", flush=True)
+        pair_seed = screening["selected"] if screening else spec.pair_seed(a.pair)
+        odors = pair_odors(pair_seed)
+        ck = Checkpoint(out / a.pair, f"{code['key']}-seed{pair_seed}" + ("-smoke" if a.smoke else ""), [Params()])
         res = run_pair(pool, spec, a.pair, odors, cells, with_n2, dict(spec.fixed_x).get(a.pair), checkpoint=ck,
                        log=lambda s: print(s, flush=True), provenance=dict(git=git, started_utc=started_utc))
     measured = res["provenance"] or {}
-    raw = dict(run_id=run_id, pair=a.pair, pair_seed=spec.pair_seed(a.pair), smoke=a.smoke,
+    raw = dict(run_id=run_id, pair=a.pair, pair_seed=pair_seed, screening=screening, smoke=a.smoke,
                measured_git=measured.get("git"), measured_started_utc=measured.get("started_utc"), written_git=git,
                replayed=bool(res["replayed"]), code=manifest, measure_key=code["key"], spec=spec, odors=odors,
                x=res["x"], layout=res["layout"],

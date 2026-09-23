@@ -1,8 +1,10 @@
-"""Spec J.12.2's protocol on a FlyPool (F.2's fly API): one pair's probes and training blocks, resumable per step.
+"""Spec J.12.2's protocol as amended by J.12.7 (independent arms from naive, F.1 reading b) on a FlyPool (F.2's fly
+API): one pair's probes and training block, resumable per step.
 
-    brains: R_0..R_{n-1}, N_0..N_{n-1}, [N2_0..N2_{n-1} — the calibration pilot only], noplast_0
-    steps:  pre -> choose X -> reward:0..T-1 -> S1 -> punish:0..T-1 -> S2
-    reward / punish: R and noplast get the DAN (noplast has plasticity off), N and N2 get none; N2 uses its own seeds.
+    brains: Rr_0..Rr_{n-1}, Rp_0.., N_0.., [N2_0.. — the calibration pilot only], noplast_0
+    steps:  pre -> choose X -> train:0..T-1 -> S1
+    one block for every brain at once: Rr gets the reward DAN, Rp the punishment DAN, noplast the reward DAN with
+    plasticity off, N and N2 none; N2 uses its own training seeds.
 
 The pool is an interface (flymon.brain.fly_pool.FlyPool in a run, a fake in the tests): decide_batch, reinforce_batch,
 state, load_state. A checkpoint (records, X, the steps done, the pool's weights) is written after every step, so an
@@ -14,14 +16,14 @@ from __future__ import annotations
 
 import numpy as np
 
-from .b_rules import choose_x
+from .b_rules import choose_x, naive_x
 
 
 def layout(spec, with_n2: bool) -> list:
     """[(brain, fly)] in pool order."""
     n = range(spec.n_flies)
-    return ([("R", f) for f in n] + [("N", f) for f in n] + ([("N2", f) for f in n] if with_n2 else [])
-            + [("noplast", 0)])
+    return ([("Rr", f) for f in n] + [("Rp", f) for f in n] + [("N", f) for f in n]
+            + ([("N2", f) for f in n] if with_n2 else []) + [("noplast", 0)])
 
 
 def fly_specs(lay: list) -> list:
@@ -29,8 +31,12 @@ def fly_specs(lay: list) -> list:
 
 
 def steps(spec) -> list:
-    return (["pre"] + [f"reward:{t}" for t in range(spec.trials)] + ["S1"]
-            + [f"punish:{t}" for t in range(spec.trials)] + ["S2"])
+    return ["pre"] + [f"train:{t}" for t in range(spec.trials)] + ["S1"]
+
+
+def dan_of(spec, brain: str):
+    """The DAN each brain's block drives (None: presentation only)."""
+    return {"Rr": spec.reward_dan, "Rp": spec.punish_dan, "noplast": spec.reward_dan}.get(brain)
 
 
 def probe(pool, spec, pair: str, lay: list, odors: dict, cells: dict, stage: str) -> list:
@@ -50,9 +56,9 @@ def probe(pool, spec, pair: str, lay: list, odors: dict, cells: dict, stage: str
     return out
 
 
-def train(pool, spec, pair: str, lay: list, x_odor: dict, dan: str, trial: int) -> None:
-    """One trial of a block for every brain at once (one reinforcement per fly per batch)."""
-    reqs = [(i, x_odor, dan if b in ("R", "noplast") else None, spec.pulse_ms,
+def train(pool, spec, pair: str, lay: list, x_odor: dict, trial: int) -> None:
+    """One trial of the block for every brain at once (one reinforcement per fly per batch)."""
+    reqs = [(i, x_odor, dan_of(spec, b), spec.pulse_ms,
              spec.train_seed(pair, f, trial, second_null=b == "N2")) for i, (b, f) in enumerate(lay)]
     pool.reinforce_batch(reqs, spec.strength, settle_ms=spec.train_settle_ms, gap_ms=spec.train_gap_ms)
 
@@ -73,18 +79,31 @@ def run_pair(pool, spec, pair: str, odors: dict, cells: dict, with_n2: bool, fix
     for step in steps(spec):
         if step in st["done"]:
             continue
-        if step in ("pre", "S1", "S2"):
+        if step in ("pre", "S1"):
             st["records"] += probe(pool, spec, pair, lay, odors, cells, step)
             if step == "pre":
                 st["x"] = choose_x(st["records"], spec, fixed_x)
                 log(f"{pair}: X = odour {st['x']}")
         else:
-            block, t = step.split(":")
-            dan = spec.reward_dan if block == "reward" else spec.punish_dan
-            train(pool, spec, pair, lay, odors[st["x"]], dan, int(t) + (spec.trials if block == "punish" else 0))
+            train(pool, spec, pair, lay, odors[st["x"]], int(step.split(":")[1]))
         st["done"].append(step)
         if checkpoint:
             checkpoint.save(dict(st, weights=pool.state()))
         log(f"{pair}: {step} done")
     return dict(pair=pair, x=st["x"], layout=lay, records=st["records"], provenance=st.get("provenance"),
                 replayed=replayed)
+
+
+def screen_calibration(spec, measure) -> dict:
+    """J.12.7's calibration-pair rule on naive probes only: measure(seed) -> the reward-arm brains' pre records for
+    design_odor_pair(k, seed); the first candidate whose rule-chosen X has a naive A-type median >= calibration_min_a is
+    the calibration pair, else the first candidate (recorded as such)."""
+    rows = []
+    for seed in spec.calibration_candidates:
+        recs = measure(seed)
+        x = choose_x(recs, spec, None)
+        a = naive_x(recs, x, spec)[spec.a_type]
+        rows.append(dict(seed=int(seed), x=x, naive_a=a))
+        if a >= spec.calibration_min_a:
+            return dict(selected=int(seed), met=True, rows=rows)
+    return dict(selected=int(spec.calibration_candidates[0]), met=False, rows=rows)
