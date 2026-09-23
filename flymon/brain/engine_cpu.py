@@ -17,6 +17,8 @@ M0d modes (spec appendix H.2, all off by default):
   kc_thresh_mode "homeostatic"  KC thresholds come from a validated file (flymon.brain.thresholds).
   apl_input_scale            every CSC edge whose target is an APL cell is scaled by this factor, applied after the
                              hemisphere factor and `apl_scale`; 1.0 skips the multiply (spec appendix H.3a).
+  receptor_scale             (j_params.StdParams only, spec appendix J.11.3) every receptor out-edge is scaled by this
+                             factor after the CSC is built; absent or 1.0 skips the multiply.
 Reproduction target for the design decisions (MBON hold, KC threshold normalisation, APL scale):
 flybrain FINDINGS.md; constants: Shiu et al. 2024.
 """
@@ -69,6 +71,9 @@ class Engine:
         self.is_receptor = np.zeros(self.N, bool)
         self.is_receptor[pops.sensory] = True
         self.receptor_idx = pops.sensory.astype(np.int64)
+        rs = float(getattr(params, "receptor_scale", 1.0))
+        if rs != 1.0:                               # spec J.11.3; 1.0 (and a plain Params) keeps the CSC bit-identical
+            self.csc.w[self.is_receptor[self.csc.pre_of_edge()]] *= np.float32(rs)
         self.drive_hz = np.zeros(self.N, np.float32)
 
         self._graded_apl = params.apl_mode == "graded"
@@ -200,3 +205,6 @@ def _validate_modes(p: Params) -> None:
         raise ValueError(f"orn_std needs 0 < orn_std_f <= 1 and orn_std_tau_ms > 0, got {p.orn_std_f}, {p.orn_std_tau_ms}")
     if not (math.isfinite(p.apl_input_scale) and 0 < p.apl_input_scale <= 1):
         raise ValueError(f"apl_input_scale must be finite and in (0, 1], got {p.apl_input_scale}")
+    rs = getattr(p, "receptor_scale", 1.0)
+    if not (math.isfinite(rs) and rs > 0):
+        raise ValueError(f"receptor_scale must be finite and > 0, got {rs}")
