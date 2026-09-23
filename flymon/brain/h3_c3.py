@@ -145,15 +145,16 @@ def run_cycles(spec, search, homeo, theta0, boundary) -> dict:
     return dict(status=CYCLES_EXHAUSTED, cycles=cycles)
 
 
-def c3_cell(m, ctx: Context, kc: float, order: int) -> dict:
-    """One kc_thresh: cycles of (scale bisection at the current thresholds, homeostasis at that scale)."""
+def c3_cell(m, ctx: Context, kc: float, order: int, make_base=None) -> dict:
+    """One kc_thresh: cycles of (scale bisection at the current thresholds, homeostasis at that scale). make_base(kc)
+    -> the cell's Params at apl_input_scale 1.0; None is C1's (H.3's C3). Spec J.11.4 passes an ORN-depression engine."""
     spec, ex = ctx.spec, ctx.extra
     rule, has_pn = ex["rule_thresholds"](kc)
     update = ex["update_mask"]
     if (update & ~has_pn).any():
         raise ValueError("the update set must lie inside Engine.kc_pn_input > 0 (the loader keeps the rest at the rule)")
     files = ex["threshold_files"]
-    base0 = c1_params(spec, kc, 1.0)
+    base0 = c1_params(spec, kc, 1.0) if make_base is None else make_base(kc)
 
     def search(theta):
         ctx.log(f"C3 G({kc:g}): scale bisection")

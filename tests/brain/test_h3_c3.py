@@ -251,3 +251,20 @@ def test_the_real_update_set_is_the_declared_3768_kcs():
     ids = np.asarray(c.bodyId[pops.kc][m], np.int64)
     assert hashlib.sha256(ids.tobytes()).hexdigest() == \
         "f069a2e55aee3314d5d3599fbdfe63ff94f0566a60dff8d0a504ccbdf4a45f32"
+
+
+def test_c3_cell_builds_every_measured_engine_from_make_base(c3ctx):
+    """Spec J.11.4: the C3 rule re-converged on another base engine. Every Params the cell measures carries the base's
+    ORN depression and receptor scale; only apl_input_scale, the thresholds (and nothing else) change."""
+    from flymon.brain.j_params import StdParams, with_std
+    make = lambda kc: with_std(c1_params(SPEC, kc, 1.0), 0.9, 300.0, 4.0)
+    m = Scripted(fired=fired_model(), mv=mv_model)
+    cell = c3_cell(m, c3ctx, 1.6, 0, make_base=make)
+    seen = [c[1] for c in m.calls if c[0] == "reference"]
+    assert seen and all(type(p) is StdParams for p in seen)
+    assert {(p.orn_std, p.orn_std_f, p.orn_std_tau_ms, p.receptor_scale, p.kc_thresh) for p in seen} == \
+        {(True, 0.9, 300.0, 4.0, 1.6)}
+    assert type(cell["params"]) is StdParams and cell["params"].kc_thresh_mode == "homeostatic"
+    plain = Scripted(fired=fired_model(), mv=mv_model)
+    c3_cell(plain, c3ctx, 1.6, 0)                                            # the default is H.3's C3, unchanged
+    assert all(type(c[1]) is Params for c in plain.calls if c[0] == "reference")
