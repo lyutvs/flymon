@@ -50,6 +50,7 @@ class BSpec:
     grid_dprime: float = 0.05
     grid_choice: float = 0.125
     grid_max_dprime: float = 50.0
+    grid_max_choice: float = 2.0                 # the choice change lies in [-2, 2]
 
     def pair_index(self, name: str) -> int:
         return PAIRS.index(name)

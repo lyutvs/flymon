@@ -14,8 +14,8 @@ from b_fixtures import records
 TH = {"reward": 1.0, "punish": 1.0, "choice": 0.25}
 
 
-def verdict(recs, x="b", th=TH, spec=SPEC):
-    return B.pair_verdict(recs, x, th, spec)
+def verdict(recs, x="b", th=TH, spec=SPEC, pair="calibration"):
+    return B.pair_verdict(recs, x, th, spec, pair)
 
 
 def test_spec_is_j12():
@@ -25,6 +25,7 @@ def test_spec_is_j12():
         (8, 8, 20, 400.0, "PAM08", "PPL105")
     assert (SPEC.z_a, SPEC.z_p) == ((21.8293, 18.1032), (40.6433, 24.0891))
     assert (SPEC.floor_spikes, SPEC.valid_min, SPEC.spill_max, SPEC.null_max, SPEC.power_min) == (5.0, 6, 0.5, 0.05, 0.9)
+    assert (SPEC.grid_dprime, SPEC.grid_choice, SPEC.grid_max_dprime, SPEC.grid_max_choice) == (0.05, 0.125, 50.0, 2.0)
     assert SPEC.probe_seeds("exploration", 2)[:2] == [410_200, 410_201]
     assert SPEC.train_seed("confirmation", 1, 3) == 4_201_003 and SPEC.train_seed("calibration", 1, 3, True) == 4_501_003
 
@@ -65,8 +66,10 @@ def test_a_punishment_that_does_not_change_the_choice_fails():
 
 
 def test_a_floor_readout_on_x_is_not_constructible():
-    v = verdict(records(naive=dict(ax=2, px=40, ay=20, py=40), reward=20, punish=20, noise=0.5))
+    """X is the rule's (its naive MBON13 median 2 beats Y's 0) and sits below the floor."""
+    v = verdict(records(naive=dict(ax=2, px=40, ay=0, py=40), reward=20, punish=20, noise=0.5))
     assert v["status"] == B.NOT_CONSTRUCTIBLE and v["naive_x"][SPEC.a_type] < SPEC.floor_spikes
+    assert set(v["recorded"]) == {"naive_dprime"}
 
 
 def test_a_noplast_count_that_moved_stops_the_machine():
@@ -77,6 +80,45 @@ def test_a_missing_or_duplicate_record_is_invalid():
     recs = records(reward=10, punish=25)
     assert verdict(recs[1:])["status"] == B.INVALID
     assert verdict(recs + recs[:1])["status"] == B.INVALID
+
+
+def test_a_fly_missing_in_every_brain_is_invalid():
+    assert verdict([r for r in records(reward=10, punish=25) if r["fly"] != 7])["status"] == B.INVALID
+
+
+def test_another_pairs_seeds_are_invalid():
+    recs = records(reward=10, punish=25, pair="exploration")
+    assert verdict(recs, pair="exploration")["status"] == B.PASS         # the same records under their own pair
+    assert verdict(recs)["status"] == B.INVALID
+
+
+def test_one_seed_missing_in_every_brain_of_a_fly_is_invalid():
+    s = SPEC.probe_seeds("calibration", 3)[2]
+    assert verdict([r for r in records(reward=10, punish=25) if not (r["fly"] == 3 and r["seed"] == s)])["status"] \
+        == B.INVALID
+
+
+def test_an_x_that_is_not_the_rules_is_invalid():
+    recs = records(reward=10, punish=25, pair="exploration")          # the exploration pair's X is fixed to b
+    v = verdict(recs, x="a", pair="exploration")
+    assert v["status"] == B.INVALID and v["reasons"] == ["X is not the rule's"]
+
+
+def test_the_recorded_items_on_a_hand_checkable_pair():
+    """One fly, two probe seeds. R pre: X MBON13 30 / 40, Y 20 / 20, MBON05 40 everywhere, so dV = 10 / sA, 20 / sA and
+    d' = 15 / (10 / sqrt 2) = 1.5 sqrt 2. R S1: X MBON05 0 on one seed of two (1/2); R S2: X MBON13 0 on both (1)."""
+    spec = dataclasses.replace(SPEC, n_flies=1, n_probe=2, valid_min=1)
+    s0, s1 = spec.probe_seeds("calibration", 0)
+    A, P = spec.a_type, spec.p_type
+    pre = {s0: {"b": {A: 30, P: 40}, "a": {A: 20, P: 40}}, s1: {"b": {A: 40, P: 40}, "a": {A: 20, P: 40}}}
+    R = {"pre": pre, "S1": {s0: {"b": {A: 30, P: 0}, "a": {A: 20, P: 40}}, s1: pre[s1]},
+         "S2": {s: {"b": {A: 0, P: 0}, "a": {A: 20, P: 40}} for s in (s0, s1)}}
+    recs = [dict(brain=b, fly=0, stage=st, seed=s, counts=(R[st][s] if b == "R" else pre[s]))
+            for b in ("R", "N", "noplast") for st in B.STAGES for s in (s0, s1)]
+    v = verdict(recs, spec=spec)
+    assert v["status"] in (B.PASS, B.FAIL)
+    assert math.isclose(v["recorded"]["naive_dprime"], 1.5 * math.sqrt(2.0))
+    assert v["recorded"]["floor_share_s1"] == 0.5 and v["recorded"]["floor_share_s2"] == 1.0
 
 
 def test_too_few_valid_flies_is_invalid(monkeypatch):
@@ -134,9 +176,10 @@ def test_mutation_without_y_specificity_lets_generalisation_pass():
                    th={**TH, "choice": -1.0})["status"] == B.PASS
 
 
-def test_mutation_without_the_confirmation_pair_passes_a_failed_confirmation(monkeypatch):
-    monkeypatch.setattr(B, "b_verdict", lambda e, c: dict(outcome=B.PASS if e["status"] == B.PASS else B.FAIL))
-    assert B.b_verdict({"status": B.PASS}, {"status": B.FAIL})["outcome"] == B.PASS
+def test_a_failure_of_either_test_pair_fails_b():
+    """Dropping either pair from b_verdict turns one of these into a PASS."""
+    assert B.b_verdict({"status": B.PASS}, {"status": B.FAIL})["outcome"] == B.FAIL
+    assert B.b_verdict({"status": B.FAIL}, {"status": B.PASS})["outcome"] == B.FAIL
 
 
 def test_mutation_without_the_noplast_check_passes_a_moved_machine(monkeypatch):

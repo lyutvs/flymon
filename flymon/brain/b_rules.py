@@ -41,7 +41,8 @@ def v_of(counts: dict, spec) -> float:
 
 
 def check_records(records: list, brains: tuple, spec, seeds_of) -> list:
-    """INVALID reasons: every (brain, fly, stage, seed) of the declared layout exactly once, finite counts."""
+    """INVALID reasons: every (brain, fly, stage, seed) of the declared layout exactly once, finite counts. seeds_of(f)
+    is the declaration (spec.probe_seeds(pair, f)); the noplast brain is fly 0's seeds."""
     reasons = []
     keys = [(r["brain"], int(r["fly"]), r["stage"], int(r["seed"])) for r in records]
     if len(set(keys)) != len(keys):
@@ -113,17 +114,31 @@ def fly_items(records: list, x: str, spec, fly: int, brain: str = "R", ref: str 
     return None if any(out[k] is None for k in ("reward", "punish", "spill_reward", "spill_punish")) else out
 
 
-def pair_verdict(records: list, x: str, thresholds: dict, spec) -> dict:
-    """J.12.3's pair verdict. thresholds: {"reward": t_R, "punish": t_P, "choice": t_C} (the calibration's)."""
-    reasons = check_records(records, ("R", "N", "noplast"), spec, lambda f: sorted(
-        {int(r["seed"]) for r in records if r["brain"] == "R" and int(r["fly"]) == f}))
+def recorded(records: list, x: str, spec) -> dict:
+    """J.12.3's record-only items: naive d' of V(X) - V(Y) over every R brain's pre probe (all flies pooled), and the
+    share of R brains' S1 probes whose X P-type count is 0 and S2 probes whose X A-type count is 0 (floor contact)."""
+    y = "a" if x == "b" else "b"
+    R = {st: [r["counts"] for r in records if r["brain"] == "R" and r["stage"] == st] for st in STAGES}
+    share = lambda st, t: float(np.mean([c[x][t] == 0 for c in R[st]])) if R[st] else None
+    return dict(naive_dprime=dprime([v_of(c[x], spec) - v_of(c[y], spec) for c in R["pre"]]),
+                floor_share_s1=share("S1", spec.p_type), floor_share_s2=share("S2", spec.a_type))
+
+
+def pair_verdict(records: list, x: str, thresholds: dict, spec, pair: str) -> dict:
+    """J.12.3's pair verdict. thresholds: {"reward": t_R, "punish": t_P, "choice": t_C} (the calibration's). The records
+    must cover exactly `pair`'s declared probe seeds (spec.probe_seeds) and x must be the rule's (choose_x, with the
+    pair's fixed X if any)."""
+    reasons = check_records(records, ("R", "N", "noplast"), spec, lambda f: spec.probe_seeds(pair, f))
+    if not reasons and x != choose_x(records, spec, dict(spec.fixed_x).get(pair)):
+        reasons.append("X is not the rule's")
     if reasons:
         return dict(status=INVALID, reasons=reasons)
     if not noplast_ok(records):
         return dict(status=STOP_MACHINE, reasons=["noplast counts moved"])
     nx = naive_x(records, x, spec)
+    rec = recorded(records, x, spec)
     if min(nx.values()) < spec.floor_spikes:
-        return dict(status=NOT_CONSTRUCTIBLE, naive_x=nx)
+        return dict(status=NOT_CONSTRUCTIBLE, naive_x=nx, recorded=dict(naive_dprime=rec["naive_dprime"]))
     flies = {f: fly_items(records, x, spec, f) for f in range(spec.n_flies)}
     valid = {f: it for f, it in flies.items() if it is not None}
     if len(valid) < spec.valid_min:
@@ -133,7 +148,7 @@ def pair_verdict(records: list, x: str, thresholds: dict, spec) -> dict:
                   spill_reward=med["spill_reward"] <= spec.spill_max, spill_punish=med["spill_punish"] <= spec.spill_max,
                   choice=med["choice"] >= thresholds["choice"])
     return dict(status=PASS if all(checks.values()) else FAIL, checks=checks, medians=med, naive_x=nx,
-                n_valid=len(valid), flies={str(f): it for f, it in flies.items()})
+                n_valid=len(valid), flies={str(f): it for f, it in flies.items()}, recorded=rec)
 
 
 def b_verdict(exploration: dict, confirmation: dict) -> dict:
@@ -167,10 +182,10 @@ def threshold(effect: list, null: list, step: float, spec, rng, cap: float) -> d
     return dict(t=t, p_null=float((nb >= t).mean()), power=power, ok=bool(power >= spec.power_min))
 
 
-def calibrate(records: list, x: str, spec) -> dict:
-    """J.12.5: the pilot's own stops, then t_R, t_P, t_C from R vs N (effect) and N vs N2 (null)."""
-    reasons = check_records(records, ("R", "N", "N2", "noplast"), spec, lambda f: sorted(
-        {int(r["seed"]) for r in records if r["brain"] == "R" and int(r["fly"]) == f}))
+def calibrate(records: list, x: str, spec, pair: str = "calibration") -> dict:
+    """J.12.5: the pilot's own stops, then t_R, t_P, t_C from R vs N (effect) and N vs N2 (null). The records must
+    cover exactly `pair`'s declared probe seeds."""
+    reasons = check_records(records, ("R", "N", "N2", "noplast"), spec, lambda f: spec.probe_seeds(pair, f))
     if reasons:
         return dict(status=INVALID, reasons=reasons)
     if not noplast_ok(records):
@@ -195,7 +210,8 @@ def calibrate(records: list, x: str, spec) -> dict:
     th = dict(reward=threshold(E["reward"], N["reward"], spec.grid_dprime, spec, rng, spec.grid_max_dprime),
               punish=threshold([-v for v in E["punish"]], [-v for v in N["punish"]], spec.grid_dprime, spec, rng,
                                spec.grid_max_dprime),
-              choice=threshold(E["choice"], N["choice"], spec.grid_choice, spec, rng, 2.0))
+              choice=threshold(E["choice"], N["choice"], spec.grid_choice, spec, rng,
+                               spec.grid_max_choice))
     ok = all(v["ok"] for v in th.values())
     return dict(base, status=CALIBRATED if ok else UNDERPOWERED, thresholds=th,
                 values={k: v["t"] for k, v in th.items()})
