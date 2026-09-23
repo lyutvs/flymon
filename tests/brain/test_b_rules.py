@@ -1,0 +1,191 @@
+"""Spec J.12.4: the B test's judge, verified before any run — fixtures with a known answer and mutations that must
+change a verdict (a surviving mutation means the rule it removes is not tested)."""
+import dataclasses
+import math
+
+import numpy as np
+import pytest
+
+from flymon.brain import b_rules as B
+from flymon.brain.b_spec import SPEC
+
+from b_fixtures import records
+
+TH = {"reward": 1.0, "punish": 1.0, "choice": 0.25}
+
+
+def verdict(recs, x="b", th=TH, spec=SPEC):
+    return B.pair_verdict(recs, x, th, spec)
+
+
+def test_spec_is_j12():
+    assert dict(SPEC.pair_seeds) == {"calibration": 23, "exploration": 0, "confirmation": 7}
+    assert dict(SPEC.fixed_x) == {"exploration": "b"}
+    assert (SPEC.n_flies, SPEC.n_probe, SPEC.trials, SPEC.pulse_ms, SPEC.reward_dan, SPEC.punish_dan) == \
+        (8, 8, 20, 400.0, "PAM08", "PPL105")
+    assert (SPEC.z_a, SPEC.z_p) == ((21.8293, 18.1032), (40.6433, 24.0891))
+    assert (SPEC.floor_spikes, SPEC.valid_min, SPEC.spill_max, SPEC.null_max, SPEC.power_min) == (5.0, 6, 0.5, 0.05, 0.9)
+    assert SPEC.probe_seeds("exploration", 2)[:2] == [410_200, 410_201]
+    assert SPEC.train_seed("confirmation", 1, 3) == 4_201_003 and SPEC.train_seed("calibration", 1, 3, True) == 4_501_003
+
+
+def test_dprime_keeps_f5_s_limits():
+    assert B.dprime([1.0]) is None and B.dprime([0.0, 0.0]) == 0.0 and B.dprime([2.0, 2.0]) == math.inf
+    assert math.isclose(B.dprime([1.0, 3.0]), 2.0 / math.sqrt(2.0))
+
+
+# ---- fixtures with a known answer ----------------------------------------------------------------------------------------
+def test_specific_associative_learning_passes():
+    """Reward 10 spikes of MBON05(X), then punishment 25 of MBON13(X): X's value falls below Y's, so the choice flips."""
+    v = verdict(records(reward=10, punish=25))
+    assert v["status"] == B.PASS and all(v["checks"].values()) and v["n_valid"] == 8
+
+
+def test_presentation_drift_without_dan_fails():
+    """F.6's first path: X-only drift passes spec 5's literal level test; the paired no-DAN contrast stops it."""
+    v = verdict(records(drift_r=20, drift_p=20))
+    assert v["status"] == B.FAIL and not v["checks"]["reward"] and not v["checks"]["punish"]
+    assert v["medians"]["r"] > 1                                        # the uncontrasted change would have passed
+
+
+def test_full_generalisation_fails_on_y_specificity():
+    v = verdict(records(reward=10, punish=25, spill=1.0))
+    assert v["status"] == B.FAIL and not v["checks"]["spill_reward"] and not v["checks"]["spill_punish"]
+
+
+def test_reward_only_fails():
+    v = verdict(records(reward=10, punish=0))
+    assert v["status"] == B.FAIL and v["checks"]["reward"] and not v["checks"]["punish"]
+
+
+def test_a_punishment_that_does_not_change_the_choice_fails():
+    """X far above Y naive (V gap ~ 3.5 z) and a small, consistent punishment: association passes, choice does not."""
+    v = verdict(records(naive=dict(ax=90, px=10, ay=10, py=40), reward=5, punish=6, noise=1.0))
+    assert v["checks"]["punish"] and not v["checks"]["choice"] and v["status"] == B.FAIL
+
+
+def test_a_floor_readout_on_x_is_not_constructible():
+    v = verdict(records(naive=dict(ax=2, px=40, ay=20, py=40), reward=20, punish=20, noise=0.5))
+    assert v["status"] == B.NOT_CONSTRUCTIBLE and v["naive_x"][SPEC.a_type] < SPEC.floor_spikes
+
+
+def test_a_noplast_count_that_moved_stops_the_machine():
+    assert verdict(records(reward=10, punish=25, noplast_move=True))["status"] == B.STOP_MACHINE
+
+
+def test_a_missing_or_duplicate_record_is_invalid():
+    recs = records(reward=10, punish=25)
+    assert verdict(recs[1:])["status"] == B.INVALID
+    assert verdict(recs + recs[:1])["status"] == B.INVALID
+
+
+def test_too_few_valid_flies_is_invalid(monkeypatch):
+    """A fly is invalid when a statistic is undefined (d' on fewer than 2 probe seeds); three leave 5 < 6 valid."""
+    orig = B.fly_items
+    monkeypatch.setattr(B, "fly_items", lambda recs, x, spec, f, **kw: None if f < 3 else orig(recs, x, spec, f, **kw))
+    v = verdict(records(reward=10, punish=25))
+    assert v["status"] == B.INVALID and "valid flies" in v["reasons"][0]
+
+
+def test_no_association_at_all_fails_rather_than_invalidates():
+    """X unmoved relative to N: the Y ratio is +inf (not specific), the fly stays valid and the pair FAILs."""
+    v = verdict(records(brain_noise=0.0))
+    assert v["status"] == B.FAIL and v["n_valid"] == 8 and v["medians"]["spill_reward"] == math.inf
+
+
+def test_the_b_verdict_needs_both_test_pairs():
+    P, F, N = ({"status": s} for s in (B.PASS, B.FAIL, B.NOT_CONSTRUCTIBLE))
+    assert B.b_verdict(P, P)["outcome"] == B.PASS
+    assert B.b_verdict(P, F)["outcome"] == B.FAIL and B.b_verdict(F, N)["outcome"] == B.FAIL
+    assert B.b_verdict(P, N)["outcome"] == B.STOP
+
+
+def test_choose_x_is_the_larger_naive_a_type_median_and_a_fixed_x_wins():
+    recs = records(naive=dict(ax=30, px=40, ay=20, py=40))                  # x = b carries the larger MBON13
+    assert B.choose_x(recs, SPEC, None) == "b" and B.choose_x(recs, SPEC, "a") == "a"
+    recs = records(x="a", naive=dict(ax=30, px=40, ay=20, py=40))
+    assert B.choose_x(recs, SPEC, None) == "a"
+
+
+# ---- mutations: each must turn a fixture's verdict --------------------------------------------------------------------------
+def test_mutation_without_the_no_dan_contrast_lets_drift_pass(monkeypatch):
+    orig = B.fly_items
+
+    def no_contrast(*a, **kw):
+        out = orig(*a, **kw)
+        return None if out is None else dict(out, reward=out["r"], punish=out["p"])
+    monkeypatch.setattr(B, "fly_items", no_contrast)
+    assert verdict(records(drift_r=20, drift_p=20), th={**TH, "choice": -1.0})["status"] == B.PASS
+
+
+def test_mutation_with_a_flipped_sign_fails_real_learning(monkeypatch):
+    monkeypatch.setattr(B, "v_of", lambda c, s: -((c[s.a_type] - s.z_a[0]) / s.z_a[1] - (c[s.p_type] - s.z_p[0]) / s.z_p[1]))
+    assert verdict(records(reward=10, punish=25))["status"] == B.FAIL
+
+
+def test_partial_generalisation_fails_on_y_specificity_alone():
+    """Y takes 70 % of X's loss: the associations still pass (30 % remains, consistently), Y specificity does not."""
+    v = verdict(records(reward=20, punish=25, spill=0.7))
+    assert v["checks"]["reward"] and v["checks"]["punish"] and not v["checks"]["spill_reward"] and v["status"] == B.FAIL
+
+
+def test_mutation_without_y_specificity_lets_generalisation_pass():
+    assert verdict(records(reward=20, punish=25, spill=0.7), spec=dataclasses.replace(SPEC, spill_max=math.inf),
+                   th={**TH, "choice": -1.0})["status"] == B.PASS
+
+
+def test_mutation_without_the_confirmation_pair_passes_a_failed_confirmation(monkeypatch):
+    monkeypatch.setattr(B, "b_verdict", lambda e, c: dict(outcome=B.PASS if e["status"] == B.PASS else B.FAIL))
+    assert B.b_verdict({"status": B.PASS}, {"status": B.FAIL})["outcome"] == B.PASS
+
+
+def test_mutation_without_the_noplast_check_passes_a_moved_machine(monkeypatch):
+    monkeypatch.setattr(B, "noplast_ok", lambda recs: True)
+    assert verdict(records(reward=10, punish=25, noplast_move=True))["status"] == B.PASS
+
+
+def test_mutation_that_reverts_the_sd_zero_limit_loses_a_noiseless_pass(monkeypatch):
+    recs = records(reward=10, punish=25, noise=0.0, brain_noise=0.0)
+    assert verdict(recs)["status"] == B.PASS                                  # +-inf d' from constant differences
+    orig = B.dprime
+    monkeypatch.setattr(B, "dprime", lambda x: None if np.std(np.asarray(list(x), float)) == 0 else orig(x))
+    assert verdict(recs)["status"] == B.INVALID
+
+
+def test_mutation_without_the_choice_item_passes_an_unchanged_choice():
+    recs = records(naive=dict(ax=90, px=10, ay=10, py=40), reward=5, punish=6, noise=1.0)
+    assert verdict(recs, th={**TH, "choice": -1.0})["status"] == B.PASS
+
+
+# ---- J.12.5: the calibration pilot's rule ------------------------------------------------------------------------------------
+def test_a_learning_pilot_calibrates_and_its_thresholds_meet_both_targets():
+    c = B.calibrate(records(reward=10, punish=25, n2=True, noise=4.0), "b", SPEC)
+    assert c["status"] == B.CALIBRATED
+    for k, th in c["thresholds"].items():
+        assert th["p_null"] <= SPEC.null_max and th["power"] >= SPEC.power_min and th["t"] >= 0, k
+    again = B.calibrate(records(reward=10, punish=25, n2=True, noise=4.0), "b", SPEC)
+    assert again["values"] == c["values"]                                    # the bootstrap seed is fixed
+
+
+def test_the_pilot_stops_without_an_effect_without_specificity_and_when_underpowered():
+    assert B.calibrate(records(n2=True), "b", SPEC)["status"] == B.NO_EFFECT
+    assert B.calibrate(records(reward=10, punish=25, spill=1.0, n2=True), "b", SPEC)["status"] == B.NO_EFFECT
+    assert B.calibrate(records(reward=20, punish=25, spill=0.7, n2=True), "b", SPEC)["status"] == B.NOT_SPECIFIC
+    weak = B.calibrate(records(reward=1, punish=1, n2=True, noise=6.0, seed=3), "b", SPEC)
+    assert weak["status"] in (B.UNDERPOWERED, B.NO_EFFECT, B.NOT_SPECIFIC)          # a weak pilot never calibrates
+    assert B.calibrate(records(reward=10, punish=25, n2=True, noplast_move=True), "b", SPEC)["status"] == B.STOP_MACHINE
+
+
+def test_threshold_is_the_smallest_grid_point_meeting_the_null_bound():
+    rng = np.random.default_rng(0)
+    th = B.threshold([5.0] * 8, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0], 0.05, SPEC, rng, 50.0)
+    assert th["t"] == 0.05 and th["p_null"] <= 0.05 and th["power"] == 1.0   # median 0 unless >= 4 of 8 draws hit 3.0
+
+
+def test_a_threshold_that_half_the_effect_cannot_clear_is_not_ok():
+    """Null medians reach ~1 (wide null), the effect's median is 1.2: at the null-bound t the half effect (~0.6)
+    passes far less than 90 % of the time -> ok False, which calibrate() reports as UNDERPOWERED."""
+    rng = np.random.default_rng(0)
+    null = [-1.0, -0.5, 0.0, 0.3, 0.6, 0.9, 1.1, 1.3]
+    th = B.threshold([1.0, 1.1, 1.15, 1.2, 1.2, 1.25, 1.3, 1.4], null, 0.05, SPEC, rng, 50.0)
+    assert th["t"] is not None and th["p_null"] <= SPEC.null_max and th["power"] < SPEC.power_min and not th["ok"]
