@@ -8,6 +8,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 M0D = ROOT / "results/summary/m0d.json"
 LEARNING = ROOT / "results/summary/m2_learning.json"      # F.10 #4's summary: written only if the learning test runs
+ENGINE = ROOT / "results/summary/m2_engine.json"          # spec J.11.4-4: a depression engine's selection, if any
 
 
 @pytest.mark.xfail(strict=True, reason="M2 no-go — 시험 불성립 (spec appendix I): no tested engine reaches "
@@ -17,7 +18,9 @@ def test_m2_learning_unit_test_can_be_built():
     least half of the (b) pairs testable (T_b >= 0.5) and at least two naive-balanced (a) pairs testable (F_a >= 2)."""
     combos = json.loads(M0D.read_text())["h4"]["h4"]["combos"]
     aggs = [c["oracle"]["aggregate"] for c in combos.values()]
-    assert any(a["T_b"] >= 0.5 and a["F_a"] >= 2 for a in aggs)
+    sel = json.loads(ENGINE.read_text()).get("selection") if ENGINE.exists() else None      # J.10.6: widened, not relaxed
+    assert any(a["T_b"] >= 0.5 and a["F_a"] >= 2 for a in aggs) or \
+        bool(sel and sel["confirmed"] and sel["T_b"] >= 0.5 and sel["F_a"] >= 2)
 
 
 @pytest.mark.xfail(strict=True, reason="M2 no-go — 시험 불성립 (spec appendix I): spec 5's learning unit test never "
