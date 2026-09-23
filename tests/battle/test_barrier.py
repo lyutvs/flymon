@@ -158,3 +158,17 @@ async def test_second_concurrent_submit_from_one_player_raises():
     with pytest.raises(RuntimeError, match="already has a pending request"):
         await bar.submit("a", None, ["x", "y"], {})
     assert await asyncio.wait_for(first, 1.0) == 0        # the first waiter is untouched
+
+
+async def test_detail_filled_by_the_batch_reaches_the_submitter_context():
+    """M3's batch runner reports what the brain saw through each request's context (live viewer detail)."""
+    async def run_batch(reqs):
+        for i, r in enumerate(reqs):
+            r.context["detail"] = {"V": [0.5, -0.5], "slot": i}
+        return [0] * len(reqs)
+
+    bar = BatchBarrier(run_batch, deadline_ms=10_000)
+    bar.register("a")
+    ctx = {"battle_tag": "b", "turn": 4}
+    assert await bar.submit("a", None, ["x", "y"], ctx) == 0
+    assert ctx == {"battle_tag": "b", "turn": 4, "detail": {"V": [0.5, -0.5], "slot": 0}}
