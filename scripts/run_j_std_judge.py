@@ -8,7 +8,8 @@ D.6 (a) and (b) on the judged engine; or one of J.11.6's self-checks.
     uv run python scripts/run_j_std_judge.py --smoke --allow-dirty --scan <a smoke scan report>   # minutes
 
 Run it from the repository root. The settings and their order come from --scan (results/summary/std_scan.json: a
-complete scan measured under this code's J key). The run report goes to <out>/runs/<run id>-judge.{json,md} (self-checks:
+complete scan measured under this code's J key; outside --smoke a smoke scan or one measured with dirty hashed files
+is refused). The run report goes to <out>/runs/<run id>-judge.{json,md} (self-checks:
 <out>/selfcheck/<run id>-<i|ii>.json). results/summary/m2_engine.json is replaced only by a complete judgement (every
 pair, D.6 measured, no --smoke / --pairs / --no-d6, clean hashed files, the declared configuration) whose outcome is
 SELECTED, B or STOP_NO_OPERATING_POINT; a SELECTED one carries a `selection` with confirmed = false (H.5 sets it).
@@ -148,6 +149,9 @@ def main(argv=None, spec: JSpec | None = None, summary_spec: JSpec = SPEC, requi
                           f"{code['key'][:12]}: its settings are not this engine's")
         if scan.get("scan", {}).get("outcome") != SCAN_COMPLETE:
             return refuse(f"the scan's outcome is {scan.get('scan', {}).get('outcome')}, not {SCAN_COMPLETE}")
+        if not a.smoke and (scan.get("smoke") or scan.get("git", {}).get("dirty_hashed")):
+            why = "a smoke run" if scan.get("smoke") else f"measured with dirty hashed files {scan['git']['dirty_hashed']}"
+            return refuse(f"the scan is {why}: only a --smoke judgement may use it")
     t0 = time.time()
     deadline = None if a.max_hours is None else t0 + 3600.0 * a.max_hours
     s = build(a.npz, spec, out, deadline=deadline, log=lambda x: print(x, flush=True), pools=pools, pairs=pairs)

@@ -50,6 +50,18 @@ def test_the_judgement_refuses_a_scan_from_other_code_or_an_incomplete_scan(tmp_
     assert JUDGE.main(["--scan", str(scan)], require_root=False) == 2 and "SCAN_COMPLETE" in capsys.readouterr().err
 
 
+@pytest.mark.skipif(not (ROOT / "data/malecns.npz").exists(), reason="MaleCNS connectome not built")
+def test_the_judgement_refuses_a_smoke_or_dirty_scan_outside_smoke(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(JUDGE, "git_state", lambda files: dict(commit="x", dirty_hashed=[], dirty_other=[]))
+    key = JUDGE.code_key("data/malecns.npz", files=JUDGE.MEASURE_FILES)["key"]
+    scan = tmp_path / "scan.json"
+    scan.write_text(json.dumps({"measure_key": key, "scan": {"outcome": "SCAN_COMPLETE"}, "smoke": True}))
+    assert JUDGE.main(["--scan", str(scan)], require_root=False) == 2 and "a smoke run" in capsys.readouterr().err
+    scan.write_text(json.dumps({"measure_key": key, "scan": {"outcome": "SCAN_COMPLETE"}, "smoke": False,
+                                "git": {"dirty_hashed": ["x"]}}))
+    assert JUDGE.main(["--scan", str(scan)], require_root=False) == 2 and "dirty hashed files" in capsys.readouterr().err
+
+
 def test_pairs_below_one_is_refused(capsys):
     assert JUDGE.main(["--pairs", "0"], require_root=False) == 2 and "--pairs" in capsys.readouterr().err
 
