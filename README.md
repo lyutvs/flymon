@@ -2,7 +2,7 @@
 
 MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
 M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
-M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). M3·M4는 보류.
+M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). M3·M4는 보류.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
 
@@ -146,6 +146,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). M3·M4�
     시험하지 않음), 짝수 턴 21쌍뿐, 채널→사구체 배정이 임의적(2867배), C0 대 C1·C3 기저 교락.
   - 판정은 `scripts/write_m2_nogo_summary.py`가 기록된 요약에서 파생한다(한 고리라도 성립하지 않으면 쓰기를 거부). 요약 `results/summary/m2_nogo.json`.
     M2 go 조건은 strict xfail 테스트 `tests/test_m2_go.py`로 남는다 — 조건이 충족되는 날 XPASS로 깨진다.
+- **안 된 것(STD 지렛대, 2026-09-25, 스펙 부록 J.13)**: M2 no-go 뒤의 새 주장 선언(부록 J)은 ORN→PN 단기 억압(STD)이 병목을 푸는지 직접 쟀다. f × τ 9점 스캔에서 전체 이득을 되돌렸고,
+  KC 부호 분산은 최대 26.9% 줄었다. 그러나 순위 상위 두 설정은 C3 규칙 재수렴에서 자격점이 없었다. 3위 설정(f 0.95, τ 100 ms)의 재수렴 엔진에서는 상대 타입 축 시험 가능 쌍이
+  **4/21**로 C3(7/21)보다도 낮았다. 사전 선언 구간 B_Tb에 따라 **STD는 이 병목의 지렛대로 닫는다.** D.6: (a) 미발동(최대 110 Hz), (b) 발동(16턴 중 5턴).
+  축소 주장의 학습 시험(B)은 보정할 수 없어 닫혔으므로(J.12.8) 축소 주장은 시험하지 않음이다. 다음은 새 주장 선언이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -179,6 +183,13 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
     even-turn pairs, an arbitrary channel-to-glomerulus assignment, and a baseline confound between C0 and C1/C3.
   - Derived by `scripts/write_m2_nogo_summary.py` into `results/summary/m2_nogo.json`; the M2 go condition stays in the
     code as strict expected failures (`tests/test_m2_go.py`). Details: spec appendix I (in Korean).
+- **Short-term depression (ORN→PN) as the lever: closed (2026-09-25, spec J.13).** The next claim declaration
+  (appendix J) measured STD directly. A 9-point f × τ scan with the total gain restored compressed the Kenyon-cell
+  code's spread by up to 26.9%. The two top-ranked settings had no operating point under C3's re-convergence rule. The
+  third (f 0.95, τ 100 ms), re-converged, had 4 of 21 testable opponent-type pairs, fewer than C3's 7. That falls in the
+  pre-declared band B_Tb, so STD is closed as the lever for this bottleneck. D.6: (a) not met (max 110 Hz); (b) met on
+  5 of 16 turns. The reduced claim's learning test could not be calibrated (J.12.8), so that claim is untested. Next: a
+  new claim declaration.
 
 ## 실행
 
