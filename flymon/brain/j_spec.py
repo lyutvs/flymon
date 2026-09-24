@@ -32,6 +32,10 @@ class JSpec:
     first_kc: float = 1.65                        # C3's adopted kc_thresh; the rest of H.3's grid follows in order
     homeo_target: float = 0.060                   # C3's adopted A0 (the declared 0.062 was never used)
     max_settings: int = 3                         # INVALID_ENGINE -> the next setting in the scan's order, at most 3
+    # ---- J.12.9 decision 2: the reading's bands, by counts on the declared pair list ----------------------------------
+    stage2_n_b: int = 21                          # the declared even-turn (b) pairs; any other count is not a judgement
+    stage2_select_testable_b: int = 11            # testable_b >= 11 (= T_b >= 0.5 on 21 pairs) with F_a >= 2: SELECTED
+    stage2_close_max_testable_b: int = 7          # testable_b <= 7 (C3's 7/21, no rise): B_Tb, the closing sentence
     # ---- J.11.4-5: D.6 on the judged engine ------------------------------------------------------------------------
     d6_seed_block: int = 8                        # one cache entry per 8 seeds of d6a.SEEDS (400-463)
     d6b_ratio_limit: float = 2.0                  # E.2: within-turn candidate KC spike ratio > 2

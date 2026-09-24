@@ -14,8 +14,11 @@ from . import d6a
 # ---- outcomes -----------------------------------------------------------------------------------------------------
 SCAN_COMPLETE = "SCAN_COMPLETE"
 NO_FEASIBLE_SETTING = "NO_FEASIBLE_SETTING"     # no setting both restorable and inside the KC band: stage 2 cannot run
-SELECTED = "SELECTED"                           # T_b >= 0.5 and F_a >= 2 (the M2 bar, G.14.4) -> H.5 confirmation
-B = "B"                                         # below the bar (J.11.5)
+SELECTED = "SELECTED"                           # testable_b >= 11/21 and F_a >= 2 (the M2 bar, G.14.4; J.12.9) -> H.5
+B = "B"                                         # below the bar (J.11.5), with a band (J.12.9 decision 2):
+B_TB = "B_Tb"                                   #   testable_b <= 7 (no rise over C3's 7/21): J.11.5's closing sentence
+B_NO_CONCLUSION = "B_NO_CONCLUSION"             #   testable_b 8-10: rose over C3 but below the bar; neither closes nor selects
+B_FA = "B_Fa"                                   #   testable_b >= 11 but F_a < 2: past the (b) bottleneck, not closed
 INVALID = "INVALID"                             # G.14.4 row 1 on the oracle rows
 STOP_MULTI_TYPE = "stop_multiple_types"         # two readout types in one pool (H.4 does not combine them)
 STOP_NO_OPERATING_POINT = "STOP_NO_OPERATING_POINT"   # every tried setting failed the C3 re-convergence (J.11.4-1)
@@ -72,15 +75,35 @@ def select_order(settings: list, spec) -> list:
     return order
 
 
-# ================================================================ stage 2 (J.11.4-3)
-def stage2_reading(agg: dict, spec4) -> dict:
-    """The M2 bar H.4 applied to C0-C3 (G.14.4): SELECTED iff T_b >= t_b_min and F_a >= f_a_min, otherwise B. With
-    fewer than f_a_min naive-balanced (a) pairs F_a cannot reach the bar; that is recorded for the B sentence."""
-    ok = bool(agg["T_b"] >= spec4.t_b_min and agg["F_a"] >= spec4.f_a_min)
-    return dict(outcome=SELECTED if ok else B, T_b=float(agg["T_b"]), testable_b=int(agg["testable_b"]),
-                n_b=int(agg["n_b"]), F_a=int(agg["F_a"]), naive_a=int(agg["naive_a"]),
-                f_a_possible=bool(agg["naive_a"] >= spec4.f_a_min),
-                bar=dict(t_b_min=spec4.t_b_min, f_a_min=spec4.f_a_min))
+# ================================================================ stage 2 (J.11.4-3, bands by J.12.9 decision 2)
+def stage2_reading(agg: dict, spec) -> dict:
+    """The M2 bar H.4 applied to C0-C3 (G.14.4), read in COUNTS on the declared pair list (J.12.9): SELECTED iff
+    testable_b >= stage2_select_testable_b and F_a >= f_a_min, otherwise B with a band — B_Tb (testable_b <=
+    stage2_close_max_testable_b), B_NO_CONCLUSION (between the two), B_Fa (testable_b at the bar, F_a below it).
+    `spec` is the J spec (H.4's bar through spec.h4). When n_b is not the declared stage2_n_b (smoke runs with fewer
+    pairs) the band is None — not a judgement — and the outcome falls back to T_b >= t_b_min and F_a >= f_a_min.
+    With fewer than f_a_min naive-balanced (a) pairs F_a cannot reach the bar; that is recorded for the B sentence."""
+    spec4 = spec.h4
+    tb, n_b, fa = int(agg["testable_b"]), int(agg["n_b"]), int(agg["F_a"])
+    fa_ok = fa >= spec4.f_a_min
+    note = None
+    if n_b != spec.stage2_n_b:
+        ok = bool(agg["T_b"] >= spec4.t_b_min and fa_ok)
+        band, note = None, "pair list is not the declared one: not a judgement"
+    elif tb >= spec.stage2_select_testable_b:
+        ok = fa_ok
+        band = SELECTED if ok else B_FA
+    else:
+        ok = False
+        band = B_TB if tb <= spec.stage2_close_max_testable_b else B_NO_CONCLUSION
+    out = dict(outcome=SELECTED if ok else B, band=band, T_b=float(agg["T_b"]), testable_b=tb, n_b=n_b, F_a=fa,
+               naive_a=int(agg["naive_a"]), f_a_possible=bool(agg["naive_a"] >= spec4.f_a_min),
+               bar=dict(t_b_min=spec4.t_b_min, f_a_min=spec4.f_a_min, n_b=spec.stage2_n_b,
+                        select_testable_b=spec.stage2_select_testable_b,
+                        close_max_testable_b=spec.stage2_close_max_testable_b))
+    if note is not None:
+        out["band_note"] = note
+    return out
 
 
 # ================================================================ D.6 on the judged engine (J.11.4-5)

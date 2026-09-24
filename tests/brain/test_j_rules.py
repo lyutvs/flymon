@@ -63,12 +63,35 @@ def test_a_tie_within_tie_tol_goes_to_the_literature_side():
     assert R.select_order(s, SPEC) == [1, 0, 2]            # 0.300 ties 0.305 and is nearer 0.78 / 893
 
 
-@pytest.mark.parametrize("tb, fa, naive, out", [(10, 2, 4, "B"), (11, 2, 4, "SELECTED"), (11, 1, 4, "B"),
-                                                (21, 2, 2, "SELECTED"), (14, 0, 1, "B")])
-def test_stage2_reading_is_the_m2_bar(tb, fa, naive, out):
+@pytest.mark.parametrize("tb, fa, naive, out, band", [
+    (10, 2, 4, "B", R.B_NO_CONCLUSION), (11, 2, 4, "SELECTED", R.SELECTED), (11, 1, 4, "B", R.B_FA),
+    (21, 2, 2, "SELECTED", R.SELECTED), (14, 0, 1, "B", R.B_FA), (7, 2, 4, "B", R.B_TB), (8, 2, 4, "B", R.B_NO_CONCLUSION),
+    (0, 0, 0, "B", R.B_TB), (7, 0, 4, "B", R.B_TB)])
+def test_stage2_reading_is_the_m2_bar_in_bands(tb, fa, naive, out, band):
     agg = dict(T_b=tb / 21, testable_b=tb, n_b=21, F_a=fa, naive_a=naive)
-    r = R.stage2_reading(agg, SPEC.h4)
-    assert r["outcome"] == out and r["f_a_possible"] == (naive >= 2)
+    r = R.stage2_reading(agg, SPEC)
+    assert (r["outcome"], r["band"]) == (out, band) and r["f_a_possible"] == (naive >= 2)
+    assert "band_note" not in r
+    assert r["bar"] == dict(t_b_min=0.5, f_a_min=2, n_b=21, select_testable_b=11, close_max_testable_b=7)
+
+
+def test_stage2_bands_by_count_at_the_boundaries():
+    band = lambda tb, fa=2: R.stage2_reading(dict(T_b=tb / 21, testable_b=tb, n_b=21, F_a=fa, naive_a=4), SPEC)["band"]
+    assert [band(t) for t in (7, 8, 10, 11)] == [R.B_TB, R.B_NO_CONCLUSION, R.B_NO_CONCLUSION, R.SELECTED]
+    assert band(11, 1) == R.B_FA and band(10, 1) == R.B_NO_CONCLUSION and band(7, 1) == R.B_TB
+
+
+def test_a_pair_list_other_than_the_declared_one_gets_no_band():
+    r = R.stage2_reading(dict(T_b=10 / 20, testable_b=10, n_b=20, F_a=2, naive_a=4), SPEC)
+    assert r["band"] is None and r["outcome"] == R.SELECTED and "not a judgement" in r["band_note"]
+    r = R.stage2_reading(dict(T_b=9 / 20, testable_b=9, n_b=20, F_a=2, naive_a=4), SPEC)
+    assert r["band"] is None and r["outcome"] == R.B
+
+
+def test_the_count_bar_is_the_m2_bar_on_the_declared_pairs():
+    assert SPEC.stage2_n_b == SPEC.h4.n_pairs_b == 21
+    assert SPEC.stage2_select_testable_b == math.ceil(SPEC.h4.t_b_min * SPEC.stage2_n_b)
+    assert SPEC.stage2_close_max_testable_b == 7 < SPEC.stage2_select_testable_b
 
 
 def test_d6b_is_e2_s_ratio_rule():

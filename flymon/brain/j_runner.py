@@ -130,7 +130,7 @@ def judge(m4, ctx: JContext, name: str, params, guard: dict) -> dict:
     run_oracle(m4, h4ctx, name, params, r)
     if r["oracle"]["reasons"]:
         return dict(outcome=INVALID, reselect=r, reading=None)
-    reading = stage2_reading(r["oracle"]["aggregate"], ctx.spec.h4)
+    reading = stage2_reading(r["oracle"]["aggregate"], ctx.spec)
     return dict(outcome=reading["outcome"], reselect=r, reading=reading)
 
 
