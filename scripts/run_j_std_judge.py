@@ -198,12 +198,14 @@ def main(argv=None, spec: JSpec | None = None, summary_spec: JSpec = SPEC, requi
         print(f"wrote {rep}: self-check ({a.self_check}) {'MATCHES' if res['check']['ok'] else 'DIFFERS'}", flush=True)
         return 0 if res["check"]["ok"] else (4 if a.self_check == "i" else 5)
     out2 = res["stage2"]
+    band = ((out2.get("judge") or {}).get("reading") or {}).get("band")
+    headline = out2["outcome"] + (f" / {band}" if band else "")
     report = write_json(out / "runs" / f"{run_id}-judge.json", res, guard_params)
-    write_bytes(out / "runs" / f"{run_id}-judge.md", (f"# J.11.4 judgement {run_id}\n\n**outcome: {out2['outcome']}**\n\n"
+    write_bytes(out / "runs" / f"{run_id}-judge.md", (f"# J.11.4 judgement {run_id}\n\n**outcome: {headline}** (band: spec J.12.9)\n\n"
                                                       f"tried: {[t['name'] for t in out2['tried']]}\n\n"
                                                       f"reading: {out2.get('judge', {}).get('reading')}\n\n"
                                                       f"D.6: {out2.get('d6')}\n").encode(), guard_params)
-    print(f"wrote {report}: {out2['outcome']} in {res['wall_s'] / 60:.1f} min", flush=True)
+    print(f"wrote {report}: {headline} in {res['wall_s'] / 60:.1f} min", flush=True)
     blockers = dict(smoke=a.smoke, pairs=a.pairs is not None, no_d6=a.no_d6, dirty=bool(git["dirty_hashed"]),
                     spec=spec != summary_spec, outcome=out2["outcome"] not in WRITES_SUMMARY)
     if any(blockers.values()):
