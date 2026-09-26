@@ -38,8 +38,8 @@ class LSpec:
     max_screened: int = 84                # 21 / 84 = the 0.25 coverage floor
     lift_seed: int = 20260928             # 20260927 + 1
     n_lift: int = 10
-    b_digest: str = ""                    # filled in Task 2 (the 64-turn (b) list)
-    a_digest: str = ""                    # filled in Task 2 (the first-8-turn (a) list)
+    b_digest: str = "8017c9703848f86ca5c425de805550d4c2d076453dc4e472be5d554336af3dff"  # 160 (b) pairs, skipped 6 (old_set)
+    a_digest: str = "47edaced4980982034f8422c36ff1f41571a46db27e403f1877155e992836c1f"  # 20 (a) pairs (turns 0-7)
     # ---- operating characteristics (L.11.4) --------------------------------------------------------------------------
     oc_q: tuple = (0.4, 0.5, 0.6, 0.7)
     oc_c: tuple = (0.25, 0.3, 0.35, 0.45)
