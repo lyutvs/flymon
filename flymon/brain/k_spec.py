@@ -23,7 +23,7 @@ class KSpec:
     tie_tol: float = 0.01                               # relative tie on N (K.8.3)
     gate_ratio: float = 1.0                             # stage 2 only if N / N_C3 > this (K.8.4)
     raster_g: float = -0.8                              # the setting whose raster and membrane are recorded (K.8.2)
-    odd_pairs_digest: str = ""                          # pinned in Task 2 (K.8.7 self-check iii)
+    odd_pairs_digest: str = "f24122391e4818cd461def012ab3271dc6836b4c3a47e104a60c228c9b9f29fa"   # 20 odd-turn (b) pairs (Task 2)
     even_pair_uses: tuple = ("H.4 C0-C3", "H.4a.8 ceiling freq", "H.4a.8 ceiling all", "J.13")   # K.8.4 record
 
 
