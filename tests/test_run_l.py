@@ -21,6 +21,12 @@ S0, OC = _load("run_l_stage0"), _load("run_l_oc")
 CLEAN = lambda files: dict(commit="x", dirty_hashed=[], dirty_other=[])
 
 
+def _fresh(tmp_path):
+    """A --summary with no blocks yet, so the committed results/summary/l_screen.json (which already holds the later
+    blocks) does not stop stage 0 at the later-block refusal before the refusal under test."""
+    return ["--summary", str(tmp_path / "l_screen.json")]
+
+
 @pytest.mark.parametrize("cli", [S0, OC])
 def test_outside_the_repository_root_is_refused(cli, tmp_path, monkeypatch, capsys):
     monkeypatch.chdir(tmp_path)
@@ -45,15 +51,15 @@ def test_an_out_dir_elsewhere_is_refused(cli, monkeypatch, capsys):
 def test_stage0_refuses_a_foreign_connectome(tmp_path, monkeypatch, capsys):
     npz = tmp_path / "other.npz"; npz.write_bytes(b"not the connectome")
     monkeypatch.setattr(S0, "git_state", CLEAN)
-    assert S0.main(["--npz", str(npz)], require_root=False) == 2 and "declared connectome" in capsys.readouterr().err
+    assert S0.main(["--npz", str(npz), *_fresh(tmp_path)], require_root=False) == 2 and "declared connectome" in capsys.readouterr().err
 
 
 @needs_npz
 def test_stage0_refuses_a_foreign_pinned_file(monkeypatch, capsys, tmp_path):
     monkeypatch.setattr(S0, "git_state", CLEAN)
     bad = tmp_path / "c.json"; bad.write_text("{}")
-    assert S0.main(["--ceiling", str(bad)], require_root=False) == 2 and "sha256" in capsys.readouterr().err
-    assert S0.main(["--k-act", str(bad)], require_root=False) == 2 and "sha256" in capsys.readouterr().err
+    assert S0.main(["--ceiling", str(bad), *_fresh(tmp_path)], require_root=False) == 2 and "sha256" in capsys.readouterr().err
+    assert S0.main(["--k-act", str(bad), *_fresh(tmp_path)], require_root=False) == 2 and "sha256" in capsys.readouterr().err
 
 
 def _m0d(tmp_path, edit):
@@ -67,17 +73,17 @@ def _m0d(tmp_path, edit):
 def test_stage0_refuses_another_readout_or_a_missing_z(monkeypatch, capsys, tmp_path):
     monkeypatch.setattr(S0, "git_state", CLEAN)
     m = _m0d(tmp_path, lambda c: c.update(readout={"A": "MBON18", "P": "MBON05"}))
-    assert S0.main(["--m0d", m], require_root=False) == 2 and "readout" in capsys.readouterr().err
+    assert S0.main(["--m0d", m, *_fresh(tmp_path)], require_root=False) == 2 and "readout" in capsys.readouterr().err
     m = _m0d(tmp_path, lambda c: c.pop("z"))
-    assert S0.main(["--m0d", m], require_root=False) == 2 and "z" in capsys.readouterr().err
+    assert S0.main(["--m0d", m, *_fresh(tmp_path)], require_root=False) == 2 and "z" in capsys.readouterr().err
 
 
 @needs_npz
-def test_stage0_refuses_another_odd_pair_list_before_building(monkeypatch, capsys):
+def test_stage0_refuses_another_odd_pair_list_before_building(monkeypatch, capsys, tmp_path):
     monkeypatch.setattr(S0, "git_state", CLEAN)
     monkeypatch.setattr(S0, "odd_pairs", lambda pops: [])
     monkeypatch.setattr(S0, "build", lambda *a, **k: pytest.fail("build ran before the digest refusal"))
-    assert S0.main([], require_root=False) == 2 and "odd pair list" in capsys.readouterr().err
+    assert S0.main(_fresh(tmp_path), require_root=False) == 2 and "odd pair list" in capsys.readouterr().err
 
 
 def _k_rows():
