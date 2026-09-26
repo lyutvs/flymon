@@ -2,7 +2,10 @@
 the config hash, written to a temp file and renamed; two generations kept; manifest.json (schema version, and per
 generation the state file, its sha256 and the completed battle ids) replaced atomically last. Resume takes the newest
 generation whose checksum holds, else the one before, and the caller drops log records of uncommitted battles.
-The engine RNG needs no checkpoint: every presentation reseeds from a seed derived from (fly, battle, turn)."""
+The engine RNG needs no checkpoint: every presentation reseeds from a seed derived from (fly, battle, turn).
+Crash points: `fault` ("state" | "before_manifest") is a test hook; the store writes no logs, so the log-write crash point
+is handled by filter_log on resume (test_resume_drops_uncommitted_log_records).
+After a fallback load, the next commit builds on the generation actually loaded and drops the newer, unusable ones."""
 from __future__ import annotations
 
 import hashlib
@@ -14,6 +17,7 @@ from pathlib import Path
 import numpy as np
 
 SCHEMA_VERSION = 1
+FAULTS = (None, "state", "before_manifest")
 
 
 class CrashForTest(Exception):
@@ -34,7 +38,8 @@ class CheckpointStore:
     def __init__(self, root, config_hash: str):
         self.root, self.config_hash = Path(root), config_hash
         self.root.mkdir(parents=True, exist_ok=True)
-        self.fault: str | None = None
+        self.fault: str | None = None   # test hook, one of FAULTS: raise CrashForTest at that point of commit()
+        self._base: int | None = None   # generation returned by the last load() / commit(); commit() builds on it
 
     @property
     def manifest_path(self) -> Path:
@@ -51,9 +56,13 @@ class CheckpointStore:
         return m
 
     def commit(self, battle_id: str, pool_state: dict, cursor: dict) -> int:
+        if self.fault not in FAULTS:
+            raise ValueError(f"unknown fault {self.fault!r}; expected one of {FAULTS}")
         m = self._manifest() or {"schema": SCHEMA_VERSION, "config_hash": self.config_hash, "generations": []}
+        gen = max((g["generation"] for g in m["generations"]), default=0) + 1   # never reuse a file name
+        if self._base is not None:   # drop generations newer than the one loaded (they failed their checksum)
+            m["generations"] = [g for g in m["generations"] if g["generation"] <= self._base]
         prev = m["generations"][-1] if m["generations"] else {"generation": 0, "completed": []}
-        gen = prev["generation"] + 1
         buf = io.BytesIO()
         flies = pool_state["flies"]
         np.savez(buf, meta=np.array(json.dumps({"cursor": cursor, "flies": [
@@ -74,6 +83,7 @@ class CheckpointStore:
         for p in self.root.glob("state_*.npz"):
             if p.name not in keep:
                 p.unlink()
+        self._base = gen
         return gen
 
     def load(self) -> dict | None:
@@ -86,6 +96,7 @@ class CheckpointStore:
                 continue
             z = np.load(p, allow_pickle=False)
             meta = json.loads(str(z["meta"]))
+            self._base = entry["generation"]
             flies = [dict(f, w=z[f"w{i}"]) for i, f in enumerate(meta["flies"])]
             return {"generation": entry["generation"], "pool_state": {"flies": flies}, "cursor": meta["cursor"],
                     "completed": list(entry["completed"])}
