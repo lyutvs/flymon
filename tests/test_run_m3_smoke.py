@@ -1,4 +1,7 @@
+import asyncio
 import importlib.util
+import threading
+from types import SimpleNamespace
 from pathlib import Path
 
 import pytest
@@ -34,3 +37,56 @@ def test_battle_opponent_uses_the_kind_class_with_the_per_battle_account(monkeyp
     assert kw["account_configuration"].username == "fm-h-f00-b001"
     assert (kw["battle_format"], kw["server_configuration"], kw["team"], kw["max_concurrent_battles"]) == \
         ("gen1ou", "srv", "team", 1)
+
+
+class _LoopThread:
+    def __init__(self):
+        self.loop = asyncio.new_event_loop()
+        self.t = threading.Thread(target=self.loop.run_forever, daemon=True)
+        self.t.start()
+
+    def run(self, coro):
+        return asyncio.run_coroutine_threadsafe(coro, self.loop).result(10)
+
+    def close(self):
+        self.loop.call_soon_threadsafe(self.loop.stop); self.t.join(10); self.loop.close()
+
+
+async def _contend(lock):
+    """Force the lock to wait once, which binds it to the running loop (as concurrent in-battle flushes do)."""
+    await lock.acquire()
+    waiter = asyncio.ensure_future(lock.acquire())
+    await asyncio.sleep(0)
+    lock.release(); await waiter; lock.release()
+
+
+def test_drain_runs_on_the_player_loop_where_the_barrier_lock_is_bound():
+    from flymon.battle.barrier import BatchBarrier
+    from flymon.agent.swarm import SafetyStop
+    poke = _LoopThread()
+    try:
+        async def run_batch(reqs):
+            return [0] * len(reqs)
+        bar = BatchBarrier(run_batch, deadline_ms=1)
+        poke.run(_contend(bar._lock))                         # bound to the "POKE_LOOP"
+        seen = []
+
+        async def drain():
+            seen.append(asyncio.get_running_loop())
+            await _contend(bar._lock)                          # fine on the bound loop
+            bar.register("p"); await bar.submit("p", None, ["PAM08"], {}); bar.unregister("p")
+        player = SimpleNamespace(ps_client=SimpleNamespace(loop=poke.loop))
+
+        async def main():
+            await m.on_player_loop(player, drain())
+            with pytest.raises(RuntimeError, match="different event loop"):
+                await _contend(bar._lock)                      # the old path: same lock from the main loop
+
+            async def boom():
+                raise SafetyStop("stop")
+            with pytest.raises(SafetyStop):
+                await m.on_player_loop(player, boom())         # fatal semantics survive the hop
+        asyncio.run(main())
+        assert seen == [poke.loop]
+    finally:
+        poke.close()

@@ -13,6 +13,7 @@ import socket
 import sys
 from pathlib import Path
 
+from poke_env.concurrency import handle_threaded_coroutines
 from poke_env.ps_client import AccountConfiguration, ServerConfiguration
 
 from flymon.agent.checkpoint import CheckpointStore
@@ -70,6 +71,14 @@ def make_battle_opponent(kind: str, battle_id: str, server_configuration, team: 
                        server_configuration=server_configuration, team=team, max_concurrent_battles=1)
 
 
+async def on_player_loop(player, coro):
+    """Await a player coroutine on the player's own loop. poke-env runs choose_move (and so the in-battle _flush) on
+    its background POKE_LOOP, which binds the reinforcement BatchBarrier's asyncio.Lock there; awaiting drain() on the
+    asyncio.run loop would use that lock (and the barrier's futures and timer) from a second loop and thread.
+    Exceptions (SafetyStop) come back to the caller unchanged."""
+    return await handle_threaded_coroutines(coro, player.ps_client.loop)
+
+
 def _port():
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0)); return s.getsockname()[1]
@@ -104,7 +113,7 @@ async def main_async(a, cfg, pool, swarm, enc, srv_cfg) -> dict:
             await p.battle_against(opp, n_battles=1)   # returns once a fatal choose_move forfeited the battle
             if p.fatal is not None:
                 raise p.fatal                            # before drain/summary: nothing is committed for this battle
-            await p.drain()
+            await on_player_loop(p, p.drain())         # the barrier lives on POKE_LOOP, not this loop
             if p.fatal is not None:
                 raise p.fatal
             for tag in set(p.battles) - before:
