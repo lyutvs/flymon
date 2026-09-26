@@ -56,7 +56,6 @@ SPEC = LSpec()
 
 
 def smoke(spec: LSpec) -> LSpec:
-    """Fewer turns, passes and seeds; the rule constants stay the declared ones."""
-    r = dataclasses.replace
-    h4 = r(spec.j.h4, act_seeds=(500, 501), select_seeds=(600, 601), report_seeds=(608, 609))
-    return r(spec, j=r(spec.j, h4=h4), n_turns=4, a_turns=1, n_pass=2, max_screened=8, n_lift=1, oc_draws=20)
+    """Fewer turns, passes and draws; the rule constants and every declared seed stay (the pinned inputs and the
+    self-checks compare against 8-seed records, so a smoke run on fewer seeds could only refuse or mismatch)."""
+    return dataclasses.replace(spec, n_turns=4, a_turns=1, n_pass=2, max_screened=8, n_lift=1, oc_draws=20)

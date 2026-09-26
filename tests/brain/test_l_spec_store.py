@@ -26,6 +26,20 @@ def test_smoke_shrinks_the_run_not_the_rule():
     m = smoke(SPEC)
     assert m.n_pass < SPEC.n_pass and m.n_turns < SPEC.n_turns
     assert m.cov_min_stage1 == SPEC.cov_min_stage1 and m.family_order == SPEC.family_order
+    assert m.j == SPEC.j                    # declared act / select / report seeds kept: loaders and self-checks need them
+
+
+def test_the_guard_refuses_a_modified_engine_on_a_reference_path(tmp_path, monkeypatch, capsys):
+    """The engine branch (pool_bench's refusals) fires before the path rule and names the engine."""
+    from flymon.brain.config import Params
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(SystemExit):
+        guard("results/m0c/x.json", [Params(apl_input_scale=0.6)])
+    assert "M0d modes" in capsys.readouterr().err
+    with pytest.raises(SystemExit):
+        guard("results/m0/x.json", [Params(kc_kc_scale=0.0)])
+    assert "kc_kc_scale=0.0" in capsys.readouterr().err
+    guard("results/m0d/l/x.json", [Params(apl_input_scale=0.6, kc_kc_scale=0.0)])   # the allowed path passes
 
 
 @pytest.mark.parametrize("path", ["results/m0d/l/runs/x.json", "results/summary/l_screen.json"])
