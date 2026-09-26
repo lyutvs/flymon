@@ -2,7 +2,7 @@
 
 MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
 M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
-M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). M3·M4는 보류.
+M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). M3 인프라만 완료(판정 없음), M4는 보류.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
 
@@ -154,6 +154,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   (`kc_kc_scale` g ∈ {−0.05, −0.1, −0.2, −0.4, −0.8}, 설정마다 C3 규칙 재수렴). 홀수 턴 (b) 20쌍으로 잰 X 전용 MBON13 구동은 C3 대비 최대 +3.5%에 그쳤고(−0.4는 자격점 없음),
   선택된 g = −0.1(+3.3%)의 엔진에서 짝수 턴 상대 타입 축 시험 가능 쌍은 **4/21**(C3 7/21)이었다. 사전 선언 구간 B_Tb에 따라 **빠른 KC→KC 억제는 이 병목의 지렛대로 닫는다.**
   KC별 항상성 재수렴이 억제의 효과를 거의 되돌렸다. D.6: (a) 미발동(최대 105 Hz), (b) 발동(16턴 중 6턴). 다음은 새 주장 선언이다.
+- **안 된 것(순진 판독 선별, 2026-09-27, 스펙 부록 L.12)**: K 다음 선언(부록 L)은 엔진을 바꾸지 않고 주장을 줄였다 — C3 엔진에서, 학습 전 판독으로 미리 고른 상대 타입 축 쌍만 시험한다.
+  짝수 21쌍 + 홀수 20쌍(C3 오라클로 새로 라벨, 시험 가능 2/20)으로 "MBON13 바닥 가드 + 지표 하나의 문턱"을 맞췄고, 최종 규칙 G ∧ S > 0.186의 턴 단위 LOO 정밀도가
+  **7/15 = 0.467**로 게이트 0.6에 못 미쳤다(`SCREEN_IMPRECISE`). 사전 선언대로 **순진 판독 선별 주장을 닫고**, 새 세트는 돌리지 않았다.
+  C3의 D.6: (a) 미발동(최대 100 Hz — 옛 기록의 (a) 충족은 C0 엔진의 값이었다), (b) 발동(16턴 중 7턴). M3 인프라(에이전트 루프·체크포인트·로그·스모크)는 판정 없이 병행 완료했다. 다음은 새 주장 선언이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -201,6 +205,14 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   opponent-type pairs (C3: 7). That falls in the pre-declared band B_Tb, so fast KC→KC inhibition is closed as the lever
   for this bottleneck; per-KC homeostatic re-convergence undid most of the inhibition's effect. D.6: (a) not met (max
   105 Hz); (b) met on 6 of 16 turns. Next: a new claim declaration.
+- **Naive-readout screening: closed (2026-09-27, spec L.12).** The next declaration (appendix L) left the engine alone
+  and narrowed the claim: on the C3 engine, test only opponent-type pairs picked in advance from the untrained brain's
+  readout. A "MBON13 floor guard + one-feature threshold" screen was fitted on 21 even-turn + 20 odd-turn pairs (the odd
+  ones newly labelled with the C3 oracle; 2 of 20 testable). The final rule, G and S > 0.186, had a leave-one-turn-out
+  precision of 7/15 = 0.467, below the 0.6 gate (`SCREEN_IMPRECISE`), so the screening claim is closed as pre-declared
+  and the new pair set was never run. D.6 on C3: (a) not met (max 100 Hz; the earlier "met" record was the C0 engine's),
+  (b) met on 7 of 16 turns. The M3 infrastructure (agent loop, checkpoints, logs, smoke) was finished in parallel with
+  no judgement attached. Next: a new claim declaration.
 
 ## 실행
 
