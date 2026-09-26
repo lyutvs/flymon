@@ -19700,5 +19700,1590 @@
     19.30889259728101
    ]
   }
+ },
+ "stage1": {
+  "argv": [],
+  "code": {
+   "files": {
+    "flymon/brain/circuits.py": "7b149d8195a06f7232097640fd790ef6c610eae41dd575e10ac0f2c12abf65b1",
+    "flymon/brain/conditioning.py": "44de4ce3384c2b7fa321bee121eca48e91f9076edbc41f20fe36ad38ea544552",
+    "flymon/brain/config.py": "613b8c660b8d94410d997835f183397a9caf3670d7dfe69aaccf8fdab6895077",
+    "flymon/brain/connectome.py": "670a4cfad683ddef89d04bb5c3b73441992592c97714af328325bf8f922d0f30",
+    "flymon/brain/d6a.py": "9303db489c7c9a001a31eba30b54705e3cc47c57c3bc54ac87858cb297788d51",
+    "flymon/brain/engine_cpu.py": "939d354ee1cb4c27f219223c5aabc89cb37dfa2ad978f6cd1cf5fc0c33535a5a",
+    "flymon/brain/fly_pool.py": "bed8e773df18cd172c2834f6cbfe1401584416aeb97cc636a88fbba2ad26e091",
+    "flymon/brain/h3_c3.py": "716bd63a1bf7e5c5526ef81779f0702223df69859753c1fc7370bd695d30bb76",
+    "flymon/brain/h3_jobs.py": "0903032c18ec1615ea51f02acee135774904dd595c989a3cdb1b69653474930b",
+    "flymon/brain/h3_measure.py": "b68f72cf172b250a9bfb56245c087545c613151e5772fb65902b4c1e5565b1b7",
+    "flymon/brain/h3_rules.py": "6fe7b0b5e1558db25110e6701e66305fca26910b2315935dc93bb4e96abe437a",
+    "flymon/brain/h3_runner.py": "59497d3a7b5db2b39edfb72a3bcb868b273df6678f308053b785e679e801f1b1",
+    "flymon/brain/h3_spec.py": "e9f9c0a50ea6f6f8f04715cf7b062e629d519de3e6d29be04b18fab1e1d6e740",
+    "flymon/brain/h3_store.py": "fdfea72e784293410a9b5ae048f39b8953390acef2d2283753c83c12221f3bee",
+    "flymon/brain/h4_formula.py": "20051be1e473981eeb3e9fc8c3ba49c3e1e03c6782c47ef82639fc6a0a6483ef",
+    "flymon/brain/h4_jobs.py": "1e5e09041b2913384a6bb38a86acf91ee0e443a40886d602f996218978edac30",
+    "flymon/brain/h4_measure.py": "664f9f281a6ad4bbd23b64db1bd7854efa883610a2980a23f4d487e8932619bf",
+    "flymon/brain/h4_pairs.py": "042149c73ff087c156586e1fd4b3d85c077c42f9121953b149205c568ace4c7c",
+    "flymon/brain/h4_rules.py": "d77da18a81ab0fdf6812ef5b12993d6a85efef3f0b7448f04e3ac5c858824753",
+    "flymon/brain/h4_runner.py": "fdb7071a19549d598c250381b2d0c81d1062e7bf9c49dcc8574e973bfa3a5426",
+    "flymon/brain/h4_spec.py": "65de724924e8bdccc2496dd5fa40c7aaba936f7c4761dc5de13a92df70f420ad",
+    "flymon/brain/j_jobs.py": "bb1ce1618e3b58d3d5b948298b44fd8a1d047c675744336d42e4f37a96487a65",
+    "flymon/brain/j_measure.py": "50fe0139c68a06038fac750020653bb896969a2b57a214319ad78bed4d606204",
+    "flymon/brain/j_params.py": "d18285bcbbf835ac4a455398d11086b224ff7e15c68e7296190544de89a7625e",
+    "flymon/brain/j_rules.py": "952c6f884a48282016b39a0185ebc310c2b8491c1e27ba11c67953f40c9217dd",
+    "flymon/brain/j_runner.py": "ac0f9d5026136ac86ecf8955c1320220a0a2790773f55530d91c650c0f73b77c",
+    "flymon/brain/j_setup.py": "638d98aab047398d00497ff51c9d2de39138018f001ae6f5fc3cb130c066a8c7",
+    "flymon/brain/j_spec.py": "b24eadcd8996b29fcfcfb7758fa01098e462bc5f3ff899b11f091595ebed53ec",
+    "flymon/brain/j_store.py": "3f9b0d1618229b5071e97889c37d70f359d38ef4ed5c95e638b8ef776ec71748",
+    "flymon/brain/k_jobs.py": "6e52f790ff564ddc784827e79b0c3f0bf7a6d5ed5178c8535a99ef7b9fc7d1ad",
+    "flymon/brain/k_measure.py": "d51cc4890f89339a5e12e7e63112ce141b74f5dff078f91c8b53f6e434629be7",
+    "flymon/brain/k_metrics.py": "531b2fb017e2009c81a4c6bbfd7e2dc1c7ff322c8ec018a2bf8b093a23336a84",
+    "flymon/brain/k_pairs.py": "50bb21e85d673d76e3deb5a52fd1519db29b05b8951ddcb101de10244d1f9eec",
+    "flymon/brain/k_params.py": "8ebd77b125f5f308e04ac0423566c3d784dff2f82599ab45f8ec7c60ec2896e7",
+    "flymon/brain/k_rules.py": "c335a06d9854b60ab5ae9d3f63ce0ab663aae2d0dc54d3eaba156745f1d7eec5",
+    "flymon/brain/k_runner.py": "98e2ee8f9dbbe8d303522b2c1fba2db2e287a6485f5a806fe43251afcf6db2c1",
+    "flymon/brain/k_spec.py": "a52b4cc68c365360bb68276bc46a80f909e4e357c046aea0f2e4f8a28dff538a",
+    "flymon/brain/k_store.py": "55061f2abc0919d706ca6b97f2cdd9632565ff8d1d78ca80670acd2f10a24684",
+    "flymon/brain/l_cli.py": "85a6d839833a714a803043f931499c0f623586ccb35f187b7107f8d81ef8ae1e",
+    "flymon/brain/l_jobs.py": "44b54dc02a86e77db51f94bf3f6329574fc4c7245569cc793b3dd3fc3575476f",
+    "flymon/brain/l_measure.py": "99df4d894b189db8d7be013dda4dcb92a4a6d9b0dec780b2db6600aa56ca381f",
+    "flymon/brain/l_oc.py": "8293b5c60f4538d9c874e85b932b97464d535fb005b97350fab0ca5574a1754b",
+    "flymon/brain/l_pairs.py": "6da577dabee37eb4e03570ce1b48b5f7ce9c465e3a657f8c8f22c28606e757d5",
+    "flymon/brain/l_rules.py": "6b8a2949f553efb1e5c2280e993a9c026bfd9c78853f3385570ed7a21f39b092",
+    "flymon/brain/l_screen.py": "de814df5036c64f08c9576ca8170bb013bceb0344f7638362503236e1fc51879",
+    "flymon/brain/l_spec.py": "44b5a54814e8bfce721056c8b7187afe783f37c747ea370543a03ff632968f48",
+    "flymon/brain/l_store.py": "64b69af1a2a3fe0ed960b89d932add08390b32ee414a9e4ad486edff8812bf5e",
+    "flymon/brain/measure.py": "25a7cd321a54dfe8c96f076824f20efb39d83f34ec5a953aaaa89af40a8ad2f3",
+    "flymon/brain/plasticity.py": "fed3ac2f62e97ec45c56a1d93c6ca98d970c5a4a15594d124b2b281eb1cc7ed0",
+    "flymon/brain/pool_bench.py": "668eb17087d57afac7f70ddd8c8db298fcf9b3a410504faec1c76f7410315373",
+    "flymon/brain/presentation.py": "2eab2be0e33f26edd750fe33be47f070d41a026b4ad826c9eefdf1ce14b699a0",
+    "flymon/brain/stimuli.py": "1cf05a7e2ceeee60c5b299065e30a3034199a7a92509227b98c95f763086c642",
+    "flymon/brain/thresholds.py": "12916a2ebfb2aa43e2e3f3de001e480a475e60065ab404b445b07581e559352a",
+    "npz:malecns.npz": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+    "scripts/run_j_std_judge.py": "2bc09ef5d9073580fdacede99e3df46c58f87cb7b738314c0e96a13121be1b0e",
+    "scripts/run_j_std_scan.py": "25b7efe8e2799035350067bcb084322c2dfb6005b6a9557aca364555924ba41e",
+    "scripts/run_k_judge.py": "1666eae9b7979ac7032be5682aea2fdf5135334c7b087419a808a64cae0fd48c",
+    "scripts/run_k_scan.py": "4e5d89e2e14634cce4857cd7052b6d9c2873ee46f1468854ecd28b0b2c2d0800",
+    "scripts/run_l_oc.py": "bbb5222c1db8744e633c1eb1c294a0e4d54ff75b643d6433ddef9959397a959e",
+    "scripts/run_l_stage0.py": "409f758f4f29a94805702183772c6cdcefcd81cf1ff8ac19326d1622219e05b2",
+    "scripts/run_l_stage1.py": "8593f67723ad5eeb5aa84beea21b3e0c6a8d82b0c6324470ab60d83f94484f02",
+    "scripts/run_l_stage2.py": "96512ff689f98fd0feca20830c5d40d0243c45b7fcf0712377ca068aed653f5d",
+    "scripts/run_l_stage3.py": "1d36059c1a4c073784ff99561fa3e94cee8c1daeafffbf808c4ca18909308c09",
+    "scripts/run_m0d_h4.py": "386be26e3a1c747c7925a5744365d9252dd2e896c94425dbf8d8397e75a2187a",
+    "uv.lock": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e"
+   },
+   "key": "f70afefd757696c655069f5cf2970e663303b1fc9999e0962dfaf12426e850e9",
+   "versions": {
+    "numpy": "2.5.3",
+    "python": "3.13.13"
+   }
+  },
+  "g_disagree": [
+   {
+    "key": [
+     "b",
+     2,
+     "Mega Drain vs Machamp",
+     "Mega Drain vs Tentacruel"
+    ],
+    "report_G": false,
+    "select_G": true,
+    "set": "even"
+   },
+   {
+    "key": [
+     "b",
+     8,
+     "Earthquake vs Hypno",
+     "Earthquake vs Dragonite"
+    ],
+    "report_G": true,
+    "select_G": false,
+    "set": "even"
+   },
+   {
+    "key": [
+     "b",
+     12,
+     "Thunderbolt vs Poliwrath",
+     "Thunderbolt vs Snorlax"
+    ],
+    "report_G": true,
+    "select_G": false,
+    "set": "even"
+   },
+   {
+    "key": [
+     "b",
+     13,
+     "Earthquake vs Rhydon",
+     "Earthquake vs Slowbro"
+    ],
+    "report_G": false,
+    "select_G": true,
+    "set": "odd"
+   },
+   {
+    "key": [
+     "b",
+     15,
+     "Earthquake vs Tentacruel",
+     "Earthquake vs Snorlax"
+    ],
+    "report_G": true,
+    "select_G": false,
+    "set": "odd"
+   }
+  ],
+  "g_disagree_note": "select-seed G (the feature) vs report-seed G (counts.pre): even from the pinned ceiling file, odd from stage 0's oracle rows (L.3 record)",
+  "gate": {
+   "final": {
+    "coverage": 0.36585365853658536,
+    "n_pass": 15,
+    "precision": 0.4666666666666667,
+    "rule": {
+     "family": "S",
+     "op": ">",
+     "t": 0.18579483907550576
+    }
+   },
+   "loto": {
+    "folds": [
+     {
+      "predicted": [
+       false,
+       true,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.18150477885848645
+      },
+      "turn": 0
+     },
+     {
+      "predicted": [
+       true,
+       true,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.13944661986822815
+      },
+      "turn": 1
+     },
+     {
+      "predicted": [
+       true,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.19689516983442457
+      },
+      "turn": 2
+     },
+     {
+      "predicted": [
+       false,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.23895332882468284
+      },
+      "turn": 3
+     },
+     {
+      "predicted": [
+       true,
+       false,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.18579483907550576
+      },
+      "turn": 4
+     },
+     {
+      "predicted": [
+       false,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.23895332882468284
+      },
+      "turn": 5
+     },
+     {
+      "predicted": [
+       true,
+       true,
+       true
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.07567397823063102
+      },
+      "turn": 6
+     },
+     {
+      "predicted": [
+       false,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.23895332882468284
+      },
+      "turn": 7
+     },
+     {
+      "predicted": [
+       false,
+       false,
+       true
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.18579483907550576
+      },
+      "turn": 8
+     },
+     {
+      "predicted": [
+       false,
+       false,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.23895332882468284
+      },
+      "turn": 9
+     },
+     {
+      "predicted": [
+       true,
+       true,
+       true
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.07567397823063102
+      },
+      "turn": 10
+     },
+     {
+      "predicted": [
+       false,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.23895332882468284
+      },
+      "turn": 11
+     },
+     {
+      "predicted": [
+       false,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.23895332882468284
+      },
+      "turn": 12
+     },
+     {
+      "predicted": [
+       true,
+       false,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.18579483907550576
+      },
+      "turn": 13
+     },
+     {
+      "predicted": [
+       false,
+       false
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.23895332882468284
+      },
+      "turn": 14
+     },
+     {
+      "predicted": [
+       true,
+       false,
+       true
+      ],
+      "rule": {
+       "family": "S",
+       "op": ">",
+       "t": 0.13944661986822815
+      },
+      "turn": 15
+     }
+    ],
+    "n_hit": 7,
+    "n_pass": 15,
+    "precision": 0.4666666666666667
+   },
+   "outcome": "SCREEN_IMPRECISE",
+   "records": {
+    "auc": {
+     "S": 0.4236111111111111,
+     "f2": 0.8020833333333334,
+     "f3": 0.5625
+    },
+    "by_set": {
+     "even": {
+      "n": 21,
+      "n_pass": 10,
+      "precision": 0.6,
+      "recall": 0.8571428571428571
+     },
+     "odd": {
+      "n": 20,
+      "n_pass": 5,
+      "precision": 0.2,
+      "recall": 0.5
+     }
+    },
+    "loto_rule_counts": {
+     "S>0.075674": 2,
+     "S>0.139447": 2,
+     "S>0.181505": 1,
+     "S>0.185795": 3,
+     "S>0.196895": 1,
+     "S>0.238953": 7
+    },
+    "species_folds": "identical to the turn folds: turn i's species is POOL[i] for i < 16 (plan reading 6)"
+   }
+  },
+  "git": {
+   "commit": "233043ef19945c7e429357de831eb24f2d85d7b3",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "measure_key": "bfa89175098fb4392a306463f9da56ed3b3335b8a248a5ef478287fa298d73a3",
+  "n_feats": 41,
+  "oc_row": [
+   {
+    "P": {
+     "B_Fa": 0.35786209454446133,
+     "B_NO_CONCLUSION": 0.46429374012888674,
+     "B_Tb": 0.1572387098240919,
+     "SELECTED": 0.02060545550256006
+    },
+    "n_b": 21,
+    "naive_a": 2,
+    "q_a": 0.23333333333333334,
+    "q_b": 0.4666666666666667,
+    "ratio": 0.5,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.29604572803678125,
+     "B_NO_CONCLUSION": 0.4642937401288868,
+     "B_Tb": 0.1572387098240919,
+     "SELECTED": 0.08242182201024019
+    },
+    "n_b": 21,
+    "naive_a": 2,
+    "q_a": 0.4666666666666667,
+    "q_b": 0.4666666666666667,
+    "ratio": 1.0,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.3262670627738692,
+     "B_NO_CONCLUSION": 0.46429374012888686,
+     "B_Tb": 0.15723870982409188,
+     "SELECTED": 0.05220048727315215
+    },
+    "n_b": 21,
+    "naive_a": 3,
+    "q_a": 0.23333333333333334,
+    "q_b": 0.4666666666666667,
+    "ratio": 0.5,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.20812911789252492,
+     "B_NO_CONCLUSION": 0.46429374012888674,
+     "B_Tb": 0.15723870982409194,
+     "SELECTED": 0.1703384321544965
+    },
+    "n_b": 21,
+    "naive_a": 3,
+    "q_a": 0.4666666666666667,
+    "q_b": 0.4666666666666667,
+    "ratio": 1.0,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.28993277623768826,
+     "B_NO_CONCLUSION": 0.46429374012888663,
+     "B_Tb": 0.1572387098240919,
+     "SELECTED": 0.08853477380933307
+    },
+    "n_b": 21,
+    "naive_a": 4,
+    "q_a": 0.23333333333333334,
+    "q_b": 0.4666666666666667,
+    "ratio": 0.5,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.13779582977711996,
+     "B_NO_CONCLUSION": 0.46429374012888686,
+     "B_Tb": 0.1572387098240919,
+     "SELECTED": 0.24067172026990144
+    },
+    "n_b": 21,
+    "naive_a": 4,
+    "q_a": 0.4666666666666667,
+    "q_b": 0.4666666666666667,
+    "ratio": 1.0,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.25279106111181454,
+     "B_NO_CONCLUSION": 0.4642937401288867,
+     "B_Tb": 0.15723870982409194,
+     "SELECTED": 0.12567648893520683
+    },
+    "n_b": 21,
+    "naive_a": 5,
+    "q_a": 0.23333333333333334,
+    "q_b": 0.4666666666666667,
+    "ratio": 0.5,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.0877810471172765,
+     "B_NO_CONCLUSION": 0.46429374012888686,
+     "B_Tb": 0.15723870982409194,
+     "SELECTED": 0.2906865029297448
+    },
+    "n_b": 21,
+    "naive_a": 5,
+    "q_a": 0.4666666666666667,
+    "q_b": 0.4666666666666667,
+    "ratio": 1.0,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.21719691744951883,
+     "B_NO_CONCLUSION": 0.4642937401288869,
+     "B_Tb": 0.1572387098240919,
+     "SELECTED": 0.1612706325975026
+    },
+    "n_b": 21,
+    "naive_a": 6,
+    "q_a": 0.23333333333333334,
+    "q_b": 0.4666666666666667,
+    "ratio": 0.5,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.05443785867738068,
+     "B_NO_CONCLUSION": 0.46429374012888674,
+     "B_Tb": 0.1572387098240919,
+     "SELECTED": 0.32402969136964066
+    },
+    "n_b": 21,
+    "naive_a": 6,
+    "q_a": 0.4666666666666667,
+    "q_b": 0.4666666666666667,
+    "ratio": 1.0,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.18445030528020667,
+     "B_NO_CONCLUSION": 0.4642937401288868,
+     "B_Tb": 0.1572387098240919,
+     "SELECTED": 0.19401724476681467
+    },
+    "n_b": 21,
+    "naive_a": 7,
+    "q_a": 0.23333333333333334,
+    "q_b": 0.4666666666666667,
+    "ratio": 0.5,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.03309821807584751,
+     "B_NO_CONCLUSION": 0.4642937401288868,
+     "B_Tb": 0.15723870982409194,
+     "SELECTED": 0.345369331971174
+    },
+    "n_b": 21,
+    "naive_a": 7,
+    "q_a": 0.4666666666666667,
+    "q_b": 0.4666666666666667,
+    "ratio": 1.0,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.15516027995098872,
+     "B_NO_CONCLUSION": 0.4642937401288868,
+     "B_Tb": 0.15723870982409194,
+     "SELECTED": 0.22330727009603282
+    },
+    "n_b": 21,
+    "naive_a": 8,
+    "q_a": 0.23333333333333334,
+    "q_b": 0.4666666666666667,
+    "ratio": 0.5,
+    "u": 0
+   },
+   {
+    "P": {
+     "B_Fa": 0.01982021947933794,
+     "B_NO_CONCLUSION": 0.46429374012888674,
+     "B_Tb": 0.15723870982409194,
+     "SELECTED": 0.3586473305676834
+    },
+    "n_b": 21,
+    "naive_a": 8,
+    "q_a": 0.4666666666666667,
+    "q_b": 0.4666666666666667,
+    "ratio": 1.0,
+    "u": 0
+   }
+  ],
+  "oc_row_note": "stage-3 OC rows at q_b = the LOTO precision, u = 0 (plan reading 15); None when LOTO passed no pair",
+  "oc_run_id": "20260926T234316Z-89cbcb",
+  "provenance": {
+   "args": {
+    "allow_dirty": false,
+    "npz": "data/malecns.npz",
+    "out": null,
+    "smoke": false,
+    "summary": "results/summary/l_screen.json"
+   },
+   "argv": [],
+   "commit": "233043ef19945c7e429357de831eb24f2d85d7b3",
+   "dirty": [],
+   "sha256": {
+    "docs/superpowers/specs/j-diag/stage2_oc.py": "af974be383523a2cb361d0ab054510347c0131ef7f2052502b4375b724166648",
+    "flymon/brain/l_oc.py": "8293b5c60f4538d9c874e85b932b97464d535fb005b97350fab0ca5574a1754b",
+    "flymon/brain/l_rules.py": "6b8a2949f553efb1e5c2280e993a9c026bfd9c78853f3385570ed7a21f39b092",
+    "flymon/brain/l_screen.py": "de814df5036c64f08c9576ca8170bb013bceb0344f7638362503236e1fc51879",
+    "flymon/brain/l_spec.py": "44b5a54814e8bfce721056c8b7187afe783f37c747ea370543a03ff632968f48",
+    "results/m0d/diag/h4_specificity_ceiling.json": "81bfab20df8bb9ada380a14106bead35039bc7a8d7910d1975cd5245a78585e3",
+    "results/summary/l_screen.json": "e69b1ba16e5956385561dc32e0863667b32a84254af8aa2872b44171a1d15c3b"
+   },
+   "summary_at_head": {
+    "path": "results/summary/l_screen.json",
+    "sha256": "e69b1ba16e5956385561dc32e0863667b32a84254af8aa2872b44171a1d15c3b"
+   }
+  },
+  "report": "results/m0d/l/run/runs/20260926T234359Z-a40b06-stage1.json",
+  "report_sha256": "9240736b79d176569247326b7c75c6b4fd153a925c8b403af2d6fdf3d7604b9a",
+  "rule_text": "G \u2227 S > 0.185795",
+  "run_id": "20260926T234359Z-a40b06",
+  "sentence": "\uc21c\uc9c4 \ud310\ub3c5(G\uc640 S\u00b7f2\u00b7f3 \uc911 \ud558\ub098\uc758 \ubb38\ud131)\uc73c\ub85c \uace0\ub978 (b) \uc30d\uc758 \uc2dc\ud5d8 \uac00\ub2a5 \ube44\uc728\uc774 LOTO 0.467(7/15)\uc600\ub2e4.",
+  "smoke": false,
+  "spec": {
+   "a_digest": "47edaced4980982034f8422c36ff1f41571a46db27e403f1877155e992836c1f",
+   "a_turns": 8,
+   "attempts": [
+    [
+     "I",
+     "M2 no-go",
+     "dc9d8b2"
+    ],
+    [
+     "J",
+     "STD B_Tb 4/21",
+     "0917b1a"
+    ],
+    [
+     "K",
+     "fast KC-KC inhibition B_Tb 4/21",
+     "73bfc2a"
+    ],
+    [
+     "L",
+     "this declaration",
+     "f89d4a3"
+    ]
+   ],
+   "b_digest": "8017c9703848f86ca5c425de805550d4c2d076453dc4e472be5d554336af3dff",
+   "ceiling_path": "results/m0d/diag/h4_specificity_ceiling.json",
+   "ceiling_sha256": "81bfab20df8bb9ada380a14106bead35039bc7a8d7910d1975cd5245a78585e3",
+   "cov_min_stage1": 0.35,
+   "directions": [
+    [
+     "S",
+     ">"
+    ],
+    [
+     "f2",
+     ">"
+    ],
+    [
+     "f3",
+     "<"
+    ]
+   ],
+   "family_order": [
+    "G",
+    "S",
+    "f2",
+    "f3"
+   ],
+   "gate_min_passes": 10,
+   "gate_min_precision": 0.6,
+   "guard_min": 5,
+   "guard_types": [
+    "MBON13",
+    "MBON05"
+   ],
+   "j": {
+    "alpn_match_tol": 0.05,
+    "c3_name": "C3",
+    "count_floor": 0.5,
+    "d6_seed_block": 8,
+    "d6b_ratio_limit": 2.0,
+    "first_kc": 1.65,
+    "h3_block": "h3",
+    "h4": {
+     "act_seeds": [
+      500,
+      501,
+      502,
+      503,
+      504,
+      505,
+      506,
+      507
+     ],
+     "combos": [
+      "C0",
+      "C1",
+      "C3"
+     ],
+     "f_a_min": 2,
+     "h3": {
+      "ai_clip_mark": 0.49,
+      "ai_quantiles": [
+       25.0,
+       50.0,
+       75.0,
+       90.0,
+       99.0
+      ],
+      "all51_seeds": [
+       200,
+       201,
+       202,
+       203,
+       204,
+       205,
+       206,
+       207
+      ],
+      "all51_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "apl_r_max": 0.333,
+      "apl_v_quantiles": [
+       5.0,
+       25.0,
+       50.0,
+       75.0,
+       95.0
+      ],
+      "baseline_band_hz": [
+       3.0,
+       4.0
+      ],
+      "baseline_cal_seeds": [
+       100,
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109,
+       110,
+       111,
+       112,
+       113,
+       114,
+       115
+      ],
+      "baseline_ci_z": 1.96,
+      "baseline_gate_seeds": [
+       116,
+       117,
+       118,
+       119,
+       120,
+       121,
+       122,
+       123,
+       124,
+       125,
+       126,
+       127,
+       128,
+       129,
+       130,
+       131,
+       132,
+       133,
+       134,
+       135,
+       136,
+       137,
+       138,
+       139,
+       140,
+       141,
+       142,
+       143,
+       144,
+       145,
+       146,
+       147
+      ],
+      "baseline_ms": 3000.0,
+      "baseline_sat_hz": 100.0,
+      "baseline_target_hz": 3.5,
+      "boot_draws": 10000,
+      "boot_seed": 20260918,
+      "c3_max_cycles": 3,
+      "c3_stall_mv": 0.2,
+      "c3_stall_pp": 0.2,
+      "callout_types": [
+       "MBON05",
+       "MBON13"
+      ],
+      "clamp_slope": 1000000000.0,
+      "connectome_sha256": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+      "d4_band": [
+       0.03,
+       0.07
+      ],
+      "design_extra_seeds": [
+       108,
+       109,
+       110,
+       111,
+       112,
+       113,
+       114,
+       115
+      ],
+      "design_k": 8,
+      "design_odor_seed": 0,
+      "design_seeds": [
+       100,
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "design_window": {
+       "read_ms": 600.0,
+       "settle_ms": 200.0
+      },
+      "extended": {
+       "exclude": [
+        "ORN_DA1",
+        "ORN_V"
+       ],
+       "k_max": 9,
+       "k_min": 6,
+       "n": 384,
+       "n_candidates": 51,
+       "name_fmt": "X{j:03d}",
+       "probe0": 810100,
+       "rng_seed": 800001
+      },
+      "guard_half": 24,
+      "guard_med_delta_min": 5.0,
+      "guard_zero_share_max": 0.25,
+      "half_split_mv": 4.7,
+      "half_split_pp": 2.03,
+      "hold_bisect_steps": 8,
+      "hold_bracket": [
+       0.5,
+       1.0
+      ],
+      "homeo_boundary_share": 0.1,
+      "homeo_clip": [
+       0.25,
+       4.0
+      ],
+      "homeo_dtheta_max": 0.05,
+      "homeo_dtheta_q": 95.0,
+      "homeo_eta": 0.1,
+      "homeo_max_iter": 40,
+      "homeo_median_tol": 0.0104,
+      "homeo_target": 0.062,
+      "homeo_target_digits": 3,
+      "kc_grid": [
+       1.55,
+       1.6,
+       1.65,
+       1.7
+      ],
+      "max_candidates": 4,
+      "membrane_target_mv": 11.0,
+      "membrane_tol_mv": 1.0,
+      "overlap_sd": 0.00349,
+      "punish_type": "PPL105",
+      "reference": {
+       "exclude": [
+        "ORN_DA1",
+        "ORN_V"
+       ],
+       "k_max": 9,
+       "k_min": 6,
+       "n": 48,
+       "n_candidates": 51,
+       "name_fmt": "R{j:02d}",
+       "probe0": 800100,
+       "rng_seed": 800000
+      },
+      "reference_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "release_match_tol": 0.02,
+      "release_quasi_linear": [
+       0.269,
+       0.731
+      ],
+      "reward_type": "PAM08",
+      "runaway_odor_record_hz": 100.0,
+      "runaway_odor_sat_hz": 150.0,
+      "runaway_odor_seeds": [
+       100,
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109,
+       110,
+       111,
+       112,
+       113,
+       114,
+       115,
+       116,
+       117,
+       118,
+       119,
+       120,
+       121,
+       122,
+       123,
+       124,
+       125,
+       126,
+       127,
+       128,
+       129,
+       130,
+       131,
+       132,
+       133,
+       134,
+       135,
+       136,
+       137,
+       138,
+       139,
+       140,
+       141,
+       142,
+       143,
+       144,
+       145,
+       146,
+       147,
+       148,
+       149,
+       150,
+       151,
+       152,
+       153,
+       154,
+       155,
+       156,
+       157,
+       158,
+       159,
+       160,
+       161,
+       162,
+       163
+      ],
+      "runaway_odor_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "runaway_rest_sat_hz": 100.0,
+      "runaway_rest_seeds": [
+       100,
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "scale_bisect_steps": 8,
+      "scale_bracket": [
+       0.005,
+       1.0
+      ],
+      "strength": 0.35
+     },
+     "h3_block": "h3",
+     "kc_window_ms": 200,
+     "n_pairs_a": 18,
+     "n_pairs_b": 21,
+     "naive_max": 0.5,
+     "notes": [
+      "C0 \ub300 C1\u00b7C3 \ube44\uad50\ub294 \uae30\uc800\uc5d0\uc11c \uad50\ub77d\ub3fc \uc788\ub2e4(H.3a.10): C1\u00b7C3\ub294 mbon_hold_frac\uc744 3.5 Hz\ub85c \uc7ac\ubcf4\uc815\ud588\uace0 C0\uc740 \ub3d9\uacb0 0.85\ub85c \uac04\ub2e4. \uae30\uc800\ub294 hold\uc5d0 \uc57d 27.9 Hz/unit\ub85c \ubc18\uc751\ud558\uace0 H.4\uc758 \ud310\ub3c5\uc774 MBON \ubc1c\ud654\uc728\uc774\ub2e4.",
+      "V\ub294 APL\u2192MBON05 \uc5b5\uc81c\uc5d0 \uc9c1\uc811 \ubc18\uc751\ud560 \uc218 \uc788\ub2e4(H.3a.9 \u2461, H.4a.2): A\u00b7P \ud480\uc774 \ubaa8\ub450 APL \ud45c\uc801\uc774\uace0 MBON05\ub294 APL\uc758 MBON \ud45c\uc801 1\uc704\ub2e4. APL\u2192MBON05\ub97c \ub04a\uc73c\uba74 MBON05\uac00 \ud480\ub824 MBON13\uc774 \ubc14\ub2e5\uc73c\ub85c \ub0b4\ub824\uac00\ubbc0\ub85c \uc808\uc81c\ud310 V\ub85c\ub294 \uc774 \uad50\ub77d\uc744 \uac00\ub97c \uc218 \uc5c6\ub2e4.",
+      "\ud310\ub3c5 \ubc14\ub2e5\uc774 \uc870\ud569\ub9c8\ub2e4 \ub2e4\ub974\ub2e4(H.4a.4): H.3 \uac00\ub4dc\uc758 MBON13 \uc911\uc559\uac12 \u0394\uac00 C0 17.5 \u00b7 C1 9.5 \u00b7 C3 6.0(\ubb38\ud131 5)\uc774\ub77c T_b \ucc28\uc774\uc758 \uc77c\ubd80\ub294 \uc5d4\uc9c4\uc774 \uc544\ub2c8\ub77c \ud310\ub3c5 \ubc14\ub2e5\uc758 \ucc28\uc774\uc77c \uc218 \uc788\ub2e4(G.14.8\uacfc \uac19\uc740 \uc885\ub958). \uc30d \ub0c4\uc0c8\uc758 \uc21c\uc9c4 \ud310\ub3c5 \uc218\uc900\u00b70 \ube44\uc728\uacfc \ud0c0\uc785\ubcc4 d\u2032\ub97c \ud568\uaed8 \uc2e3\ub294\ub2e4."
+     ],
+     "oracle_alphas": [
+      0.2,
+      0.5,
+      0.8
+     ],
+     "oracle_window": {
+      "read_ms": 600.0,
+      "settle_ms": 800.0
+     },
+     "pairs_digest": "4e7298340f2225b839059e0b9508db1351c9e5630998d9deae2b4d0712946338",
+     "react_med_delta_min": 5.0,
+     "react_zero_share_max": 0.25,
+     "report_seeds": [
+      608,
+      609,
+      610,
+      611,
+      612,
+      613,
+      614,
+      615
+     ],
+     "select_seeds": [
+      600,
+      601,
+      602,
+      603,
+      604,
+      605,
+      606,
+      607
+     ],
+     "t_b_min": 0.5,
+     "teach_gap_ms": 200.0,
+     "teach_min_decreased": 6,
+     "teach_orders": [
+      "ab",
+      "ba"
+     ],
+     "teach_present_ms": 800.0,
+     "teach_seeds": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "teach_trials": 12,
+     "teach_window": {
+      "read_ms": 600.0,
+      "settle_ms": 800.0
+     },
+     "testable_min": 2.0,
+     "tie_pairs": 2,
+     "z_ddof": 0
+    },
+    "homeo_target": 0.06,
+    "kc_band_pct": [
+     3.0,
+     9.0
+    ],
+    "lit_f": 0.78,
+    "lit_tau_ms": 893.0,
+    "max_settings": 3,
+    "scale_bisect_steps": 6,
+    "scale_bracket": [
+     1.0,
+     64.0
+    ],
+    "stage2_close_max_testable_b": 7,
+    "stage2_n_b": 21,
+    "stage2_select_testable_b": 11,
+    "std_f": [
+     0.78,
+     0.9,
+     0.95
+    ],
+    "std_tau_ms": [
+     893.0,
+     300.0,
+     100.0
+    ],
+    "tie_tol": 0.01,
+    "uni_frac": 0.8,
+    "uni_min_syn": 20
+   },
+   "k": {
+    "even_pair_uses": [
+     "H.4 C0-C3",
+     "H.4a.8 ceiling freq",
+     "H.4a.8 ceiling all",
+     "J.13"
+    ],
+    "gate_ratio": 1.0,
+    "grid": [
+     -0.05,
+     -0.1,
+     -0.2,
+     -0.4,
+     -0.8
+    ],
+    "j": {
+     "alpn_match_tol": 0.05,
+     "c3_name": "C3",
+     "count_floor": 0.5,
+     "d6_seed_block": 8,
+     "d6b_ratio_limit": 2.0,
+     "first_kc": 1.65,
+     "h3_block": "h3",
+     "h4": {
+      "act_seeds": [
+       500,
+       501,
+       502,
+       503,
+       504,
+       505,
+       506,
+       507
+      ],
+      "combos": [
+       "C0",
+       "C1",
+       "C3"
+      ],
+      "f_a_min": 2,
+      "h3": {
+       "ai_clip_mark": 0.49,
+       "ai_quantiles": [
+        25.0,
+        50.0,
+        75.0,
+        90.0,
+        99.0
+       ],
+       "all51_seeds": [
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207
+       ],
+       "all51_window": {
+        "read_ms": 600.0,
+        "settle_ms": 800.0
+       },
+       "apl_r_max": 0.333,
+       "apl_v_quantiles": [
+        5.0,
+        25.0,
+        50.0,
+        75.0,
+        95.0
+       ],
+       "baseline_band_hz": [
+        3.0,
+        4.0
+       ],
+       "baseline_cal_seeds": [
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115
+       ],
+       "baseline_ci_z": 1.96,
+       "baseline_gate_seeds": [
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147
+       ],
+       "baseline_ms": 3000.0,
+       "baseline_sat_hz": 100.0,
+       "baseline_target_hz": 3.5,
+       "boot_draws": 10000,
+       "boot_seed": 20260918,
+       "c3_max_cycles": 3,
+       "c3_stall_mv": 0.2,
+       "c3_stall_pp": 0.2,
+       "callout_types": [
+        "MBON05",
+        "MBON13"
+       ],
+       "clamp_slope": 1000000000.0,
+       "connectome_sha256": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+       "d4_band": [
+        0.03,
+        0.07
+       ],
+       "design_extra_seeds": [
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115
+       ],
+       "design_k": 8,
+       "design_odor_seed": 0,
+       "design_seeds": [
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107
+       ],
+       "design_window": {
+        "read_ms": 600.0,
+        "settle_ms": 200.0
+       },
+       "extended": {
+        "exclude": [
+         "ORN_DA1",
+         "ORN_V"
+        ],
+        "k_max": 9,
+        "k_min": 6,
+        "n": 384,
+        "n_candidates": 51,
+        "name_fmt": "X{j:03d}",
+        "probe0": 810100,
+        "rng_seed": 800001
+       },
+       "guard_half": 24,
+       "guard_med_delta_min": 5.0,
+       "guard_zero_share_max": 0.25,
+       "half_split_mv": 4.7,
+       "half_split_pp": 2.03,
+       "hold_bisect_steps": 8,
+       "hold_bracket": [
+        0.5,
+        1.0
+       ],
+       "homeo_boundary_share": 0.1,
+       "homeo_clip": [
+        0.25,
+        4.0
+       ],
+       "homeo_dtheta_max": 0.05,
+       "homeo_dtheta_q": 95.0,
+       "homeo_eta": 0.1,
+       "homeo_max_iter": 40,
+       "homeo_median_tol": 0.0104,
+       "homeo_target": 0.062,
+       "homeo_target_digits": 3,
+       "kc_grid": [
+        1.55,
+        1.6,
+        1.65,
+        1.7
+       ],
+       "max_candidates": 4,
+       "membrane_target_mv": 11.0,
+       "membrane_tol_mv": 1.0,
+       "overlap_sd": 0.00349,
+       "punish_type": "PPL105",
+       "reference": {
+        "exclude": [
+         "ORN_DA1",
+         "ORN_V"
+        ],
+        "k_max": 9,
+        "k_min": 6,
+        "n": 48,
+        "n_candidates": 51,
+        "name_fmt": "R{j:02d}",
+        "probe0": 800100,
+        "rng_seed": 800000
+       },
+       "reference_window": {
+        "read_ms": 600.0,
+        "settle_ms": 800.0
+       },
+       "release_match_tol": 0.02,
+       "release_quasi_linear": [
+        0.269,
+        0.731
+       ],
+       "reward_type": "PAM08",
+       "runaway_odor_record_hz": 100.0,
+       "runaway_odor_sat_hz": 150.0,
+       "runaway_odor_seeds": [
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163
+       ],
+       "runaway_odor_window": {
+        "read_ms": 600.0,
+        "settle_ms": 800.0
+       },
+       "runaway_rest_sat_hz": 100.0,
+       "runaway_rest_seeds": [
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107
+       ],
+       "scale_bisect_steps": 8,
+       "scale_bracket": [
+        0.005,
+        1.0
+       ],
+       "strength": 0.35
+      },
+      "h3_block": "h3",
+      "kc_window_ms": 200,
+      "n_pairs_a": 18,
+      "n_pairs_b": 21,
+      "naive_max": 0.5,
+      "notes": [
+       "C0 \ub300 C1\u00b7C3 \ube44\uad50\ub294 \uae30\uc800\uc5d0\uc11c \uad50\ub77d\ub3fc \uc788\ub2e4(H.3a.10): C1\u00b7C3\ub294 mbon_hold_frac\uc744 3.5 Hz\ub85c \uc7ac\ubcf4\uc815\ud588\uace0 C0\uc740 \ub3d9\uacb0 0.85\ub85c \uac04\ub2e4. \uae30\uc800\ub294 hold\uc5d0 \uc57d 27.9 Hz/unit\ub85c \ubc18\uc751\ud558\uace0 H.4\uc758 \ud310\ub3c5\uc774 MBON \ubc1c\ud654\uc728\uc774\ub2e4.",
+       "V\ub294 APL\u2192MBON05 \uc5b5\uc81c\uc5d0 \uc9c1\uc811 \ubc18\uc751\ud560 \uc218 \uc788\ub2e4(H.3a.9 \u2461, H.4a.2): A\u00b7P \ud480\uc774 \ubaa8\ub450 APL \ud45c\uc801\uc774\uace0 MBON05\ub294 APL\uc758 MBON \ud45c\uc801 1\uc704\ub2e4. APL\u2192MBON05\ub97c \ub04a\uc73c\uba74 MBON05\uac00 \ud480\ub824 MBON13\uc774 \ubc14\ub2e5\uc73c\ub85c \ub0b4\ub824\uac00\ubbc0\ub85c \uc808\uc81c\ud310 V\ub85c\ub294 \uc774 \uad50\ub77d\uc744 \uac00\ub97c \uc218 \uc5c6\ub2e4.",
+       "\ud310\ub3c5 \ubc14\ub2e5\uc774 \uc870\ud569\ub9c8\ub2e4 \ub2e4\ub974\ub2e4(H.4a.4): H.3 \uac00\ub4dc\uc758 MBON13 \uc911\uc559\uac12 \u0394\uac00 C0 17.5 \u00b7 C1 9.5 \u00b7 C3 6.0(\ubb38\ud131 5)\uc774\ub77c T_b \ucc28\uc774\uc758 \uc77c\ubd80\ub294 \uc5d4\uc9c4\uc774 \uc544\ub2c8\ub77c \ud310\ub3c5 \ubc14\ub2e5\uc758 \ucc28\uc774\uc77c \uc218 \uc788\ub2e4(G.14.8\uacfc \uac19\uc740 \uc885\ub958). \uc30d \ub0c4\uc0c8\uc758 \uc21c\uc9c4 \ud310\ub3c5 \uc218\uc900\u00b70 \ube44\uc728\uacfc \ud0c0\uc785\ubcc4 d\u2032\ub97c \ud568\uaed8 \uc2e3\ub294\ub2e4."
+      ],
+      "oracle_alphas": [
+       0.2,
+       0.5,
+       0.8
+      ],
+      "oracle_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "pairs_digest": "4e7298340f2225b839059e0b9508db1351c9e5630998d9deae2b4d0712946338",
+      "react_med_delta_min": 5.0,
+      "react_zero_share_max": 0.25,
+      "report_seeds": [
+       608,
+       609,
+       610,
+       611,
+       612,
+       613,
+       614,
+       615
+      ],
+      "select_seeds": [
+       600,
+       601,
+       602,
+       603,
+       604,
+       605,
+       606,
+       607
+      ],
+      "t_b_min": 0.5,
+      "teach_gap_ms": 200.0,
+      "teach_min_decreased": 6,
+      "teach_orders": [
+       "ab",
+       "ba"
+      ],
+      "teach_present_ms": 800.0,
+      "teach_seeds": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ],
+      "teach_trials": 12,
+      "teach_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "testable_min": 2.0,
+      "tie_pairs": 2,
+      "z_ddof": 0
+     },
+     "homeo_target": 0.06,
+     "kc_band_pct": [
+      3.0,
+      9.0
+     ],
+     "lit_f": 0.78,
+     "lit_tau_ms": 893.0,
+     "max_settings": 3,
+     "scale_bisect_steps": 6,
+     "scale_bracket": [
+      1.0,
+      64.0
+     ],
+     "stage2_close_max_testable_b": 7,
+     "stage2_n_b": 21,
+     "stage2_select_testable_b": 11,
+     "std_f": [
+      0.78,
+      0.9,
+      0.95
+     ],
+     "std_tau_ms": [
+      893.0,
+      300.0,
+      100.0
+     ],
+     "tie_tol": 0.01,
+     "uni_frac": 0.8,
+     "uni_min_syn": 20
+    },
+    "min_weight": 5,
+    "odd_pairs_digest": "f24122391e4818cd461def012ab3271dc6836b4c3a47e104a60c228c9b9f29fa",
+    "raster_g": -0.8,
+    "reward_type": "MBON05",
+    "target_type": "MBON13",
+    "tie_tol": 0.01
+   },
+   "k_act_path": "results/m0d/k/run/cache/k_act/f16f19e4602bf075d866cecf.json",
+   "k_act_sha256": "93d86ee0685c06837e93a539ec8483e275c67ba0bb5baa67298df39f7d835fcf",
+   "lift_seed": 20260928,
+   "m0d_path": "results/summary/m0d.json",
+   "max_screened": 84,
+   "n_lift": 10,
+   "n_pass": 21,
+   "n_turns": 64,
+   "oc_c": [
+    0.25,
+    0.3,
+    0.35,
+    0.45
+   ],
+   "oc_draws": 2000,
+   "oc_naive_a": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "oc_q": [
+    0.4,
+    0.5,
+    0.6,
+    0.7
+   ],
+   "oc_q_fail": [
+    0.0,
+    0.1
+   ],
+   "oc_ratio": [
+    0.5,
+    1.0
+   ],
+   "oc_seed": 20260929,
+   "readout": [
+    [
+     "A",
+     "MBON13"
+    ],
+    [
+     "P",
+     "MBON05"
+    ]
+   ],
+   "rng_seed": 20260927
+  },
+  "stage0_run_id": "20260926T231111Z-c4a4f4",
+  "wall_s": 0.0686330795288086
  }
 }
