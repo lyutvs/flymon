@@ -1,0 +1,7865 @@
+{
+ "stage0": {
+  "argv": [],
+  "artifacts": {
+   "results/m0d/l/run/cache/j_d6/0eb961d347b98b69796f1e89.json": "276684cbb9dd97626cc0a48fd6ba29e3b2815e114b9363a075ab91251cc7b2cd",
+   "results/m0d/l/run/cache/j_d6/2c338a6a423120a2238e017c.json": "433d84c2119caf69fd0d4a0aaf5f9cdcee802f1b4bb7ee741aa72454b4c8849f",
+   "results/m0d/l/run/cache/j_d6/4350958ed6bd5ddbd68e73a4.json": "1f455ce4803b2c540b3945112bc5026d427d3de30f553159a2485582340c2adb",
+   "results/m0d/l/run/cache/j_d6/4c445a72a1ef31e86d6345ed.json": "6fb910bbb49c1ced21199f053dc6760eb30a1680489e72d59de45eb877be3ef0",
+   "results/m0d/l/run/cache/j_d6/cb48e39ebb0898135db86e2f.json": "18e3ca77081d7f53c0116a96316409a5179f7af520b05c27f445b2e31f1e61c0",
+   "results/m0d/l/run/cache/j_d6/d0dc53abdd84206b32950799.json": "b6282c88f93c6820cf597c22a61d7e945856fc1f4e20cf396d8af3ef0b7f8c67",
+   "results/m0d/l/run/cache/j_d6/d2ae67eb6db41c3b52f30944.json": "397e88309ef95872a891afa9c2569ead7aeb9681a5b4cd7dd9690ae187ed26dd",
+   "results/m0d/l/run/cache/j_d6/e2685f1b18fc77116f924ef9.json": "a46a363a5f799e77906b6c81b868a9dc932e9e6e14f35df64fd6a3ad5fd7bd92",
+   "results/m0d/l/run/cache/oracle/03f8f314baa983f537c994a7.json": "8a096bcb57ab5266a7a74a444ea205b293564bf96da788414f161bcc64f8e6cf",
+   "results/m0d/l/run/cache/oracle/0b7d681f9ea073c366e127e2.json": "d0fcfa616c3bc6287dcf2794613817b35edfc1c6aba96499d9762e6cb7587155",
+   "results/m0d/l/run/cache/oracle/1afb2b68ac477e5d3d18fedb.json": "ce6925e4fbc387036901f38c8296b02ac7d6c5b9acb869302d771e7468d487cb",
+   "results/m0d/l/run/cache/oracle/1ed4225fc93e839cc4a41146.json": "4561561c47f229cb5162836ada83051ed4b08a4bfb862cc45ac74e9199d9ffb8",
+   "results/m0d/l/run/cache/oracle/3823d5c9a4fa2c457598a33d.json": "1a36474a4d769c34decc89a1cc7ad81174271781bd273b369817d447811fd8e9",
+   "results/m0d/l/run/cache/oracle/468e559441aa53f540b91026.json": "c249c06e45e095c5ed93cea0e70b023447e3260ad70d0219cf6406228fad4f48",
+   "results/m0d/l/run/cache/oracle/4d3b8be2f38f2bc7bc5d0087.json": "fd98e11151bd123586ddf4178366aa3cafbcd2302bf3362889c40f056861f98c",
+   "results/m0d/l/run/cache/oracle/507b88ff3281bf4ec245eca0.json": "3eb4de1db0e679a09b6a980247e01997e3bb0f5dd7410735a4855854644d1500",
+   "results/m0d/l/run/cache/oracle/6628d1dfc4be3d65395c9ca7.json": "e4209234ad45fb008c7e7279977440516c34effc7823329ac9f5669654713eed",
+   "results/m0d/l/run/cache/oracle/74966ddf3c7eebc2ada5d06b.json": "4932c50ee65d7050897ac0e85218f8d9ac1af3de170f581e54739aa12dae5eb5",
+   "results/m0d/l/run/cache/oracle/74bb3093f174d8c5379ee0fc.json": "4327a0a1f3295374060e070b0454e4816e71950d7834643f7f372c8e95b92c7a",
+   "results/m0d/l/run/cache/oracle/7d4f59f8178e5f1077a55627.json": "e0926f79ae1f3918f5affb4a0651381f8c06b1210ea4e431900ecb89cefe4d5d",
+   "results/m0d/l/run/cache/oracle/9f54309806fc038f0e2c71e1.json": "dcd42d6c04d0a622c0f4341ad2eadcaee3386a0b249740cc41aba43a9135c1bc",
+   "results/m0d/l/run/cache/oracle/b4ddf67531af5dea99889965.json": "1b571ec0b6af99e741a28552612d73c9bd5d30b861a125579c4f08b7dcc5d3d7",
+   "results/m0d/l/run/cache/oracle/b9877956252fb3cb2d84fa38.json": "486e28dcc44aec5ab7371ef748f084e2fdeae40ea205c0f4adad35eb3a81fdc0",
+   "results/m0d/l/run/cache/oracle/c14ed9f0b39a919f86d10de9.json": "d9dd8beb0244c05f82b54df9690b3d8cc90233223aef1558963b355a973954e7",
+   "results/m0d/l/run/cache/oracle/c6e77325684b6d962d45a212.json": "e1673755253cdec025df1f2148bec8dd4753f5b95045ab6985029deade0dce7f",
+   "results/m0d/l/run/cache/oracle/d4407edef12d179f2ca1e618.json": "fb0e0b5ecbd16e65159c4eb682520b2355c3a830d9a9246210717aa497179db3",
+   "results/m0d/l/run/cache/oracle/daf6d8d925f2d8b6731e2e34.json": "5592b77e1b16623090ec542ca6ee0f50b245f386398fa2af33543c60f5e675b3",
+   "results/m0d/l/run/cache/oracle/e15391f49a54ed523650d87b.json": "80d164a6f5741933ecb94f1c446c691e2cc5a956560c8ea9b3529db0a9014fad",
+   "results/m0d/l/run/cache/oracle/f665b56474c5a7f1ee4cd192.json": "7475799d2316460df08694e2e3e9e5de39a3fa8990bafcb138ee65e0e70583b6"
+  },
+  "c3": {
+   "apl_input_scale": 0.6085250180429371,
+   "apl_mode": "graded",
+   "apl_r_max": 0.333,
+   "apl_scale": 0.1,
+   "apl_slope": 5.0,
+   "apl_v_mid": 11.0,
+   "balance_hemispheres": true,
+   "core_frac": 0.2,
+   "da_baseline_ms": 200.0,
+   "da_trace_ms": 100.0,
+   "da_trace_scale": 20.0,
+   "dan_drive_mv": 70.0,
+   "dt": 1.0,
+   "kc_kc_scale": 0.0,
+   "kc_norm_clip": [
+    0.5,
+    3.0
+   ],
+   "kc_thresh": 1.65,
+   "kc_thresh_file": "results/m0d/h3/thresholds/theta-f860e39d1c7a238c568c566f.npz",
+   "kc_thresh_mode": "homeostatic",
+   "kc_thresh_sha256": "542f87a324c4c39eb82f39cd1529ff5f3646db1821bd009094a1ccaedc0d4d9f",
+   "kc_trace_ms": 200.0,
+   "kc_trace_scale": 40.0,
+   "learn_rate": 0.0003,
+   "max_rate_hz": 200.0,
+   "mbon_hold_frac": 0.8486328125,
+   "min_weight": 5,
+   "min_weight_frac": 0.2,
+   "mv_per_synapse": 0.275,
+   "noise_mv": 0.15,
+   "orn_std": false,
+   "orn_std_f": 0.78,
+   "orn_std_tau_ms": 893.0,
+   "recovery_per_pulse": 0.0,
+   "refractory_ms": 2.2,
+   "sign_override": [
+    [
+     "lLN1",
+     -1
+    ],
+    [
+     "lLN2",
+     -1
+    ]
+   ],
+   "syn_delay_ms": 1.8,
+   "tau_m": 20.0,
+   "tau_syn": 5.0,
+   "v_reset": 0.0,
+   "v_thresh": 7.0
+  },
+  "cache": {
+   "hits": 0,
+   "misses": 29
+  },
+  "checks": {
+   "i": {
+    "even": 21,
+    "note": "ceiling and K cache load as C3's engine on the declared seeds, pairs and odour order (l_measure.load_even / load_odd_activity)",
+    "odd": 20,
+    "ok": true
+   },
+   "ii": {
+    "mismatched": [],
+    "n_pairs": 20,
+    "ok": true
+   },
+   "iii": {
+    "got": {
+     "d_pre": -0.6094862506268047,
+     "m": 0.314693675998335,
+     "p": -0.314693675998335,
+     "r": 1.3944695463744352,
+     "testable": false
+    },
+    "mismatched": [],
+    "note": "h4_jobs.oracle_job unchanged, re-run on the first even (b) pair against H.4's record: a code-identity check, not used for labels (ruling S11)",
+    "ok": true,
+    "pair": [
+     "b",
+     0,
+     "Surf vs Chansey",
+     "Surf vs Rhydon"
+    ],
+    "want": {
+     "axis": "b",
+     "d_pre": -0.6094862506268047,
+     "m": 0.314693675998335,
+     "p": -0.314693675998335,
+     "r": 1.3944695463744352,
+     "testable": false,
+     "turn": 0,
+     "x": "Surf vs Chansey",
+     "y": "Surf vs Rhydon"
+    }
+   }
+  },
+  "code": {
+   "files": {
+    "flymon/brain/circuits.py": "7b149d8195a06f7232097640fd790ef6c610eae41dd575e10ac0f2c12abf65b1",
+    "flymon/brain/conditioning.py": "44de4ce3384c2b7fa321bee121eca48e91f9076edbc41f20fe36ad38ea544552",
+    "flymon/brain/config.py": "613b8c660b8d94410d997835f183397a9caf3670d7dfe69aaccf8fdab6895077",
+    "flymon/brain/connectome.py": "670a4cfad683ddef89d04bb5c3b73441992592c97714af328325bf8f922d0f30",
+    "flymon/brain/d6a.py": "9303db489c7c9a001a31eba30b54705e3cc47c57c3bc54ac87858cb297788d51",
+    "flymon/brain/engine_cpu.py": "939d354ee1cb4c27f219223c5aabc89cb37dfa2ad978f6cd1cf5fc0c33535a5a",
+    "flymon/brain/fly_pool.py": "bed8e773df18cd172c2834f6cbfe1401584416aeb97cc636a88fbba2ad26e091",
+    "flymon/brain/h3_c3.py": "716bd63a1bf7e5c5526ef81779f0702223df69859753c1fc7370bd695d30bb76",
+    "flymon/brain/h3_jobs.py": "0903032c18ec1615ea51f02acee135774904dd595c989a3cdb1b69653474930b",
+    "flymon/brain/h3_measure.py": "b68f72cf172b250a9bfb56245c087545c613151e5772fb65902b4c1e5565b1b7",
+    "flymon/brain/h3_rules.py": "6fe7b0b5e1558db25110e6701e66305fca26910b2315935dc93bb4e96abe437a",
+    "flymon/brain/h3_runner.py": "59497d3a7b5db2b39edfb72a3bcb868b273df6678f308053b785e679e801f1b1",
+    "flymon/brain/h3_spec.py": "e9f9c0a50ea6f6f8f04715cf7b062e629d519de3e6d29be04b18fab1e1d6e740",
+    "flymon/brain/h3_store.py": "fdfea72e784293410a9b5ae048f39b8953390acef2d2283753c83c12221f3bee",
+    "flymon/brain/h4_formula.py": "20051be1e473981eeb3e9fc8c3ba49c3e1e03c6782c47ef82639fc6a0a6483ef",
+    "flymon/brain/h4_jobs.py": "1e5e09041b2913384a6bb38a86acf91ee0e443a40886d602f996218978edac30",
+    "flymon/brain/h4_measure.py": "664f9f281a6ad4bbd23b64db1bd7854efa883610a2980a23f4d487e8932619bf",
+    "flymon/brain/h4_pairs.py": "042149c73ff087c156586e1fd4b3d85c077c42f9121953b149205c568ace4c7c",
+    "flymon/brain/h4_rules.py": "d77da18a81ab0fdf6812ef5b12993d6a85efef3f0b7448f04e3ac5c858824753",
+    "flymon/brain/h4_runner.py": "fdb7071a19549d598c250381b2d0c81d1062e7bf9c49dcc8574e973bfa3a5426",
+    "flymon/brain/h4_spec.py": "65de724924e8bdccc2496dd5fa40c7aaba936f7c4761dc5de13a92df70f420ad",
+    "flymon/brain/j_jobs.py": "bb1ce1618e3b58d3d5b948298b44fd8a1d047c675744336d42e4f37a96487a65",
+    "flymon/brain/j_measure.py": "50fe0139c68a06038fac750020653bb896969a2b57a214319ad78bed4d606204",
+    "flymon/brain/j_params.py": "d18285bcbbf835ac4a455398d11086b224ff7e15c68e7296190544de89a7625e",
+    "flymon/brain/j_rules.py": "952c6f884a48282016b39a0185ebc310c2b8491c1e27ba11c67953f40c9217dd",
+    "flymon/brain/j_runner.py": "ac0f9d5026136ac86ecf8955c1320220a0a2790773f55530d91c650c0f73b77c",
+    "flymon/brain/j_setup.py": "638d98aab047398d00497ff51c9d2de39138018f001ae6f5fc3cb130c066a8c7",
+    "flymon/brain/j_spec.py": "b24eadcd8996b29fcfcfb7758fa01098e462bc5f3ff899b11f091595ebed53ec",
+    "flymon/brain/j_store.py": "3f9b0d1618229b5071e97889c37d70f359d38ef4ed5c95e638b8ef776ec71748",
+    "flymon/brain/k_jobs.py": "6e52f790ff564ddc784827e79b0c3f0bf7a6d5ed5178c8535a99ef7b9fc7d1ad",
+    "flymon/brain/k_measure.py": "d51cc4890f89339a5e12e7e63112ce141b74f5dff078f91c8b53f6e434629be7",
+    "flymon/brain/k_metrics.py": "531b2fb017e2009c81a4c6bbfd7e2dc1c7ff322c8ec018a2bf8b093a23336a84",
+    "flymon/brain/k_pairs.py": "50bb21e85d673d76e3deb5a52fd1519db29b05b8951ddcb101de10244d1f9eec",
+    "flymon/brain/k_params.py": "8ebd77b125f5f308e04ac0423566c3d784dff2f82599ab45f8ec7c60ec2896e7",
+    "flymon/brain/k_rules.py": "c335a06d9854b60ab5ae9d3f63ce0ab663aae2d0dc54d3eaba156745f1d7eec5",
+    "flymon/brain/k_runner.py": "98e2ee8f9dbbe8d303522b2c1fba2db2e287a6485f5a806fe43251afcf6db2c1",
+    "flymon/brain/k_spec.py": "a52b4cc68c365360bb68276bc46a80f909e4e357c046aea0f2e4f8a28dff538a",
+    "flymon/brain/k_store.py": "55061f2abc0919d706ca6b97f2cdd9632565ff8d1d78ca80670acd2f10a24684",
+    "flymon/brain/l_cli.py": "85a6d839833a714a803043f931499c0f623586ccb35f187b7107f8d81ef8ae1e",
+    "flymon/brain/l_jobs.py": "44b54dc02a86e77db51f94bf3f6329574fc4c7245569cc793b3dd3fc3575476f",
+    "flymon/brain/l_measure.py": "99df4d894b189db8d7be013dda4dcb92a4a6d9b0dec780b2db6600aa56ca381f",
+    "flymon/brain/l_oc.py": "8293b5c60f4538d9c874e85b932b97464d535fb005b97350fab0ca5574a1754b",
+    "flymon/brain/l_pairs.py": "6da577dabee37eb4e03570ce1b48b5f7ce9c465e3a657f8c8f22c28606e757d5",
+    "flymon/brain/l_rules.py": "6b8a2949f553efb1e5c2280e993a9c026bfd9c78853f3385570ed7a21f39b092",
+    "flymon/brain/l_screen.py": "de814df5036c64f08c9576ca8170bb013bceb0344f7638362503236e1fc51879",
+    "flymon/brain/l_spec.py": "44b5a54814e8bfce721056c8b7187afe783f37c747ea370543a03ff632968f48",
+    "flymon/brain/l_store.py": "64b69af1a2a3fe0ed960b89d932add08390b32ee414a9e4ad486edff8812bf5e",
+    "flymon/brain/measure.py": "25a7cd321a54dfe8c96f076824f20efb39d83f34ec5a953aaaa89af40a8ad2f3",
+    "flymon/brain/plasticity.py": "fed3ac2f62e97ec45c56a1d93c6ca98d970c5a4a15594d124b2b281eb1cc7ed0",
+    "flymon/brain/pool_bench.py": "668eb17087d57afac7f70ddd8c8db298fcf9b3a410504faec1c76f7410315373",
+    "flymon/brain/presentation.py": "2eab2be0e33f26edd750fe33be47f070d41a026b4ad826c9eefdf1ce14b699a0",
+    "flymon/brain/stimuli.py": "1cf05a7e2ceeee60c5b299065e30a3034199a7a92509227b98c95f763086c642",
+    "flymon/brain/thresholds.py": "12916a2ebfb2aa43e2e3f3de001e480a475e60065ab404b445b07581e559352a",
+    "npz:malecns.npz": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+    "scripts/run_j_std_judge.py": "2bc09ef5d9073580fdacede99e3df46c58f87cb7b738314c0e96a13121be1b0e",
+    "scripts/run_j_std_scan.py": "25b7efe8e2799035350067bcb084322c2dfb6005b6a9557aca364555924ba41e",
+    "scripts/run_k_judge.py": "1666eae9b7979ac7032be5682aea2fdf5135334c7b087419a808a64cae0fd48c",
+    "scripts/run_k_scan.py": "4e5d89e2e14634cce4857cd7052b6d9c2873ee46f1468854ecd28b0b2c2d0800",
+    "scripts/run_l_oc.py": "bbb5222c1db8744e633c1eb1c294a0e4d54ff75b643d6433ddef9959397a959e",
+    "scripts/run_l_stage0.py": "409f758f4f29a94805702183772c6cdcefcd81cf1ff8ac19326d1622219e05b2",
+    "scripts/run_l_stage1.py": "8593f67723ad5eeb5aa84beea21b3e0c6a8d82b0c6324470ab60d83f94484f02",
+    "scripts/run_l_stage2.py": "96512ff689f98fd0feca20830c5d40d0243c45b7fcf0712377ca068aed653f5d",
+    "scripts/run_l_stage3.py": "1d36059c1a4c073784ff99561fa3e94cee8c1daeafffbf808c4ca18909308c09",
+    "scripts/run_m0d_h4.py": "386be26e3a1c747c7925a5744365d9252dd2e896c94425dbf8d8397e75a2187a",
+    "uv.lock": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e"
+   },
+   "key": "f70afefd757696c655069f5cf2970e663303b1fc9999e0962dfaf12426e850e9",
+   "versions": {
+    "numpy": "2.5.3",
+    "python": "3.13.13"
+   }
+  },
+  "d6": {
+   "a": {
+    "condition": "some KC has >= 31 spikes in a 200 ms window sliding by 1 ms over settle + read (> 150 Hz)",
+    "fired": false,
+    "margin_spikes": 10,
+    "max_win_hz": 100.0,
+    "max_win_spikes": 20,
+    "n_over": 0,
+    "n_presentations": 2624,
+    "over": []
+   },
+   "b": {
+    "condition": "within-turn candidate KC spike-count ratio > 2.0",
+    "fired": true,
+    "n_turns": 16,
+    "n_turns_over": 7,
+    "per_turn": {
+     "0": {
+      "max": 2.994991652754591,
+      "mean": 2.0831050131990345
+     },
+     "1": {
+      "max": 1.8560235063663075,
+      "mean": 1.4665699286249674
+     },
+     "10": {
+      "max": 1.7220149253731343,
+      "mean": 1.3130225701030553
+     },
+     "11": {
+      "max": 2.272197962154294,
+      "mean": 1.3696329739158672
+     },
+     "12": {
+      "max": 2.18609865470852,
+      "mean": 1.3145702936648416
+     },
+     "13": {
+      "max": 1.7735618115055078,
+      "mean": 1.3032943926771687
+     },
+     "14": {
+      "max": 1.9500734214390603,
+      "mean": 1.2521325912027632
+     },
+     "15": {
+      "max": 1.543030303030303,
+      "mean": 1.122361179960334
+     },
+     "2": {
+      "max": 1.2948846539618857,
+      "mean": 1.080393762499701
+     },
+     "3": {
+      "max": 1.6752899197145406,
+      "mean": 1.2599824358932756
+     },
+     "4": {
+      "max": 1.6153846153846154,
+      "mean": 1.2392316155874004
+     },
+     "5": {
+      "max": 1.4828326180257512,
+      "mean": 1.0984345162982994
+     },
+     "6": {
+      "max": 2.3631613324624428,
+      "mean": 1.7306939405339024
+     },
+     "7": {
+      "max": 2.4917695473251027,
+      "mean": 1.1876038680352243
+     },
+     "8": {
+      "max": 2.0247252747252746,
+      "mean": 1.4057071245938388
+     },
+     "9": {
+      "max": 2.1953757225433526,
+      "mean": 1.4307329694393496
+     }
+    },
+    "ratio_max": 2.994991652754591,
+    "ratio_mean_over_turns": 1.353591823514314,
+    "turns_over": [
+     0,
+     6,
+     7,
+     8,
+     9,
+     11,
+     12
+    ]
+   },
+   "n_rows": 1024,
+   "seed_block": "G.8's block (d6a.SEEDS 400-463), not E.2's 8 seeds (spec J.11.4-5, plan reading 10)",
+   "seeds": [
+    400,
+    401,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407,
+    408,
+    409,
+    410,
+    411,
+    412,
+    413,
+    414,
+    415,
+    416,
+    417,
+    418,
+    419,
+    420,
+    421,
+    422,
+    423,
+    424,
+    425,
+    426,
+    427,
+    428,
+    429,
+    430,
+    431,
+    432,
+    433,
+    434,
+    435,
+    436,
+    437,
+    438,
+    439,
+    440,
+    441,
+    442,
+    443,
+    444,
+    445,
+    446,
+    447,
+    448,
+    449,
+    450,
+    451,
+    452,
+    453,
+    454,
+    455,
+    456,
+    457,
+    458,
+    459,
+    460,
+    461,
+    462,
+    463
+   ]
+  },
+  "feats": [
+   {
+    "feat": {
+     "G": true,
+     "S": 0.14373668008524745,
+     "f2": 37.5,
+     "f3": 0.7033898305084746
+    },
+    "key": [
+     "b",
+     0,
+     "Surf vs Chansey",
+     "Surf vs Rhydon"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 0
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.25005365958360165,
+     "f2": 40.5,
+     "f3": 0.690176322418136
+    },
+    "key": [
+     "b",
+     0,
+     "Earthquake vs Chansey",
+     "Earthquake vs Rhydon"
+    ],
+    "set": "even",
+    "testable": true,
+    "turn": 0
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.16576651433319484,
+     "f2": 26.5,
+     "f3": 0.6078431372549019
+    },
+    "key": [
+     "b",
+     0,
+     "Strength vs Chansey",
+     "Strength vs Rhydon"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 0
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.22785299806576403,
+     "f2": 11.5,
+     "f3": 0.3926247288503254
+    },
+    "key": [
+     "b",
+     2,
+     "Psychic vs Machamp",
+     "Psychic vs Tentacruel"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 2
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.13515655965120887,
+     "f2": 13.0,
+     "f3": 0.42385786802030456
+    },
+    "key": [
+     "b",
+     2,
+     "Mega Drain vs Machamp",
+     "Mega Drain vs Tentacruel"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 2
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.6793674698795181,
+     "f2": 23.0,
+     "f3": 0.20784313725490197
+    },
+    "key": [
+     "b",
+     4,
+     "Earthquake vs Venusaur",
+     "Earthquake vs Charizard"
+    ],
+    "set": "even",
+    "testable": true,
+    "turn": 4
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.7441591040741455,
+     "f2": 2.0,
+     "f3": 0.21605839416058395
+    },
+    "key": [
+     "b",
+     4,
+     "Rock Slide vs Venusaur",
+     "Rock Slide vs Charizard"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 4
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.7790466732869911,
+     "f2": 7.5,
+     "f3": 0.17417417417417416
+    },
+    "key": [
+     "b",
+     4,
+     "Strength vs Venusaur",
+     "Strength vs Charizard"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 4
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.44487932159165033,
+     "f2": 12.0,
+     "f3": 0.36688311688311687
+    },
+    "key": [
+     "b",
+     6,
+     "Surf vs Snorlax",
+     "Surf vs Exeggutor"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 6
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.29610882632078456,
+     "f2": 16.0,
+     "f3": 0.38317757009345793
+    },
+    "key": [
+     "b",
+     6,
+     "Psychic vs Snorlax",
+     "Psychic vs Exeggutor"
+    ],
+    "set": "even",
+    "testable": true,
+    "turn": 6
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.4678647578434359,
+     "f2": 11.0,
+     "f3": 0.35119047619047616
+    },
+    "key": [
+     "b",
+     6,
+     "Thunderbolt vs Snorlax",
+     "Thunderbolt vs Exeggutor"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 6
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.23640816326530611,
+     "f2": 0.0,
+     "f3": 0.39477726574500765
+    },
+    "key": [
+     "b",
+     8,
+     "Flamethrower vs Hypno",
+     "Flamethrower vs Dragonite"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 8
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.2350848385331144,
+     "f2": 20.0,
+     "f3": 0.3875802997858672
+    },
+    "key": [
+     "b",
+     8,
+     "Earthquake vs Hypno",
+     "Earthquake vs Dragonite"
+    ],
+    "set": "even",
+    "testable": true,
+    "turn": 8
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.29050107592991087,
+     "f2": 14.0,
+     "f3": 0.3855421686746988
+    },
+    "key": [
+     "b",
+     8,
+     "Strength vs Hypno",
+     "Strength vs Dragonite"
+    ],
+    "set": "even",
+    "testable": true,
+    "turn": 8
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.5227321237993596,
+     "f2": 21.5,
+     "f3": 0.3018181818181818
+    },
+    "key": [
+     "b",
+     10,
+     "Earthquake vs Slowbro",
+     "Earthquake vs Venusaur"
+    ],
+    "set": "even",
+    "testable": true,
+    "turn": 10
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.527546358505778,
+     "f2": 26.0,
+     "f3": 0.2832764505119454
+    },
+    "key": [
+     "b",
+     10,
+     "Surf vs Slowbro",
+     "Surf vs Venusaur"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 10
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.5431141439205955,
+     "f2": 20.0,
+     "f3": 0.29583333333333334
+    },
+    "key": [
+     "b",
+     10,
+     "Strength vs Slowbro",
+     "Strength vs Venusaur"
+    ],
+    "set": "even",
+    "testable": true,
+    "turn": 10
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.6042347591303112,
+     "f2": 14.5,
+     "f3": 0.362
+    },
+    "key": [
+     "b",
+     12,
+     "Surf vs Poliwrath",
+     "Surf vs Snorlax"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 12
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.6196581196581197,
+     "f2": 5.5,
+     "f3": 0.34151329243353784
+    },
+    "key": [
+     "b",
+     12,
+     "Thunderbolt vs Poliwrath",
+     "Thunderbolt vs Snorlax"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 12
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.016191396810053167,
+     "f2": 16.0,
+     "f3": 0.576271186440678
+    },
+    "key": [
+     "b",
+     14,
+     "Surf vs Nidoking",
+     "Surf vs Kangaskhan"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 14
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.08424257802588175,
+     "f2": 8.0,
+     "f3": 0.5583126550868487
+    },
+    "key": [
+     "b",
+     14,
+     "Mega Drain vs Nidoking",
+     "Mega Drain vs Kangaskhan"
+    ],
+    "set": "even",
+    "testable": false,
+    "turn": 14
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.8333805610654577,
+     "f2": 16.5,
+     "f3": 0.22333333333333333
+    },
+    "key": [
+     "b",
+     1,
+     "Earthquake vs Charizard",
+     "Earthquake vs Nidoking"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 1
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.7993827160493827,
+     "f2": 20.0,
+     "f3": 0.2202797202797203
+    },
+    "key": [
+     "b",
+     1,
+     "Surf vs Charizard",
+     "Surf vs Nidoking"
+    ],
+    "set": "odd",
+    "testable": true,
+    "turn": 1
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.9135657779079989,
+     "f2": 5.0,
+     "f3": 0.16143497757847533
+    },
+    "key": [
+     "b",
+     1,
+     "Strength vs Charizard",
+     "Strength vs Nidoking"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 1
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.6606946983546618,
+     "f2": 8.0,
+     "f3": 0.3157894736842105
+    },
+    "key": [
+     "b",
+     3,
+     "Thunderbolt vs Exeggutor",
+     "Thunderbolt vs Rhydon"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 3
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.6708972845336482,
+     "f2": 13.5,
+     "f3": 0.32891246684350134
+    },
+    "key": [
+     "b",
+     3,
+     "Psychic vs Exeggutor",
+     "Psychic vs Rhydon"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 3
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.6442432082794308,
+     "f2": 4.0,
+     "f3": 0.30957683741648107
+    },
+    "key": [
+     "b",
+     5,
+     "Surf vs Dragonite",
+     "Surf vs Machamp"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 5
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.6597595292913788,
+     "f2": 5.0,
+     "f3": 0.3227990970654628
+    },
+    "key": [
+     "b",
+     5,
+     "Psychic vs Dragonite",
+     "Psychic vs Machamp"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 5
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.7227414330218068,
+     "f2": 3.0,
+     "f3": 0.1472
+    },
+    "key": [
+     "b",
+     7,
+     "Mega Drain vs Lapras",
+     "Mega Drain vs Charizard"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 7
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.7878787878787878,
+     "f2": 13.0,
+     "f3": 0.15692821368948248
+    },
+    "key": [
+     "b",
+     7,
+     "Cut vs Lapras",
+     "Cut vs Charizard"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 7
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.48743900234953913,
+     "f2": 16.0,
+     "f3": 0.475177304964539
+    },
+    "key": [
+     "b",
+     9,
+     "Earthquake vs Blastoise",
+     "Earthquake vs Snorlax"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 9
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.5032723990069962,
+     "f2": 5.0,
+     "f3": 0.4094955489614243
+    },
+    "key": [
+     "b",
+     9,
+     "Thunderbolt vs Blastoise",
+     "Thunderbolt vs Snorlax"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 9
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.5623950755456072,
+     "f2": 9.0,
+     "f3": 0.4304461942257218
+    },
+    "key": [
+     "b",
+     9,
+     "Surf vs Blastoise",
+     "Surf vs Snorlax"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 9
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.5158620689655172,
+     "f2": 5.5,
+     "f3": 0.332579185520362
+    },
+    "key": [
+     "b",
+     11,
+     "Psychic vs Kangaskhan",
+     "Psychic vs Dragonite"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 11
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.48972188633615477,
+     "f2": 6.5,
+     "f3": 0.3255131964809384
+    },
+    "key": [
+     "b",
+     11,
+     "Tri Attack vs Kangaskhan",
+     "Tri Attack vs Dragonite"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 11
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.5066929133858268,
+     "f2": 17.5,
+     "f3": 0.36771300448430494
+    },
+    "key": [
+     "b",
+     13,
+     "Earthquake vs Rhydon",
+     "Earthquake vs Slowbro"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 13
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.39279026217228463,
+     "f2": 8.5,
+     "f3": 0.3850129198966408
+    },
+    "key": [
+     "b",
+     13,
+     "Rock Slide vs Rhydon",
+     "Rock Slide vs Slowbro"
+    ],
+    "set": "odd",
+    "testable": true,
+    "turn": 13
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.31511976047904194,
+     "f2": 8.0,
+     "f3": 0.43373493975903615
+    },
+    "key": [
+     "b",
+     13,
+     "Strength vs Rhydon",
+     "Strength vs Slowbro"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 13
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.5941441441441442,
+     "f2": 12.5,
+     "f3": 0.4880382775119617
+    },
+    "key": [
+     "b",
+     15,
+     "Surf vs Tentacruel",
+     "Surf vs Snorlax"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 15
+   },
+   {
+    "feat": {
+     "G": false,
+     "S": 0.6254669987546699,
+     "f2": 23.0,
+     "f3": 0.41843971631205673
+    },
+    "key": [
+     "b",
+     15,
+     "Earthquake vs Tentacruel",
+     "Earthquake vs Snorlax"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 15
+   },
+   {
+    "feat": {
+     "G": true,
+     "S": 0.6322177271055535,
+     "f2": 20.0,
+     "f3": 0.39746835443037976
+    },
+    "key": [
+     "b",
+     15,
+     "Psychic vs Tentacruel",
+     "Psychic vs Snorlax"
+    ],
+    "set": "odd",
+    "testable": false,
+    "turn": 15
+   }
+  ],
+  "git": {
+   "commit": "7a29504bc1421a682650c95a1aa4bbcf831ca307",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "inputs": {
+   "ceiling": {
+    "path": "results/m0d/diag/h4_specificity_ceiling.json",
+    "sha256": "81bfab20df8bb9ada380a14106bead35039bc7a8d7910d1975cd5245a78585e3"
+   },
+   "k_act": {
+    "path": "results/m0d/k/run/cache/k_act/f16f19e4602bf075d866cecf.json",
+    "sha256": "93d86ee0685c06837e93a539ec8483e275c67ba0bb5baa67298df39f7d835fcf"
+   },
+   "m0d": {
+    "path": "results/summary/m0d.json",
+    "sha256": "64f2c0bb804c613c4af271e099ae4e076610e17305b22fcf1d85ed6fa5a8b564"
+   }
+  },
+  "measure_key": "bfa89175098fb4392a306463f9da56ed3b3335b8a248a5ef478287fa298d73a3",
+  "n_odd": 20,
+  "odd": [
+   {
+    "d_pre": 4.020106168261466,
+    "key": [
+     "b",
+     1,
+     "Earthquake vs Charizard",
+     "Earthquake vs Nidoking"
+    ],
+    "m": 0.42628975106614847,
+    "p": -2.029637438085133,
+    "r": 0.42628975106614847,
+    "report_pre": {
+     "MBON05": [
+      [
+       76,
+       68
+      ],
+      [
+       71,
+       61
+      ],
+      [
+       57,
+       58
+      ],
+      [
+       59,
+       59
+      ],
+      [
+       69,
+       48
+      ],
+      [
+       74,
+       65
+      ],
+      [
+       76,
+       60
+      ],
+      [
+       66,
+       59
+      ]
+     ],
+     "MBON13": [
+      [
+       38,
+       25
+      ],
+      [
+       43,
+       16
+      ],
+      [
+       39,
+       16
+      ],
+      [
+       41,
+       19
+      ],
+      [
+       48,
+       17
+      ],
+      [
+       46,
+       15
+      ],
+      [
+       44,
+       17
+      ],
+      [
+       42,
+       17
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       85,
+       66
+      ],
+      [
+       60,
+       72
+      ],
+      [
+       55,
+       60
+      ],
+      [
+       48,
+       59
+      ],
+      [
+       79,
+       61
+      ],
+      [
+       62,
+       67
+      ],
+      [
+       38,
+       62
+      ],
+      [
+       52,
+       64
+      ]
+     ],
+     "MBON13": [
+      [
+       43,
+       19
+      ],
+      [
+       36,
+       13
+      ],
+      [
+       37,
+       17
+      ],
+      [
+       33,
+       17
+      ],
+      [
+       47,
+       17
+      ],
+      [
+       39,
+       16
+      ],
+      [
+       30,
+       13
+      ],
+      [
+       35,
+       13
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 0.07839932426058081,
+    "key": [
+     "b",
+     1,
+     "Surf vs Charizard",
+     "Surf vs Nidoking"
+    ],
+    "m": 3.7158488576355375,
+    "p": -3.7158488576355375,
+    "r": 4.100400063095088,
+    "report_pre": {
+     "MBON05": [
+      [
+       57,
+       53
+      ],
+      [
+       65,
+       53
+      ],
+      [
+       66,
+       58
+      ],
+      [
+       69,
+       54
+      ],
+      [
+       55,
+       55
+      ],
+      [
+       65,
+       56
+      ],
+      [
+       68,
+       57
+      ],
+      [
+       70,
+       54
+      ]
+     ],
+     "MBON13": [
+      [
+       23,
+       23
+      ],
+      [
+       27,
+       19
+      ],
+      [
+       24,
+       19
+      ],
+      [
+       27,
+       19
+      ],
+      [
+       21,
+       19
+      ],
+      [
+       26,
+       19
+      ],
+      [
+       22,
+       18
+      ],
+      [
+       23,
+       19
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       80,
+       55
+      ],
+      [
+       90,
+       51
+      ],
+      [
+       64,
+       53
+      ],
+      [
+       64,
+       54
+      ],
+      [
+       70,
+       54
+      ],
+      [
+       77,
+       54
+      ],
+      [
+       55,
+       62
+      ],
+      [
+       55,
+       55
+      ]
+     ],
+     "MBON13": [
+      [
+       37,
+       23
+      ],
+      [
+       26,
+       19
+      ],
+      [
+       26,
+       21
+      ],
+      [
+       28,
+       21
+      ],
+      [
+       26,
+       19
+      ],
+      [
+       25,
+       19
+      ],
+      [
+       20,
+       18
+      ],
+      [
+       20,
+       21
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": true
+   },
+   {
+    "d_pre": 8.46801598542212,
+    "key": [
+     "b",
+     1,
+     "Strength vs Charizard",
+     "Strength vs Nidoking"
+    ],
+    "m": -0.3450730020519177,
+    "p": -3.085995127541902,
+    "r": -0.3450730020519177,
+    "report_pre": {
+     "MBON05": [
+      [
+       21,
+       42
+      ],
+      [
+       23,
+       42
+      ],
+      [
+       7,
+       42
+      ],
+      [
+       19,
+       47
+      ],
+      [
+       19,
+       41
+      ],
+      [
+       4,
+       44
+      ],
+      [
+       4,
+       47
+      ],
+      [
+       3,
+       45
+      ]
+     ],
+     "MBON13": [
+      [
+       27,
+       5
+      ],
+      [
+       28,
+       3
+      ],
+      [
+       16,
+       3
+      ],
+      [
+       27,
+       1
+      ],
+      [
+       26,
+       0
+      ],
+      [
+       13,
+       2
+      ],
+      [
+       19,
+       1
+      ],
+      [
+       23,
+       3
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       26,
+       45
+      ],
+      [
+       28,
+       14
+      ],
+      [
+       22,
+       40
+      ],
+      [
+       23,
+       48
+      ],
+      [
+       23,
+       44
+      ],
+      [
+       19,
+       48
+      ],
+      [
+       18,
+       36
+      ],
+      [
+       20,
+       43
+      ]
+     ],
+     "MBON13": [
+      [
+       32,
+       8
+      ],
+      [
+       30,
+       6
+      ],
+      [
+       25,
+       6
+      ],
+      [
+       24,
+       5
+      ],
+      [
+       30,
+       4
+      ],
+      [
+       28,
+       3
+      ],
+      [
+       24,
+       5
+      ],
+      [
+       30,
+       2
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 1.9273956083647767,
+    "key": [
+     "b",
+     3,
+     "Thunderbolt vs Exeggutor",
+     "Thunderbolt vs Rhydon"
+    ],
+    "m": -0.3324821212093075,
+    "p": -1.3203825804115896,
+    "r": -0.3324821212093075,
+    "report_pre": {
+     "MBON05": [
+      [
+       4,
+       59
+      ],
+      [
+       52,
+       64
+      ],
+      [
+       34,
+       59
+      ],
+      [
+       4,
+       61
+      ],
+      [
+       49,
+       59
+      ],
+      [
+       45,
+       62
+      ],
+      [
+       47,
+       63
+      ],
+      [
+       50,
+       60
+      ]
+     ],
+     "MBON13": [
+      [
+       18,
+       7
+      ],
+      [
+       14,
+       6
+      ],
+      [
+       15,
+       6
+      ],
+      [
+       17,
+       8
+      ],
+      [
+       17,
+       7
+      ],
+      [
+       13,
+       7
+      ],
+      [
+       15,
+       6
+      ],
+      [
+       14,
+       9
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       47,
+       64
+      ],
+      [
+       47,
+       8
+      ],
+      [
+       40,
+       59
+      ],
+      [
+       4,
+       62
+      ],
+      [
+       47,
+       64
+      ],
+      [
+       51,
+       61
+      ],
+      [
+       51,
+       64
+      ],
+      [
+       4,
+       62
+      ]
+     ],
+     "MBON13": [
+      [
+       17,
+       5
+      ],
+      [
+       16,
+       13
+      ],
+      [
+       14,
+       8
+      ],
+      [
+       14,
+       8
+      ],
+      [
+       14,
+       9
+      ],
+      [
+       16,
+       10
+      ],
+      [
+       15,
+       4
+      ],
+      [
+       17,
+       6
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 0.1390079233775529,
+    "key": [
+     "b",
+     3,
+     "Psychic vs Exeggutor",
+     "Psychic vs Rhydon"
+    ],
+    "m": -0.27445749723363605,
+    "p": -0.45802123207557305,
+    "r": -0.27445749723363605,
+    "report_pre": {
+     "MBON05": [
+      [
+       2,
+       57
+      ],
+      [
+       36,
+       59
+      ],
+      [
+       41,
+       54
+      ],
+      [
+       42,
+       53
+      ],
+      [
+       0,
+       50
+      ],
+      [
+       0,
+       52
+      ],
+      [
+       39,
+       6
+      ],
+      [
+       40,
+       52
+      ]
+     ],
+     "MBON13": [
+      [
+       21,
+       29
+      ],
+      [
+       25,
+       22
+      ],
+      [
+       21,
+       27
+      ],
+      [
+       5,
+       26
+      ],
+      [
+       16,
+       21
+      ],
+      [
+       3,
+       21
+      ],
+      [
+       11,
+       16
+      ],
+      [
+       6,
+       18
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       8,
+       54
+      ],
+      [
+       4,
+       55
+      ],
+      [
+       44,
+       1
+      ],
+      [
+       43,
+       51
+      ],
+      [
+       5,
+       57
+      ],
+      [
+       46,
+       52
+      ],
+      [
+       45,
+       5
+      ],
+      [
+       31,
+       53
+      ]
+     ],
+     "MBON13": [
+      [
+       19,
+       25
+      ],
+      [
+       19,
+       23
+      ],
+      [
+       6,
+       13
+      ],
+      [
+       23,
+       18
+      ],
+      [
+       16,
+       19
+      ],
+      [
+       11,
+       19
+      ],
+      [
+       6,
+       15
+      ],
+      [
+       8,
+       23
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 2.1604641910429305,
+    "key": [
+     "b",
+     5,
+     "Surf vs Dragonite",
+     "Surf vs Machamp"
+    ],
+    "m": -1.434047750599608,
+    "p": 0.157382435811888,
+    "r": -1.434047750599608,
+    "report_pre": {
+     "MBON05": [
+      [
+       0,
+       59
+      ],
+      [
+       1,
+       54
+      ],
+      [
+       12,
+       53
+      ],
+      [
+       0,
+       54
+      ],
+      [
+       4,
+       54
+      ],
+      [
+       16,
+       51
+      ],
+      [
+       0,
+       56
+      ],
+      [
+       0,
+       60
+      ]
+     ],
+     "MBON13": [
+      [
+       1,
+       17
+      ],
+      [
+       4,
+       20
+      ],
+      [
+       5,
+       21
+      ],
+      [
+       0,
+       19
+      ],
+      [
+       2,
+       18
+      ],
+      [
+       2,
+       16
+      ],
+      [
+       1,
+       14
+      ],
+      [
+       2,
+       18
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       22,
+       59
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       0,
+       55
+      ],
+      [
+       8,
+       51
+      ],
+      [
+       8,
+       54
+      ],
+      [
+       0,
+       55
+      ],
+      [
+       0,
+       61
+      ],
+      [
+       7,
+       54
+      ]
+     ],
+     "MBON13": [
+      [
+       5,
+       20
+      ],
+      [
+       10,
+       9
+      ],
+      [
+       2,
+       16
+      ],
+      [
+       9,
+       21
+      ],
+      [
+       3,
+       20
+      ],
+      [
+       1,
+       19
+      ],
+      [
+       0,
+       16
+      ],
+      [
+       10,
+       16
+      ]
+     ],
+     "MBON18": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": -0.42230005319724073,
+    "key": [
+     "b",
+     5,
+     "Psychic vs Dragonite",
+     "Psychic vs Machamp"
+    ],
+    "m": -0.3962398021463214,
+    "p": 0.3962398021463214,
+    "r": 0.224128161967809,
+    "report_pre": {
+     "MBON05": [
+      [
+       12,
+       50
+      ],
+      [
+       5,
+       42
+      ],
+      [
+       11,
+       51
+      ],
+      [
+       10,
+       50
+      ],
+      [
+       13,
+       45
+      ],
+      [
+       18,
+       47
+      ],
+      [
+       14,
+       39
+      ],
+      [
+       38,
+       49
+      ]
+     ],
+     "MBON13": [
+      [
+       3,
+       23
+      ],
+      [
+       9,
+       22
+      ],
+      [
+       3,
+       24
+      ],
+      [
+       3,
+       23
+      ],
+      [
+       5,
+       22
+      ],
+      [
+       8,
+       22
+      ],
+      [
+       2,
+       19
+      ],
+      [
+       5,
+       20
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       25,
+       48
+      ],
+      [
+       24,
+       49
+      ],
+      [
+       9,
+       50
+      ],
+      [
+       11,
+       44
+      ],
+      [
+       17,
+       58
+      ],
+      [
+       24,
+       52
+      ],
+      [
+       27,
+       55
+      ],
+      [
+       3,
+       51
+      ]
+     ],
+     "MBON13": [
+      [
+       9,
+       20
+      ],
+      [
+       8,
+       24
+      ],
+      [
+       4,
+       22
+      ],
+      [
+       5,
+       20
+      ],
+      [
+       5,
+       18
+      ],
+      [
+       5,
+       24
+      ],
+      [
+       10,
+       19
+      ],
+      [
+       0,
+       15
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": -11.8713488682034,
+    "key": [
+     "b",
+     7,
+     "Mega Drain vs Lapras",
+     "Mega Drain vs Charizard"
+    ],
+    "m": 0.2801649085985877,
+    "p": -0.2801649085985877,
+    "r": 7.217361683817531,
+    "report_pre": {
+     "MBON05": [
+      [
+       42,
+       23
+      ],
+      [
+       49,
+       20
+      ],
+      [
+       43,
+       24
+      ],
+      [
+       41,
+       21
+      ],
+      [
+       41,
+       23
+      ],
+      [
+       37,
+       25
+      ],
+      [
+       44,
+       19
+      ],
+      [
+       41,
+       19
+      ]
+     ],
+     "MBON13": [
+      [
+       6,
+       35
+      ],
+      [
+       4,
+       34
+      ],
+      [
+       7,
+       36
+      ],
+      [
+       3,
+       34
+      ],
+      [
+       1,
+       33
+      ],
+      [
+       3,
+       33
+      ],
+      [
+       0,
+       31
+      ],
+      [
+       5,
+       29
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       43,
+       38
+      ],
+      [
+       37,
+       28
+      ],
+      [
+       41,
+       19
+      ],
+      [
+       9,
+       7
+      ],
+      [
+       44,
+       12
+      ],
+      [
+       39,
+       18
+      ],
+      [
+       38,
+       22
+      ],
+      [
+       34,
+       29
+      ]
+     ],
+     "MBON13": [
+      [
+       3,
+       45
+      ],
+      [
+       7,
+       30
+      ],
+      [
+       3,
+       30
+      ],
+      [
+       19,
+       28
+      ],
+      [
+       3,
+       28
+      ],
+      [
+       0,
+       33
+      ],
+      [
+       2,
+       30
+      ],
+      [
+       9,
+       41
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": -5.832109667659424,
+    "key": [
+     "b",
+     7,
+     "Cut vs Lapras",
+     "Cut vs Charizard"
+    ],
+    "m": 0.6240194638582407,
+    "p": -0.6240194638582407,
+    "r": 1.769196444319952,
+    "report_pre": {
+     "MBON05": [
+      [
+       28,
+       13
+      ],
+      [
+       33,
+       20
+      ],
+      [
+       27,
+       13
+      ],
+      [
+       4,
+       15
+      ],
+      [
+       30,
+       9
+      ],
+      [
+       0,
+       7
+      ],
+      [
+       26,
+       6
+      ],
+      [
+       27,
+       23
+      ]
+     ],
+     "MBON13": [
+      [
+       12,
+       27
+      ],
+      [
+       14,
+       28
+      ],
+      [
+       12,
+       29
+      ],
+      [
+       8,
+       28
+      ],
+      [
+       11,
+       27
+      ],
+      [
+       1,
+       23
+      ],
+      [
+       11,
+       20
+      ],
+      [
+       13,
+       32
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       5,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       32,
+       9
+      ],
+      [
+       28,
+       17
+      ],
+      [
+       15,
+       4
+      ],
+      [
+       25,
+       24
+      ],
+      [
+       23,
+       26
+      ],
+      [
+       15,
+       28
+      ],
+      [
+       29,
+       22
+      ],
+      [
+       28,
+       21
+      ]
+     ],
+     "MBON13": [
+      [
+       14,
+       26
+      ],
+      [
+       17,
+       24
+      ],
+      [
+       12,
+       20
+      ],
+      [
+       12,
+       30
+      ],
+      [
+       13,
+       31
+      ],
+      [
+       17,
+       28
+      ],
+      [
+       13,
+       30
+      ],
+      [
+       10,
+       31
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 1.5095170813673686,
+    "key": [
+     "b",
+     9,
+     "Earthquake vs Blastoise",
+     "Earthquake vs Snorlax"
+    ],
+    "m": 0.13987393667840783,
+    "p": -1.6932304340241777,
+    "r": 0.13987393667840783,
+    "report_pre": {
+     "MBON05": [
+      [
+       18,
+       32
+      ],
+      [
+       24,
+       31
+      ],
+      [
+       18,
+       32
+      ],
+      [
+       17,
+       32
+      ],
+      [
+       20,
+       33
+      ],
+      [
+       17,
+       1
+      ],
+      [
+       27,
+       32
+      ],
+      [
+       23,
+       33
+      ]
+     ],
+     "MBON13": [
+      [
+       20,
+       17
+      ],
+      [
+       29,
+       17
+      ],
+      [
+       24,
+       15
+      ],
+      [
+       25,
+       14
+      ],
+      [
+       26,
+       16
+      ],
+      [
+       23,
+       21
+      ],
+      [
+       23,
+       15
+      ],
+      [
+       27,
+       10
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       31
+      ],
+      [
+       25,
+       30
+      ],
+      [
+       0,
+       34
+      ],
+      [
+       18,
+       31
+      ],
+      [
+       14,
+       31
+      ],
+      [
+       24,
+       38
+      ],
+      [
+       19,
+       33
+      ]
+     ],
+     "MBON13": [
+      [
+       19,
+       25
+      ],
+      [
+       18,
+       17
+      ],
+      [
+       29,
+       15
+      ],
+      [
+       23,
+       17
+      ],
+      [
+       23,
+       16
+      ],
+      [
+       25,
+       16
+      ],
+      [
+       17,
+       13
+      ],
+      [
+       27,
+       15
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       1,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 1.84720736205159,
+    "key": [
+     "b",
+     9,
+     "Thunderbolt vs Blastoise",
+     "Thunderbolt vs Snorlax"
+    ],
+    "m": -0.366983495497094,
+    "p": -1.2114909822099353,
+    "r": -0.366983495497094,
+    "report_pre": {
+     "MBON05": [
+      [
+       21,
+       42
+      ],
+      [
+       32,
+       36
+      ],
+      [
+       24,
+       42
+      ],
+      [
+       27,
+       41
+      ],
+      [
+       19,
+       3
+      ],
+      [
+       26,
+       40
+      ],
+      [
+       28,
+       43
+      ],
+      [
+       26,
+       44
+      ]
+     ],
+     "MBON13": [
+      [
+       19,
+       4
+      ],
+      [
+       20,
+       4
+      ],
+      [
+       17,
+       2
+      ],
+      [
+       18,
+       1
+      ],
+      [
+       17,
+       14
+      ],
+      [
+       18,
+       2
+      ],
+      [
+       14,
+       6
+      ],
+      [
+       18,
+       4
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       0,
+       3
+      ],
+      [
+       27,
+       8
+      ],
+      [
+       30,
+       38
+      ],
+      [
+       26,
+       43
+      ],
+      [
+       18,
+       39
+      ],
+      [
+       28,
+       34
+      ],
+      [
+       14,
+       49
+      ],
+      [
+       28,
+       46
+      ]
+     ],
+     "MBON13": [
+      [
+       16,
+       9
+      ],
+      [
+       19,
+       15
+      ],
+      [
+       18,
+       5
+      ],
+      [
+       18,
+       5
+      ],
+      [
+       10,
+       5
+      ],
+      [
+       17,
+       6
+      ],
+      [
+       13,
+       4
+      ],
+      [
+       13,
+       2
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       3,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       2
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 2.4383695340613984,
+    "key": [
+     "b",
+     9,
+     "Surf vs Blastoise",
+     "Surf vs Snorlax"
+    ],
+    "m": 0.014367376966069859,
+    "p": -2.5075134281016935,
+    "r": 0.014367376966069859,
+    "report_pre": {
+     "MBON05": [
+      [
+       15,
+       5
+      ],
+      [
+       8,
+       41
+      ],
+      [
+       9,
+       43
+      ],
+      [
+       8,
+       35
+      ],
+      [
+       15,
+       38
+      ],
+      [
+       8,
+       37
+      ],
+      [
+       16,
+       4
+      ],
+      [
+       8,
+       38
+      ]
+     ],
+     "MBON13": [
+      [
+       24,
+       7
+      ],
+      [
+       25,
+       11
+      ],
+      [
+       25,
+       7
+      ],
+      [
+       27,
+       11
+      ],
+      [
+       29,
+       9
+      ],
+      [
+       28,
+       9
+      ],
+      [
+       20,
+       8
+      ],
+      [
+       24,
+       7
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       4
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       16,
+       38
+      ],
+      [
+       13,
+       22
+      ],
+      [
+       15,
+       2
+      ],
+      [
+       9,
+       43
+      ],
+      [
+       14,
+       17
+      ],
+      [
+       10,
+       38
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       13,
+       40
+      ]
+     ],
+     "MBON13": [
+      [
+       27,
+       9
+      ],
+      [
+       25,
+       9
+      ],
+      [
+       24,
+       12
+      ],
+      [
+       24,
+       7
+      ],
+      [
+       23,
+       7
+      ],
+      [
+       25,
+       10
+      ],
+      [
+       22,
+       12
+      ],
+      [
+       25,
+       8
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 2.0032954535800447,
+    "key": [
+     "b",
+     11,
+     "Psychic vs Kangaskhan",
+     "Psychic vs Dragonite"
+    ],
+    "m": 0.8087832420361932,
+    "p": -1.5375634869598702,
+    "r": 0.8087832420361932,
+    "report_pre": {
+     "MBON05": [
+      [
+       41,
+       35
+      ],
+      [
+       21,
+       28
+      ],
+      [
+       38,
+       34
+      ],
+      [
+       0,
+       26
+      ],
+      [
+       0,
+       33
+      ],
+      [
+       34,
+       25
+      ],
+      [
+       2,
+       24
+      ],
+      [
+       22,
+       0
+      ]
+     ],
+     "MBON13": [
+      [
+       16,
+       4
+      ],
+      [
+       12,
+       9
+      ],
+      [
+       15,
+       4
+      ],
+      [
+       10,
+       8
+      ],
+      [
+       10,
+       5
+      ],
+      [
+       16,
+       4
+      ],
+      [
+       12,
+       6
+      ],
+      [
+       16,
+       0
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       33,
+       38
+      ],
+      [
+       38,
+       39
+      ],
+      [
+       41,
+       34
+      ],
+      [
+       0,
+       36
+      ],
+      [
+       39,
+       35
+      ],
+      [
+       0,
+       32
+      ],
+      [
+       1,
+       34
+      ],
+      [
+       34,
+       20
+      ]
+     ],
+     "MBON13": [
+      [
+       17,
+       4
+      ],
+      [
+       16,
+       5
+      ],
+      [
+       15,
+       6
+      ],
+      [
+       9,
+       4
+      ],
+      [
+       14,
+       6
+      ],
+      [
+       12,
+       6
+      ],
+      [
+       9,
+       5
+      ],
+      [
+       20,
+       6
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 0.02081395039523524,
+    "key": [
+     "b",
+     11,
+     "Tri Attack vs Kangaskhan",
+     "Tri Attack vs Dragonite"
+    ],
+    "m": 1.0326102080209525,
+    "p": -1.0326102080209525,
+    "r": 1.914930687061598,
+    "report_pre": {
+     "MBON05": [
+      [
+       41,
+       2
+      ],
+      [
+       41,
+       42
+      ],
+      [
+       42,
+       54
+      ],
+      [
+       43,
+       55
+      ],
+      [
+       6,
+       7
+      ],
+      [
+       47,
+       44
+      ],
+      [
+       10,
+       3
+      ],
+      [
+       42,
+       47
+      ]
+     ],
+     "MBON13": [
+      [
+       5,
+       3
+      ],
+      [
+       9,
+       9
+      ],
+      [
+       7,
+       8
+      ],
+      [
+       7,
+       9
+      ],
+      [
+       5,
+       0
+      ],
+      [
+       6,
+       5
+      ],
+      [
+       9,
+       1
+      ],
+      [
+       5,
+       8
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       1,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       5,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       48,
+       51
+      ],
+      [
+       47,
+       47
+      ],
+      [
+       42,
+       41
+      ],
+      [
+       8,
+       39
+      ],
+      [
+       46,
+       52
+      ],
+      [
+       44,
+       51
+      ],
+      [
+       24,
+       48
+      ],
+      [
+       5,
+       48
+      ]
+     ],
+     "MBON13": [
+      [
+       3,
+       11
+      ],
+      [
+       7,
+       10
+      ],
+      [
+       9,
+       8
+      ],
+      [
+       11,
+       8
+      ],
+      [
+       5,
+       7
+      ],
+      [
+       6,
+       9
+      ],
+      [
+       4,
+       10
+      ],
+      [
+       9,
+       11
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       4,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 0.28932696383377554,
+    "key": [
+     "b",
+     13,
+     "Earthquake vs Rhydon",
+     "Earthquake vs Slowbro"
+    ],
+    "m": 1.4710705394353263,
+    "p": -1.4710705394353263,
+    "r": 1.6534806079955477,
+    "report_pre": {
+     "MBON05": [
+      [
+       44,
+       44
+      ],
+      [
+       27,
+       45
+      ],
+      [
+       33,
+       44
+      ],
+      [
+       47,
+       36
+      ],
+      [
+       49,
+       40
+      ],
+      [
+       33,
+       41
+      ],
+      [
+       30,
+       45
+      ],
+      [
+       50,
+       2
+      ]
+     ],
+     "MBON13": [
+      [
+       22,
+       15
+      ],
+      [
+       20,
+       20
+      ],
+      [
+       20,
+       15
+      ],
+      [
+       13,
+       15
+      ],
+      [
+       20,
+       17
+      ],
+      [
+       17,
+       15
+      ],
+      [
+       12,
+       16
+      ],
+      [
+       17,
+       3
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       5,
+       0
+      ],
+      [
+       10,
+       0
+      ],
+      [
+       10,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       4,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       38,
+       43
+      ],
+      [
+       58,
+       42
+      ],
+      [
+       59,
+       44
+      ],
+      [
+       62,
+       40
+      ],
+      [
+       73,
+       41
+      ],
+      [
+       43,
+       40
+      ],
+      [
+       34,
+       46
+      ],
+      [
+       25,
+       45
+      ]
+     ],
+     "MBON13": [
+      [
+       18,
+       16
+      ],
+      [
+       18,
+       19
+      ],
+      [
+       17,
+       13
+      ],
+      [
+       14,
+       20
+      ],
+      [
+       13,
+       13
+      ],
+      [
+       22,
+       21
+      ],
+      [
+       18,
+       19
+      ],
+      [
+       13,
+       11
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       3,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       4,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       7,
+       0
+      ],
+      [
+       8,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": -1.874817238394705,
+    "key": [
+     "b",
+     13,
+     "Rock Slide vs Rhydon",
+     "Rock Slide vs Slowbro"
+    ],
+    "m": 2.083142990245212,
+    "p": -3.275642722391052,
+    "r": 2.083142990245212,
+    "report_pre": {
+     "MBON05": [
+      [
+       61,
+       31
+      ],
+      [
+       56,
+       0
+      ],
+      [
+       31,
+       32
+      ],
+      [
+       62,
+       31
+      ],
+      [
+       56,
+       29
+      ],
+      [
+       60,
+       32
+      ],
+      [
+       57,
+       30
+      ],
+      [
+       60,
+       34
+      ]
+     ],
+     "MBON13": [
+      [
+       14,
+       13
+      ],
+      [
+       13,
+       4
+      ],
+      [
+       12,
+       12
+      ],
+      [
+       11,
+       10
+      ],
+      [
+       12,
+       7
+      ],
+      [
+       11,
+       10
+      ],
+      [
+       12,
+       7
+      ],
+      [
+       13,
+       10
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       55,
+       39
+      ],
+      [
+       58,
+       31
+      ],
+      [
+       58,
+       32
+      ],
+      [
+       59,
+       29
+      ],
+      [
+       57,
+       0
+      ],
+      [
+       59,
+       0
+      ],
+      [
+       59,
+       38
+      ],
+      [
+       23,
+       34
+      ]
+     ],
+     "MBON13": [
+      [
+       19,
+       8
+      ],
+      [
+       12,
+       9
+      ],
+      [
+       16,
+       6
+      ],
+      [
+       9,
+       10
+      ],
+      [
+       15,
+       2
+      ],
+      [
+       13,
+       3
+      ],
+      [
+       15,
+       11
+      ],
+      [
+       6,
+       10
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": true
+   },
+   {
+    "d_pre": -0.7279536900356043,
+    "key": [
+     "b",
+     13,
+     "Strength vs Rhydon",
+     "Strength vs Slowbro"
+    ],
+    "m": 1.0816533685175278,
+    "p": -1.5038010061964693,
+    "r": 1.0816533685175278,
+    "report_pre": {
+     "MBON05": [
+      [
+       59,
+       40
+      ],
+      [
+       43,
+       42
+      ],
+      [
+       59,
+       36
+      ],
+      [
+       34,
+       35
+      ],
+      [
+       35,
+       44
+      ],
+      [
+       71,
+       39
+      ],
+      [
+       69,
+       39
+      ],
+      [
+       34,
+       38
+      ]
+     ],
+     "MBON13": [
+      [
+       10,
+       12
+      ],
+      [
+       10,
+       6
+      ],
+      [
+       11,
+       7
+      ],
+      [
+       6,
+       6
+      ],
+      [
+       3,
+       7
+      ],
+      [
+       9,
+       8
+      ],
+      [
+       9,
+       6
+      ],
+      [
+       6,
+       8
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       1,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       5,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       66,
+       42
+      ],
+      [
+       52,
+       39
+      ],
+      [
+       70,
+       39
+      ],
+      [
+       73,
+       38
+      ],
+      [
+       68,
+       41
+      ],
+      [
+       73,
+       41
+      ],
+      [
+       71,
+       45
+      ],
+      [
+       53,
+       40
+      ]
+     ],
+     "MBON13": [
+      [
+       10,
+       9
+      ],
+      [
+       12,
+       7
+      ],
+      [
+       9,
+       8
+      ],
+      [
+       5,
+       10
+      ],
+      [
+       7,
+       4
+      ],
+      [
+       6,
+       10
+      ],
+      [
+       8,
+       5
+      ],
+      [
+       9,
+       8
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": -1.8268161115656543,
+    "key": [
+     "b",
+     15,
+     "Surf vs Tentacruel",
+     "Surf vs Snorlax"
+    ],
+    "m": 0.5779675196656769,
+    "p": -0.5779675196656769,
+    "r": 1.5356759457361753,
+    "report_pre": {
+     "MBON05": [
+      [
+       40,
+       37
+      ],
+      [
+       43,
+       39
+      ],
+      [
+       50,
+       44
+      ],
+      [
+       42,
+       30
+      ],
+      [
+       56,
+       37
+      ],
+      [
+       59,
+       20
+      ],
+      [
+       42,
+       34
+      ],
+      [
+       44,
+       30
+      ]
+     ],
+     "MBON13": [
+      [
+       12,
+       15
+      ],
+      [
+       11,
+       19
+      ],
+      [
+       15,
+       21
+      ],
+      [
+       14,
+       16
+      ],
+      [
+       13,
+       12
+      ],
+      [
+       13,
+       14
+      ],
+      [
+       9,
+       10
+      ],
+      [
+       12,
+       12
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       4,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       4,
+       0
+      ],
+      [
+       4,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       39,
+       40
+      ],
+      [
+       47,
+       38
+      ],
+      [
+       51,
+       39
+      ],
+      [
+       50,
+       32
+      ],
+      [
+       52,
+       40
+      ],
+      [
+       43,
+       36
+      ],
+      [
+       39,
+       43
+      ],
+      [
+       37,
+       37
+      ]
+     ],
+     "MBON13": [
+      [
+       12,
+       14
+      ],
+      [
+       15,
+       13
+      ],
+      [
+       11,
+       17
+      ],
+      [
+       16,
+       15
+      ],
+      [
+       13,
+       12
+      ],
+      [
+       13,
+       14
+      ],
+      [
+       7,
+       15
+      ],
+      [
+       11,
+       13
+      ]
+     ],
+     "MBON18": [
+      [
+       1,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": -2.006128856125327,
+    "key": [
+     "b",
+     15,
+     "Earthquake vs Tentacruel",
+     "Earthquake vs Snorlax"
+    ],
+    "m": 1.9021396352628106,
+    "p": -2.9078582660336694,
+    "r": 1.9021396352628106,
+    "report_pre": {
+     "MBON05": [
+      [
+       50,
+       54
+      ],
+      [
+       55,
+       45
+      ],
+      [
+       54,
+       50
+      ],
+      [
+       56,
+       48
+      ],
+      [
+       63,
+       48
+      ],
+      [
+       60,
+       41
+      ],
+      [
+       53,
+       50
+      ],
+      [
+       56,
+       54
+      ]
+     ],
+     "MBON13": [
+      [
+       21,
+       28
+      ],
+      [
+       20,
+       24
+      ],
+      [
+       24,
+       25
+      ],
+      [
+       23,
+       26
+      ],
+      [
+       20,
+       25
+      ],
+      [
+       19,
+       22
+      ],
+      [
+       22,
+       26
+      ],
+      [
+       22,
+       25
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       50,
+       53
+      ],
+      [
+       56,
+       45
+      ],
+      [
+       59,
+       3
+      ],
+      [
+       50,
+       50
+      ],
+      [
+       59,
+       46
+      ],
+      [
+       53,
+       49
+      ],
+      [
+       52,
+       54
+      ],
+      [
+       57,
+       45
+      ]
+     ],
+     "MBON13": [
+      [
+       27,
+       26
+      ],
+      [
+       24,
+       27
+      ],
+      [
+       19,
+       18
+      ],
+      [
+       26,
+       27
+      ],
+      [
+       22,
+       21
+      ],
+      [
+       27,
+       26
+      ],
+      [
+       19,
+       25
+      ],
+      [
+       22,
+       28
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   },
+   {
+    "d_pre": 0.9154173836194311,
+    "key": [
+     "b",
+     15,
+     "Psychic vs Tentacruel",
+     "Psychic vs Snorlax"
+    ],
+    "m": 0.6719552726140035,
+    "p": -2.0759336263214156,
+    "r": 0.6719552726140035,
+    "report_pre": {
+     "MBON05": [
+      [
+       38,
+       44
+      ],
+      [
+       42,
+       40
+      ],
+      [
+       44,
+       42
+      ],
+      [
+       34,
+       41
+      ],
+      [
+       46,
+       35
+      ],
+      [
+       41,
+       41
+      ],
+      [
+       34,
+       41
+      ],
+      [
+       35,
+       44
+      ]
+     ],
+     "MBON13": [
+      [
+       23,
+       18
+      ],
+      [
+       22,
+       20
+      ],
+      [
+       24,
+       21
+      ],
+      [
+       22,
+       18
+      ],
+      [
+       18,
+       16
+      ],
+      [
+       23,
+       20
+      ],
+      [
+       18,
+       18
+      ],
+      [
+       20,
+       19
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "select_pre": {
+     "MBON05": [
+      [
+       39,
+       41
+      ],
+      [
+       38,
+       41
+      ],
+      [
+       44,
+       41
+      ],
+      [
+       44,
+       39
+      ],
+      [
+       44,
+       5
+      ],
+      [
+       34,
+       42
+      ],
+      [
+       39,
+       43
+      ],
+      [
+       34,
+       43
+      ]
+     ],
+     "MBON13": [
+      [
+       24,
+       20
+      ],
+      [
+       18,
+       20
+      ],
+      [
+       21,
+       18
+      ],
+      [
+       27,
+       21
+      ],
+      [
+       21,
+       13
+      ],
+      [
+       26,
+       20
+      ],
+      [
+       17,
+       21
+      ],
+      [
+       23,
+       21
+      ]
+     ],
+     "MBON18": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "MBON21": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    },
+    "testable": false
+   }
+  ],
+  "odd_pairs_digest": "f24122391e4818cd461def012ab3271dc6836b4c3a47e104a60c228c9b9f29fa",
+  "pools": {
+   "A": [
+    "MBON13",
+    "MBON18"
+   ],
+   "P": [
+    "MBON05",
+    "MBON21"
+   ]
+  },
+  "readout": {
+   "A": "MBON13",
+   "P": "MBON05"
+  },
+  "reasons": [],
+  "report": "results/m0d/l/run/runs/20260926T231111Z-c4a4f4-stage0.json",
+  "report_sha256": "1b78ef5e9ee1e88c5bfb8ef9cea66b17e0c46723066408c0678ce51ff8aaf9cb",
+  "run_id": "20260926T231111Z-c4a4f4",
+  "smoke": false,
+  "spec": {
+   "a_digest": "47edaced4980982034f8422c36ff1f41571a46db27e403f1877155e992836c1f",
+   "a_turns": 8,
+   "attempts": [
+    [
+     "I",
+     "M2 no-go",
+     "dc9d8b2"
+    ],
+    [
+     "J",
+     "STD B_Tb 4/21",
+     "0917b1a"
+    ],
+    [
+     "K",
+     "fast KC-KC inhibition B_Tb 4/21",
+     "73bfc2a"
+    ],
+    [
+     "L",
+     "this declaration",
+     "f89d4a3"
+    ]
+   ],
+   "b_digest": "8017c9703848f86ca5c425de805550d4c2d076453dc4e472be5d554336af3dff",
+   "ceiling_path": "results/m0d/diag/h4_specificity_ceiling.json",
+   "ceiling_sha256": "81bfab20df8bb9ada380a14106bead35039bc7a8d7910d1975cd5245a78585e3",
+   "cov_min_stage1": 0.35,
+   "directions": [
+    [
+     "S",
+     ">"
+    ],
+    [
+     "f2",
+     ">"
+    ],
+    [
+     "f3",
+     "<"
+    ]
+   ],
+   "family_order": [
+    "G",
+    "S",
+    "f2",
+    "f3"
+   ],
+   "gate_min_passes": 10,
+   "gate_min_precision": 0.6,
+   "guard_min": 5,
+   "guard_types": [
+    "MBON13",
+    "MBON05"
+   ],
+   "j": {
+    "alpn_match_tol": 0.05,
+    "c3_name": "C3",
+    "count_floor": 0.5,
+    "d6_seed_block": 8,
+    "d6b_ratio_limit": 2.0,
+    "first_kc": 1.65,
+    "h3_block": "h3",
+    "h4": {
+     "act_seeds": [
+      500,
+      501,
+      502,
+      503,
+      504,
+      505,
+      506,
+      507
+     ],
+     "combos": [
+      "C0",
+      "C1",
+      "C3"
+     ],
+     "f_a_min": 2,
+     "h3": {
+      "ai_clip_mark": 0.49,
+      "ai_quantiles": [
+       25.0,
+       50.0,
+       75.0,
+       90.0,
+       99.0
+      ],
+      "all51_seeds": [
+       200,
+       201,
+       202,
+       203,
+       204,
+       205,
+       206,
+       207
+      ],
+      "all51_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "apl_r_max": 0.333,
+      "apl_v_quantiles": [
+       5.0,
+       25.0,
+       50.0,
+       75.0,
+       95.0
+      ],
+      "baseline_band_hz": [
+       3.0,
+       4.0
+      ],
+      "baseline_cal_seeds": [
+       100,
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109,
+       110,
+       111,
+       112,
+       113,
+       114,
+       115
+      ],
+      "baseline_ci_z": 1.96,
+      "baseline_gate_seeds": [
+       116,
+       117,
+       118,
+       119,
+       120,
+       121,
+       122,
+       123,
+       124,
+       125,
+       126,
+       127,
+       128,
+       129,
+       130,
+       131,
+       132,
+       133,
+       134,
+       135,
+       136,
+       137,
+       138,
+       139,
+       140,
+       141,
+       142,
+       143,
+       144,
+       145,
+       146,
+       147
+      ],
+      "baseline_ms": 3000.0,
+      "baseline_sat_hz": 100.0,
+      "baseline_target_hz": 3.5,
+      "boot_draws": 10000,
+      "boot_seed": 20260918,
+      "c3_max_cycles": 3,
+      "c3_stall_mv": 0.2,
+      "c3_stall_pp": 0.2,
+      "callout_types": [
+       "MBON05",
+       "MBON13"
+      ],
+      "clamp_slope": 1000000000.0,
+      "connectome_sha256": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+      "d4_band": [
+       0.03,
+       0.07
+      ],
+      "design_extra_seeds": [
+       108,
+       109,
+       110,
+       111,
+       112,
+       113,
+       114,
+       115
+      ],
+      "design_k": 8,
+      "design_odor_seed": 0,
+      "design_seeds": [
+       100,
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "design_window": {
+       "read_ms": 600.0,
+       "settle_ms": 200.0
+      },
+      "extended": {
+       "exclude": [
+        "ORN_DA1",
+        "ORN_V"
+       ],
+       "k_max": 9,
+       "k_min": 6,
+       "n": 384,
+       "n_candidates": 51,
+       "name_fmt": "X{j:03d}",
+       "probe0": 810100,
+       "rng_seed": 800001
+      },
+      "guard_half": 24,
+      "guard_med_delta_min": 5.0,
+      "guard_zero_share_max": 0.25,
+      "half_split_mv": 4.7,
+      "half_split_pp": 2.03,
+      "hold_bisect_steps": 8,
+      "hold_bracket": [
+       0.5,
+       1.0
+      ],
+      "homeo_boundary_share": 0.1,
+      "homeo_clip": [
+       0.25,
+       4.0
+      ],
+      "homeo_dtheta_max": 0.05,
+      "homeo_dtheta_q": 95.0,
+      "homeo_eta": 0.1,
+      "homeo_max_iter": 40,
+      "homeo_median_tol": 0.0104,
+      "homeo_target": 0.062,
+      "homeo_target_digits": 3,
+      "kc_grid": [
+       1.55,
+       1.6,
+       1.65,
+       1.7
+      ],
+      "max_candidates": 4,
+      "membrane_target_mv": 11.0,
+      "membrane_tol_mv": 1.0,
+      "overlap_sd": 0.00349,
+      "punish_type": "PPL105",
+      "reference": {
+       "exclude": [
+        "ORN_DA1",
+        "ORN_V"
+       ],
+       "k_max": 9,
+       "k_min": 6,
+       "n": 48,
+       "n_candidates": 51,
+       "name_fmt": "R{j:02d}",
+       "probe0": 800100,
+       "rng_seed": 800000
+      },
+      "reference_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "release_match_tol": 0.02,
+      "release_quasi_linear": [
+       0.269,
+       0.731
+      ],
+      "reward_type": "PAM08",
+      "runaway_odor_record_hz": 100.0,
+      "runaway_odor_sat_hz": 150.0,
+      "runaway_odor_seeds": [
+       100,
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109,
+       110,
+       111,
+       112,
+       113,
+       114,
+       115,
+       116,
+       117,
+       118,
+       119,
+       120,
+       121,
+       122,
+       123,
+       124,
+       125,
+       126,
+       127,
+       128,
+       129,
+       130,
+       131,
+       132,
+       133,
+       134,
+       135,
+       136,
+       137,
+       138,
+       139,
+       140,
+       141,
+       142,
+       143,
+       144,
+       145,
+       146,
+       147,
+       148,
+       149,
+       150,
+       151,
+       152,
+       153,
+       154,
+       155,
+       156,
+       157,
+       158,
+       159,
+       160,
+       161,
+       162,
+       163
+      ],
+      "runaway_odor_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "runaway_rest_sat_hz": 100.0,
+      "runaway_rest_seeds": [
+       100,
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "scale_bisect_steps": 8,
+      "scale_bracket": [
+       0.005,
+       1.0
+      ],
+      "strength": 0.35
+     },
+     "h3_block": "h3",
+     "kc_window_ms": 200,
+     "n_pairs_a": 18,
+     "n_pairs_b": 21,
+     "naive_max": 0.5,
+     "notes": [
+      "C0 \ub300 C1\u00b7C3 \ube44\uad50\ub294 \uae30\uc800\uc5d0\uc11c \uad50\ub77d\ub3fc \uc788\ub2e4(H.3a.10): C1\u00b7C3\ub294 mbon_hold_frac\uc744 3.5 Hz\ub85c \uc7ac\ubcf4\uc815\ud588\uace0 C0\uc740 \ub3d9\uacb0 0.85\ub85c \uac04\ub2e4. \uae30\uc800\ub294 hold\uc5d0 \uc57d 27.9 Hz/unit\ub85c \ubc18\uc751\ud558\uace0 H.4\uc758 \ud310\ub3c5\uc774 MBON \ubc1c\ud654\uc728\uc774\ub2e4.",
+      "V\ub294 APL\u2192MBON05 \uc5b5\uc81c\uc5d0 \uc9c1\uc811 \ubc18\uc751\ud560 \uc218 \uc788\ub2e4(H.3a.9 \u2461, H.4a.2): A\u00b7P \ud480\uc774 \ubaa8\ub450 APL \ud45c\uc801\uc774\uace0 MBON05\ub294 APL\uc758 MBON \ud45c\uc801 1\uc704\ub2e4. APL\u2192MBON05\ub97c \ub04a\uc73c\uba74 MBON05\uac00 \ud480\ub824 MBON13\uc774 \ubc14\ub2e5\uc73c\ub85c \ub0b4\ub824\uac00\ubbc0\ub85c \uc808\uc81c\ud310 V\ub85c\ub294 \uc774 \uad50\ub77d\uc744 \uac00\ub97c \uc218 \uc5c6\ub2e4.",
+      "\ud310\ub3c5 \ubc14\ub2e5\uc774 \uc870\ud569\ub9c8\ub2e4 \ub2e4\ub974\ub2e4(H.4a.4): H.3 \uac00\ub4dc\uc758 MBON13 \uc911\uc559\uac12 \u0394\uac00 C0 17.5 \u00b7 C1 9.5 \u00b7 C3 6.0(\ubb38\ud131 5)\uc774\ub77c T_b \ucc28\uc774\uc758 \uc77c\ubd80\ub294 \uc5d4\uc9c4\uc774 \uc544\ub2c8\ub77c \ud310\ub3c5 \ubc14\ub2e5\uc758 \ucc28\uc774\uc77c \uc218 \uc788\ub2e4(G.14.8\uacfc \uac19\uc740 \uc885\ub958). \uc30d \ub0c4\uc0c8\uc758 \uc21c\uc9c4 \ud310\ub3c5 \uc218\uc900\u00b70 \ube44\uc728\uacfc \ud0c0\uc785\ubcc4 d\u2032\ub97c \ud568\uaed8 \uc2e3\ub294\ub2e4."
+     ],
+     "oracle_alphas": [
+      0.2,
+      0.5,
+      0.8
+     ],
+     "oracle_window": {
+      "read_ms": 600.0,
+      "settle_ms": 800.0
+     },
+     "pairs_digest": "4e7298340f2225b839059e0b9508db1351c9e5630998d9deae2b4d0712946338",
+     "react_med_delta_min": 5.0,
+     "react_zero_share_max": 0.25,
+     "report_seeds": [
+      608,
+      609,
+      610,
+      611,
+      612,
+      613,
+      614,
+      615
+     ],
+     "select_seeds": [
+      600,
+      601,
+      602,
+      603,
+      604,
+      605,
+      606,
+      607
+     ],
+     "t_b_min": 0.5,
+     "teach_gap_ms": 200.0,
+     "teach_min_decreased": 6,
+     "teach_orders": [
+      "ab",
+      "ba"
+     ],
+     "teach_present_ms": 800.0,
+     "teach_seeds": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "teach_trials": 12,
+     "teach_window": {
+      "read_ms": 600.0,
+      "settle_ms": 800.0
+     },
+     "testable_min": 2.0,
+     "tie_pairs": 2,
+     "z_ddof": 0
+    },
+    "homeo_target": 0.06,
+    "kc_band_pct": [
+     3.0,
+     9.0
+    ],
+    "lit_f": 0.78,
+    "lit_tau_ms": 893.0,
+    "max_settings": 3,
+    "scale_bisect_steps": 6,
+    "scale_bracket": [
+     1.0,
+     64.0
+    ],
+    "stage2_close_max_testable_b": 7,
+    "stage2_n_b": 21,
+    "stage2_select_testable_b": 11,
+    "std_f": [
+     0.78,
+     0.9,
+     0.95
+    ],
+    "std_tau_ms": [
+     893.0,
+     300.0,
+     100.0
+    ],
+    "tie_tol": 0.01,
+    "uni_frac": 0.8,
+    "uni_min_syn": 20
+   },
+   "k": {
+    "even_pair_uses": [
+     "H.4 C0-C3",
+     "H.4a.8 ceiling freq",
+     "H.4a.8 ceiling all",
+     "J.13"
+    ],
+    "gate_ratio": 1.0,
+    "grid": [
+     -0.05,
+     -0.1,
+     -0.2,
+     -0.4,
+     -0.8
+    ],
+    "j": {
+     "alpn_match_tol": 0.05,
+     "c3_name": "C3",
+     "count_floor": 0.5,
+     "d6_seed_block": 8,
+     "d6b_ratio_limit": 2.0,
+     "first_kc": 1.65,
+     "h3_block": "h3",
+     "h4": {
+      "act_seeds": [
+       500,
+       501,
+       502,
+       503,
+       504,
+       505,
+       506,
+       507
+      ],
+      "combos": [
+       "C0",
+       "C1",
+       "C3"
+      ],
+      "f_a_min": 2,
+      "h3": {
+       "ai_clip_mark": 0.49,
+       "ai_quantiles": [
+        25.0,
+        50.0,
+        75.0,
+        90.0,
+        99.0
+       ],
+       "all51_seeds": [
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207
+       ],
+       "all51_window": {
+        "read_ms": 600.0,
+        "settle_ms": 800.0
+       },
+       "apl_r_max": 0.333,
+       "apl_v_quantiles": [
+        5.0,
+        25.0,
+        50.0,
+        75.0,
+        95.0
+       ],
+       "baseline_band_hz": [
+        3.0,
+        4.0
+       ],
+       "baseline_cal_seeds": [
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115
+       ],
+       "baseline_ci_z": 1.96,
+       "baseline_gate_seeds": [
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147
+       ],
+       "baseline_ms": 3000.0,
+       "baseline_sat_hz": 100.0,
+       "baseline_target_hz": 3.5,
+       "boot_draws": 10000,
+       "boot_seed": 20260918,
+       "c3_max_cycles": 3,
+       "c3_stall_mv": 0.2,
+       "c3_stall_pp": 0.2,
+       "callout_types": [
+        "MBON05",
+        "MBON13"
+       ],
+       "clamp_slope": 1000000000.0,
+       "connectome_sha256": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+       "d4_band": [
+        0.03,
+        0.07
+       ],
+       "design_extra_seeds": [
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115
+       ],
+       "design_k": 8,
+       "design_odor_seed": 0,
+       "design_seeds": [
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107
+       ],
+       "design_window": {
+        "read_ms": 600.0,
+        "settle_ms": 200.0
+       },
+       "extended": {
+        "exclude": [
+         "ORN_DA1",
+         "ORN_V"
+        ],
+        "k_max": 9,
+        "k_min": 6,
+        "n": 384,
+        "n_candidates": 51,
+        "name_fmt": "X{j:03d}",
+        "probe0": 810100,
+        "rng_seed": 800001
+       },
+       "guard_half": 24,
+       "guard_med_delta_min": 5.0,
+       "guard_zero_share_max": 0.25,
+       "half_split_mv": 4.7,
+       "half_split_pp": 2.03,
+       "hold_bisect_steps": 8,
+       "hold_bracket": [
+        0.5,
+        1.0
+       ],
+       "homeo_boundary_share": 0.1,
+       "homeo_clip": [
+        0.25,
+        4.0
+       ],
+       "homeo_dtheta_max": 0.05,
+       "homeo_dtheta_q": 95.0,
+       "homeo_eta": 0.1,
+       "homeo_max_iter": 40,
+       "homeo_median_tol": 0.0104,
+       "homeo_target": 0.062,
+       "homeo_target_digits": 3,
+       "kc_grid": [
+        1.55,
+        1.6,
+        1.65,
+        1.7
+       ],
+       "max_candidates": 4,
+       "membrane_target_mv": 11.0,
+       "membrane_tol_mv": 1.0,
+       "overlap_sd": 0.00349,
+       "punish_type": "PPL105",
+       "reference": {
+        "exclude": [
+         "ORN_DA1",
+         "ORN_V"
+        ],
+        "k_max": 9,
+        "k_min": 6,
+        "n": 48,
+        "n_candidates": 51,
+        "name_fmt": "R{j:02d}",
+        "probe0": 800100,
+        "rng_seed": 800000
+       },
+       "reference_window": {
+        "read_ms": 600.0,
+        "settle_ms": 800.0
+       },
+       "release_match_tol": 0.02,
+       "release_quasi_linear": [
+        0.269,
+        0.731
+       ],
+       "reward_type": "PAM08",
+       "runaway_odor_record_hz": 100.0,
+       "runaway_odor_sat_hz": 150.0,
+       "runaway_odor_seeds": [
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163
+       ],
+       "runaway_odor_window": {
+        "read_ms": 600.0,
+        "settle_ms": 800.0
+       },
+       "runaway_rest_sat_hz": 100.0,
+       "runaway_rest_seeds": [
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107
+       ],
+       "scale_bisect_steps": 8,
+       "scale_bracket": [
+        0.005,
+        1.0
+       ],
+       "strength": 0.35
+      },
+      "h3_block": "h3",
+      "kc_window_ms": 200,
+      "n_pairs_a": 18,
+      "n_pairs_b": 21,
+      "naive_max": 0.5,
+      "notes": [
+       "C0 \ub300 C1\u00b7C3 \ube44\uad50\ub294 \uae30\uc800\uc5d0\uc11c \uad50\ub77d\ub3fc \uc788\ub2e4(H.3a.10): C1\u00b7C3\ub294 mbon_hold_frac\uc744 3.5 Hz\ub85c \uc7ac\ubcf4\uc815\ud588\uace0 C0\uc740 \ub3d9\uacb0 0.85\ub85c \uac04\ub2e4. \uae30\uc800\ub294 hold\uc5d0 \uc57d 27.9 Hz/unit\ub85c \ubc18\uc751\ud558\uace0 H.4\uc758 \ud310\ub3c5\uc774 MBON \ubc1c\ud654\uc728\uc774\ub2e4.",
+       "V\ub294 APL\u2192MBON05 \uc5b5\uc81c\uc5d0 \uc9c1\uc811 \ubc18\uc751\ud560 \uc218 \uc788\ub2e4(H.3a.9 \u2461, H.4a.2): A\u00b7P \ud480\uc774 \ubaa8\ub450 APL \ud45c\uc801\uc774\uace0 MBON05\ub294 APL\uc758 MBON \ud45c\uc801 1\uc704\ub2e4. APL\u2192MBON05\ub97c \ub04a\uc73c\uba74 MBON05\uac00 \ud480\ub824 MBON13\uc774 \ubc14\ub2e5\uc73c\ub85c \ub0b4\ub824\uac00\ubbc0\ub85c \uc808\uc81c\ud310 V\ub85c\ub294 \uc774 \uad50\ub77d\uc744 \uac00\ub97c \uc218 \uc5c6\ub2e4.",
+       "\ud310\ub3c5 \ubc14\ub2e5\uc774 \uc870\ud569\ub9c8\ub2e4 \ub2e4\ub974\ub2e4(H.4a.4): H.3 \uac00\ub4dc\uc758 MBON13 \uc911\uc559\uac12 \u0394\uac00 C0 17.5 \u00b7 C1 9.5 \u00b7 C3 6.0(\ubb38\ud131 5)\uc774\ub77c T_b \ucc28\uc774\uc758 \uc77c\ubd80\ub294 \uc5d4\uc9c4\uc774 \uc544\ub2c8\ub77c \ud310\ub3c5 \ubc14\ub2e5\uc758 \ucc28\uc774\uc77c \uc218 \uc788\ub2e4(G.14.8\uacfc \uac19\uc740 \uc885\ub958). \uc30d \ub0c4\uc0c8\uc758 \uc21c\uc9c4 \ud310\ub3c5 \uc218\uc900\u00b70 \ube44\uc728\uacfc \ud0c0\uc785\ubcc4 d\u2032\ub97c \ud568\uaed8 \uc2e3\ub294\ub2e4."
+      ],
+      "oracle_alphas": [
+       0.2,
+       0.5,
+       0.8
+      ],
+      "oracle_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "pairs_digest": "4e7298340f2225b839059e0b9508db1351c9e5630998d9deae2b4d0712946338",
+      "react_med_delta_min": 5.0,
+      "react_zero_share_max": 0.25,
+      "report_seeds": [
+       608,
+       609,
+       610,
+       611,
+       612,
+       613,
+       614,
+       615
+      ],
+      "select_seeds": [
+       600,
+       601,
+       602,
+       603,
+       604,
+       605,
+       606,
+       607
+      ],
+      "t_b_min": 0.5,
+      "teach_gap_ms": 200.0,
+      "teach_min_decreased": 6,
+      "teach_orders": [
+       "ab",
+       "ba"
+      ],
+      "teach_present_ms": 800.0,
+      "teach_seeds": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ],
+      "teach_trials": 12,
+      "teach_window": {
+       "read_ms": 600.0,
+       "settle_ms": 800.0
+      },
+      "testable_min": 2.0,
+      "tie_pairs": 2,
+      "z_ddof": 0
+     },
+     "homeo_target": 0.06,
+     "kc_band_pct": [
+      3.0,
+      9.0
+     ],
+     "lit_f": 0.78,
+     "lit_tau_ms": 893.0,
+     "max_settings": 3,
+     "scale_bisect_steps": 6,
+     "scale_bracket": [
+      1.0,
+      64.0
+     ],
+     "stage2_close_max_testable_b": 7,
+     "stage2_n_b": 21,
+     "stage2_select_testable_b": 11,
+     "std_f": [
+      0.78,
+      0.9,
+      0.95
+     ],
+     "std_tau_ms": [
+      893.0,
+      300.0,
+      100.0
+     ],
+     "tie_tol": 0.01,
+     "uni_frac": 0.8,
+     "uni_min_syn": 20
+    },
+    "min_weight": 5,
+    "odd_pairs_digest": "f24122391e4818cd461def012ab3271dc6836b4c3a47e104a60c228c9b9f29fa",
+    "raster_g": -0.8,
+    "reward_type": "MBON05",
+    "target_type": "MBON13",
+    "tie_tol": 0.01
+   },
+   "k_act_path": "results/m0d/k/run/cache/k_act/f16f19e4602bf075d866cecf.json",
+   "k_act_sha256": "93d86ee0685c06837e93a539ec8483e275c67ba0bb5baa67298df39f7d835fcf",
+   "lift_seed": 20260928,
+   "m0d_path": "results/summary/m0d.json",
+   "max_screened": 84,
+   "n_lift": 10,
+   "n_pass": 21,
+   "n_turns": 64,
+   "oc_c": [
+    0.25,
+    0.3,
+    0.35,
+    0.45
+   ],
+   "oc_draws": 2000,
+   "oc_naive_a": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "oc_q": [
+    0.4,
+    0.5,
+    0.6,
+    0.7
+   ],
+   "oc_q_fail": [
+    0.0,
+    0.1
+   ],
+   "oc_ratio": [
+    0.5,
+    1.0
+   ],
+   "oc_seed": 20260929,
+   "readout": [
+    [
+     "A",
+     "MBON13"
+    ],
+    [
+     "P",
+     "MBON05"
+    ]
+   ],
+   "rng_seed": 20260927
+  },
+  "status": "done",
+  "wall_s": 1904.8152341842651,
+  "z": {
+   "A": [
+    10.78125,
+    9.412096743243064
+   ],
+   "P": [
+    26.25,
+    19.30889259728101
+   ]
+  }
+ }
+}
