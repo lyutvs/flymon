@@ -7,6 +7,7 @@ from poke_env.ps_client import AccountConfiguration
 from flymon.agent import logschema
 from flymon.agent.player import AgentPlayer
 from flymon.agent.screen import ScreenTable
+from flymon.agent.swarm import SafetyStop
 from flymon.battle.attribution import Outcome
 from flymon.battle.barrier import BatchBarrier
 from flymon.battle.coach import Coach
@@ -21,10 +22,12 @@ class FakeEncoder:
         return ("me", "opp", "high", "high", tuple(sorted(m.id for m in cands)))
 
 
-def make_player(tmp_path, table=None, name="fm-agent-t"):
+def make_player(tmp_path, table=None, name="fm-agent-t", decide_exc=None, reinforce_exc=None):
     decided, reinforced = [], []
 
     async def decide_batch(reqs):
+        if decide_exc is not None:
+            raise decide_exc
         for r in reqs:
             r.context["detail"] = {"v": [0.0] * len(r.candidates), "a": [0] * len(r.candidates),
                                    "p": [0] * len(r.candidates), "kc_active": [0] * len(r.candidates),
@@ -33,6 +36,8 @@ def make_player(tmp_path, table=None, name="fm-agent-t"):
         return [0] * len(reqs)
 
     async def reinforce_batch(reqs):
+        if reinforce_exc is not None:
+            raise reinforce_exc
         reinforced.extend(r.context for r in reqs)
         return [0] * len(reqs)
 
@@ -101,3 +106,60 @@ def test_schema_rejects_missing_fields():
         logschema.validate({"schema": 1, "kind": "decision", "fly": 0, "battle_tag": "b", "turn": 1})
     with pytest.raises(ValueError, match="kind"):
         logschema.validate({"schema": 1, "kind": "nope", "fly": 0, "battle_id": "x", "battle_tag": "b", "turn": 1})
+
+
+def stub_forfeit(p, monkeypatch):
+    sent = []
+
+    async def send_message(message, room="", message_2=None):
+        sent.append((message, room))
+    monkeypatch.setattr(p.ps_client, "send_message", send_message)
+    return sent
+
+
+async def test_failing_decision_batch_records_fatal_forfeits_and_reraises(make_battle, tmp_path, monkeypatch):
+    """poke-env never awaits choose_move's task: without the forfeit the battle would hang with no move sent."""
+    p, _, _ = make_player(tmp_path, name="fm-agent-t6", decide_exc=KeyError("ORN_x"))
+    sent = stub_forfeit(p, monkeypatch)
+    battle = make_battle(by_species["Blastoise"], "Charizard")
+    with pytest.raises(KeyError):
+        await p.choose_move(battle)
+    assert isinstance(p.fatal, KeyError)
+    assert sent == [("/forfeit", battle.battle_tag)]
+
+
+async def test_safety_stop_in_flush_records_fatal_forfeits_and_reraises(make_battle, tmp_path, monkeypatch):
+    stop = SafetyStop("median left the band")
+    p, _, _ = make_player(tmp_path, name="fm-agent-t7", reinforce_exc=stop)
+    sent = stub_forfeit(p, monkeypatch)
+    battle = make_battle(by_species["Blastoise"], "Charizard")
+    await p.choose_move(battle)
+    p._on_outcome(battle.battle_tag, battle.turn, Outcome(dealt_frac=0.5, effectiveness="resisted"))
+    with pytest.raises(SafetyStop):
+        await p.choose_move(battle)
+    assert p.fatal is stop and sent == [("/forfeit", battle.battle_tag)]
+    assert p.player_id not in p.rbarrier.active
+
+
+async def test_first_fatal_wins(make_battle, tmp_path, monkeypatch):
+    p, _, _ = make_player(tmp_path, name="fm-agent-t8", decide_exc=KeyError("first"))
+    stub_forfeit(p, monkeypatch)
+    battle = make_battle(by_species["Blastoise"], "Charizard")
+    with pytest.raises(KeyError):
+        await p.choose_move(battle)
+    first = p.fatal
+    with pytest.raises(KeyError):
+        await p.choose_move(battle)
+    assert p.fatal is first
+
+
+async def test_flush_unregisters_from_rbarrier_when_submit_raises(make_battle, tmp_path):
+    p, _, _ = make_player(tmp_path, name="fm-agent-t9", reinforce_exc=SafetyStop("stop"))
+    battle = make_battle(by_species["Blastoise"], "Charizard")
+    await p.choose_move(battle)
+    p._on_outcome(battle.battle_tag, battle.turn, Outcome(dealt_frac=0.5, effectiveness="resisted"))
+    assert len(p.pending_pulses(battle.battle_tag)) == 2
+    with pytest.raises(SafetyStop):
+        await p.drain()
+    assert p.player_id not in p.rbarrier.active
+    assert p.pending_pulses(battle.battle_tag) == []   # unsent pulses of a fatal battle are dropped

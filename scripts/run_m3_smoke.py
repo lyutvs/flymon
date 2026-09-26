@@ -24,7 +24,7 @@ from flymon.agent.screen import ScreenTable
 from flymon.agent.swarm import BrainSwarm
 from flymon.battle.barrier import BatchBarrier
 from flymon.battle.coach import Coach
-from flymon.battle.opponents import make_opponent
+from flymon.battle.opponents import KINDS
 from flymon.battle.pool import by_species, team_export
 from flymon.battle.schedule import make_schedule
 from flymon.battle.server import ShowdownServer
@@ -55,6 +55,21 @@ def _team(species):
     return team_export([by_species[s] for s in species])
 
 
+def opponent_name(battle_id: str) -> str:
+    """One Showdown account per battle: reusing a fly's opponent name can hit `nametaken` while the server still
+    holds the previous login, and that failure happens in an unawaited poke-env task (a silent hang)."""
+    name = f"fm-h-{battle_id}"
+    if len(name) > 18:
+        raise ValueError(f"opponent name {name!r} exceeds Showdown's 18 characters")
+    return name
+
+
+def make_battle_opponent(kind: str, battle_id: str, server_configuration, team: str):
+    """flymon.battle.opponents.make_opponent with a per-battle account name (same class and kwargs)."""
+    return KINDS[kind](account_configuration=AccountConfiguration(opponent_name(battle_id), None), battle_format="gen1ou",
+                       server_configuration=server_configuration, team=team, max_concurrent_battles=1)
+
+
 def _port():
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0)); return s.getsockname()[1]
@@ -81,22 +96,27 @@ async def main_async(a, cfg, pool, swarm, enc, srv_cfg) -> dict:
                 log_path=out / "logs" / f"fly{sb.fly_id:02d}.jsonl",
                 account_configuration=AccountConfiguration(f"fm-m3-f{sb.fly_id:02d}", None), battle_format="gen1ou",
                 server_configuration=srv_cfg, team=_team(sb.my_team), max_concurrent_battles=1)
-        opp = make_opponent(sb.opponent, sb.fly_id, srv_cfg, _team(sb.opp_team))
+        opp = make_battle_opponent(sb.opponent, sb.battle_id, srv_cfg, _team(sb.opp_team))
         p.update_team(_team(sb.my_team))
         p.start_battle(sb.battle_id, int(sb.battle_id[-3:]))
         before = set(p.battles)
         try:
-            await p.battle_against(opp, n_battles=1)
+            await p.battle_against(opp, n_battles=1)   # returns once a fatal choose_move forfeited the battle
+            if p.fatal is not None:
+                raise p.fatal                            # before drain/summary: nothing is committed for this battle
             await p.drain()
+            if p.fatal is not None:
+                raise p.fatal
             for tag in set(p.battles) - before:
                 p.write_battle_summary(tag, swarm.compartment_fracs(sb.fly_id))
         finally:
             await opp.ps_client.stop_listening()
 
-    res = await run_cohort(sched, store, out / "logs", play_one, pool.state, stop_after=a.stop_after)
-    for p in players.values():
-        await p.ps_client.stop_listening()
-    return res
+    try:
+        return await run_cohort(sched, store, out / "logs", play_one, pool.state, stop_after=a.stop_after)
+    finally:
+        for p in players.values():
+            await p.ps_client.stop_listening()
 
 
 def main(argv=None) -> int:

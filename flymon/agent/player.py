@@ -30,6 +30,7 @@ class AgentPlayer(FlyCoachPlayer):
         self._queue: dict = {}         # battle_tag -> [pulse context]
         self._k: dict = {}             # battle_tag -> decisions so far (seed part)
         self.no_signal: dict = {}      # battle_tag -> fly turns whose outcome gave no pulse
+        self.fatal: BaseException | None = None   # first exception raised inside choose_move (SafetyStop, pool ...)
 
     def start_battle(self, battle_id: str, battle_index: int) -> None:
         self.battle_id, self.battle_index = battle_id, int(battle_index)
@@ -51,6 +52,21 @@ class AgentPlayer(FlyCoachPlayer):
 
     # ---- decision -------------------------------------------------------------------------
     async def choose_move(self, battle):
+        """poke-env runs this in a message-handler task nobody awaits, so an exception here would only be logged and
+        the battle would hang with no move sent. Record it on self.fatal (first one wins), forfeit the battle so
+        battle_against returns, then re-raise; the caller re-raises self.fatal (spec 4.3: a safety failure stops the run)."""
+        try:
+            return await self._choose_move(battle)
+        except Exception as e:
+            if self.fatal is None:
+                self.fatal = e
+            try:
+                await self.ps_client.send_message("/forfeit", battle.battle_tag)
+            except Exception:                         # a dead socket: the run stops on self.fatal anyway
+                self.logger.exception("forfeit of %s failed", battle.battle_tag)
+            raise
+
+    async def _choose_move(self, battle):
         tag = battle.battle_tag
         await self._flush(tag)
         decision = self.coach.decide(battle)
@@ -102,11 +118,16 @@ class AgentPlayer(FlyCoachPlayer):
         return list(self._queue.get(tag, []))
 
     async def _flush(self, tag: str) -> None:
+        """Deliver the battle's queued pulses in order. If a submit raises (SafetyStop, pool failure) the player still
+        leaves rbarrier, and the pulses not yet sent are dropped: that exception stops the run."""
         q = self._queue.pop(tag, [])
-        for ctx in q:
-            self.rbarrier.register(self.player_id)
-            await self.rbarrier.submit(self.player_id, None, [ctx["dan"]], ctx)
-        if q:
+        if not q:
+            return
+        try:
+            for ctx in q:
+                self.rbarrier.register(self.player_id)
+                await self.rbarrier.submit(self.player_id, None, [ctx["dan"]], ctx)
+        finally:
             self.rbarrier.unregister(self.player_id)
 
     async def drain(self) -> None:
