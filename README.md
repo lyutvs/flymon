@@ -2,7 +2,7 @@
 
 MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
 M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
-M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). M3·M4는 보류.
+M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). M3·M4는 보류.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
 
@@ -150,6 +150,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   KC 부호 분산은 최대 26.9% 줄었다. 그러나 순위 상위 두 설정은 C3 규칙 재수렴에서 자격점이 없었다. 3위 설정(f 0.95, τ 100 ms)의 재수렴 엔진에서는 상대 타입 축 시험 가능 쌍이
   **4/21**로 C3(7/21)보다도 낮았다. 사전 선언 구간 B_Tb에 따라 **STD는 이 병목의 지렛대로 닫는다.** D.6: (a) 미발동(최대 110 Hz), (b) 발동(16턴 중 5턴).
   축소 주장의 학습 시험(B)은 보정할 수 없어 닫혔으므로(J.12.8) 축소 주장은 시험하지 않음이다. 다음은 새 주장 선언이다.
+- **안 된 것(빠른 KC→KC 억제, 2026-09-27, 스펙 부록 K.9)**: J 다음 선언(부록 K)은 PN 아래, KC 부호에서 X/Y 겹침을 줄이려고 KC→KC 엣지를 빠른 억제로 되살렸다
+  (`kc_kc_scale` g ∈ {−0.05, −0.1, −0.2, −0.4, −0.8}, 설정마다 C3 규칙 재수렴). 홀수 턴 (b) 20쌍으로 잰 X 전용 MBON13 구동은 C3 대비 최대 +3.5%에 그쳤고(−0.4는 자격점 없음),
+  선택된 g = −0.1(+3.3%)의 엔진에서 짝수 턴 상대 타입 축 시험 가능 쌍은 **4/21**(C3 7/21)이었다. 사전 선언 구간 B_Tb에 따라 **빠른 KC→KC 억제는 이 병목의 지렛대로 닫는다.**
+  KC별 항상성 재수렴이 억제의 효과를 거의 되돌렸다. D.6: (a) 미발동(최대 105 Hz), (b) 발동(16턴 중 6턴). 다음은 새 주장 선언이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -190,6 +194,13 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   pre-declared band B_Tb, so STD is closed as the lever for this bottleneck. D.6: (a) not met (max 110 Hz); (b) met on
   5 of 16 turns. The reduced claim's learning test could not be calibrated (J.12.8), so that claim is untested. Next: a
   new claim declaration.
+- **Fast KC→KC inhibition as the lever: closed (2026-09-27, spec K.9).** The next declaration (appendix K) went below
+  the PN layer: KC→KC edges restored as fast inhibition (`kc_kc_scale` g in {−0.05, −0.1, −0.2, −0.4, −0.8}), every
+  setting re-converged by C3's rule. The X-only drive onto MBON13, measured on 20 odd-turn opponent-type pairs, rose by
+  at most 3.5% over C3 (g = −0.4 had no operating point). The selected g = −0.1 (+3.3%) had 4 of 21 testable even-turn
+  opponent-type pairs (C3: 7). That falls in the pre-declared band B_Tb, so fast KC→KC inhibition is closed as the lever
+  for this bottleneck; per-KC homeostatic re-convergence undid most of the inhibition's effect. D.6: (a) not met (max
+  105 Hz); (b) met on 6 of 16 turns. Next: a new claim declaration.
 
 ## 실행
 
