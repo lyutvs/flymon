@@ -52,7 +52,16 @@ class BrainSwarm:
 
     async def reinforce_run_batch(self, reqs) -> list:
         jobs = [(r.context["fly"], r.context["odour"], r.context["dan"], r.context["ms"], r.context["seed"]) for r in reqs]
-        await self._run(self.pool.reinforce_batch, jobs, self.cfg.strength, self.cfg.settle_ms)
+        # FlyPool refuses a fly twice in one batch: the n-th request of each fly goes to round n (request order kept)
+        rounds: list = []
+        seen: dict = {}
+        for j in jobs:
+            n = seen.get(j[0], 0); seen[j[0]] = n + 1
+            if n == len(rounds):
+                rounds.append([])
+            rounds[n].append(j)
+        for rnd in rounds:
+            await self._run(self.pool.reinforce_batch, rnd, self.cfg.strength, self.cfg.settle_ms)
         for fly in {j[0] for j in jobs}:
             self.check_median(fly)
         return [0] * len(reqs)

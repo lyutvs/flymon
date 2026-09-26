@@ -51,6 +51,22 @@ async def test_reinforce_changes_only_that_fly(swarm):
     swarm.pool.w[0] = before[0]
 
 
+
+async def test_reinforce_two_pulses_for_one_fly_in_one_batch(swarm):
+    """A barrier batch may carry two pulses for one fly (e.g. PAM08 then PPL105): both apply, in request order."""
+    start = swarm.pool.w[0].copy()
+    p1 = {"fly": 0, "odour": A, "dan": "PAM08", "ms": 200.0, "seed": 5}
+    p2 = {"fly": 0, "odour": A, "dan": "PPL105", "ms": 200.0, "seed": 6}
+    assert await swarm.reinforce_run_batch([_req(dict(p1))]) == [0]
+    after_one = swarm.pool.w[0].copy()
+    assert await swarm.reinforce_run_batch([_req(dict(p2))]) == [0]
+    sequential = swarm.pool.w[0].copy()
+    swarm.pool.w[0] = start.copy()
+    assert await swarm.reinforce_run_batch([_req(dict(p1)), _req(dict(p2))]) == [0, 0]
+    assert not np.array_equal(swarm.pool.w[0], after_one)
+    assert np.array_equal(swarm.pool.w[0], sequential)
+    swarm.pool.w[0] = start
+
 async def test_median_floor_stops_the_run(swarm):
     """Safety constraint 4: a fly whose plastic weights fall to a median below 0.5 of w0 stops the run."""
     keep = swarm.pool.w[1].copy()
