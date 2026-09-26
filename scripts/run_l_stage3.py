@@ -9,9 +9,13 @@ sample; the judgement in J.12.9's bands.
 Run it from the repository root. Refused before the pool, in this order, unless: the hashed files are clean (or
 --allow-dirty); the summary is git-tracked and unchanged against HEAD (outside --smoke; a --smoke run reads only a
 smoke summary under results/m0d/l/); blocks "stage0", "oc", "stage1" and "stage2" are present; each was produced under
-this code's measure key and procedure manifest; stage 2's outcome is SCREENED with stage 1's rule and the pinned pair
-digests; C3, its readout, z and pools load from results/summary/m0d.json; the regenerated new pair lists carry the
-pinned digests (l_pairs.check_digests); every recorded passed / lift pair is in them and there are n_pass passes.
+this code's measure key and procedure manifest; the recorded upstream run ids chain (oc -> stage0, stage1 -> stage0
+and oc, stage2 -> stage1); stage 2's outcome is SCREENED with stage 1's rule and the pinned pair digests; C3, its
+readout, z and pools load from results/summary/m0d.json, whose sha256 is block stage0's inputs.m0d.sha256 and whose
+C3 params / readout / z / pools equal block stage0's c3 / readout / z / pools; the regenerated new pair lists carry the
+pinned digests (l_pairs.check_digests); every recorded passed / lift pair is in them and there are n_pass passes;
+passed = the pass:true rows of stage 2's screened list (same order), each lift pair a screened pass:false row, and
+len(lift) = min(n_lift, screened failures).
 Judged = the n_pass passes + the fixed (a) pairs (plan reading 12); the lift pairs are measured by the same oracle and
 recorded, never judged. Then: l_rules.pair_rows_stats over the judged rows (any reason -> INVALID: report only, exit 3);
 h4_formula.arm_aggregate(stats, naive_max, t_b_min, f_a_min); l_rules.stage3_reading (J.12.9's bands); the lift's
@@ -40,7 +44,7 @@ from flymon.brain.j_rules import INVALID
 from flymon.brain.j_runner import params_json
 from flymon.brain.l_cli import (POOL_TIMEOUT_S, check_committed, code_keys, git_state, guard_params, head_sha256,
                                 load_c3_record, new_set, other_code, out_allowed, provenance, read_previous, refuse,
-                                rule_text, run_id, same_code, write_block)
+                                rule_text, run_id, run_id_chain, same_code, stage0_inputs, write_block)
 from flymon.brain.l_measure import HASHED_FILES
 from flymon.brain.l_pairs import new_turns
 from flymon.brain.l_rules import SCREENED, diversity, pair_rows_stats, sentence, stage3_reading
@@ -61,6 +65,29 @@ def turn_info(declared) -> dict:
     """{turn: new_turns' record} of the declared new set (my species and the original opponent's types)."""
     species_types, move_info, _, _ = pool_vocabulary()
     return {t["turn"]: t for t in new_turns(species_types, move_info, declared.n_turns, declared.rng_seed)}
+
+
+def screened_consistency(s2: dict, passed: list, lift: list, n_lift: int) -> str | None:
+    """The refusal when block stage2's passed / lift lists do not follow from its screened rows, or None: passed = the
+    pass:true rows of screened (same keys, same order); every lift pair a screened pass:false row; len(lift) =
+    min(n_lift, the screened failures)."""
+    k = lambda x: ("b", int(x[1]), x[2], x[3])
+    try:
+        rows = [(k(r["key"]), bool(r["pass"])) for r in s2.get("screened") or []]
+    except (KeyError, TypeError, IndexError, ValueError) as e:
+        return f"block stage2's screened rows are malformed: {e!r}"
+    want = [key for key, ok in rows if ok]
+    if passed != want:
+        return (f"block stage2's passed {[list(x) for x in passed]} are not the pass:true rows of its screened list "
+                f"{[list(x) for x in want]} (same keys, same order)")
+    failed = [key for key, ok in rows if not ok]
+    stray = [list(x) for x in lift if x not in set(failed)]
+    if stray:
+        return f"block stage2's lift pairs {stray} are not screened pass:false rows"
+    if len(set(lift)) != len(lift) or len(lift) != min(n_lift, len(failed)):
+        return (f"block stage2's lift has {len(lift)} pairs ({len(set(lift))} distinct), not min(n_lift {n_lift}, "
+                f"screened failures {len(failed)}) = {min(n_lift, len(failed))}")
+    return None
 
 
 def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, require_root: bool = True) -> int:
@@ -95,6 +122,11 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
     why = other_code(doc, NEED, code["key"], manifest["key"], same_code)
     if why:
         return refuse(why)
+    why = (run_id_chain(doc, "oc", {"stage0_run_id": "stage0"})
+           or run_id_chain(doc, "stage1", {"stage0_run_id": "stage0", "oc_run_id": "oc"})
+           or run_id_chain(doc, "stage2", {"stage1_run_id": "stage1"}))
+    if why:
+        return refuse(why)
     s2 = doc["stage2"]
     if s2.get("outcome") != SCREENED:
         return refuse(f"block stage2's outcome is {s2.get('outcome')}, not {SCREENED}: stage 3 does not run")
@@ -110,6 +142,9 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
     except ValueError as e:
         return refuse(str(e))
     c3_json = params_json(c3)
+    why = stage0_inputs(doc["stage0"], m0d_path, c3=c3_json, readout=readout, z=z, pools=pools_h4)
+    if why:
+        return refuse(why)
     conn, pops = world(a.npz)
     try:
         s = new_set(pops, spec, summary_spec)
@@ -123,8 +158,9 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
     unknown = [list(k) for k in passed + lift if k not in by]
     if unknown:
         return refuse(f"block stage2 names pairs that are not in the new (b) set: {unknown}")
-    if len(lift) > spec.n_lift or set(lift) & set(passed):
-        return refuse(f"block stage2's lift sample ({len(lift)} pairs) is not at most {spec.n_lift} failing pairs")
+    why = screened_consistency(s2, passed, lift, spec.n_lift)
+    if why:
+        return refuse(why)
     judged = [by[k] for k in passed] + list(s["a"])
     lift_pairs = [by[k] for k in lift]
     t0 = time.time()

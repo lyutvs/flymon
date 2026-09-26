@@ -5,13 +5,15 @@ H4Measurer, on H.4's recorded C3 readout / z / pools), the 41 stage-1 feature re
     uv run python scripts/run_l_stage0.py                                  # stage 0 (~55 min; resumable: rerun it)
     uv run python scripts/run_l_stage0.py --smoke --allow-dirty --workers 4  # minutes (2 odd pairs, 2 D.6 seeds)
 
-Run it from the repository root. Inputs, each refused before the pool starts: the declared connectome, C3 from block
-"h3" of results/summary/m0d.json, H.4a.8's ceiling raw file and K's C3 activity cache by their pinned sha256 (--ceiling /
---k-act replace the paths, never the hashes), block "h4"'s C3 readout {A: MBON13, P: MBON05} with its z, the odd pair
-list by SPEC.k.odd_pairs_digest. Self-checks: (i) both raw files load as C3's engine on the declared seeds and pairs;
-(iii) the oracle re-run on the first even (b) pair reproduces H.4's recorded statistics bit for bit (a recorded code-
-identity check, never a label); (ii) every odd pair's oracle KC fire fraction and spike count per act seed equal the K
-cache's. Labels: h4_formula.pair_stats on the report seeds (l_rules.pair_rows_stats' row checks); features:
+Run it from the repository root. Refused first (outside --smoke) when --summary already holds a later block (oc, stage1,
+...): block stage0 is never rewritten under them. Inputs, each refused before the pool starts: the declared connectome,
+C3 from block "h3" of results/summary/m0d.json, H.4a.8's ceiling raw file and K's C3 activity cache by their pinned
+sha256 (--ceiling / --k-act replace the paths, never the hashes), block "h4"'s C3 readout {A: MBON13, P: MBON05} with
+its z, the odd pair list by SPEC.k.odd_pairs_digest. Self-checks: (i) both raw files load as C3's engine on the declared
+seeds and pairs; (iii) the oracle re-run on the first even (b) pair reproduces H.4's recorded statistics bit for bit (a
+recorded code-identity check, never a label); (ii) every odd pair's oracle KC fire fraction and spike count per act
+seed equal the K cache's.
+Labels: h4_formula.pair_stats on the report seeds (l_rules.pair_rows_stats' row checks); features:
 l_screen.features on the select seeds (even from the ceiling file with H.4's labels, odd from the K cache with the
 oracle's select.pre). D.6: j_runner.measure_d6 on C3 (d6a.SEEDS; a record, not a judgement).
 
@@ -45,8 +47,8 @@ from flymon.brain.j_setup import build
 from flymon.brain.k_measure import KMeasurer
 from flymon.brain.k_metrics import readout_weights
 from flymon.brain.k_pairs import odd_pairs
-from flymon.brain.l_cli import (POOL_TIMEOUT_S, code_keys, git_state, guard_params, out_allowed, refuse, run_id,
-                                write_block)
+from flymon.brain.l_cli import (POOL_TIMEOUT_S, code_keys, git_state, guard_params, later_blocks, out_allowed, refuse,
+                                run_id, write_block)
 from flymon.brain.l_measure import HASHED_FILES, check_pinned, load_even, load_odd_activity
 from flymon.brain.l_rules import pair_rows_stats
 from flymon.brain.l_screen import features
@@ -108,6 +110,9 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
     git = git_state(files=HASHED_FILES)
     if git["dirty_hashed"] and not a.allow_dirty:
         return refuse(f"hashed files are dirty {git['dirty_hashed']} (commit them, or --allow-dirty)")
+    why = None if a.smoke else later_blocks(a.summary, "stage0")
+    if why:
+        return refuse(why)
     if not Path(a.npz).exists():
         return refuse(f"{a.npz} does not exist (the declared connectome)")
     code, manifest = code_keys(a.npz)

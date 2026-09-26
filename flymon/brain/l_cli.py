@@ -166,3 +166,56 @@ def write_block(summary, name: str, res: dict, report, params_list) -> Path:
     """The summary block = the run record + its report path and sha256, through l_store's guarded write."""
     return l_store.write_summary_block(summary, name, dict(res, report=str(report), report_sha256=sha256_file(report)),
                                        params_list)
+
+
+# ---------------------------------------------------------------- the chain between the blocks (final review)
+ORDER = ("stage0", "oc", "stage1", "stage2", "stage3")
+
+
+def later_blocks(summary, name: str, doc: dict | None = None) -> str | None:
+    """The refusal when the summary already holds a block of a stage after `name` (rewriting `name` would orphan it),
+    or None. `doc`: the summary already read; otherwise it is read when it exists (a missing summary has none)."""
+    if doc is None:
+        try:
+            doc = json.loads(Path(summary).read_text())
+        except OSError:
+            return None
+        except ValueError as e:
+            return f"no usable summary at {summary}: {e}"
+    later = [b for b in ORDER[ORDER.index(name) + 1:] if isinstance(doc, dict) and b in doc]
+    if not later:
+        return None
+    return (f"{summary} already holds the later blocks {later}: block {name} is not rewritten under them (start a new "
+            f"summary, or --smoke)")
+
+
+def run_id_chain(doc: dict, block: str, links: dict) -> str | None:
+    """The refusal naming every upstream run id that block `block` recorded (links: {field: upstream block}) and that
+    is missing or differs from that block's run_id, or None."""
+    bad = {f: (doc[block].get(f), doc[u].get("run_id")) for f, u in links.items()
+           if doc[block].get(f) is None or doc[block].get(f) != doc[u].get("run_id")}
+    if not bad:
+        return None
+    what = ", ".join(f"{f} {got} != block {links[f]} run_id {want}" for f, (got, want) in bad.items())
+    return f"block {block} was produced on other upstream runs ({what})"
+
+
+def _norm(x):
+    return json.loads(json.dumps(x))
+
+
+def stage0_inputs(s0: dict, m0d_path, **record) -> str | None:
+    """The refusal when the m0d summary (by sha256) or C3's record (record: c3 / readout / z / pools, each against the
+    value block stage0 recorded) differs from what stage 0 ran on, or None."""
+    want = ((s0.get("inputs") or {}).get("m0d") or {}).get("sha256")
+    try:
+        got = sha256_file(m0d_path)
+    except OSError as e:
+        return f"the m0d summary {m0d_path} is not readable: {e}"
+    if not want or got != want:
+        return (f"the m0d summary {m0d_path} (sha256 {got[:12]}) is not the one stage 0 ran on "
+                f"(block stage0 inputs.m0d.sha256 {str(want)[:12]})")
+    bad = [k for k, v in record.items() if _norm(v) != _norm(s0.get(k))]
+    if bad:
+        return f"C3's {bad} from {m0d_path} differ from what block stage0 recorded (stage 0 ran on another engine)"
+    return None

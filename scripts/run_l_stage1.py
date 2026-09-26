@@ -7,8 +7,10 @@ gate (l_screen.gate). Pure: no pool, seconds.
 
 Run it from the repository root. Refused, in this order, unless: the hashed files are clean (or --allow-dirty); the
 summary is git-tracked and unchanged against HEAD (outside --smoke; a --smoke run reads and writes only a smoke summary
-under results/m0d/l/); blocks "stage0" and "oc" are present (L.11.4: the OC is recorded before stage 1); both were
-produced under this code's measure key and procedure manifest; stage 0's feature records are well formed. Recorded:
+under results/m0d/l/); blocks "stage0" and "oc" are present (L.11.4: the OC is recorded before stage 1); no later
+block (stage2, stage3) is in the summary (outside --smoke); both were produced under this code's measure key and
+procedure manifest; block oc's stage0_run_id is block stage0's run_id; stage 0's feature records are well formed.
+Recorded:
 - the gate (outcome, the rule chosen on all 41 pairs, the LOTO folds, AUCs, by-set precision / recall, the turn folds
   standing for the species folds, plan reading 6) and, when the outcome is not SCREEN_GO, its sentence (L.11.2);
 - the stage-3 OC rows at q_b = the LOTO precision (plan reading 15; only when the precision exists), u = 0;
@@ -28,8 +30,8 @@ from pathlib import Path
 from flymon.brain import l_oc, l_store
 from flymon.brain.config import Params
 from flymon.brain.h3_store import ROOT, sha256_file
-from flymon.brain.l_cli import (check_committed, code_keys, git_state, head_sha256, other_code, out_allowed,
-                                provenance, read_previous, refuse, rule_text, run_id, same_code, write_block)
+from flymon.brain.l_cli import (check_committed, code_keys, git_state, head_sha256, later_blocks, other_code, out_allowed,
+                                provenance, read_previous, refuse, rule_text, run_id, run_id_chain, same_code, write_block)
 from flymon.brain.l_measure import HASHED_FILES, check_pinned
 from flymon.brain.l_rules import sentence
 from flymon.brain.l_screen import SCREEN_FEW, SCREEN_GO, SCREEN_IMPRECISE, SCREEN_NO_RULE, gate
@@ -98,6 +100,9 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
     doc, why = read_previous(a.summary, NEED, a.smoke, check_committed, out_allowed)
     if why:
         return refuse(why)
+    why = None if a.smoke else later_blocks(a.summary, "stage1", doc)
+    if why:
+        return refuse(why)
     if not Path(a.npz).exists():
         return refuse(f"{a.npz} does not exist (the declared connectome)")
     code, manifest = code_keys(a.npz)
@@ -105,6 +110,9 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
     if npz_sha != spec.j.h4.h3.connectome_sha256:
         return refuse(f"{a.npz} is not the declared connectome ({npz_sha[:12]})")
     why = other_code(doc, NEED, code["key"], manifest["key"], same_code)
+    if why:
+        return refuse(why)
+    why = run_id_chain(doc, "oc", {"stage0_run_id": "stage0"})
     if why:
         return refuse(why)
     s0 = doc["stage0"]

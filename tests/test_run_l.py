@@ -298,8 +298,9 @@ def test_oc_smoke_writes_its_block_into_the_smoke_summary_with_provenance(monkey
 S1, S2, S3 = _load("run_l_stage1"), _load("run_l_stage2"), _load("run_l_stage3")
 KEYS = {"measure_key": "k", "code": {"key": "m"}}
 DIRTY = lambda files: dict(commit="x", dirty_hashed=["flymon/brain/l_rules.py"], dirty_other=[])
-FULL = {"stage0": dict(KEYS), "oc": dict(KEYS), "stage1": dict(KEYS, gate={"outcome": "SCREEN_GO"}),
-        "stage2": dict(KEYS, outcome="SCREENED")}
+FULL = {"stage0": dict(KEYS, run_id="r0"), "oc": dict(KEYS, run_id="r1", stage0_run_id="r0"),
+        "stage1": dict(KEYS, run_id="r2", stage0_run_id="r0", oc_run_id="r1", gate={"outcome": "SCREEN_GO"}),
+        "stage2": dict(KEYS, run_id="r3", stage1_run_id="r2", outcome="SCREENED")}
 
 
 @pytest.mark.parametrize("cli", [S1, S2, S3])
@@ -363,7 +364,7 @@ def test_each_stage_refuses_a_summary_edited_after_its_commit(cli, tmp_path, mon
 def test_each_stage_refuses_blocks_under_other_code(cli, tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(cli, "git_state", CLEAN)
     monkeypatch.setattr(cli, "check_committed", lambda summary, blocks: None)
-    s = tmp_path / "l_screen.json"; s.write_text(json.dumps(FULL))
+    s = tmp_path / "l_screen.json"; s.write_text(json.dumps({b: FULL[b] for b in cli.NEED}))
     assert cli.main(["--summary", str(s)], require_root=False) == 2
     err = capsys.readouterr().err
     assert "other code" in err and "stage0" in err and "oc" in err
@@ -374,8 +375,8 @@ def test_stage2_refuses_a_stage1_that_did_not_go(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(S2, "git_state", CLEAN)
     monkeypatch.setattr(S2, "check_committed", lambda summary, blocks: None)
     monkeypatch.setattr(S2, "same_code", lambda block, key, manifest: True)
-    doc = {b: {"measure_key": "k", "code": {"key": "m"}} for b in ("stage0", "oc")}
-    doc["stage1"] = {"measure_key": "k", "code": {"key": "m"}, "gate": {"outcome": "SCREEN_IMPRECISE"}}
+    doc = {b: FULL[b] for b in ("stage0", "oc")}
+    doc["stage1"] = dict(FULL["stage1"], gate={"outcome": "SCREEN_IMPRECISE"})
     s = tmp_path / "l_screen.json"; s.write_text(json.dumps(doc))
     assert S2.main(["--summary", str(s)], require_root=False) == 2 and "SCREEN_GO" in capsys.readouterr().err
 
@@ -385,7 +386,8 @@ def test_stage3_refuses_a_stage2_that_did_not_screen(tmp_path, monkeypatch, caps
     monkeypatch.setattr(S3, "git_state", CLEAN)
     monkeypatch.setattr(S3, "check_committed", lambda summary, blocks: None)
     monkeypatch.setattr(S3, "same_code", lambda block, key, manifest: True)
-    s = tmp_path / "l_screen.json"; s.write_text(json.dumps(dict(FULL, stage2=dict(KEYS, outcome="COVERAGE_SHORT"))))
+    doc = dict(FULL, stage2=dict(FULL["stage2"], outcome="COVERAGE_SHORT"))
+    s = tmp_path / "l_screen.json"; s.write_text(json.dumps(doc))
     assert S3.main(["--summary", str(s)], require_root=False) == 2 and "SCREENED" in capsys.readouterr().err
 
 
@@ -455,7 +457,7 @@ def _stage1_doc(label=lambda f: f["G"], g=None):
                                                                          f3=0.4)) for i, o in enumerate(odd)]
     for f in feats:
         f["testable"] = bool(label(f["feat"]))
-    return {"stage0": dict(KEYS, run_id="r0", feats=feats, odd=odd), "oc": dict(KEYS, run_id="r1")}
+    return {"stage0": dict(KEYS, run_id="r0", feats=feats, odd=odd), "oc": dict(KEYS, run_id="r1", stage0_run_id="r0")}
 
 
 def _s1_spec():
@@ -512,6 +514,21 @@ def test_stage1_refuses_a_feature_record_with_no_report_probe(tmp_path, monkeypa
     assert "report" in capsys.readouterr().err and "stage1" not in json.loads(s.read_text())
 
 
+def _s0_inputs(spec) -> dict:
+    """What block stage0 records of the m0d summary: its sha256 and C3's record (c3 = the params_json stand-in)."""
+    from flymon.brain.h3_store import sha256_file
+    m0d = json.loads(Path(spec.m0d_path).read_text())
+    rec = m0d["h4"]["h4"]["combos"][spec.j.c3_name]
+    return dict(inputs=dict(m0d=dict(path=spec.m0d_path, sha256=sha256_file(spec.m0d_path))), c3={"p": "C3"},
+                readout=rec["readout"], z=rec["z"], pools=m0d["h4"]["pools"])
+
+
+def _screened(passed, failed) -> list:
+    """Stage 2's screened rows: the passes, then the failing pairs (a stand-in order)."""
+    return [dict(key=k, feat={}, **{"pass": True}) for k in passed] + [dict(key=k, feat={}, **{"pass": False})
+                                                                        for k in failed]
+
+
 # ---------------------------------------------------------------- stage 2
 TYPES = ("MBON13", "MBON18", "MBON05", "MBON21")
 PASS_PRE = {t: [[6, 6]] * 8 for t in TYPES}
@@ -565,8 +582,9 @@ def _s2_world(monkeypatch, tmp_path, pattern, selfcheck_ok=True, **spec_kw):
     monkeypatch.setattr(S2, "readout_weights", lambda conn, pops, t, w: np.ones(10))
     monkeypatch.setattr(S2, "FlyPool", _Pool)
     monkeypatch.setattr(S2, "LMeasurer", LM)
-    doc = {"stage0": dict(KEYS), "oc": dict(KEYS),
-           "stage1": dict(KEYS, run_id="r2", gate={"outcome": "SCREEN_GO", "final": {"rule": {"family": "G"}}})}
+    doc = {"stage0": dict(KEYS, run_id="r0", **_s0_inputs(spec)), "oc": dict(KEYS, run_id="r1", stage0_run_id="r0"),
+           "stage1": dict(KEYS, run_id="r2", stage0_run_id="r0", oc_run_id="r1",
+                          gate={"outcome": "SCREEN_GO", "final": {"rule": {"family": "G"}}})}
     return spec, argv + ["--summary", str(_summary(tmp_path, doc))], calls
 
 
@@ -671,11 +689,13 @@ def _s3_world(monkeypatch, tmp_path, testable_b=12, fa_ok=3, reasons=(), n_lift_
     monkeypatch.setattr(S3, "H4Measurer", M4)
     monkeypatch.setattr(S3, "pair_rows_stats", rows_stats)
     rule = {"family": "f2", "op": ">", "t": 13.5}
-    doc = {"stage0": dict(KEYS), "oc": dict(KEYS), "stage1": dict(KEYS, gate={"outcome": "SCREEN_GO",
-                                                                            "final": {"rule": rule}}),
-           "stage2": dict(KEYS, run_id="r3", outcome="SCREENED", rule=rule, b_digest=spec.b_digest,
-                          a_digest=spec.a_digest, coverage=0.3, passed=[key(p) for p in b],
-                          lift=[key(p) for p in lift])}
+    doc = {"stage0": dict(KEYS, run_id="r0", **_s0_inputs(spec)), "oc": dict(KEYS, run_id="r1", stage0_run_id="r0"),
+           "stage1": dict(KEYS, run_id="r2", stage0_run_id="r0", oc_run_id="r1",
+                          gate={"outcome": "SCREEN_GO", "final": {"rule": rule}}),
+           "stage2": dict(KEYS, run_id="r3", stage1_run_id="r2", outcome="SCREENED", rule=rule,
+                          b_digest=spec.b_digest, a_digest=spec.a_digest, coverage=0.3,
+                          screened=_screened([key(p) for p in b], [key(p) for p in lift]),
+                          passed=[key(p) for p in b], lift=[key(p) for p in lift])}
     return spec, argv + ["--summary", str(_summary(tmp_path, doc))], seen
 
 
@@ -735,8 +755,144 @@ def test_stage3_smoke_writes_no_block(tmp_path, monkeypatch):
     sm = tmp_path / "results/m0d/l/smoke/l_screen.json"; sm.parent.mkdir(parents=True)
     doc = json.loads(Path(argv[-1]).read_text())
     doc["stage2"]["passed"] = doc["stage2"]["passed"][:2]; doc["stage2"]["lift"] = doc["stage2"]["lift"][:1]
+    doc["stage2"]["screened"] = _screened(doc["stage2"]["passed"], doc["stage2"]["lift"])
     sm.write_text(json.dumps(doc))
     assert S3.main(argv[:-1] + [str(sm), "--smoke"], summary_spec=smoke(spec), require_root=False) == 0
     assert "stage3" not in json.loads(sm.read_text())
     rep = json.loads(next((tmp_path / "results/m0d/l/smoke/runs").glob("*-stage3.json")).read_text())
     assert rep["reading"]["band"] is None and rep["sentence"] is None
+
+
+# ---------------------------------------------------------------- final-review fix wave
+def test_stage2_refuses_an_m0d_summary_other_than_stage0s_before_the_pool(tmp_path, monkeypatch, capsys):
+    spec, argv, calls = _s2_world(monkeypatch, tmp_path, [True] * 8, n_pass=3)
+    doc = json.loads(Path(argv[-1]).read_text())
+    doc["stage0"]["inputs"]["m0d"]["sha256"] = "0" * 64
+    Path(argv[-1]).write_text(json.dumps(doc))
+    monkeypatch.setattr(S2, "FlyPool", lambda *a, **k: pytest.fail("the pool started before the m0d refusal"))
+    assert S2.main(argv, spec=spec, summary_spec=spec, require_root=False) == 2
+    err = capsys.readouterr().err
+    assert "m0d" in err and "stage 0" in err and calls == []
+
+
+@pytest.mark.parametrize("edit,word", [(lambda s0: s0["inputs"]["m0d"].update(sha256="0" * 64), "sha256"),
+                                       (lambda s0: s0.update(c3={"p": "C2"}), "c3"),
+                                       (lambda s0: s0.update(z={"A": [0, 1], "P": [0, 1]}), "z"),
+                                       (lambda s0: s0.update(readout={"A": "x", "P": "y"}), "readout"),
+                                       (lambda s0: s0.update(pools={"A": [], "P": []}), "pools")])
+def test_stage3_refuses_an_m0d_or_c3_record_other_than_stage0s(edit, word, tmp_path, monkeypatch, capsys):
+    spec, argv, seen = _s3_world(monkeypatch, tmp_path)
+    doc = json.loads(Path(argv[-1]).read_text())
+    edit(doc["stage0"])
+    Path(argv[-1]).write_text(json.dumps(doc))
+    assert S3.main(argv, spec=spec, summary_spec=spec, require_root=False) == 2
+    err = capsys.readouterr().err
+    assert word in err and "stage0" in err and seen == []
+
+
+def _s3_edit(tmp_path, monkeypatch, capsys, edit, **kw):
+    spec, argv, seen = _s3_world(monkeypatch, tmp_path, **kw)
+    doc = json.loads(Path(argv[-1]).read_text())
+    edit(doc["stage2"])
+    Path(argv[-1]).write_text(json.dumps(doc))
+    rc = S3.main(argv, spec=spec, summary_spec=spec, require_root=False)
+    return rc, capsys.readouterr().err, seen
+
+
+def test_stage3_refuses_passes_other_than_the_screened_passes(tmp_path, monkeypatch, capsys):
+    def swap(s2):                                    # same keys, another order
+        s2["passed"][0], s2["passed"][1] = s2["passed"][1], s2["passed"][0]
+    rc, err, seen = _s3_edit(tmp_path, monkeypatch, capsys, swap)
+    assert rc == 2 and "passed" in err and "screened" in err and seen == []
+
+
+def test_stage3_refuses_a_pass_that_screened_marks_failing(tmp_path, monkeypatch, capsys):
+    def flip(s2):
+        s2["screened"][0]["pass"] = False
+    rc, err, seen = _s3_edit(tmp_path, monkeypatch, capsys, flip)
+    assert rc == 2 and "passed" in err and seen == []
+
+
+def test_stage3_refuses_a_lift_pair_that_is_not_a_screened_failure(tmp_path, monkeypatch, capsys):
+    def drop(s2):                                    # the first lift pair was never screened
+        s2["screened"] = [r for r in s2["screened"] if r["key"] != s2["lift"][0]]
+    rc, err, seen = _s3_edit(tmp_path, monkeypatch, capsys, drop)
+    assert rc == 2 and "lift" in err and seen == []
+
+
+def test_stage3_refuses_a_lift_of_the_wrong_size(tmp_path, monkeypatch, capsys):
+    def short(s2):                                   # 10 screened failures, n_lift 10, only 9 drawn
+        s2["lift"] = s2["lift"][:9]
+    rc, err, seen = _s3_edit(tmp_path, monkeypatch, capsys, short, n_lift=10)
+    assert rc == 2 and "lift" in err and "min" in err and seen == []
+
+
+def test_stage1_refuses_an_oc_run_on_another_stage0(tmp_path, monkeypatch, capsys):
+    argv = _keys(monkeypatch, S1, tmp_path)
+    doc = _stage1_doc(); doc["oc"]["stage0_run_id"] = "r-old"
+    s = _summary(tmp_path, doc)
+    spec = _s1_spec()
+    assert S1.main(argv + ["--summary", str(s)], spec=spec, summary_spec=spec, require_root=False) == 2
+    err = capsys.readouterr().err
+    assert "stage0_run_id" in err and "r-old" in err and "stage1" not in json.loads(s.read_text())
+
+
+@pytest.mark.parametrize("field", ["stage0_run_id", "oc_run_id"])
+def test_stage2_refuses_a_stage1_run_on_other_upstream_blocks(field, tmp_path, monkeypatch, capsys):
+    spec, argv, calls = _s2_world(monkeypatch, tmp_path, [True] * 8, n_pass=3)
+    doc = json.loads(Path(argv[-1]).read_text())
+    doc["stage1"][field] = "r-old"
+    Path(argv[-1]).write_text(json.dumps(doc))
+    assert S2.main(argv, spec=spec, summary_spec=spec, require_root=False) == 2
+    assert field in capsys.readouterr().err and calls == []
+
+
+def test_stage3_refuses_a_stage2_run_on_another_stage1(tmp_path, monkeypatch, capsys):
+    def old(s2):
+        s2["stage1_run_id"] = "r-old"
+    rc, err, seen = _s3_edit(tmp_path, monkeypatch, capsys, old)
+    assert rc == 2 and "stage1_run_id" in err and seen == []
+
+
+def test_stage0_refuses_to_rewrite_its_block_under_later_blocks(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(S0, "git_state", CLEAN)
+    monkeypatch.setattr(S0, "build", lambda *a, **k: pytest.fail("build ran before the later-block refusal"))
+    s = tmp_path / "l_screen.json"; s.write_text(json.dumps({"stage0": {}, "oc": {}, "stage1": {}}))
+    assert S0.main(["--summary", str(s)], require_root=False) == 2
+    err = capsys.readouterr().err
+    assert "later blocks" in err and "oc" in err and "stage1" in err
+
+
+def test_oc_refuses_to_rewrite_its_block_under_later_blocks(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(OC, "git_state", CLEAN)
+    s = tmp_path / "l_screen.json"; s.write_text(json.dumps({"stage0": dict(KEYS), "oc": {}, "stage1": {}}))
+    assert OC.main(["--summary", str(s)], require_root=False) == 2
+    assert "later blocks" in capsys.readouterr().err
+
+
+def test_stage1_refuses_to_rewrite_its_block_under_later_blocks_unless_smoke(tmp_path, monkeypatch, capsys):
+    argv = _keys(monkeypatch, S1, tmp_path)
+    doc = dict(_stage1_doc(), stage2={"run_id": "r3"})
+    s = _summary(tmp_path, doc)
+    spec = _s1_spec()
+    assert S1.main(argv + ["--summary", str(s)], spec=spec, summary_spec=spec, require_root=False) == 2
+    assert "later blocks" in capsys.readouterr().err and "stage1" not in json.loads(s.read_text())
+    assert S1.main(argv + ["--summary", str(s), "--smoke"], spec=spec, summary_spec=spec, require_root=False) == 0
+    assert "stage1" in json.loads(s.read_text())
+
+
+def test_stage2_refuses_to_rewrite_its_block_under_a_stage3_block(tmp_path, monkeypatch, capsys):
+    spec, argv, calls = _s2_world(monkeypatch, tmp_path, [True] * 8, n_pass=3)
+    doc = json.loads(Path(argv[-1]).read_text()); doc["stage3"] = {"run_id": "r4"}
+    Path(argv[-1]).write_text(json.dumps(doc))
+    assert S2.main(argv, spec=spec, summary_spec=spec, require_root=False) == 2
+    assert "later blocks" in capsys.readouterr().err and calls == []
+
+
+def test_later_blocks_and_run_id_chain():
+    assert l_cli.later_blocks("s", "stage3", {"stage0": {}, "stage3": {}}) is None
+    assert "['stage2']" in l_cli.later_blocks("s", "stage1", {"stage1": {}, "stage2": {}})
+    assert l_cli.later_blocks("/nonexistent/l_screen.json", "stage0") is None
+    doc = {"a": {"run_id": "1"}, "b": {"a_run_id": "1"}, "c": {}}
+    assert l_cli.run_id_chain(doc, "b", {"a_run_id": "a"}) is None
+    assert "a_run_id" in l_cli.run_id_chain(doc, "c", {"a_run_id": "a"})

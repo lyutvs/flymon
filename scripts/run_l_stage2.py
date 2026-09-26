@@ -8,11 +8,12 @@ sample from the screened failing pairs (decision 12).
 
 Run it from the repository root. Refused before the pool, in this order, unless: the hashed files are clean (or
 --allow-dirty); the summary is git-tracked and unchanged against HEAD (outside --smoke; a --smoke run reads and writes
-only a smoke summary under results/m0d/l/); blocks "stage0", "oc" and "stage1" are present; each was produced under
-this code's measure key and procedure manifest; stage 1's outcome is SCREEN_GO with a rule; C3, its readout, z and
-pools load from results/summary/m0d.json; the new pair lists' digests are SPEC.b_digest / SPEC.a_digest
-(l_pairs.check_digests, before the screen order exists); H.4's even pair list is the declared one.
-Then:
+only a smoke summary under results/m0d/l/); blocks "stage0", "oc" and "stage1" are present; each was produced under this
+code's measure key and procedure manifest; no block stage3 is in the summary (outside --smoke); the recorded upstream
+run ids chain (oc -> stage0, stage1 -> stage0 and oc); stage 1's outcome is SCREEN_GO with a rule; C3, its readout, z
+and pools load from results/summary/m0d.json, whose sha256 is block stage0's inputs.m0d.sha256; the new pair lists'
+digests are SPEC.b_digest / SPEC.a_digest (l_pairs.check_digests, before the screen order exists); H.4's even pair list
+is the declared one. Then:
 1. naive self-check: LMeasurer.naive on the first even (b) pair must equal the pinned ceiling file's row (fx / fy by
    np.array_equal, select-seed pre equal); a mismatch is recorded and exits 5 (stop and ask the user);
 2. batches of --workers pairs in declared order, each followed by l_rules.screen_order, until it decides (the n_pass-th
@@ -42,8 +43,9 @@ from flymon.brain.h4_pairs import even_pairs, pair_key, pairs_digest
 from flymon.brain.j_runner import params_json
 from flymon.brain.k_metrics import readout_weights
 from flymon.brain.l_cli import (POOL_TIMEOUT_S, check_committed, code_keys, git_state, guard_params, head_sha256,
-                                load_c3_record, new_set, other_code, out_allowed, provenance, read_previous, refuse,
-                                rule_text, run_id, same_code, write_block)
+                                later_blocks, load_c3_record, new_set, other_code, out_allowed, provenance,
+                                read_previous, refuse, rule_text, run_id, run_id_chain, same_code, stage0_inputs,
+                                write_block)
 from flymon.brain.l_measure import HASHED_FILES, LMeasurer, dense, load_even
 from flymon.brain.l_rules import COVERAGE_SHORT, SCREENED, lift_draw, screen_order, sentence
 from flymon.brain.l_screen import SCREEN_GO, features
@@ -103,6 +105,9 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
     doc, why = read_previous(a.summary, NEED, a.smoke, check_committed, out_allowed)
     if why:
         return refuse(why)
+    why = None if a.smoke else later_blocks(a.summary, "stage2", doc)
+    if why:
+        return refuse(why)
     if not Path(a.npz).exists():
         return refuse(f"{a.npz} does not exist (the declared connectome)")
     code, manifest = code_keys(a.npz)
@@ -110,6 +115,10 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
     if npz_sha != spec.j.h4.h3.connectome_sha256:
         return refuse(f"{a.npz} is not the declared connectome ({npz_sha[:12]})")
     why = other_code(doc, NEED, code["key"], manifest["key"], same_code)
+    if why:
+        return refuse(why)
+    why = (run_id_chain(doc, "oc", {"stage0_run_id": "stage0"})
+           or run_id_chain(doc, "stage1", {"stage0_run_id": "stage0", "oc_run_id": "oc"}))
     if why:
         return refuse(why)
     g1 = doc["stage1"].get("gate") or {}
@@ -123,6 +132,9 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
         c3, readout, z, pools_h4 = load_c3_record(m0d_path, spec)
     except ValueError as e:
         return refuse(str(e))
+    why = stage0_inputs(doc["stage0"], m0d_path)
+    if why:
+        return refuse(why)
     c3_json = params_json(c3)
     types = [t for k in ("A", "P") for t in pools_h4[k]]
     conn, pops = world(a.npz)

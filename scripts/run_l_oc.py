@@ -6,8 +6,9 @@ change a judgement). Pure: no pool.
     uv run python scripts/run_l_oc.py --smoke --allow-dirty --summary results/m0d/l/smoke/l_screen.json
 
 Run it from the repository root. Refused unless block "stage0" of --summary exists under this code's measure key and
-procedure manifest, and (outside --smoke) the summary is git-tracked and unchanged against HEAD; a --smoke run reads and
-writes only a smoke summary under results/m0d/l/. Computed (flymon/brain/l_oc.py):
+procedure manifest, and (outside --smoke) no later block (stage1, stage2, stage3) is in the summary and the summary is
+git-tracked and unchanged against HEAD; a --smoke run reads and writes only a smoke summary under results/m0d/l/.
+Computed (flymon/brain/l_oc.py):
 - the stage-1 gate on stage 0's 41 real feature vectors and turns, labels Bernoulli(q) for G-passing pairs and
   Bernoulli(q_fail) otherwise, q in SPEC.oc_q x q_fail in SPEC.oc_q_fail, SPEC.oc_draws draws from one
   numpy.random.default_rng(SPEC.oc_seed) taken in that order;
@@ -31,8 +32,8 @@ import numpy as np
 from flymon.brain import l_oc, l_store
 from flymon.brain.config import Params
 from flymon.brain.h3_store import ROOT, sha256_file
-from flymon.brain.l_cli import (check_committed, code_keys, git_state, head_sha256, out_allowed, provenance, refuse,
-                                run_id, same_code, write_block)
+from flymon.brain.l_cli import (check_committed, code_keys, git_state, head_sha256, later_blocks, out_allowed,
+                                provenance, refuse, run_id, same_code, write_block)
 from flymon.brain.l_measure import HASHED_FILES
 from flymon.brain.l_spec import SPEC, LSpec, smoke
 
@@ -77,6 +78,9 @@ def main(argv=None, spec: LSpec | None = None, summary_spec: LSpec = SPEC, requi
     s0 = doc.get("stage0")
     if not isinstance(s0, dict):
         return refuse(f"{a.summary} has no block stage0 (run scripts/run_l_stage0.py and commit its summary first)")
+    why = None if a.smoke else later_blocks(a.summary, "oc", doc)
+    if why:
+        return refuse(why)
     if not Path(a.npz).exists():
         return refuse(f"{a.npz} does not exist (the declared connectome)")
     code, manifest = code_keys(a.npz)
