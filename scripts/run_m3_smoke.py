@@ -1,0 +1,151 @@
+"""M3 smoke (spec 5 M3: F=2, 2 battles each) on the C3 engine through the local Showdown server. Infrastructure only
+(appendix L.7): allow-all screen table, no judgement. Outputs under results/m3/.
+
+    uv run python scripts/run_m3_smoke.py --flies 2 --battles 2 --workers 2 --out results/m3/smoke/<run_id>
+    uv run python scripts/run_m3_smoke.py ... --stop-after 1      # then rerun with --resume
+"""
+from __future__ import annotations
+
+import argparse
+import asyncio
+import json
+import socket
+import sys
+from pathlib import Path
+
+from poke_env.concurrency import handle_threaded_coroutines
+from poke_env.ps_client import AccountConfiguration, ServerConfiguration
+
+from flymon.agent.checkpoint import CheckpointStore
+from flymon.agent.config import config_hash, load_c3_config
+from flymon.agent.encode import Encoder
+from flymon.agent.player import AgentPlayer
+from flymon.agent.runner import run_cohort
+from flymon.agent.screen import ScreenTable
+from flymon.agent.swarm import BrainSwarm
+from flymon.battle.barrier import BatchBarrier
+from flymon.battle.coach import Coach
+from flymon.battle.opponents import KINDS
+from flymon.battle.pool import by_species, team_export
+from flymon.battle.schedule import make_schedule
+from flymon.battle.server import ShowdownServer
+from flymon.brain.circuits import Populations
+from flymon.brain.connectome import Connectome
+from flymon.brain.fly_pool import FlyPool, FlySpec
+from flymon.brain.h4_jobs import type_cells
+
+NPZ = "data/malecns.npz"
+
+
+def parse_args(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--flies", type=int, default=2)
+    ap.add_argument("--battles", type=int, default=2)
+    ap.add_argument("--workers", type=int, default=2)
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--resume", action="store_true")
+    ap.add_argument("--stop-after", type=int, default=None)
+    ap.add_argument("--seed", type=int, default=0)
+    a = ap.parse_args(argv)
+    if not Path(a.out).resolve().is_relative_to(Path("results/m3").resolve()):
+        ap.error("--out must be under results/m3/")
+    return a
+
+
+def _team(species):
+    return team_export([by_species[s] for s in species])
+
+
+def opponent_name(battle_id: str) -> str:
+    """One Showdown account per battle: reusing a fly's opponent name can hit `nametaken` while the server still
+    holds the previous login, and that failure happens in an unawaited poke-env task (a silent hang)."""
+    name = f"fm-h-{battle_id}"
+    if len(name) > 18:
+        raise ValueError(f"opponent name {name!r} exceeds Showdown's 18 characters")
+    return name
+
+
+def make_battle_opponent(kind: str, battle_id: str, server_configuration, team: str):
+    """flymon.battle.opponents.make_opponent with a per-battle account name (same class and kwargs)."""
+    return KINDS[kind](account_configuration=AccountConfiguration(opponent_name(battle_id), None), battle_format="gen1ou",
+                       server_configuration=server_configuration, team=team, max_concurrent_battles=1)
+
+
+async def on_player_loop(player, coro):
+    """Await a player coroutine on the player's own loop. poke-env runs choose_move (and so the in-battle _flush) on
+    its background POKE_LOOP, which binds the reinforcement BatchBarrier's asyncio.Lock there; awaiting drain() on the
+    asyncio.run loop would use that lock (and the barrier's futures and timer) from a second loop and thread.
+    Exceptions (SafetyStop) come back to the caller unchanged."""
+    return await handle_threaded_coroutines(coro, player.ps_client.loop)
+
+
+def _port():
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0)); return s.getsockname()[1]
+
+
+async def main_async(a, cfg, pool, swarm, enc, srv_cfg) -> dict:
+    out = Path(a.out)
+    store = CheckpointStore(out / "checkpoints", config_hash(cfg))
+    if not a.resume and store.load() is not None:
+        raise SystemExit(f"{out} already has checkpoints; pass --resume")
+    ck = store.load()   # a ValueError (no usable generation, config-hash mismatch) is fatal
+    if ck:
+        pool.load_state(ck["pool_state"])   # before run_cohort takes its per-fly committed snapshot
+    sched = make_schedule(a.flies, a.battles, "heuristic", seed=a.seed)
+    dbar = BatchBarrier(swarm.decide_run_batch)
+    rbar = BatchBarrier(swarm.reinforce_run_batch)
+    players = {}
+
+    async def play_one(sb):
+        p = players.get(sb.fly_id)
+        if p is None:
+            p = players[sb.fly_id] = AgentPlayer(
+                fly=sb.fly_id, encoder=enc, table=ScreenTable.allow_all(), rbarrier=rbar, coach=Coach(), barrier=dbar,
+                log_path=out / "logs" / f"fly{sb.fly_id:02d}.jsonl",
+                account_configuration=AccountConfiguration(f"fm-m3-f{sb.fly_id:02d}", None), battle_format="gen1ou",
+                server_configuration=srv_cfg, team=_team(sb.my_team), max_concurrent_battles=1)
+        opp = make_battle_opponent(sb.opponent, sb.battle_id, srv_cfg, _team(sb.opp_team))
+        p.update_team(_team(sb.my_team))
+        p.start_battle(sb.battle_id, int(sb.battle_id[-3:]))
+        before = set(p.battles)
+        try:
+            await p.battle_against(opp, n_battles=1)   # returns once a fatal choose_move forfeited the battle
+            if p.fatal is not None:
+                raise p.fatal                            # before drain/summary: nothing is committed for this battle
+            await on_player_loop(p, p.drain())         # the barrier lives on POKE_LOOP, not this loop
+            if p.fatal is not None:
+                raise p.fatal
+            for tag in set(p.battles) - before:
+                p.write_battle_summary(tag, swarm.compartment_fracs(sb.fly_id))
+        finally:
+            await opp.ps_client.stop_listening()
+
+    try:
+        return await run_cohort(sched, store, out / "logs", play_one, pool.state, stop_after=a.stop_after)
+    finally:
+        for p in players.values():
+            await p.ps_client.stop_listening()
+
+
+def main(argv=None) -> int:
+    a = parse_args(argv)
+    cfg = load_c3_config()
+    conn = Connectome.load(NPZ); pops = Populations.from_connectome(conn)
+    enc = Encoder(pops)
+    Path(a.out).mkdir(parents=True, exist_ok=True)
+    with FlyPool(NPZ, cfg.params, [FlySpec() for _ in range(a.flies)], workers=a.workers, timeout_s=7200) as pool:
+        swarm = BrainSwarm(pool, cfg, type_cells(conn, [cfg.readout["A"], cfg.readout["P"]]), pops.kc)
+        try:
+            with ShowdownServer(port=_port()) as srv:
+                srv_cfg = ServerConfiguration(srv.url_ws, "https://play.pokemonshowdown.com/action.php?")
+                res = asyncio.run(main_async(a, cfg, pool, swarm, enc, srv_cfg))
+        finally:
+            swarm._exec.shutdown(wait=True)   # BrainSwarm has no close(); its executor thread must not outlive the pool
+    (Path(a.out) / "result.json").write_text(json.dumps(res, indent=1))
+    print(json.dumps(res), flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
