@@ -81,3 +81,26 @@ def test_the_judgement_reads_the_scan_block_of_the_summary(tmp_path, monkeypatch
 
 def test_the_smoke_spec_differs_from_the_declared_one():
     assert SCAN.smoke(SCAN.SPEC) != SCAN.SPEC
+
+
+@pytest.mark.parametrize("cli", [SCAN, JUDGE])
+@pytest.mark.parametrize("out", ["/tmp/k-elsewhere", "results/m0d/kx", "results/m0d/k/../h3", "results/summary"])
+def test_an_out_outside_results_m0d_k_is_refused_before_anything(cli, out, monkeypatch, capsys):
+    def no_git(files):
+        raise AssertionError("reached git_state")
+    monkeypatch.setattr(cli, "git_state", no_git)
+    assert cli.main(["--out", out], require_root=False) == 2
+    assert "results/m0d/k/" in capsys.readouterr().err
+    assert not (ROOT / "results/m0d/kx").exists()
+
+
+@pytest.mark.parametrize("cli", [SCAN, JUDGE])
+def test_an_out_under_results_m0d_k_passes_the_out_check(cli):
+    assert cli.out_allowed("results/m0d/k/run") and cli.out_allowed(ROOT / "results/m0d/k/smoke")
+    assert cli.out_allowed("results/m0d/k") and not cli.out_allowed("results/m0d/k2/run")
+
+
+@pytest.mark.parametrize("n", ["0", "-3"])
+def test_the_scan_refuses_fewer_than_one_pair(n, monkeypatch, capsys):
+    monkeypatch.setattr(SCAN, "git_state", lambda files: (_ for _ in ()).throw(AssertionError("reached git_state")))
+    assert SCAN.main(["--pairs", n], require_root=False) == 2 and "--pairs" in capsys.readouterr().err

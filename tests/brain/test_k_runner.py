@@ -9,7 +9,9 @@ from flymon.brain.config import Params
 from flymon.brain.h3_rules import COMBO_ABORTED, COMBO_ADOPTED, COMBO_DROPPED
 from flymon.brain.j_rules import B, COMPUTE_ABORTED
 from flymon.brain.k_params import with_kc
-from flymon.brain.k_rules import SCAN_GO, STOP_NO_QUALIFIED_SETTING, STOP_NO_TARGET_GAIN
+from flymon.brain import d6a
+from flymon.brain.j_rules import SELECTED
+from flymon.brain.k_rules import SCAN_GO, STOP_C3_NO_DRIVE, STOP_NO_QUALIFIED_SETTING, STOP_NO_TARGET_GAIN
 from flymon.brain.k_spec import SPEC
 
 ARR = K.KArrays(w13=np.ones(4), w05=np.ones(4), lobes={"apbp": np.array([1, 1, 0, 0], bool)},
@@ -85,7 +87,7 @@ def test_stage2_judges_the_setting_and_names_the_state(monkeypatch):
         seen.update(name=name, params=params, guard=guard)
         return dict(outcome=B, reading=None, reason="no reactive and teachable readout in a pool")
     monkeypatch.setattr(K, "judge", judge)
-    monkeypatch.setattr(K, "measure_d6", lambda jm, ctx, params, seeds: {"a": 1})
+    monkeypatch.setattr(K, "measure_d6", lambda jm, ctx, params, seeds, judged: {"a": 1})
     setting = dict(g=-0.2, reconverge=dict(adopted=dict(params=K.params_json(p)), guard={"MBON13": {"x": 1}}))
     r = K.stage2(object(), object(), JCTX, setting, with_d6=True, d6_seeds=(1, 2))
     assert seen["params"] == p and seen["guard"] == {"MBON13": {"x": 1}} and "g=-0.2" in seen["name"]
@@ -104,3 +106,25 @@ def test_stage1_records_all51_kc_on_variance_with_js_count_floor(monkeypatch):
     assert r["base"]["metrics"]["all51_kc_on_log10_var"] == pytest.approx(0.2)
     assert r["settings"][4]["metrics"]["all51_kc_on_log10_var"] == pytest.approx(0.2 - 0.8)
     assert floors == [SPEC.j.count_floor] * 2
+
+
+def test_a_c3_without_drive_stops_before_any_reconvergence(monkeypatch):
+    calls = []
+    monkeypatch.setattr(K, "reconverge", lambda *a: calls.append(a))
+    r = K.stage1(object(), FakeKM(lambda g: 0.0 if g == 0 else 5.0), JCTX, SPEC, Params(), ARR)
+    assert r["outcome"] == STOP_C3_NO_DRIVE == "stop_c3_no_drive" and calls == []
+    assert r["settings"] == [] and r["order"] == [] and r["ratios"] == {} and r["base"]["metrics"]["N"] == 0.0
+
+
+@pytest.mark.parametrize("seeds,judged", [(d6a.SEEDS[:2], False), (d6a.SEEDS, True), (None, True)])
+def test_stage2_judges_d6a_only_on_the_full_seed_block(monkeypatch, seeds, judged):
+    p = with_kc(Params(apl_mode="graded"), -0.2)
+    monkeypatch.setattr(K, "judge", lambda m4, ctx, name, params, guard: dict(outcome=SELECTED,
+                                                                             reading=dict(band=SELECTED)))
+    got = {}
+    monkeypatch.setattr(K, "measure_d6", lambda jm, ctx, params, s, judged: got.update(seeds=tuple(s), judged=judged))
+    setting = dict(g=-0.2, reconverge=dict(adopted=dict(params=K.params_json(p)), guard={}))
+    kw = {} if seeds is None else dict(d6_seeds=seeds)
+    r = K.stage2(object(), object(), JCTX, setting, with_d6=True, **kw)
+    assert got == dict(seeds=tuple(d6a.SEEDS if seeds is None else seeds), judged=judged)
+    assert r["state"] == SELECTED

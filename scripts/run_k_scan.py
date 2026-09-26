@@ -17,6 +17,7 @@ import argparse
 import dataclasses
 import datetime as dt
 import json
+import os
 import sys
 import time
 import uuid
@@ -47,6 +48,12 @@ def refuse(why: str) -> int:
     return 2
 
 
+def out_allowed(out) -> bool:
+    """--out must lie under results/m0d/k/ of the repository root (normalised like k_store.guard)."""
+    rel = os.path.relpath(os.path.abspath(str(out)), ROOT).replace(os.sep, "/")
+    return (rel + "/").startswith(k_store.ALLOWED_DIR)
+
+
 def main(argv=None, spec: KSpec | None = None, summary_spec: KSpec = SPEC, require_root: bool = True,
          pools: dict | None = None, odd: list | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -62,12 +69,16 @@ def main(argv=None, spec: KSpec | None = None, summary_spec: KSpec = SPEC, requi
     ap.add_argument("--self-check", choices=["i"], default=None)
     ap.add_argument("--max-hours", type=float, default=None)
     a = ap.parse_args(argv)
+    if a.pairs is not None and a.pairs < 1:
+        return refuse(f"--pairs must be at least 1, got {a.pairs}")
     if require_root and Path.cwd().resolve() != ROOT:
         return refuse(f"not at the repository root {ROOT}")
     spec = spec or (smoke(SPEC) if a.smoke else SPEC)
     if a.grid:
         spec = dataclasses.replace(spec, grid=tuple(a.grid))
     out = Path(a.out or ("results/m0d/k/smoke" if a.smoke else "results/m0d/k/run"))
+    if not out_allowed(out):
+        return refuse(f"--out {out} is not under {k_store.ALLOWED_DIR} of the repository root")
     run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid.uuid4().hex[:6]
     git = git_state(files=HASHED_FILES)
     if git["dirty_hashed"] and not a.allow_dirty:

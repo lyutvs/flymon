@@ -3,12 +3,14 @@ median, then smaller |g|), gate on N / N_C3 > gate_ratio, and name the closing s
 from __future__ import annotations
 
 from .h3_rules import COMBO_ADOPTED
-from .j_rules import COMPUTE_ABORTED, INVALID, STOP_MULTI_TYPE
+from .j_rules import B, COMPUTE_ABORTED, INVALID, STOP_MULTI_TYPE
 
 SCAN_GO = "scan_go"
 STOP_NO_QUALIFIED_SETTING = "stop_no_qualified_setting"
 STOP_NO_TARGET_GAIN = "stop_no_target_gain"
+STOP_C3_NO_DRIVE = "stop_c3_no_drive"             # K.8.3: N_C3 is not > 0, the ratio is undefined (ask the user)
 DROPPED_NO_READOUT = "dropped_no_readout"
+NOT_A_JUDGEMENT = "not_a_judgement"               # a reading off the declared 21 pairs (e.g. --pairs) has no band
 
 
 def select_order(settings: list, n_c3: float, tie_tol: float) -> list:
@@ -37,7 +39,9 @@ def closing_state(judge: dict) -> str:
         return o
     rd = judge.get("reading")
     if rd is None:
-        return DROPPED_NO_READOUT                     # j_runner.judge: B without a band (no readout in a pool)
+        if o == B:
+            return DROPPED_NO_READOUT                 # j_runner.judge: B without a band (no readout in a pool)
+        raise ValueError(f"outcome {o!r} without a reading: only B may lack one (no readout in a pool)")
     if rd.get("band") is None:
-        raise ValueError(f"reading without a band: {rd!r} (off the declared 21 pairs is not a judgement)")
+        return NOT_A_JUDGEMENT                        # off the declared 21 pairs: recorded, not a judgement
     return rd["band"]

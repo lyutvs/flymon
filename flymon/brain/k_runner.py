@@ -19,7 +19,7 @@ from .j_rules import B, COMPUTE_ABORTED, SELECTED, scan_metrics
 from .j_runner import judge, measure_d6, params_json, reconverge
 from .k_metrics import engine_metrics, kc_kc_edges, kc_kc_input, lobe_masks, readout_weights
 from .k_params import k_make
-from .k_rules import SCAN_GO, closing_state, scan_outcome, select_order
+from .k_rules import SCAN_GO, STOP_C3_NO_DRIVE, closing_state, scan_outcome, select_order
 
 
 @dataclass
@@ -64,6 +64,9 @@ def stage1(m3, km, jctx, spec, c3, arr: KArrays, jm=None) -> dict:
         base = dict(g=0.0, name="C3", params=params_json(c3), metrics=measure(kmd, c3, arr, 0.0))
         base["metrics"]["all51_kc_on_log10_var"] = _all51(jmd, c3, spec.j.count_floor)
         jctx.log(f"K stage 1: C3 N {base['metrics']['N']:.4g}")
+        if not base["metrics"]["N"] > 0:
+            jctx.log("K stage 1: N_C3 is not > 0, the ratio N / N_C3 is undefined (K.8.3): stop and ask the user")
+            return dict(outcome=STOP_C3_NO_DRIVE, base=base, settings=[], order=[], ratios={})
         for g in spec.grid:
             jctx.log(f"K stage 1: g = {g:g}, C3 rule re-convergence")
             rc = reconverge(m3, jctx, k_make(jctx.h3.spec, g))
@@ -96,14 +99,14 @@ def stage1(m3, km, jctx, spec, c3, arr: KArrays, jm=None) -> dict:
                 order=order, ratios=ratios)
 
 
-def stage2(m4, jm, jctx, setting: dict, with_d6: bool = True, d6_seeds=None) -> dict:
+def stage2(m4, jm, jctx, setting: dict, with_d6: bool = True, d6_seeds=d6a.SEEDS) -> dict:
     p = params_from_json(setting["reconverge"]["adopted"]["params"])
     guard = setting["reconverge"]["guard"]
     name = f"KC-KC g={setting['g']:g} kc_thresh={p.kc_thresh:g}"
     m4, jm = Deadline(m4, jctx.h3), Deadline(jm, jctx.h3)
     try:
         j = judge(m4, jctx, name, p, guard)
-        d6 = measure_d6(jm, jctx, p, d6a.SEEDS if d6_seeds is None else d6_seeds) \
+        d6 = measure_d6(jm, jctx, p, d6_seeds, judged=tuple(d6_seeds) == tuple(d6a.SEEDS)) \
             if with_d6 and j["outcome"] in (SELECTED, B) else None
     except ComputeAborted as e:
         return dict(name=name, g=setting["g"], params=params_json(p), judge=None, outcome=COMPUTE_ABORTED, d6=None,

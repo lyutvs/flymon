@@ -3,8 +3,8 @@ import pytest
 
 from flymon.brain.h3_rules import COMBO_ADOPTED, COMBO_DROPPED
 from flymon.brain.j_rules import B, COMPUTE_ABORTED, INVALID, SELECTED, STOP_MULTI_TYPE
-from flymon.brain.k_rules import (DROPPED_NO_READOUT, SCAN_GO, STOP_NO_QUALIFIED_SETTING, STOP_NO_TARGET_GAIN,
-                                  closing_state, scan_outcome, select_order)
+from flymon.brain.k_rules import (DROPPED_NO_READOUT, NOT_A_JUDGEMENT, SCAN_GO, STOP_NO_QUALIFIED_SETTING,
+                                  STOP_NO_TARGET_GAIN, closing_state, scan_outcome, select_order)
 
 
 def st(g, n=None, s=0.5, status=COMBO_ADOPTED):
@@ -48,6 +48,12 @@ def test_every_branch_has_a_state(judge, state):
     assert closing_state(judge) == state
 
 
-def test_a_bandless_reading_is_an_error():
-    with pytest.raises(ValueError, match="band"):
-        closing_state(dict(outcome=B, reading=dict(band=None)))
+def test_a_bandless_reading_is_not_a_judgement():
+    assert closing_state(dict(outcome=B, reading=dict(band=None))) == NOT_A_JUDGEMENT == "not_a_judgement"
+    assert closing_state(dict(outcome=SELECTED, reading=dict(band=None))) == NOT_A_JUDGEMENT
+
+
+@pytest.mark.parametrize("outcome", [SELECTED, "something_else"])
+def test_a_readingless_outcome_other_than_b_raises(outcome):
+    with pytest.raises(ValueError, match=outcome):
+        closing_state(dict(outcome=outcome, reading=None))
