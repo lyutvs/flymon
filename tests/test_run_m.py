@@ -101,7 +101,7 @@ def _keys(monkeypatch, mod, tmp_path):
     npz = tmp_path / "malecns.npz"
     npz.write_bytes(b"stand-in")
     code = dict(key="k" * 64, files={"npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256})
-    monkeypatch.setattr(mod, "code_keys", lambda p: (code, "m" * 64))
+    monkeypatch.setattr(mod, "code_keys", lambda p: (code, {"key": "m" * 64, "files": {}}))   # the real shape
     monkeypatch.setattr(mod, "check_committed", lambda *a: None)
     monkeypatch.setattr(mod, "git_state", CLEAN)
     return str(npz), code
@@ -234,7 +234,7 @@ def test_spec_pure_path_on_the_synthetic_connectome(synthetic_npz, tmp_path, mon
     monkeypatch.setattr(mod, "git_state", CLEAN)
     monkeypatch.setattr(mod, "out_allowed", lambda out: True)
     monkeypatch.setattr(mod, "code_keys", lambda p: (dict(key="k" * 64, files={
-        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), "m" * 64))
+        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), {"key": "m" * 64, "files": {}}))
     monkeypatch.setattr(mod, "load_c3_record", lambda path, s: (Params(), {"A": "MBON13", "P": "MBON05"}, None, None))
     monkeypatch.setattr(mod, "load_even", lambda s, c3: even)
     monkeypatch.setattr(mod, "candidates", lambda types, comps, s: cands)
@@ -267,7 +267,7 @@ def test_spec_stop_prints_the_sentence_and_smoke_writes_no_block(synthetic_npz, 
     monkeypatch.setattr(mod, "git_state", CLEAN)
     monkeypatch.setattr(mod, "out_allowed", lambda out: True)
     monkeypatch.setattr(mod, "code_keys", lambda p: (dict(key="k" * 64, files={
-        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), "m" * 64))
+        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), {"key": "m" * 64, "files": {}}))
     monkeypatch.setattr(mod, "load_c3_record", lambda path, s: (Params(), {"A": "MBON13", "P": "MBON05"}, None, None))
     monkeypatch.setattr(mod, "load_even", lambda s, c3: even)
     monkeypatch.setattr(mod, "candidates", lambda types, comps, s: cands)
@@ -353,7 +353,7 @@ def _stage0_world(monkeypatch, tmp_path, synthetic_npz, fail=(), bad_z=False, te
     monkeypatch.setattr(mod, "out_allowed", lambda out: True)
     monkeypatch.setattr(mod, "check_committed", lambda *a: None)
     monkeypatch.setattr(mod, "code_keys", lambda p: (dict(key="k" * 64, files={
-        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), "m" * 64))
+        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), {"key": "m" * 64, "files": {}}))
     monkeypatch.setattr(mod, "load_c3_record", lambda path, s: (Params(), readout, z, {"A": ["MBON03"], "P": ["MBON01"]}))
     monkeypatch.setattr(mod, "candidates", lambda types, comps, s: cands)
     monkeypatch.setattr(mod, "build", lambda *a, **k: dict(odors=ODORS))

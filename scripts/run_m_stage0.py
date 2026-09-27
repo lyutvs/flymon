@@ -151,7 +151,7 @@ def main(argv=None, spec: MSpec | None = None, summary_spec: MSpec = SPEC, requi
     npz_sha = code["files"]["npz:" + Path(a.npz).name]
     if npz_sha != spec.j.h4.h3.connectome_sha256:
         return refuse(f"{a.npz} is not the declared connectome ({npz_sha[:12]})")
-    why = other_code(doc, ["spec_check"], code["key"], manifest, same_code)
+    why = other_code(doc, ["spec_check"], code["key"], manifest["key"], same_code)
     if why:
         return refuse(why)
     why = None if a.smoke else later_blocks(a.summary, "stage0", doc)
