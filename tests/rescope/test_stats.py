@@ -250,7 +250,7 @@ def test_cli_judge_writes_summary(tmp_path, monkeypatch):
     lay_out(tmp_path)
     log = tmp_path / "results/rescope/judge/FLY/logs/eval/fly00.jsonl"; log.parent.mkdir(parents=True)
     log.write_text(json.dumps(dict(kind="decision", decider="fly", candidates=["a", "b"], multipliers=[2, 1],
-                                   chosen="a")) + "\n")
+                                   chosen="a", p=[3, 40])) + "\n")
     assert load().main(["--phase", "judge", "--allow-dirty"]) == 0
     s = json.loads((tmp_path / "results/summary/rescope_m4.json").read_text())
     assert s["status"] == "OK" and s["2a"]["verdict"] == "PASS" and s["2b"]["verdict"] == "FAIL"
@@ -263,6 +263,10 @@ def test_cli_judge_writes_summary(tmp_path, monkeypatch):
     assert set(rec["fly_decision_fraction"]["FLY"]) >= {"eval_only", "learn_only", "both_blocks"}
     assert set(rec["learn_curve"]) == {"FLY", "RS"} and rec["rs_mismatch"]["per_fly"]["0"]["residual_frac"] == 0.01
     assert set(rec["final_weight_median_ratio"]) == {"FLY", "RS", "COFF"}
+    sd = rec["silent_decisions"]
+    assert set(sd) == {"FLY", "RS", "COFF"} and sd["FLY"]["eval_only"]["chosen_silent_share"] == 1.0
+    assert sd["FLY"]["per_fly"]["0"]["eval_only"]["silent_presentation_share"] == 0.5
+    assert sd["FLY"]["both_blocks"]["n_fly_decisions"] == 1 and "learn_only" not in sd["COFF"]
     assert s["boot_draws"] == SPEC.boot_draws and s["boot_seed"] == SPEC.boot_seed
     with pytest.raises(SystemExit):                              # the judged file is not overwritten silently
         load().main(["--phase", "judge", "--allow-dirty"])
@@ -523,3 +527,17 @@ def test_nobrain_decision_record_carries_fly_and_battle_id(tmp_path, kind):
     assert any(r["kind"] == "decision" for r in recs)
     filter_log(log, {"JE-f02-b004"})                          # a committed battle's records survive a resume
     assert blocks.read_jsonl(log) == recs
+
+
+def test_silent_decisions_from_decision_counts():
+    """Spec 10.3 amendment 2026-09-28 (recorded only): per candidate presentation silent := p < floor."""
+    d = lambda p, chosen="a", **k: dict(kind="decision", decider="fly", candidates=["a", "b", "c"][:len(p)],
+                                        chosen=chosen, p=p, **k)
+    recs = [d([0, 30]), d([30, 4], chosen="a"), d([1, 2], chosen="b"), d([5, 5]),
+            dict(kind="decision", decider="coach", candidates=["a"], chosen="a"), dict(kind="reinforce"),
+            dict(kind="decision", decider="fly", candidates=["a", "b"], chosen="a")]
+    s = stats.silent_decisions(recs, 5.0)
+    assert (s["n_fly_decisions"], s["n_without_counts"], s["n_presentations"], s["n_silent_presentations"]) == (4, 1, 8, 4)
+    assert (s["n_any_silent"], s["n_all_silent"], s["n_chosen_silent"]) == (3, 1, 2)
+    assert s["silent_presentation_share"] == 0.5 and s["chosen_silent_share"] == 0.5
+    assert stats.silent_decisions([], 5.0)["any_silent_share"] is None

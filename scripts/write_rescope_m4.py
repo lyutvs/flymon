@@ -23,7 +23,9 @@ Also recorded, never judged (spec 4.5): per-arm n_flies / n_eval / invalid flies
 the information-turn type match of each brain arm's eval-block fly decisions (stats.info_turn_stats over the valid
 flies' <arm>/logs/eval/flyNN.jsonl, whose decision records carry `multipliers` from blocks.EvalPlayer); the fly
 decision fraction (eval only, learn only, both blocks); the learning-block win curve (FLY, RS); RS turn / pulse
-mismatch (dropped bundles, exhausted turns); the final plastic weight median / w0 per fly (brain arms).
+mismatch (dropped bundles, exhausted turns); the final plastic weight median / w0 per fly (brain arms); the silent
+decision share per arm and fly (spec 10.3 amendment 2026-09-28: a candidate presentation is silent when its MBON05
+count `p` in the fly decision record is < floor_spikes; eval block, learning block, both).
 """
 from __future__ import annotations
 
@@ -143,6 +145,31 @@ def decision_fractions(root: Path, arm: str, d: dict, spec=SPEC) -> dict:
                 both_blocks=stats.decision_fraction(ev + le), missing_logs=m1 + m2)
 
 
+def silent_states(root: Path, arm: str, d: dict, spec=SPEC) -> dict:
+    """Recorded only (spec 10.3 amendment 2026-09-28): stats.silent_decisions per valid fly and pooled over them, for
+    the eval block, the learning block (arms with one) and both; silent := the decision's MBON05 count p <
+    spec.floor_spikes for that candidate odour."""
+    per, pooled, missing = {}, {"eval_only": [], "learn_only": [], "both_blocks": []}, []
+    for k, r in stats.fly_rows(d):
+        if stats.row_invalid(r, spec):
+            continue
+        blocks = {"eval_only": root / arm / "logs/eval" / f"fly{k:02d}.jsonl"}
+        if d.get("learn"):
+            blocks["learn_only"] = root / arm / "logs" / f"fly{k:02d}.jsonl"
+        recs = {}
+        for b, f in blocks.items():
+            if not f.exists():
+                missing.append(str(f))
+            recs[b] = read_jsonl(f)
+        recs["both_blocks"] = recs["eval_only"] + recs.get("learn_only", [])
+        per[str(k)] = {b: stats.silent_decisions(v, spec.floor_spikes) for b, v in recs.items()}
+        for b, v in recs.items():
+            pooled[b] += v
+    out = {b: stats.silent_decisions(v, spec.floor_spikes) for b, v in pooled.items()
+           if b != "learn_only" or d.get("learn")}
+    return dict(out, per_fly=per, missing_logs=missing)
+
+
 def summarize(root: Path, phase: str, smoke: bool, spec=SPEC) -> dict:
     arms, reasons, inputs = load_arms(root, phase, smoke)
     dig, r2 = eval_digests(root, arms)
@@ -168,6 +195,7 @@ def summarize(root: Path, phase: str, smoke: bool, spec=SPEC) -> dict:
     v["recorded"] = dict(v.get("recorded", {}),
                          info_turn_match={a: info_turns(root, a, present[a], spec) for a in brain},
                          fly_decision_fraction={a: decision_fractions(root, a, present[a], spec) for a in brain},
+                         silent_decisions={a: silent_states(root, a, present[a], spec) for a in brain},
                          learn_curve={a: stats.learn_curve(present[a], spec) for a in ("FLY", "RS") if a in present},
                          rs_mismatch=stats.rs_mismatch(present["RS"]) if "RS" in present else None,
                          final_weight_median_ratio={a: stats.weight_medians(present[a]) for a in brain})

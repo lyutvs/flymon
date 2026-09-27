@@ -219,3 +219,27 @@ def recorded_items(records, x, spec, xcore=None, floor_frac=None) -> dict:
         out["xcore"] = dict(xc, ratio_rr_over_n=None if rr is None or not n else rr / n, floor_frac=floor_frac,
                             n_edges=n_edges)
     return out
+
+
+def silent_states(records, spec) -> dict:
+    """Recorded only (spec 10.3 amendment 2026-09-28, floor rule B): the per-seed state of every recorded probe,
+    silent := that probe's MBON05 (spec.p_type) count for the odour < spec.floor_spikes, else active.
+    {brain: {stage: {odour: {flies, seeds (per fly, sorted), state (per fly, per seed "active" / "silent"),
+    n, n_silent, silent_share}}}} over every brain / stage present in the records (noplast included)."""
+    out: dict = {}
+    for b in sorted({r["brain"] for r in records}):
+        out[b] = {}
+        for st in sorted({r["stage"] for r in records if r["brain"] == b}):
+            rows = [r for r in records if r["brain"] == b and r["stage"] == st]
+            flies = sorted({r["fly"] for r in rows})
+            by = {(r["fly"], r["seed"]): r["counts"] for r in rows}
+            seeds = [sorted({r["seed"] for r in rows if r["fly"] == f}) for f in flies]
+            out[b][st] = {}
+            for o in ("a", "b"):
+                state = [["silent" if by[(f, s)][o][spec.p_type] < spec.floor_spikes else "active" for s in ss]
+                         for f, ss in zip(flies, seeds)]
+                n = sum(len(v) for v in state)
+                k = sum(v.count("silent") for v in state)
+                out[b][st][o] = dict(flies=flies, seeds=seeds, state=state, n=n, n_silent=k,
+                                     silent_share=k / n if n else None)
+    return out

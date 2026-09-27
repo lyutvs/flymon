@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Re-scoped claim, pair qualification (spec 10.3): for seed0 and every new designed pair, the naive MBON05 counts on
 every qualification select and report seed (both odours; C3 engine), X = oracle.qual_x, the reward-only oracle on C3
-(oracle.reward_oracle_job, z = the C3 z {"A": SPEC.z_a, "P": SPEC.z_p}) and oracle.qualify.
+(oracle.reward_oracle_job, z = the C3 z {"A": SPEC.z_a, "P": SPEC.z_p}) and oracle.qualify (floor rule B, spec 10.3
+amendment 2026-09-28: per odour, median >= floor_spikes and silent-seed share <= floor_silent_max).
 
     uv run python scripts/run_rescope_qualify.py --npz data/malecns.npz --workers 16 --out results/rescope/qualify
     uv run python scripts/run_rescope_qualify.py --smoke --allow-dirty --workers 4      # 2 qualification seeds
 
-Writes <out>/oracle_rows.json (raw) and results/summary/rescope_qualify.json ({pairs, qualified, m, stop,
+Writes <out>/oracle_rows.json (raw) and results/summary/rescope_qualify.json ({pairs (each with the rule-B items per
+odour in `floor` and the recorded silent-seed share in `silent_share`), qualified, m, stop,
 control_qualified, oc_table, pairs_digest, recovery_per_pulse, provenance}); stop is STOP_CONTROL_INVALID when seed0 is
 not qualified (precedence), else STOP_FEW_PAIRS when m < 4, else None; --smoke writes under results/rescope-smoke/ only (its summary
 at results/rescope-smoke/summary/rescope_qualify.json). Refuses (SystemExit) an --out outside the re-scope trees and,
@@ -90,7 +92,8 @@ def oracle_all(pool, spec, params, odors_of: dict, naive: dict, log=print) -> di
     for n, row in zip(names, rows):
         out[n] = dict(qualify(xs[n], row["report"], naive[n], spec, z), naive=naive[n],
                       alpha_reward=row["alpha_reward"], row=row)
-        log(f"{n}: X {xs[n]}, r {out[n]['r']}, floor_ok {out[n]['floor_ok']} -> "
+        log(f"{n}: X {xs[n]}, r {out[n]['r']}, floor_ok {out[n]['floor_ok']} "
+            f"(silent share a {out[n]['silent_share']['a']}, b {out[n]['silent_share']['b']}) -> "
             f"{'qualified' if out[n]['qualified'] else 'not qualified ' + str(out[n]['reasons'])}")
     return out
 

@@ -162,3 +162,21 @@ def test_recorded_floor_contact_counts_float32_floored_edges():
                                                                   "N": [free, free]}, floor_frac=0.2)
     assert rec["xcore"]["Rr"]["floor_contact_per_fly"] == [1.0, 0.5]
     assert rec["xcore"]["N"]["floor_contact_per_fly"] == [0.0, 0.0]
+
+
+def test_silent_states_recorded_per_probe():
+    """Spec 10.3 amendment 2026-09-28: every recorded probe carries its state, silent := MBON05 count < 5 for that
+    odour; no verdict effect."""
+    recs = records(dx=12, noise=2)
+    tgt = next(r for r in recs if r["brain"] == "N" and r["stage"] == "S1" and r["fly"] == 1)
+    tgt["counts"]["b"][SPEC.p_type] = 4
+    edge = next(r for r in recs if r["brain"] == "Rr" and r["stage"] == "pre" and r["fly"] == 0)
+    edge["counts"]["a"][SPEC.p_type] = 5
+    s = R.silent_states(recs, SPEC)
+    assert set(s) == {r["brain"] for r in recs} and set(s["Rr"]) == {"pre", "S1"}
+    nb = s["N"]["S1"]["b"]
+    i = nb["flies"].index(1)
+    assert nb["state"][i][nb["seeds"][i].index(tgt["seed"])] == "silent" and nb["n_silent"] == 1
+    assert nb["silent_share"] == 1 / nb["n"] and nb["n"] == sum(len(v) for v in nb["seeds"])
+    assert s["Rr"]["pre"]["a"]["n_silent"] == 0                       # a count of exactly 5 is active
+    assert s["N"]["S1"]["a"]["n_silent"] == 0

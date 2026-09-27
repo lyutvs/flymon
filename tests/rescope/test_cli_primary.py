@@ -168,7 +168,9 @@ def test_primary_driver_runs_control_then_qualified_and_resets(tmp_path, monkeyp
     rec = res["recorded"]
     for n in ("seed0", "p1000", "p1001"):
         assert set(rec[n]) == {"level", "sign", "naive", "qual_x_vs_x", "naive_dprime", "choice", "self_change",
-                               "xcore", "xcore_mask", "flies"}
+                               "xcore", "xcore_mask", "flies", "silent"}
+        assert rec[n]["silent"] == rules.silent_states(json.loads(Path(f"results/rescope/primary/{n}/records.json")
+                                                                  .read_text())["records"], SMALL)
         xc = rec[n]["xcore"]                               # Rr: 3 reward trials x 0.9; N: no DAN, unchanged
         assert xc["Rr"]["median"] == pytest.approx(0.9 ** SMALL.trials) and xc["N"]["median"] == 1.0
         assert xc["ratio_rr_over_n"] == pytest.approx(0.9 ** SMALL.trials) and xc["n_edges"] == 3

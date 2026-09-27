@@ -11,7 +11,8 @@ rescope_qualify.json) exists with stop None and control_qualified; refuses an --
 without --allow-dirty a dirty flymon/rescope/ or this script, a C3 recovery_per_pulse other than 0 (spec 10.2), and a
 designed-pairs digest that is not SPEC.pairs_digest or not the qualification summary's. Writes <out>/<pair>/
 checkpoint.npz and records.json and results/summary/rescope_primary.json ({control, pairs, overall, oc_table,
-recorded: {<pair>: {level, sign, naive, qual_x_vs_x, naive_dprime, choice, self_change, xcore, xcore_mask, flies}},
+recorded: {<pair>: {level, sign, naive, qual_x_vs_x, silent, naive_dprime, choice, self_change, xcore, xcore_mask,
+flies}},
 recovery_per_pulse, pairs_digest, min_weight_frac, provenance}); --smoke writes under results/rescope-smoke/ only.
 The recorded items (spec 10.4 item 6, rules.recorded_items) have no verdict effect.
 """
@@ -62,10 +63,12 @@ def load_qualification(path: Path) -> dict:
 def recorded(records, x, spec, verdict, qual_x, xcore=None, floor_frac=None) -> dict:
     """Recorded, not judged: the level / sign medians, the naive MBON05 medians (Rr pre), X vs the qualification X and
     spec 10.4 item 6 (rules.recorded_items: naive d', choice ratios, N / N' self change, X-core MBON05 w/w0 Rr vs N
-    and floor contact)."""
+    and floor contact) and the per-seed probe state (rules.silent_states: active / silent, silent := MBON05 count
+    < floor_spikes; spec 10.3 amendment 2026-09-28)."""
     return dict(level=verdict.get("level_median"), sign=verdict.get("sign_median"),
                 naive={o: rules.naive_p(records, o, spec) for o in ("a", "b")},
                 qual_x_vs_x=None if qual_x is None else bool(qual_x == x),
+                silent=rules.silent_states(records, spec),
                 **rules.recorded_items(records, x, spec, xcore=xcore, floor_frac=floor_frac))
 
 

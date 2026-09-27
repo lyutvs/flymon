@@ -321,3 +321,28 @@ def decision_fraction(records) -> dict:
     dec = [r for r in records if isinstance(r, dict) and r.get("kind") == "decision"]
     n_fly = sum(1 for r in dec if r.get("decider") == "fly")
     return dict(n_decisions=len(dec), n_fly=n_fly, frac=n_fly / len(dec) if dec else None)
+
+
+def silent_decisions(records, floor: float) -> dict:
+    """Recorded only (spec 10.3 amendment 2026-09-28): the silent / active state of the fly's decisions, from the
+    MBON05 (readout P) counts `p` every fly decision record carries (logschema FLY_DECISION). Per candidate odour
+    presentation, silent := p < floor. Counts: presentations and silent ones; decisions with any / every candidate
+    silent; decisions whose chosen candidate was silent. Fly decisions without a usable `p` are counted apart."""
+    dec = [r for r in records if isinstance(r, dict) and r.get("kind") == "decision" and r.get("decider") == "fly"]
+    n_pres = n_sil = n_any = n_all = n_chosen = n_dec = n_bad = 0
+    for r in dec:
+        p = r.get("p")
+        if not isinstance(p, list) or not p or not all(_is_number(x) for x in p):
+            n_bad += 1
+            continue
+        s = [x < floor for x in p]
+        n_dec += 1; n_pres += len(s); n_sil += sum(s)
+        n_any += any(s); n_all += all(s)
+        c = r.get("candidates")
+        if isinstance(c, list) and r.get("chosen") in c and len(c) == len(s):
+            n_chosen += s[c.index(r.get("chosen"))]
+    sh = lambda k, n: k / n if n else None
+    return dict(n_fly_decisions=n_dec, n_without_counts=n_bad, n_presentations=n_pres, n_silent_presentations=n_sil,
+                silent_presentation_share=sh(n_sil, n_pres), n_any_silent=n_any, any_silent_share=sh(n_any, n_dec),
+                n_all_silent=n_all, all_silent_share=sh(n_all, n_dec), n_chosen_silent=n_chosen,
+                chosen_silent_share=sh(n_chosen, n_dec), floor=floor)

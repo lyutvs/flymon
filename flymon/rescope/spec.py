@@ -30,6 +30,7 @@ class RSpec:
     z_p: tuple = (26.25, 19.30889259728101)
     x_tie: str = "b"
     floor_spikes: float = 5.0
+    floor_silent_max: float = 0.125   # rule B (spec 10.3 amendment 2026-09-28): share of qualification seeds < floor_spikes
     valid_min: int = 6
     assoc_min: float = 1.0
     spill_max: float = 0.5

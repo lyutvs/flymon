@@ -80,11 +80,39 @@ def qual_x(naive: dict, spec) -> str:
     return spec.x_tie if a == b else ("a" if a > b else "b")
 
 
+def floor_rule_b(counts, spec) -> dict:
+    """Floor rule B for one odour's naive MBON05 counts over the qualification pre probes (select + report seeds;
+    spec 10.3 amendment 2026-09-28): ok <=> median >= spec.floor_spikes AND the share of seeds with a count
+    < spec.floor_spikes (silent seeds) <= spec.floor_silent_max (1/8)."""
+    c = np.asarray(counts, float)
+    n = int(c.size)
+    n_silent = int((c < spec.floor_spikes).sum())
+    med = float(np.median(c)) if n else None
+    share = n_silent / n if n else None
+    median_ok = med is not None and med >= spec.floor_spikes
+    silent_ok = n > 0 and n_silent <= spec.floor_silent_max * n
+    return dict(median=med, n_seeds=n, n_silent=n_silent, silent_share=share, median_ok=bool(median_ok),
+                silent_ok=bool(silent_ok), ok=bool(median_ok and silent_ok))
+
+
 def qualify(x: str, report: dict, naive: dict, spec, z) -> dict:
-    """Qualified <=> naive MBON05 >= spec.floor_spikes on every seed for both odours and the reward-oracle change
-    r = d'(dV_R1 - dV_pre) >= spec.oracle_min. report = reward_oracle_job's report {"pre", "R1"} ({"A", "P"} rows)."""
-    floor_ok = bool(min(min(naive["a"]), min(naive["b"])) >= spec.floor_spikes)
+    """Qualified <=> floor rule B holds for both odours (X and Y separately; floor_rule_b over the naive MBON05 counts
+    on the select + report seeds) and the reward-oracle change r = d'(dV_R1 - dV_pre) >= spec.oracle_min.
+    report = reward_oracle_job's report {"pre", "R1"} ({"A", "P"} rows). Recorded with it: per odour the rule-B
+    items (median, silent-seed count and share) in `floor` and the silent-seed share in `silent_share`."""
+    y = "b" if x == "a" else "a"
+    floor = {o: floor_rule_b(naive[o], spec) for o in ("a", "b")}
+    floor_ok = bool(floor["a"]["ok"] and floor["b"]["ok"])
     r = dprime(dv(report["R1"], z) - dv(report["pre"], z))
-    reasons = ([] if floor_ok else ["naive MBON05 below floor on some seed"]) + \
-              ([] if (r is not None and r >= spec.oracle_min) else [f"oracle reward change d' {r} < {spec.oracle_min}"])
-    return dict(qualified=not reasons, r=r, floor_ok=floor_ok, x=x, reasons=reasons)
+    reasons = []
+    for o, role in ((x, "X"), (y, "Y")):
+        f = floor[o]
+        if not f["median_ok"]:
+            reasons.append(f"floor rule B: {role} (odour {o}) naive MBON05 median {f['median']} < {spec.floor_spikes}")
+        if not f["silent_ok"]:
+            reasons.append(f"floor rule B: {role} (odour {o}) silent seeds (naive MBON05 < {spec.floor_spikes}) "
+                           f"{f['n_silent']}/{f['n_seeds']} > {spec.floor_silent_max}")
+    if not (r is not None and r >= spec.oracle_min):
+        reasons.append(f"oracle reward change d' {r} < {spec.oracle_min}")
+    return dict(qualified=not reasons, r=r, floor_ok=floor_ok, x=x, reasons=reasons, floor=floor,
+                silent_share={o: floor[o]["silent_share"] for o in ("a", "b")})
