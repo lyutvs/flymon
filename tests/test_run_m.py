@@ -78,12 +78,11 @@ def test_stage0_refuses_a_stopped_spec_check(tmp_path, monkeypatch, capsys):
 def test_stage0_refuses_a_spec_check_from_other_code(tmp_path, monkeypatch, capsys):
     mod = _script("run_m_stage0")
     monkeypatch.chdir(ROOT)
-    monkeypatch.setattr(mod, "check_committed", lambda *a: None)
+    npz, _ = _keys(monkeypatch, mod, tmp_path)                                 # code keys stood in; same_code real
     s = tmp_path / "m.json"
-    s.write_text(json.dumps({"spec_check": {"outcome": "SPEC_GO", "measure_key": "x", "code": {"key": "y"}}}))
-    rc = mod.main(["--summary", str(s), "--allow-dirty"])
-    err = capsys.readouterr().err
-    assert rc == 2 and ("other code" in err or "do not exist" in err or "does not exist" in err)
+    s.write_text(json.dumps({"spec_check": _sc_block(measure_key="x")}))
+    assert mod.main(["--npz", npz, "--summary", str(s)]) == 2
+    assert "other code" in capsys.readouterr().err
 
 
 def test_stage0_smoke_reads_only_a_smoke_summary(tmp_path, monkeypatch, capsys):
