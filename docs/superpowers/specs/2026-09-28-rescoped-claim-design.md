@@ -264,6 +264,15 @@ N 뇌 자체의 변화(J.12.9: N 뇌도 제시만으로 가소성 경로를 타�
 - **오라클**: 원문의 "G.4의 O-freq/O-all"은 낡은 인용이다(G.4a·H.4/G.14.3에서 개정됨). 자격 오라클은 **현 코드의 오라클 편집을 보상 편집(PAM08 핵심 엣지)에만** 적용한 것이며,
   함수·α(편집 세기) 격자·z(C3 블록 `"h4"`)·시드 블록·통계를 **계획서에서 코드 기준으로 못 박고, 어떤 자격 실행보다 먼저** 이 절에 날짜 붙은 보충으로 기록한다.
   통계는 변화량 d′(ΔV_R1 − ΔV_pre) ≥ **+2**다.
+- **2026-09-28 보충 — 자격 오라클 고정(계획 R3, 어떤 자격 실행보다 먼저)**: 코드가 고정한 값을 그대로 적는다.
+  - 함수: `flymon/rescope/oracle.py:reward_oracle_job` — `flymon.brain.h4_jobs.oracle_job`의 보상 절반(처벌 스윕과 R2를 뺀 사본, `tests/rescope/test_oracle.py`가 원본에 고정).
+    편집은 G.14.3 "freq": PAM08 핵심 구획의 가소성 KC→MBON 엣지만 w = w0 · (1 − α · f_i)(f_i = X의 act 시드 가운데 KC i가 read 구간에서 한 번 이상 발화한 시드의 비율), 엔진은 C3 Params(`load_c3_config().params`).
+  - α 격자 (0.2, 0.5, 0.8): select 시드에서 변화량 d′(ΔV_α − ΔV_pre)가 가장 큰 α, 동률이면 **작은 α**(`max(alphas, key=(change, −α))`).
+  - z(C3 블록 `"h4"`, `results/summary/m0d.json` `h4.h4.combos.C3.z`): A = (10.78125, 9.412096743243064), P = (26.25, 19.30889259728101). 판독 A = MBON13, P = MBON05.
+  - 시드: 쌍 인덱스 p(seed0 = 0, p1000 = 1, …, p1005 = 6)마다 980_000 + 1000p + {0: act, 100: select, 200: report} + i, i = 0–7(블록마다 8개, `RSpec.n_qual_seeds`).
+    제시 강도 0.35, settle 800 ms, read 600 ms.
+  - 통계: report 시드에서 d′(ΔV_R1 − ΔV_pre) ≥ **2.0**(`RSpec.oracle_min`; d′는 F.5 정의, sd = 0 극한 포함). ΔV = V(X) − V(Y), V = z_A − z_P.
+    X는 R1의 규칙(select + report 시드의 순진 MBON05 중앙값이 큰 냄새, 동률 b)이고, 바닥 가드는 R2(X와 Y 모두 select·report 모든 시드에서 순진 MBON05 ≥ 5)다.
 - **바닥 가드**: X **와 Y** 모두 순진 MBON05가 자격 프로브의 모든 시드에서 ≥ 5 스파이크. Y가 바닥이면 Y 번짐이 구조적으로 0이 되어 특이성이 공허해지기 때문이다.
 - 멈춤: 자격 쌍 m < 4 → `STOP_FEW_PAIRS`(원문 그대로).
 - **seed 0**: 자격 미달이면 `STOP_CONTROL_INVALID`로 멈추고 사용자에게 묻는다(양성 대조가 성립하지 않음 — `STOP_PROTOCOL`과 구분한다).
