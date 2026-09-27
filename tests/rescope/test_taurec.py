@@ -138,3 +138,19 @@ def test_cli_smoke_paths_and_spec():
     assert str(out) == "results/rescope/taurec" and str(summ) == "results/summary/rescope_taurec.json"
     s = m.smoke_spec()
     assert (s.taurec_pulses, s.taurec_sample_every, s.taurec_odours, s.recovery_grid) == (20, 5, 4, (0.0, 0.02))
+
+
+def test_floor_frac_counts_float32_floored_edges():
+    """The engine floors in float32 (np.maximum(w, w0 * min_weight_frac)); every such taught edge counts as floored."""
+    from types import SimpleNamespace
+    from flymon.rescope import taurec
+    rng = np.random.default_rng(7)
+    w0 = rng.uniform(0.1, 3.0, 2000).astype(np.float32)
+    floored = np.maximum(np.float32(1e-6) * w0, w0 * np.float32(0.2)).astype(np.float32)
+    assert (floored.astype(float) / w0.astype(float) > 0.2).any()
+    w = np.concatenate([floored, (np.float32(0.5) * w0[:1000]).astype(np.float32)])
+    pool = SimpleNamespace(w={0: w}, w0={None: np.concatenate([w0, w0[:1000]])}, flies=[SimpleNamespace(shuffle_seed=None)])
+    mask = np.zeros(w.size, bool); mask[:2000] = True
+    assert taurec._sample(pool, 0, mask)[2] == 1.0
+    mask[2000:] = True
+    assert taurec._sample(pool, 0, mask)[2] == 2000 / 3000

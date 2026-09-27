@@ -18,7 +18,8 @@ from ..agent.encode import Encoder
 from ..battle.pool import POOL
 from ..brain import h4_pairs
 
-FLOOR_RATIO = 0.2          # a taught edge counts as floored at w/w0 <= this (Params.min_weight_frac: default and C3 both 0.2)
+FLOOR_RATIO = 0.2          # a taught edge counts as floored at w/w0 <= this (Params.min_weight_frac: default and C3 both 0.2),
+                           # with a relative tolerance 1e-6: the engine floors in float32, so w/w0 = 0.2 (1 +- ~6e-8)
 
 
 def synthetic_odours(pops, n: int, seed: int) -> list:
@@ -74,7 +75,7 @@ def _sample(pool, fly, mask) -> tuple:
     taught = r[mask]
     if taught.size == 0:
         return float(np.median(r)), None, None
-    return float(np.median(r)), float(np.quantile(taught, 0.1)), float(np.mean(taught <= FLOOR_RATIO + 1e-9))
+    return float(np.median(r)), float(np.quantile(taught, 0.1)), float(np.mean(taught <= FLOOR_RATIO * (1 + 1e-6)))
 
 
 def trajectory(pool, odours, plan, spec, taught_mask) -> dict:
