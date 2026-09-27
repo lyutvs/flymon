@@ -39,10 +39,10 @@ def test_joint_below_single():
 
 def test_choose_min_wall_and_stops():
     cs = {"FLY": comp(0.3), "RS": comp(0.3), "COFF": comp(0.3), "RND": comp(0.15)}
-    rates = {"sec_per_fly_battle_brain": 1.0, "sec_per_battle_nobrain": 0.1}
+    rates = {"sec_per_batch_battle_brain": 1.0, "sec_per_batch_battle_nobrain": 0.1}
     out = power.choose(cs, rates, SPEC)
     assert out["status"] == "SIZED" and out["p_2b"] >= 0.8
-    slow = {"sec_per_fly_battle_brain": 600.0, "sec_per_battle_nobrain": 1.0}
+    slow = {"sec_per_batch_battle_brain": 600.0, "sec_per_batch_battle_nobrain": 1.0}
     assert power.choose(cs, slow, SPEC)["status"] == "STOP_BUDGET"
     tiny = dict(cs, FLY=comp(0.3, 0.2), RS=comp(0.3, 0.2))
     assert power.choose(tiny, rates, SPEC, grid_F=(2,), grid_E=(20,))["status"] == "STOP_POWER"
@@ -73,15 +73,35 @@ def test_joint_power_matches_normal_theory_and_is_deterministic():
 
 
 def test_wall_hours_formula():
-    rates = {"sec_per_fly_battle_brain": 2.0, "sec_per_battle_nobrain": 0.5}
+    rates = {"sec_per_batch_battle_brain": 2.0, "sec_per_batch_battle_nobrain": 0.5}
     L = SPEC.learn_battles
-    assert power.wall_hours(8, 20, rates, SPEC) == pytest.approx(
-        (8 * (L + 20) * 2.0 * 2 + 8 * 20 * 2.0 + 2 * 8 * 20 * 0.5) / 3600)
+    one = ((L + 20) * 2.0 * 2 + 20 * 2.0 + 2 * 20 * 0.5) / 3600          # one batch
+    assert power.wall_hours(8, 20, rates, SPEC, 16) == pytest.approx(one)
+    assert power.wall_hours(17, 20, rates, SPEC, 16) == pytest.approx(2 * one)
+    assert power.wall_hours(32, 20, rates, SPEC, 8) == pytest.approx(4 * one)
+    with pytest.raises(ValueError):
+        power.wall_hours(8, 20, rates, SPEC, 0)
+
+
+def test_partial_batch_costs_a_full_batch():
+    """Batch model (R11): with W = 16, F = 6 and F = 16 both take one batch - equal hours."""
+    rates = {"sec_per_batch_battle_brain": 1.5, "sec_per_batch_battle_nobrain": 0.2}
+    assert power.wall_hours(6, 80, rates, SPEC, 16) == power.wall_hours(16, 80, rates, SPEC, 16)
+    assert power.wall_hours(24, 80, rates, SPEC, 16) == 2 * power.wall_hours(16, 80, rates, SPEC, 16)
+
+
+def test_choose_uses_the_judge_workers():
+    cs = {"FLY": comp(0.3, 0.002), "RS": comp(0.3, 0.002), "COFF": comp(0.3), "RND": comp(0.15)}
+    rates = {"sec_per_batch_battle_brain": 1.0, "sec_per_batch_battle_nobrain": 0.1}
+    w16, w8 = power.choose(cs, rates, SPEC, workers=16), power.choose(cs, rates, SPEC, workers=8)
+    for out, W in ((w16, 16), (w8, 8)):
+        assert all(r["hours"] == pytest.approx(power.wall_hours(r["F"], r["E"], rates, SPEC, W)) for r in out["table"])
+    assert w8["hours"] >= w16["hours"]
 
 
 def test_choose_picks_cheapest_powered_point():
     cs = {"FLY": comp(0.3, 0.002), "RS": comp(0.3, 0.002), "COFF": comp(0.3), "RND": comp(0.15)}
-    rates = {"sec_per_fly_battle_brain": 1.0, "sec_per_battle_nobrain": 0.1}
+    rates = {"sec_per_batch_battle_brain": 1.0, "sec_per_batch_battle_nobrain": 0.1}
     out = power.choose(cs, rates, SPEC)
     ok = [r for r in out["table"] if r["p_2b"] >= SPEC.power_target]
     assert out["hours"] == min(r["hours"] for r in ok)
@@ -90,7 +110,7 @@ def test_choose_picks_cheapest_powered_point():
 
 def test_stop_budget_still_reports_best():
     cs = {"FLY": comp(0.3), "RS": comp(0.3), "COFF": comp(0.3), "RND": comp(0.15)}
-    out = power.choose(cs, {"sec_per_fly_battle_brain": 600.0, "sec_per_battle_nobrain": 1.0}, SPEC)
+    out = power.choose(cs, {"sec_per_batch_battle_brain": 600.0, "sec_per_batch_battle_nobrain": 1.0}, SPEC)
     assert out["status"] == "STOP_BUDGET" and out["F"] and out["E"] and out["hours"] > SPEC.budget_hours
 
 
@@ -104,6 +124,15 @@ def load(dirty=False):
 
 RATES = {"FLY": 0.3, "RS": 0.3, "COFF": 0.3, "RND": 0.15}
 WALL = {"FLY": 3600.0, "RS": 3600.0, "COFF": 1200.0, "RND": 12.0}
+
+
+def sessions(*secs, status="ok"):
+    return {"sessions": [dict(started_utc="2026-09-28T00:00:00+00:00", ended_utc="2026-09-28T01:00:00+00:00",
+                              seconds=x, status=status, played=None, complete=True) for x in secs]}
+
+
+def write_sessions(root, arm, d):
+    (root / arm / "wall_clock.json").write_text(json.dumps(d))
 
 
 def lay_out(tmp_path, smoke=False, n_flies=6, learn=40, n=20, seed=0, logs=True):
@@ -120,11 +149,12 @@ def lay_out(tmp_path, smoke=False, n_flies=6, learn=40, n=20, seed=0, logs=True)
             for r in rows:
                 r.update(donor_invalid=False, residual_frac=0.01, donor_sha256="d" * 64)
         d = dict(arm=name, phase="pilot", smoke=smoke, complete=True, flies=n_flies, learn=lr, eval=n,
-                 per_fly=rows, wall_clock_s=WALL[name], m_overlap_note=None,
+                 per_fly=rows, wall_clock_s=WALL[name], m_overlap_note=None, workers=16,
                  schedule_digests={"learn": dig["learn"] if lr else None, "eval": dig["eval"]},
                  logs=dict(learn="logs" if lr else None, eval="logs/eval", retries="<logs>/retries"))
         a = root / name; a.mkdir(parents=True, exist_ok=True)
         (a / "result.json").write_text(json.dumps(d))
+        write_sessions(root, name, sessions(WALL[name]))
         if logs and name in ("FLY", "RS", "COFF"):
             for k in range(n_flies):
                 for sub, nb in (("logs/eval", n), ("logs", lr)):
@@ -149,9 +179,10 @@ def test_cli_writes_summary(tmp_path, monkeypatch):
     s = json.loads((tmp_path / "results/summary/rescope_power.json").read_text())
     assert s["status"] in power.STATUSES and code == (0 if s["status"] == "SIZED" else 2)
     assert set(s["components"]) == {"FLY", "RS", "COFF", "RND"} and s["components"]["FLY"]["n_flies"] == 6
-    assert s["rates"]["sec_per_fly_battle_brain"] == pytest.approx(3600.0 / (6 * 60))
-    assert s["rates"]["sec_per_battle_nobrain"] == pytest.approx(12.0 / (6 * 20))
-    assert s["rate_record"]["sources"]["sec_per_fly_battle_brain"] == "FLY"
+    assert s["rates"]["sec_per_batch_battle_brain"] == pytest.approx(3600.0 / (1 * 60))   # 6 flies, 16 workers: 1 batch
+    assert s["rates"]["sec_per_batch_battle_nobrain"] == pytest.approx(12.0 / (1 * 20))
+    assert s["workers"] == 16 and s["rate_record"]["per_arm"]["FLY"]["batches"] == 1
+    assert s["rate_record"]["sources"]["sec_per_batch_battle_brain"] == "FLY"
     assert s["m_overlap"] == "yes" and s["m_overlap_hours_note"]
     assert "사전 추정" in s["pre_estimate"]["text"] and "40–50시간" in s["pre_estimate"]["text"]
     dec = s["fly_decisions"]["per_arm"]["FLY"]
@@ -171,6 +202,7 @@ def test_cli_sized_status_feeds_judge(tmp_path, monkeypatch):
     root = lay_out(tmp_path)
     for arm in ("FLY", "RS", "COFF", "RND"):
         edit(root, arm, lambda d: d.update(wall_clock_s=36.0))
+        write_sessions(root, arm, sessions(36.0))
     assert load().main(["--m-overlap", "no", "--allow-dirty"]) == 0
     s = json.loads((tmp_path / "results/summary/rescope_power.json").read_text())
     assert s["status"] == "SIZED" and s["F"] in power.GRID_F and s["E"] in power.GRID_E
@@ -213,6 +245,8 @@ def _wall_missing(d): d.pop("wall_clock_s")
 def _wall_nan(d): d["wall_clock_s"] = float("nan")
 def _wall_zero(d): d["wall_clock_s"] = 0
 def _flies_str(d): d["flies"] = "6"
+def _no_workers(d): d.pop("workers")
+def _zero_workers(d): d["workers"] = 0
 
 
 @pytest.mark.parametrize("arm, fn, match", [
@@ -220,7 +254,7 @@ def _flies_str(d): d["flies"] = "6"
     ("FLY", _other_phase, "phase"), ("COFF", _bad_eval_digest, "eval schedule digest"),
     ("RS", _bad_learn_digest, "learn schedule digest"), ("FLY", _wall_none, "wall_clock_s"),
     ("RND", _wall_missing, "wall_clock_s"), ("FLY", _wall_nan, "wall_clock_s"), ("RND", _wall_zero, "wall_clock_s"),
-    ("FLY", _flies_str, "integer")])
+    ("FLY", _flies_str, "integer"), ("FLY", _no_workers, "workers"), ("RND", _zero_workers, "workers")])
 def test_cli_refuses_malformed_pilot(tmp_path, monkeypatch, arm, fn, match):
     monkeypatch.chdir(tmp_path)
     root = lay_out(tmp_path)
@@ -288,8 +322,8 @@ def test_cli_rs_coff_wall_clock_optional_but_recorded(tmp_path, monkeypatch):
     edit(root, "RS", _wall_none)
     load().main(["--m-overlap", "no", "--allow-dirty"])
     s = json.loads((tmp_path / "results/summary/rescope_power.json").read_text())
-    assert s["rate_record"]["per_arm"]["RS"]["sec_per_battle"] is None
-    assert "undercount" in s["rate_record"]["sources"]["caveat"]
+    assert s["rate_record"]["per_arm"]["RS"]["sec_per_batch_battle"] is None
+    assert s["rate_record"]["sources"]["sec_per_batch_battle_brain"] == "FLY"
 
 
 def test_cli_missing_logs_recorded_not_sized_from(tmp_path, monkeypatch):
@@ -298,3 +332,84 @@ def test_cli_missing_logs_recorded_not_sized_from(tmp_path, monkeypatch):
     load().main(["--m-overlap", "no", "--allow-dirty"])
     s = json.loads((tmp_path / "results/summary/rescope_power.json").read_text())
     assert s["fly_decisions"]["per_arm"]["FLY"]["missing_logs"] and s["fly_decisions"]["projected_at_choice"] is None
+
+
+# ---- session log (fix round 1: an aborted session is counted, a session without an end refuses) ---------
+@pytest.mark.parametrize("arm", ["FLY", "RND"])
+def test_cli_refuses_session_without_end(tmp_path, monkeypatch, arm):
+    monkeypatch.chdir(tmp_path)
+    root = lay_out(tmp_path)
+    d = sessions(WALL[arm] / 2, WALL[arm] / 2)
+    d["sessions"].append(dict(started_utc="2026-09-28T02:00:00+00:00", ended_utc=None, seconds=None,
+                              status="running", played=None, complete=None))
+    write_sessions(root, arm, d)
+    with pytest.raises(SystemExit, match="no end record"):
+        load().main(["--m-overlap", "no", "--allow-dirty"])
+    assert not (tmp_path / "results/summary").exists()
+
+
+@pytest.mark.parametrize("arm", ["FLY", "RND"])
+def test_cli_refuses_missing_session_log(tmp_path, monkeypatch, arm):
+    monkeypatch.chdir(tmp_path)
+    root = lay_out(tmp_path)
+    (root / arm / "wall_clock.json").unlink()
+    with pytest.raises(SystemExit, match="session log"):
+        load().main(["--m-overlap", "no", "--allow-dirty"])
+
+
+def test_cli_refuses_sessions_not_summing_to_wall(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    root = lay_out(tmp_path)
+    write_sessions(root, "FLY", sessions(1000.0))
+    with pytest.raises(SystemExit, match="sum to"):
+        load().main(["--m-overlap", "no", "--allow-dirty"])
+
+
+def test_cli_aborted_session_is_counted(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    root = lay_out(tmp_path)
+    d = sessions(1000.0, status="aborted")
+    d["sessions"] += sessions(2600.0)["sessions"]
+    write_sessions(root, "FLY", d)                              # 1000 + 2600 == FLY wall_clock_s 3600
+    load().main(["--m-overlap", "no", "--allow-dirty"])
+    s = json.loads((tmp_path / "results/summary/rescope_power.json").read_text())
+    r = s["rate_record"]["per_arm"]["FLY"]
+    assert r["sessions"] == 2 and r["aborted_sessions"] == 1 and r["sec_per_batch_battle"] == pytest.approx(3600 / 60)
+
+
+def test_cli_judge_workers_recorded_and_scale_hours(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    lay_out(tmp_path)
+    load().main(["--m-overlap", "no", "--allow-dirty", "--workers", "4"])
+    s = json.loads((tmp_path / "results/summary/rescope_power.json").read_text())
+    rates = s["rates"]
+    assert s["workers"] == 4
+    assert all(r["hours"] == pytest.approx(power.wall_hours(r["F"], r["E"], rates, SPEC, 4)) for r in s["table"])
+
+
+# ---- run_rescope_battles session bookkeeping ------------------------------------------------------------
+def load_battles():
+    spec = importlib.util.spec_from_file_location("rrb", ROOT / "scripts/run_rescope_battles.py")
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    return mod
+
+
+def test_battles_sessions_count_aborted_and_leave_killed_open(tmp_path, monkeypatch):
+    import time
+    from flymon.brain.config import Params
+    monkeypatch.chdir(tmp_path)
+    mod = load_battles()
+    out = Path("results/rescope/pilot/FLY")
+    t0 = time.time() - 10.0
+    i = mod.open_session(out, t0, [Params()])
+    mod.close_session(out, i, t0, "aborted", None, [Params()])          # an exception in session 0
+    k = mod.open_session(out, time.time(), [Params()])                     # session 1 killed hard: never closed
+    t2 = time.time() - 5.0
+    j = mod.open_session(out, t2, [Params()])
+    run = {"played": {"L": ["a", "b"], "E": ["c"]}, "complete": True}
+    total = mod.close_session(out, j, t2, "ok", run, [Params()])
+    ss = json.loads((out / "wall_clock.json").read_text())["sessions"]
+    assert [x["status"] for x in ss] == ["aborted", "running", "ok"] and (i, k, j) == (0, 1, 2)
+    assert ss[1]["ended_utc"] is None and ss[2]["played"] == {"L": 2, "E": 1} and ss[2]["complete"] is True
+    assert total == pytest.approx(ss[0]["seconds"] + ss[2]["seconds"]) and total >= 15.0
+    assert load().session_reasons("FLY", out / "wall_clock.json", total)          # the killed session refuses

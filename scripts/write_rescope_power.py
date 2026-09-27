@@ -2,7 +2,7 @@
 """Re-scoped claim, stage 4 sizing (spec 10.7, plan R8 / R9): pilot variance components -> joint (2b) power -> the
 cheapest (F, E) on the grid -> the 60-hour budget.
 
-    uv run python scripts/write_rescope_power.py --m-overlap no
+    uv run python scripts/write_rescope_power.py --m-overlap no [--workers 16]
     uv run python scripts/write_rescope_power.py --smoke --m-overlap no --allow-dirty
 
 Reads results/rescope/pilot/<ARM>/result.json for ARM in FLY RS COFF RND (--smoke: results/rescope-smoke/pilot/...)
@@ -11,19 +11,22 @@ results/summary/). status is SIZED | STOP_BUDGET | STOP_POWER (flymon.rescope.po
 requires SIZED and F / E equal to its --flies / --eval. Exit 0 on SIZED, 2 on a STOP.
 
 Per-arm components come from the evaluation-block win tables (flymon.rescope.stats.win_table: unfinished = loss,
-INVALID flies - incl. RS donor_invalid / residual > max / eval weights changed - excluded). Rates:
-sec_per_fly_battle_brain = FLY wall_clock_s / (flies x (learn + eval)), sec_per_battle_nobrain = RND wall_clock_s /
-(flies x eval); RS / COFF rates are recorded only. Fly decisions per battle (decision records with decider "fly" in
+INVALID flies - incl. RS donor_invalid / residual > max / eval weights changed - excluded). Rates (batch model,
+plan R11): sec_per_batch_battle_brain = FLY wall_clock_s / (ceil(flies / W_FLY) x (learn + eval)),
+sec_per_batch_battle_nobrain = RND wall_clock_s / (ceil(flies / W_RND) x eval), W_arm = the pilot result.json's
+`workers`; power.wall_hours scales them by ceil(F / --workers) (the judge's workers, default 16, recorded). RS / COFF
+rates are recorded only. Fly decisions per battle (decision records with decider "fly" in
 the logs named by result.json["logs"]) are recorded with the decisions implied by the chosen (F, E).
 
 Refusals (SystemExit, nothing written): a pilot arm file missing / unreadable / of another arm, phase or smoke flag /
 not complete / malformed (stats.check_arm); fly or eval counts that differ between arms, or (non-smoke) a pilot size
 other than R9 (6 flies, learn 40, eval 20); schedule digests that are not the pilot ones (SPEC.schedule_seeds
 "pilot", recomputed from the arm's flies / learn / eval) or an eval_schedule.json that differs; fewer than two valid
-flies in an arm; a FLY or RND wall_clock_s that is missing, None, non-finite or <= 0 (never sized on a guessed rate);
-a dirty flymon/rescope/ or this script without --allow-dirty; an existing non-smoke summary without --force.
-Caveat recorded in the summary: an arm session that ended in an exception writes no wall_clock.json entry, so a
-resumed arm's wall_clock_s can undercount.
+flies in an arm; for FLY and RND (the rate arms): a wall_clock_s that is missing, None, non-finite or <= 0, a
+`workers` that is not an integer >= 1, a session log <arm>/wall_clock.json that is missing / unreadable / empty, any
+session without an end record (status ok / aborted, ended_utc, seconds; a hard-killed session's time is unknown), or
+session seconds that do not sum to wall_clock_s (never sized on an undercounted or guessed rate); a dirty
+flymon/rescope/ or this script without --allow-dirty; an existing non-smoke summary without --force.
 """
 from __future__ import annotations
 
@@ -54,8 +57,8 @@ PRE_ESTIMATE = (                                  # spec 10.7's bullet, verbatim
     '\n'
     '최소 관심 효과나 예산의 조정은 **어떤 판정 데이터보다 먼저** 날짜 붙은 개정으로 한다. 최소 관심 효과 0.05는 RND → MAX 폭(0.32, 원 스펙 B.2)의 16%다.')
 PRE_ESTIMATE_SOURCE = "docs/superpowers/specs/2026-09-28-rescoped-claim-design.md section 10.7"
-WALL_CAVEAT = ("wall_clock_s sums the sessions recorded in <arm>/wall_clock.json; a session that ended in an exception "
-               "records none, so a resumed arm's wall_clock_s may undercount")
+RATE_ARMS = ("FLY", "RND")
+WALL_TOL_S = 0.05
 
 
 def paths(smoke: bool) -> tuple:
@@ -146,32 +149,71 @@ def load_pilot(root: Path, smoke: bool, spec=SPEC) -> tuple:
         n = len(stats.win_table(d, spec))
         if n < 2:
             reasons.append(f"{a}: {n} valid flies (a between-fly variance needs >= 2)")
-    for a in ("FLY", "RND"):
+    for a in RATE_ARMS:
         if _wall(arms[a]) is None:
             reasons.append(f"{a}: wall_clock_s {arms[a].get('wall_clock_s')!r} is missing / not a positive number "
                            "(the rate cannot be measured; rerun or record the arm's wall clock)")
+        w = arms[a].get("workers")
+        if not _int(w) or w < 1:
+            reasons.append(f"{a}: workers {w!r} is not an integer >= 1 (the batch model needs the pilot's workers)")
+        reasons += session_reasons(a, root / a / "wall_clock.json", arms[a].get("wall_clock_s"))
     if reasons:
         raise SystemExit("refusing: the pilot cannot be sized from:\n  " + "\n  ".join(reasons))
     return arms, inputs
 
 
+def _sessions(p: Path):
+    """The session list of <arm>/wall_clock.json, or a reason string."""
+    if not p.exists():
+        return f"{p} does not exist"
+    try:
+        ss = json.loads(p.read_text())["sessions"]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as e:
+        return f"{p} unreadable ({e!r})"
+    if not isinstance(ss, list) or not ss or not all(isinstance(x, dict) for x in ss):
+        return f"{p} has no session list"
+    return ss
+
+
+def _ended(x: dict) -> bool:
+    sec = x.get("seconds")
+    return (x.get("status") in ("ok", "aborted") and isinstance(x.get("ended_utc"), str)
+            and isinstance(sec, (int, float)) and not isinstance(sec, bool) and math.isfinite(sec) and sec >= 0)
+
+
+def session_reasons(arm: str, p: Path, wall) -> list:
+    """Why this arm's session log cannot back its wall_clock_s (empty = it can)."""
+    ss = _sessions(p)
+    if isinstance(ss, str):
+        return [f"{arm}: session log {ss} (wall_clock_s cannot be checked for undercounting)"]
+    open_ = [i for i, x in enumerate(ss) if not _ended(x)]
+    if open_:
+        return [f"{arm}: {p} sessions {open_} have no end record (killed hard; their time is unknown, so "
+                "wall_clock_s undercounts)"]
+    total = sum(x["seconds"] for x in ss)
+    if isinstance(wall, (int, float)) and not isinstance(wall, bool) and abs(total - wall) > WALL_TOL_S:
+        return [f"{arm}: {p} sessions sum to {total:.2f} s but wall_clock_s is {wall}"]
+    return []
+
+
 def rates_of(arms: dict, root: Path) -> tuple:
-    """(rates for power.wall_hours, per-arm rate record incl. which arms supplied the rates)."""
+    """(rates for power.wall_hours: seconds per battle-per-fly of one batch, per-arm rate record incl. which arms
+    supplied the rates). Batch model (plan R11): an arm's wall clock / (ceil(flies / workers) x battles per fly)."""
     rec = {}
     for a, d in arms.items():
-        per = d["flies"] * (d["learn"] + d["eval"])
-        wc = root / a / "wall_clock.json"
-        try:
-            sessions = len(json.loads(wc.read_text())["sessions"]) if wc.exists() else None
-        except (OSError, json.JSONDecodeError, KeyError, TypeError):
-            sessions = None
-        w = _wall(d)
-        rec[a] = dict(wall_clock_s=d.get("wall_clock_s"), battles=per, sec_per_battle=None if w is None else w / per,
-                      wall_clock_sessions=sessions, m_overlap_note=d.get("m_overlap_note"))
-    rates = dict(sec_per_fly_battle_brain=rec["FLY"]["sec_per_battle"],
-                 sec_per_battle_nobrain=rec["RND"]["sec_per_battle"])
-    src = dict(sec_per_fly_battle_brain="FLY", sec_per_battle_nobrain="RND", recorded_only=["RS", "COFF"],
-               caveat=WALL_CAVEAT)
+        per_fly = d["learn"] + d["eval"]
+        w, W = _wall(d), d.get("workers")
+        B = power.batches(d["flies"], W) if _int(W) and W >= 1 else None
+        ss = _sessions(root / a / "wall_clock.json")
+        ss = [] if isinstance(ss, str) else ss
+        rec[a] = dict(wall_clock_s=d.get("wall_clock_s"), workers=W, batches=B, battles_per_fly=per_fly,
+                      sec_per_batch_battle=None if w is None or B is None else w / (B * per_fly),
+                      sessions=len(ss), aborted_sessions=sum(1 for x in ss if x.get("status") == "aborted"),
+                      m_overlap_note=d.get("m_overlap_note"))
+    rates = dict(sec_per_batch_battle_brain=rec["FLY"]["sec_per_batch_battle"],
+                 sec_per_batch_battle_nobrain=rec["RND"]["sec_per_batch_battle"])
+    src = dict(sec_per_batch_battle_brain="FLY", sec_per_batch_battle_nobrain="RND", recorded_only=["RS", "COFF"],
+               model="batch (plan R11): hours scale with ceil(F / workers)")
     return rates, dict(per_arm=rec, sources=src)
 
 
@@ -210,11 +252,11 @@ def projected_decisions(dec: dict, F, E, spec=SPEC):
     return 2 * F * spec.learn_battles * le + 3 * F * E * ev
 
 
-def summarize(root: Path, smoke: bool, m_overlap: str, spec=SPEC) -> dict:
+def summarize(root: Path, smoke: bool, m_overlap: str, workers: int = 16, spec=SPEC) -> dict:
     arms, inputs = load_pilot(root, smoke, spec)
     comp = {a: power.components(stats.win_table(d, spec)) for a, d in arms.items()}
     rates, rate_rec = rates_of(arms, root)
-    out = power.choose(comp, rates, spec)
+    out = power.choose(comp, rates, spec, workers=workers)
     dec = {a: decisions(root, a, arms[a], spec) for a in BRAIN}
     pilot = {a: dict(flies=d["flies"], learn=d["learn"], eval=d["eval"],
                      invalid_flies=sorted(k for k, r in stats.fly_rows(d) if stats.row_invalid(r, spec)),
@@ -222,7 +264,7 @@ def summarize(root: Path, smoke: bool, m_overlap: str, spec=SPEC) -> dict:
     note = ("the pilot shared the CPU with M's runs: the rates and the extrapolated hours carry that load"
             if m_overlap == "yes" else None)
     return dict(out, components=comp, rates=rates, rate_record=rate_rec, pilot=pilot, inputs=inputs,
-                m_overlap=m_overlap, m_overlap_hours_note=note,
+                m_overlap=m_overlap, m_overlap_hours_note=note, workers=workers,
                 fly_decisions=dict(per_arm=dec, projected_at_choice=projected_decisions(dec, out["F"], out["E"], spec)),
                 grid=dict(F=list(power.GRID_F), E=list(power.GRID_E)),
                 pre_estimate=dict(text=PRE_ESTIMATE, source=PRE_ESTIMATE_SOURCE))
@@ -232,10 +274,13 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--m-overlap", choices=("yes", "no"), required=True,
                     help="whether the pilot shared the CPU with M's runs (recorded verbatim)")
+    ap.add_argument("--workers", type=int, default=16, help="the judge run's FlyPool workers (batch model, R11)")
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--allow-dirty", action="store_true")
     ap.add_argument("--force", action="store_true", help="overwrite an existing results/summary/rescope_power.json")
     a = ap.parse_args(argv)
+    if a.workers < 1:
+        ap.error("--workers must be >= 1")
     root, summary = paths(a.smoke)
     gp = [Params()]
     guard(summary, gp)
@@ -245,7 +290,7 @@ def main(argv=None) -> int:
     if git["dirty"] and not a.allow_dirty:
         raise SystemExit(f"refusing: uncommitted changes in {git['dirty_files']} (commit them or pass --allow-dirty)")
     started = dt.datetime.now(dt.timezone.utc).isoformat()
-    v = summarize(root, a.smoke, a.m_overlap, SPEC)
+    v = summarize(root, a.smoke, a.m_overlap, a.workers, SPEC)
     v.update(smoke=a.smoke, root=str(root), power_draws=SPEC.power_draws, seed=SPEC.boot_seed,
              spec=dataclasses.asdict(SPEC),
              provenance=dict(git=git, started_utc=started, finished_utc=dt.datetime.now(dt.timezone.utc).isoformat(),

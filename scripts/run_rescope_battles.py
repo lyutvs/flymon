@@ -23,7 +23,11 @@ All refusals run before any pool or server starts. Server errors: an unfinished 
 entry up to SPEC.retry_max times (counted per battle), beyond that the fly is INVALID. --smoke forces --flies 2
 --learn 2 --eval 2 --workers 2 and an --out under results/rescope-smoke/<phase>/.
 Writes <out>/result.json only once the arm is complete: {phase, arm, flies, learn, eval, recovery_per_pulse,
-schedule_digests, per_fly, wall_clock_s, m_overlap_note, provenance, ...}.
+schedule_digests, per_fly, wall_clock_s, workers, m_overlap_note, provenance, ...}.
+Wall clock: every session that passes the refusals is appended to <out>/wall_clock.json at its start (status
+"running", no end) and ended in a finally (status "ok", or "aborted" on an exception / interrupt, with start, end and
+seconds); result.json's wall_clock_s is the sum over all ended sessions, aborted ones included. A session left
+without an end record (killed hard) makes write_rescope_power refuse to size from the arm.
 """
 from __future__ import annotations
 
@@ -315,86 +319,93 @@ def main(argv=None) -> int:
     git = git_provenance(files=sorted(glob.glob("flymon/rescope/*.py")) + ["scripts/run_rescope_battles.py"])
     if git["dirty"] and not a.allow_dirty:
         raise SystemExit(f"refusing: uncommitted changes in {git['dirty_files']} (commit them or pass --allow-dirty)")
-    if create_eval:
-        write_json(eval_file, dict(digest=digests["eval"], schedule=blocks.schedule_rows(eval_)), [Params()])
+    sess = open_session(out, t0, [Params()])      # after every refusal: a refused start is not a session
+    closed = {"wall": None}
+    try:
+        if create_eval:
+            write_json(eval_file, dict(digest=digests["eval"], schedule=blocks.schedule_rows(eval_)), [Params()])
 
-    import asyncio
-    import numpy as np
-    from poke_env.ps_client import ServerConfiguration
-    from flymon.agent.config import config_hash, load_c3_config
-    from flymon.battle.server import ShowdownServer
+        import asyncio
+        import numpy as np
+        from poke_env.ps_client import ServerConfiguration
+        from flymon.agent.config import config_hash, load_c3_config
+        from flymon.battle.server import ShowdownServer
 
-    cfg = load_c3_config()
-    params = cfg.params if r is None else dataclasses.replace(cfg.params, recovery_per_pulse=r)
-    cfg_r = dataclasses.replace(cfg, params=params)
-    gp = [params]
-    started = dt.datetime.now(dt.timezone.utc).isoformat()
-    prov = dict(git=git, started_utc=started, argv=list(sys.argv[1:] if argv is None else argv), npz=a.npz,
-                taurec=taurec, power=power, eval_schedule=dict(path=str(eval_file), digest=digests["eval"]),
-                donor=None if donor is None else dict(path=str(donor_dir), provenance=donor.get("provenance")))
-    out.mkdir(parents=True, exist_ok=True)
-    key = config_hash(cfg_r) if a.arm in BRAIN else hashlib_key(a.arm)
+        cfg = load_c3_config()
+        params = cfg.params if r is None else dataclasses.replace(cfg.params, recovery_per_pulse=r)
+        cfg_r = dataclasses.replace(cfg, params=params)
+        gp = [params]
+        started = dt.datetime.now(dt.timezone.utc).isoformat()
+        prov = dict(git=git, started_utc=started, argv=list(sys.argv[1:] if argv is None else argv), npz=a.npz,
+                    taurec=taurec, power=power, eval_schedule=dict(path=str(eval_file), digest=digests["eval"]),
+                    donor=None if donor is None else dict(path=str(donor_dir), provenance=donor.get("provenance")))
+        out.mkdir(parents=True, exist_ok=True)
+        key = config_hash(cfg_r) if a.arm in BRAIN else hashlib_key(a.arm)
 
-    def srv_config(srv):
-        return ServerConfiguration(srv.url_ws, "https://play.pokemonshowdown.com/action.php?")
+        def srv_config(srv):
+            return ServerConfiguration(srv.url_ws, "https://play.pokemonshowdown.com/action.php?")
 
-    yoke = None
-    if a.arm == "RS":
-        from flymon.rescope.yoke import YokedQueue
-        yoke = blocks.YokeBook(out / "yoke_state.json", {
-            k: YokedQueue.from_log(donor_dir / "logs" / f"fly{k:02d}.jsonl", blocks.ids_of(learn, k))
-            for k in range(a.flies)})
+        yoke = None
+        if a.arm == "RS":
+            from flymon.rescope.yoke import YokedQueue
+            yoke = blocks.YokeBook(out / "yoke_state.json", {
+                k: YokedQueue.from_log(donor_dir / "logs" / f"fly{k:02d}.jsonl", blocks.ids_of(learn, k))
+                for k in range(a.flies)})
 
-    if a.arm in BRAIN:
-        from flymon.agent.encode import Encoder
-        from flymon.agent.swarm import BrainSwarm
-        from flymon.brain.circuits import Populations
-        from flymon.brain.connectome import Connectome
-        from flymon.brain.fly_pool import FlyPool, FlySpec
-        from flymon.brain.h4_jobs import type_cells
-        conn = Connectome.load(a.npz); pops = Populations.from_connectome(conn)
-        enc = Encoder(pops)
-        on = a.arm != "COFF"
-        with FlyPool(a.npz, params, [FlySpec(enabled=on) for _ in range(a.flies)], workers=a.workers,
-                     timeout_s=POOL_TIMEOUT_S) as pool:
-            swarm = BrainSwarm(pool, cfg_r, type_cells(conn, [cfg.readout["A"], cfg.readout["P"]]), pops.kc,
-                               mode="learn" if on else "eval")
-            try:
-                with ShowdownServer(port=_port()) as srv:
-                    run = asyncio.run(_drive(a, out, srv_config(srv), key, spec, learn, eval_, pool, swarm, enc, yoke))
-                medians = {f: swarm.median_ratio(f) for f in range(a.flies)} if run["complete"] else None
-            finally:
-                swarm._exec.shutdown(wait=True)   # BrainSwarm has no close(); its executor must not outlive the pool
-    else:
-        medians = None
-        with ShowdownServer(port=_port()) as srv:
-            run = asyncio.run(_drive(a, out, srv_config(srv), key, spec, None, eval_, None, None, None, None))
+        if a.arm in BRAIN:
+            from flymon.agent.encode import Encoder
+            from flymon.agent.swarm import BrainSwarm
+            from flymon.brain.circuits import Populations
+            from flymon.brain.connectome import Connectome
+            from flymon.brain.fly_pool import FlyPool, FlySpec
+            from flymon.brain.h4_jobs import type_cells
+            conn = Connectome.load(a.npz); pops = Populations.from_connectome(conn)
+            enc = Encoder(pops)
+            on = a.arm != "COFF"
+            with FlyPool(a.npz, params, [FlySpec(enabled=on) for _ in range(a.flies)], workers=a.workers,
+                         timeout_s=POOL_TIMEOUT_S) as pool:
+                swarm = BrainSwarm(pool, cfg_r, type_cells(conn, [cfg.readout["A"], cfg.readout["P"]]), pops.kc,
+                                   mode="learn" if on else "eval")
+                try:
+                    with ShowdownServer(port=_port()) as srv:
+                        run = asyncio.run(_drive(a, out, srv_config(srv), key, spec, learn, eval_, pool, swarm, enc, yoke))
+                    medians = {f: swarm.median_ratio(f) for f in range(a.flies)} if run["complete"] else None
+                finally:
+                    swarm._exec.shutdown(wait=True)   # BrainSwarm has no close(); its executor must not outlive the pool
+        else:
+            medians = None
+            with ShowdownServer(port=_port()) as srv:
+                run = asyncio.run(_drive(a, out, srv_config(srv), key, spec, None, eval_, None, None, None, None))
 
-    wall = _wall_clock(out, t0, run, gp)
-    if not run["complete"]:
-        print(f"{a.arm}: stopped before completion (played {sum(len(v) for v in run['played'].values())}); "
-              "rerun with --resume", flush=True)
+        wall = closed["wall"] = close_session(out, sess, t0, "ok", run, gp)
+        if not run["complete"]:
+            print(f"{a.arm}: stopped before completion (played {sum(len(v) for v in run['played'].values())}); "
+                  "rerun with --resume", flush=True)
+            return 0
+        per_fly = blocks.arm_per_fly(out, n_flies=a.flies, eval_=eval_, run=run, learn=learn, yoke=yoke, spec=spec,
+                                     brain=a.arm in BRAIN,
+                                     extra=None if donor is None else {row["fly"]: dict(donor_invalid=row["invalid"])
+                                                                       for row in donor["per_fly"]},
+                                     weight_medians=medians)
+        frozen = all(row["weights_bit_identical_across_eval"] is not False for row in per_fly)
+        res = dict(phase=a.phase, arm=a.arm, flies=a.flies, learn=a.learn if learn else 0, eval=a.eval,
+                   recovery_per_pulse=r, schedule_digests=digests, per_fly=per_fly, wall_clock_s=wall,
+                   workers=a.workers, wall_clock_sessions=str(out / "wall_clock.json"),
+                   m_overlap_note=a.m_overlap_note, complete=True, smoke=a.smoke, retry_max=spec.retry_max,
+                   residual_max=spec.residual_max, eval_weights_frozen=frozen, n_invalid=sum(row["invalid"] for row in per_fly),
+                   logs=dict(learn="logs" if learn else None, eval="logs/eval", retries="<logs>/retries"),
+                   provenance=dict(prov, finished_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
+        write_json(out / "result.json", res, gp)
+        wins = [np.mean([b["won"] is True for b in row["eval_battles"]]) for row in per_fly]
+        print(f"{a.arm}: eval win rate {float(np.mean(wins)):.3f} over {a.flies} flies, invalid {res['n_invalid']}, "
+              f"weights frozen in eval {frozen}; wrote {out / 'result.json'}", flush=True)
+        if not frozen:
+            print("SAFETY: weights changed during the evaluation block (spec 4.5); stop and report", file=sys.stderr)
+            return 3
         return 0
-    per_fly = blocks.arm_per_fly(out, n_flies=a.flies, eval_=eval_, run=run, learn=learn, yoke=yoke, spec=spec,
-                                 brain=a.arm in BRAIN,
-                                 extra=None if donor is None else {row["fly"]: dict(donor_invalid=row["invalid"])
-                                                                   for row in donor["per_fly"]},
-                                 weight_medians=medians)
-    frozen = all(row["weights_bit_identical_across_eval"] is not False for row in per_fly)
-    res = dict(phase=a.phase, arm=a.arm, flies=a.flies, learn=a.learn if learn else 0, eval=a.eval,
-               recovery_per_pulse=r, schedule_digests=digests, per_fly=per_fly, wall_clock_s=wall,
-               m_overlap_note=a.m_overlap_note, complete=True, smoke=a.smoke, retry_max=spec.retry_max,
-               residual_max=spec.residual_max, eval_weights_frozen=frozen, n_invalid=sum(row["invalid"] for row in per_fly),
-               logs=dict(learn="logs" if learn else None, eval="logs/eval", retries="<logs>/retries"),
-               provenance=dict(prov, finished_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
-    write_json(out / "result.json", res, gp)
-    wins = [np.mean([b["won"] is True for b in row["eval_battles"]]) for row in per_fly]
-    print(f"{a.arm}: eval win rate {float(np.mean(wins)):.3f} over {a.flies} flies, invalid {res['n_invalid']}, "
-          f"weights frozen in eval {frozen}; wrote {out / 'result.json'}", flush=True)
-    if not frozen:
-        print("SAFETY: weights changed during the evaluation block (spec 4.5); stop and report", file=sys.stderr)
-        return 3
-    return 0
+    finally:
+        if closed["wall"] is None:                 # an exception / interrupt: the session still counts
+            close_session(out, sess, t0, "aborted", None, [Params()])
 
 
 def hashlib_key(arm: str) -> str:
@@ -414,15 +425,29 @@ async def _drive(a, out, srv_cfg, key, spec, learn, eval_, pool, swarm, enc, yok
         await b.close()
 
 
-def _wall_clock(out: Path, t0: float, run: dict, gp) -> float:
-    """Wall-clock over every session of this arm (resumes add up): out/wall_clock.json."""
+def open_session(out: Path, t0: float, gp) -> int:
+    """Append this session to out/wall_clock.json ({"sessions": [...]}) with status "running" and no end; returns its
+    index. close_session fills the end (also from main's finally on an exception / interrupt, status "aborted"), so
+    a session without an end record was killed hard (its time is unknown; write_rescope_power refuses to size)."""
     p = out / "wall_clock.json"
     d = json.loads(p.read_text()) if p.exists() else {"sessions": []}
-    d["sessions"].append(dict(seconds=round(time.time() - t0, 2),
-                              played={k: len(v) for k, v in run["played"].items()},
-                              finished_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
+    d["sessions"].append(dict(started_utc=dt.datetime.fromtimestamp(t0, dt.timezone.utc).isoformat(), ended_utc=None,
+                              seconds=None, status="running", played=None, complete=None))
     write_json(p, d, gp)
-    return round(sum(s["seconds"] for s in d["sessions"]), 2)
+    return len(d["sessions"]) - 1
+
+
+def close_session(out: Path, idx: int, t0: float, status: str, run: dict | None, gp) -> float:
+    """End session idx (status "ok" | "aborted"); returns the wall clock summed over every session with an end record
+    (aborted ones included: their CPU time was spent on this arm)."""
+    p = out / "wall_clock.json"
+    d = json.loads(p.read_text())
+    d["sessions"][idx].update(ended_utc=dt.datetime.now(dt.timezone.utc).isoformat(),
+                              seconds=round(time.time() - t0, 2), status=status,
+                              played=None if run is None else {k: len(v) for k, v in run["played"].items()},
+                              complete=None if run is None else bool(run["complete"]))
+    write_json(p, d, gp)
+    return round(sum(x["seconds"] for x in d["sessions"] if x.get("seconds") is not None), 2)
 
 
 if __name__ == "__main__":

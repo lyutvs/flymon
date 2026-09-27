@@ -5,8 +5,16 @@ joint (2b) power by Monte Carlo of the two z statistics FLY - COFF and FLY - RS,
 noise (drawn once per draw and shared), spec.power_draws draws, seed spec.boot_seed. Power is computed at the MIE
 alternative: both (2b) differences are spec.mie; (2a)'s power uses the pilot's measured FLY - RND gap and is
 recorded only.
+
+Wall clock (plan R11, 2026-09-28 supplement): batch model. Every arm plays all its flies concurrently (runner.run_cohort
+gathers one loop per fly) and the brain arms' decisions go through a FlyPool of W workers, so an arm's time scales
+with the number of batches ceil(F / W), not with F: per-batch-battle rates are measured on the pilot as
+wall_clock_s / (ceil(F_pilot / W_pilot) x battles per fly) and multiplied by ceil(F / W) x battles per fly at the
+judge's W. The no-brain arms (RND, MAX) run the same way and use the same form.
 """
 from __future__ import annotations
+
+import math
 
 import numpy as np
 
@@ -49,19 +57,29 @@ def joint_power(comp: dict, F: int, E: int, spec) -> dict:
                 p_2b=float((out["COFF"] & out["RS"]).mean()), p_2a=float(out["RND"].mean()))
 
 
-def wall_hours(F, E, rates, spec) -> float:
-    """FLY and RS (serial, after FLY) learn + eval, COFF eval only, RND and MAX eval only on the no-brain rate."""
-    b, s = rates["sec_per_fly_battle_brain"], rates["sec_per_battle_nobrain"]
-    L = spec.learn_battles
-    return (2 * F * (L + E) * b + F * E * b + 2 * F * E * s) / 3600.0
+def batches(F: int, workers: int) -> int:
+    if workers < 1 or F < 1:
+        raise ValueError(f"F and workers must be >= 1, got F={F} workers={workers}")
+    return math.ceil(F / workers)
 
 
-def choose(comp, rates, spec, grid_F=GRID_F, grid_E=GRID_E) -> dict:
+def wall_hours(F, E, rates, spec, workers) -> float:
+    """B = ceil(F / workers) batches; FLY and RS (serial, after FLY) B x (L + E) brain batch-battles each, COFF B x E
+    brain batch-battles, RND and MAX B x E no-brain batch-battles each. rates = {"sec_per_batch_battle_brain",
+    "sec_per_batch_battle_nobrain"} (seconds per battle-per-fly of one batch)."""
+    b, s = rates["sec_per_batch_battle_brain"], rates["sec_per_batch_battle_nobrain"]
+    L, B = spec.learn_battles, batches(F, workers)
+    return (2 * B * (L + E) * b + B * E * b + 2 * B * E * s) / 3600.0
+
+
+def choose(comp, rates, spec, workers: int = 16, grid_F=GRID_F, grid_E=GRID_E) -> dict:
+    """Among grid points with p_2b >= power_target the smallest wall_hours at the judge's workers (ties: fewer
+    flies); none -> STOP_POWER; the best above budget_hours -> STOP_BUDGET (still reported)."""
     table = []
     for F in grid_F:
         for E in grid_E:
             jp = joint_power(comp, F, E, spec)
-            table.append(dict(F=F, E=E, hours=wall_hours(F, E, rates, spec), **jp))
+            table.append(dict(F=F, E=E, hours=wall_hours(F, E, rates, spec, workers), **jp))
     ok = [r for r in table if r["p_2b"] >= spec.power_target]
     if not ok:
         return dict(status="STOP_POWER", F=None, E=None, hours=None, p_2b=None, table=table)

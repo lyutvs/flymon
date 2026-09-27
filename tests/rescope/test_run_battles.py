@@ -418,3 +418,30 @@ def test_coff_and_nobrain_arms_play_eval_only(tmp_path):
     assert nb["complete"] and nb["after"] == {}
     rows = blocks.arm_per_fly(tmp_path / "RND", n_flies=2, eval_=ev, run=nb, brain=False)
     assert [len(r["eval_battles"]) for r in rows] == [2, 2] and rows[0]["weights_bit_identical_across_eval"] is None
+
+
+# ---- wall-clock sessions (Task 10 fix round 1) ----------------------------------------------------------
+def test_aborted_session_is_recorded_and_refusal_is_not(tmp_path, monkeypatch):
+    """An exception after the refusals still ends the session (status aborted, seconds) in the finally; a refused start
+    appends nothing."""
+    import flymon.agent.config as agent_config
+    monkeypatch.chdir(tmp_path)
+
+    def boom():
+        raise RuntimeError("engine down")
+    monkeypatch.setattr(agent_config, "load_c3_config", boom)
+    mod = load()
+    mod.git_provenance = lambda files=(): {"commit": "c" * 40, "dirty": False, "dirty_files": []}
+    args = ["--phase", "pilot", "--arm", "RND", "--flies", "2", "--eval", "2", "--out", "results/rescope/pilot/RND"]
+    with pytest.raises(RuntimeError, match="engine down"):
+        mod.main(args)
+    with pytest.raises(RuntimeError):
+        mod.main(args + ["--resume"])
+    wc = tmp_path / "results/rescope/pilot/RND/wall_clock.json"
+    ss = json.loads(wc.read_text())["sessions"]
+    assert [x["status"] for x in ss] == ["aborted", "aborted"]
+    assert all(isinstance(x["seconds"], float) and x["ended_utc"] for x in ss)
+    (tmp_path / "results/rescope/pilot/RND/result.json").write_text("{}")
+    with pytest.raises(SystemExit, match="exists"):
+        mod.main(args)                                        # refused: result.json exists, no --resume
+    assert len(json.loads(wc.read_text())["sessions"]) == 2
