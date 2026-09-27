@@ -2,7 +2,7 @@
 
 MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
 M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
-M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). M3 인프라만 완료(판정 없음), M4는 보류.
+M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). 판독 확장(가르치는 구획 재선택) — 닫힘(부록 M.11). M3 인프라만 완료(판정 없음), M4는 보류.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
 
@@ -158,6 +158,9 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   짝수 21쌍 + 홀수 20쌍(C3 오라클로 새로 라벨, 시험 가능 2/20)으로 "MBON13 바닥 가드 + 지표 하나의 문턱"을 맞췄고, 최종 규칙 G ∧ S > 0.186의 턴 단위 LOO 정밀도가
   **7/15 = 0.467**로 게이트 0.6에 못 미쳤다(`SCREEN_IMPRECISE`). 사전 선언대로 **순진 판독 선별 주장을 닫고**, 새 세트는 돌리지 않았다.
   C3의 D.6: (a) 미발동(최대 100 Hz — 옛 기록의 (a) 충족은 C0 엔진의 값이었다), (b) 발동(16턴 중 7턴). M3 인프라(에이전트 루프·체크포인트·로그·스모크)는 판정 없이 병행 완료했다. 다음은 새 주장 선언이다.
+- **안 된 것(판독 확장, 2026-09-28, 스펙 부록 M.11)**: 판독이 MBON13·MBON05 두 타입뿐이라는 대안 설명을 겨눠, 가르치는 DAN 구획(PPL1 처벌 × PAM 보상)을 다시 고르고
+  그 core MBON 세포 집단으로 읽었다. core KC 입력의 X 전용 몫이 현 조합보다 큰 후보(보상 5·처벌 2) 가운데 반응 가드를 통과한 것을 팔별로 스캔하고 상위 조합을 함께 편집했더니
+  최선 PPL106·PAM12도 짝수 턴 시험 가능 **7/21**(C3와 같음, F_a 1)로 M2 기준에 못 미쳤다(`STOP_NO_GAIN`). 판정 세트는 쓰지 않았다. 이것으로 이번 라운드의 지렛대 탐색을 끝낸다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -213,6 +216,12 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   and the new pair set was never run. D.6 on C3: (a) not met (max 100 Hz; the earlier "met" record was the C0 engine's),
   (b) met on 7 of 16 turns. The M3 infrastructure (agent loop, checkpoints, logs, smoke) was finished in parallel with
   no judgement attached. Next: a new claim declaration.
+- **Readout expansion: closed (2026-09-28, spec M.11).** Aimed at the alternative explanation "the readout is only
+  MBON13 and MBON05": the taught DAN compartments (PPL1 punish x PAM reward) were re-chosen and read as their core MBON
+  cell populations. Among candidates whose core KC input had a larger X-only share than the incumbents (5 reward, 2
+  punish) and that passed the reactivity guard, a per-arm scan and a joint check of the top combinations gave at best
+  PPL106·PAM12 with 7 of 21 testable even-turn pairs (same as C3, F_a 1), below the M2 bar (`STOP_NO_GAIN`); the
+  judgement set was never used. This ends this round's lever search.
 
 ## 실행
 
