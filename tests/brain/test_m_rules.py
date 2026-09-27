@@ -28,7 +28,17 @@ def test_arm_counts_use_r_for_reward_and_minus_p_for_punish(monkeypatch):
 def test_arm_counts_all_undefined(monkeypatch):
     monkeypatch.setattr(R, "pair_stats", lambda rep, z, tmin: None)
     got = R.arm_rows([{"x": 1}, None], {}, "reward", SPEC.j.h4)
-    assert (got["n"], got["defined"], got["med"]) == (0, 0, float("-inf"))
+    assert (got["n"], got["defined"], got["med"]) == (0, 0, None)            # M.10.8: null, not -Infinity
+
+
+def test_rank_puts_an_undefined_median_lowest():
+    ranked = R.rank([_e("U", 3, None, 9), _e("A", 3, -5.0, 1), _e("B", 4, None, 0)], "reward")
+    assert [e["name"] for e in ranked] == ["B", "A", "U"]
+
+
+def test_choose_puts_an_undefined_median_m_lowest():
+    aggs = {"U": _agg(12, 2, m=None), "V": _agg(12, 2, m=-3.0)}
+    assert [k for k, _ in R.choose(aggs, SPEC.j)] == ["V", "U"]
 
 
 def _e(name, n, med, w):

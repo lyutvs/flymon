@@ -1245,3 +1245,84 @@ def test_stage3_refuses_a_winner_whose_cells_moved(synthetic_npz, tmp_path, monk
     doc["stage2"]["winner"]["cells"]["PAM10"] = [0]
     summ.write_text(json.dumps(doc))
     assert run() == 2 and "winner" in capsys.readouterr().err and not calls["pre"]
+
+
+# ---------------------------------------------------------------- M.10.8 (final-review fix wave)
+def test_stage2_no_non_overlapping_combination_stops_no_gain_before_the_pool(synthetic_npz, tmp_path, monkeypatch,
+                                                                              capsys):
+    """Punish PPL107 alone (its core holds PAM03's, PAM05's and PAM06's cells) x reward PAM03 / PAM05 / PAM06: every
+    combination overlaps, so STOP_NO_GAIN with "겹치지 않는 조합이 없었다", the block written, exit 0, no pool."""
+    run, calls, cands, summ = _stage2_world(monkeypatch, tmp_path, synthetic_npz, P2)
+    mod = sys.modules["run_m_stage2"]
+
+    class NoPool:
+        def __init__(self, *a, **k):
+            raise AssertionError("the pool started")
+    monkeypatch.setattr(mod, "FlyPool", NoPool)
+    doc = json.loads(summ.read_text())
+    cs = sorted(int(c) for c in doc["stage0"]["cells"])[:3]
+    g = lambda name, arm, cells: dict(name=name, arm=arm, cells=cells, digest=cells_digest(cells), z=[0.0, 1.0],
+                                      n_dan_cells=5, w_mbon_stats=dict(min=0.1, median=0.5, max=1.0))
+    groups = [g(n, "reward", [c]) for n, c in zip(("PAM03", "PAM05", "PAM06"), cs)] + [g("PPL107", "punish", cs)]
+    doc["stage0"]["groups"] += groups
+    doc["stage1"]["top"] = {"reward": [dict(name=x["name"], cells=x["cells"], digest=x["digest"]) for x in groups[:3]],
+                            "punish": [dict(name="PPL107", cells=cs, digest=cells_digest(cs))]}
+    summ.write_text(json.dumps(doc))
+    assert run() == 0
+    out = capsys.readouterr().out
+    b = json.loads(summ.read_text())["stage2"]
+    assert not calls["pre"] and not calls["edit"]
+    assert b["gate"] == "STOP_NO_GAIN" and b["status"] == "done" and b["combos"] == [] and b["winner"] is None
+    assert b["excluded"] == [["PAM03", "PPL107"], ["PAM05", "PPL107"], ["PAM06", "PPL107"]]
+    assert "겹치지 않는 조합이 없었다" in b["sentence"] and "팔별 상위 2 × 2" in b["sentence"]
+    assert "겹치지 않는 조합이 없었다" in out
+    assert "Infinity" not in summ.read_text()
+
+
+def test_stage2_undefined_m_median_is_null(monkeypatch):
+    mod = _script("run_m_stage2")
+    monkeypatch.setattr(mod, "pair_rows_stats", lambda rows, z, keys, h4: dict(
+        reasons=[], pairs=[], stats={("b", 0, "x", "y"): dict(m=float("nan")), ("b", 1, "x", "y"): None}))
+    monkeypatch.setattr(mod, "arm_aggregate", lambda st, *a: dict(testable_b=0, F_a=0))
+    assert mod.aggregate([], [], {}, SPEC.j.h4)["agg"]["m_median"] is None
+
+
+def test_stage1_undefined_medians_are_null_and_the_report_writes(synthetic_npz, tmp_path, monkeypatch):
+    from flymon.brain import m_rules
+    run, calls, cands, summ = _stage1_world(monkeypatch, tmp_path, synthetic_npz, PLAN)
+    monkeypatch.setattr(m_rules, "pair_stats", lambda rep, z, tmin: None)        # every pair undefined
+    assert run() == 0
+    text = summ.read_text()
+    b = json.loads(text)["stage1"]
+    assert "Infinity" not in text and b["reference"]["med_r"] is None and b["reference"]["med_p"] is None
+    assert all(e["med"] is None for arm in b["entries"] for e in b["entries"][arm])
+    assert all(t["med"] is None for arm in b["top"] for t in b["top"][arm])
+    md = next((tmp_path / "results/m0d/m/run/runs").glob("*-stage1.md")).read_text()
+    assert "| undefined |" in md
+
+
+def test_list_smoke_takes_turns_from_60_and_names_the_smoke_pairs(tmp_path, monkeypatch, capsys):
+    mod = _script("run_m_list")
+    assert "13-59" in mod.EXPOSURE and "60" in mod.EXPOSURE and "13-59" in mod.__doc__
+    npz = tmp_path / "malecns.npz"
+    npz.write_bytes(b"stand-in")
+    s = tmp_path / "results/m0d/m/smoke/m_readout.json"
+    s.parent.mkdir(parents=True)
+    ok = dict(measure_key="k" * 64, code={"key": "m" * 64})
+    s.write_text(json.dumps({"stage2": dict(ok, run_id="r4", gate="STAGE2_GO")}))
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(mod, "git_state", CLEAN)
+    monkeypatch.setattr(mod, "code_keys", lambda p: (dict(key="k" * 64, files={
+        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), {"key": "m" * 64}))
+    monkeypatch.setattr(mod, "Connectome", type("C", (), {"load": staticmethod(lambda p: None)}))
+    monkeypatch.setattr(mod, "Populations", type("P", (), {"from_connectome": staticmethod(lambda c: None)}))
+    monkeypatch.setattr(mod, "out_allowed", lambda out: True)
+    monkeypatch.setattr(m_cli, "out_allowed", lambda out: True)                  # read_previous's smoke-path check
+    monkeypatch.setattr(mod, "new_pairs", lambda pops, lspec: _new_all(n_b=4, turns=(13, 40, 60, 63)))
+    assert mod.main(["--npz", str(npz), "--smoke", "--summary", str(s.relative_to(tmp_path))], require_root=False) == 0
+    b = json.loads(s.read_text())["list"]
+    assert b["from_turn"] == 60 and b["turns"] == [60, 63] and all(k[1] >= 60 for k in b["b"])
+    for k in b["b"]:
+        assert f"{k[2]} / {k[3]}" in b["exposure_note"]                     # the smoke-measured pairs, by name
+    md = next((tmp_path / "results/m0d/m/smoke/runs").glob("*-list.md")).read_text()
+    assert b["exposure_note"] in md

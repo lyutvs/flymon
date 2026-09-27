@@ -4,7 +4,8 @@
 l_pairs.new_pairs regenerated with a_turns = n_turns (the generator and its order unchanged), then m_rules.judgement_set:
 the first 21 (b) pairs with turn >= 4 in declared order and every (a) pair of their turns — (b) 21 / (a) 18 over turns
 4, 5, 7-12, both digests pinned (SPEC.judge_b_digest / judge_a_digest). Turns 0-3 were measured by L's R0 smoke and are
-excluded; turns 13 on stay unmeasured (the F v4 confirmation candidates, M.10.6).
+excluded; turns 13-59 stay unmeasured (the F v4 confirmation candidates, M.10.6 narrowed by M.10.8); turns >= 60 are
+M's smoke list (M.10.8).
 
     uv run python scripts/run_m_list.py                                          # seconds
     uv run python scripts/run_m_list.py --smoke --allow-dirty --summary results/m0d/m/smoke/m_readout.json
@@ -15,8 +16,9 @@ only a smoke summary under results/m0d/m/) or has no block stage2, block stage2'
 block in the summary (outside --smoke), no connectome file, block stage2 produced under other code, another connectome,
 a judgement list whose digests are not the pinned ones, or whose sizes are not (b) 21 / (a) 18 (outside --smoke).
 Report: <out>/runs/<run id>-list.{json,md}. Block "list" (commit it before stage 3), outside --smoke only with clean
-hashed files and the declared spec; a --smoke run (turns >= 13, no digests: never the judgement set) writes it into its
-smoke summary (the L convention for chaining smoke stages). Exit codes: 0 written, 2 refused.
+hashed files and the declared spec; a --smoke run (the L set's last turns, >= 60, no digests: never the judgement set)
+writes it into its smoke summary (the L convention for chaining smoke stages), its exposure note naming the pairs the
+smoke measures (M.10.8). Exit codes: 0 written, 2 refused.
 """
 from __future__ import annotations
 
@@ -40,7 +42,16 @@ from flymon.brain.m_spec import SPEC, MSpec, smoke
 
 NEED = ("stage2",)
 EXPOSURE = ("turns 0-3 of the L set were measured by L's R0 smoke (naive; part of them by C3's oracle); excluded. "
-            "Turns 13 on stay unmeasured (F v4 confirmation candidates, M.10.6).")
+            "Turns 13-59 stay unmeasured (F v4 confirmation candidates, M.10.6 narrowed by M.10.8). "
+            "Turns >= 60 (the L set's last turns) are M's smoke list (M.10.8).")
+
+
+def exposure(js: dict, smoke_run: bool) -> str:
+    """EXPOSURE; under --smoke followed by the pairs this smoke list sends to stage 3, by name (M.10.8)."""
+    if not smoke_run:
+        return EXPOSURE
+    names = "; ".join(f"{p['x']} / {p['y']} (turn {int(p['turn'])}, {p['axis']})" for p in js["b"] + js["a"])
+    return f"{EXPOSURE} This smoke list measures: {names or 'no pair'}."
 
 
 def diversity(b: list) -> dict:
@@ -106,7 +117,7 @@ def main(argv=None, spec: MSpec | None = None, summary_spec: MSpec = SPEC, requi
                b=[list(pair_key(p)) for p in js["b"]], a=[list(pair_key(p)) for p in js["a"]],
                n_b=len(js["b"]), n_a=len(js["a"]), turns=turns, from_turn=spec.judge_from_turn,
                b_digest=js["b_digest"], a_digest=js["a_digest"],
-               pinned=dict(b=spec.judge_b_digest, a=spec.judge_a_digest), exposure_note=EXPOSURE,
+               pinned=dict(b=spec.judge_b_digest, a=spec.judge_a_digest), exposure_note=exposure(js, a.smoke),
                diversity=diversity(js["b"]))
     gp = guard_params(Params(), [])
     report = m_store.write_json(out / "runs" / f"{rid}-list.json", res, gp)
@@ -114,7 +125,7 @@ def main(argv=None, spec: MSpec | None = None, summary_spec: MSpec = SPEC, requi
     lines = [f"# M.10.4 judgement list {rid}\n\n",
              f"- (b) {res['n_b']} / (a) {res['n_a']}, turns {turns} (from {spec.judge_from_turn})\n",
              f"- digests b {res['b_digest']}, a {res['a_digest']} (pinned: {bool(spec.judge_b_digest)})\n",
-             f"- moves {dv['n_moves']}, top {dv['top_move_text']}\n", f"- {EXPOSURE}\n"]
+             f"- moves {dv['n_moves']}, top {dv['top_move_text']}\n", f"- {res['exposure_note']}\n"]
     m_store.write_bytes(out / "runs" / f"{rid}-list.md", "".join(lines).encode(), gp)
     print(f"wrote {report}: (b) {res['n_b']} / (a) {res['n_a']}, turns {turns}", flush=True)
     blockers = dict(dirty=bool(git["dirty_hashed"]) and not a.smoke, spec=spec != summary_spec and not a.smoke)

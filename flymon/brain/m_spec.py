@@ -71,10 +71,10 @@ SPEC = MSpec()
 def smoke(spec: MSpec) -> MSpec:
     """Two candidates per arm (incumbent + one, a filter of the declared lists in declared order: m_cands checks the
     representatives against the declared SPEC lists first, then keeps these), two even (b) / (a) pairs, two odd pairs,
-    and a judgement list taken from turn 13 on (never the declared turns 4-12) with no digests: a smoke run can never
-    write a judged block."""
+    and a judgement list taken from the L set's last turns (turn >= 60 of 64, M.10.8; never the declared turns 4-12 nor
+    the F v4 confirmation candidates, turns 13-59) with no digests: a smoke run can never write a judged block."""
     keep_r, keep_p = {"PAM08", "PAM10"}, {"PPL103", "PPL105"}
     return dataclasses.replace(spec, reward_candidates=tuple(n for n in spec.reward_candidates if n in keep_r),
                                punish_candidates=tuple(n for n in spec.punish_candidates if n in keep_p),
-                               n_even_b=2, n_even_a=2, n_odd=2, judge_from_turn=13, judge_n_b=2, judge_n_a=0,
+                               n_even_b=2, n_even_a=2, n_odd=2, judge_from_turn=60, judge_n_b=2, judge_n_a=0,
                                judge_b_digest="", judge_a_digest="")

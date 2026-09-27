@@ -9,7 +9,8 @@
   h4_formula.arm_aggregate(stats, naive_max, t_b_min, f_a_min), plus m_median = the median of the defined m values.
 - The choice: m_rules.choose (bar first: testable_b >= 11 and F_a >= 2, then testable_b, F_a, m_median); the winner is
   the first. Gate: STAGE2_GO iff the winner meets the M2 bar on the even pairs (m_rules.meets_bar), else STOP_NO_GAIN
-  with M.10.5's sentence.
+  with M.10.5's sentence. No combination left after the overlap exclusion (M.10.8): STOP_NO_GAIN before the pool,
+  "겹치지 않는 조합이 없었다", the block written (no winner, no odd record), exit 0.
 - The odd record: the winner on k_pairs.odd_pairs (K.8.1's 20 (b) pairs), testable per pair and the count, whatever the
   gate says (a record, not a judgement).
 
@@ -83,8 +84,41 @@ def aggregate(rows: list, pairs: list, z: dict, h4) -> dict:
         return dict(reasons=st["reasons"], pairs=st["pairs"], agg=None)
     agg = arm_aggregate(st["stats"], h4.naive_max, h4.t_b_min, h4.f_a_min)
     ms = [s["m"] for s in st["stats"].values() if s is not None and np.isfinite(s["m"])]
-    agg["m_median"] = float(np.median(ms)) if ms else float("-inf")
+    agg["m_median"] = float(np.median(ms)) if ms else None                   # M.10.8: undefined -> null, ranked lowest
     return dict(reasons=[], pairs=st["pairs"], agg=agg)
+
+
+def no_combination(a, rid, argv, git, code, manifest, spec, summary_spec, sc, s0, s1, doc, c3, readout, z_c3, m0d_path,
+                   even, cells, tops, excluded, passing, out, t0) -> int:
+    """M.10.8: every top-2 x 2 combination overlapped: STOP_NO_GAIN before any pool, the stage2 block written."""
+    sent = sentence(STOP_NO_GAIN, dict(excluded=excluded))
+    res = dict(run_id=rid, smoke=a.smoke, argv=list(sys.argv[1:] if argv is None else argv), git=git, code=manifest,
+               measure_key=code["key"], spec=spec, spec_check_run_id=sc.get("run_id"), stage0_run_id=s0.get("run_id"),
+               oc_run_id=doc["oc"].get("run_id"), stage1_run_id=s1.get("run_id"), c3=params_json(c3),
+               readout=readout, z_c3=z_c3, inputs=dict(m0d=dict(path=m0d_path, sha256=sha256_file(m0d_path))),
+               pairs=[list(pair_key(p)) for p in even], pairs_digest=pairs_digest(even),
+               n_b=sum(p["axis"] == "b" for p in even),
+               n_pairs=len(even), cells=cells, top={arm: [t["name"] for t in tops[arm]] for arm in tops},
+               excluded=excluded, n_spec_passing=sum(len(v) for v in passing.values()),
+               n_cands=len(summary_spec.reward_candidates) + len(summary_spec.punish_candidates) - 2,
+               combos=[], ranked=[], winner=None, odd=None, gate=STOP_NO_GAIN, sentence=sent,
+               note="no top-2 x 2 combination left after the core-overlap exclusion: closed before the pool (M.10.8)",
+               status=DONE, wall_s=time.time() - t0, cache=dict(hits=0, misses=0), artifacts={})
+    gp = guard_params(Params(), [])
+    report = m_store.write_json(out / "runs" / f"{rid}-stage2.json", res, gp)
+    lines = [f"# M.10.3 stage 2 {rid}\n\n", f"**status: {DONE}; gate {STOP_NO_GAIN}**\n\n",
+             f"- excluded (overlapping cells): {excluded}\n", "- no combination left: no pool, no odd record\n",
+             f"\n{sent}\n"]
+    m_store.write_bytes(out / "runs" / f"{rid}-stage2.md", "".join(lines).encode(), gp)
+    print(f"wrote {report}: {DONE}, gate {STOP_NO_GAIN} (no combination left)", flush=True)
+    blockers = dict(dirty=bool(git["dirty_hashed"]) and not a.smoke, spec=spec != summary_spec and not a.smoke)
+    if any(blockers.values()):
+        print(f"summary not written: {[k for k, v in blockers.items() if v]}", flush=True)
+    else:
+        write_block(a.summary, "stage2", res, report, gp)
+        print(f"wrote {a.summary} (block stage2{', smoke' if a.smoke else ''})", flush=True)
+    print(f"{STOP_NO_GAIN}: {sent}", flush=True)
+    return 0
 
 
 def main(argv=None, spec: MSpec | None = None, summary_spec: MSpec = SPEC, require_root: bool = True) -> int:
@@ -175,6 +209,9 @@ def main(argv=None, spec: MSpec | None = None, summary_spec: MSpec = SPEC, requi
     passing = sc.get("passing") or {}
 
     t0 = time.time()
+    if not ok:                                                   # M.10.8: every combination overlapped; no pool
+        return no_combination(a, rid, argv, git, code, manifest, spec, summary_spec, sc, s0, s1, doc, c3, readout, z_c3,
+                              m0d_path, even, cells, tops, excluded, passing, out, t0)
     print(f"run {rid}: M key {code['key'][:12]}, {len(even)} even pairs, {len(odd)} odd, combinations "
           f"{[combo_name(r['name'], p['name']) for r, p in ok]}, excluded {excluded}", flush=True)
     res = dict(run_id=rid, smoke=a.smoke, argv=list(sys.argv[1:] if argv is None else argv), git=git, code=manifest,

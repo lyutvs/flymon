@@ -36,7 +36,8 @@ def test_c3_readout_m0d_path_and_attempts_come_from_l():
 
 def test_smoke_keeps_the_rules_and_leaves_the_judgement_set_alone():
     s = smoke(SPEC)
-    assert s.judge_from_turn >= 13 and s.judge_n_b == 2 and s.judge_b_digest == "" and s.judge_a_digest == ""
+    assert s.judge_from_turn == 60 and s.judge_n_b == 2                   # M.10.8: L set turns >= 60 (of 64)
+    assert SPEC.l.n_turns == 64 and s.judge_n_b == 2 and s.judge_b_digest == "" and s.judge_a_digest == ""
     assert s.incumbent_reward in s.reward_candidates and s.incumbent_punish in s.punish_candidates
     assert (s.j, s.k, s.l, s.top_k) == (SPEC.j, SPEC.k, SPEC.l, SPEC.top_k)
 

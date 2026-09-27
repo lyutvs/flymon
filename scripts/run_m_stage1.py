@@ -260,7 +260,7 @@ def main(argv=None, spec: MSpec | None = None, summary_spec: MSpec = SPEC, requi
         for arm in ("reward", "punish"):
             for e in ranked[arm]:
                 ed = {k: (v["group"], len(v["cells"])) for k, v in e["edited"].items()}
-                lines.append(f"| {arm} | {e['name']} | {e['n']} | {e['med']:.4g} | {e['defined']} | "
+                lines.append(f"| {arm} | {e['name']} | {e['n']} | {'undefined' if e['med'] is None else format(e['med'], '.4g')} | {e['defined']} | "
                              f"{e['kc_input']:.6g} | {ed} | {e['edited_ok']} |\n")
         lines.append(f"\ntop: { {arm: [t['name'] for t in res['top'][arm]] for arm in res['top']} }\n\n"
                      f"predicted joint: {res['predicted_joint']}\n")

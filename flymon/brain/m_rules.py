@@ -32,13 +32,19 @@ def arm_rows(reports: list, z: dict, arm: str, h4spec) -> dict:
     p = [s["p"] if s else None for s in st]
     val = r if arm == "reward" else [(-x if x is not None else None) for x in p]
     ok = [v for v in val if v is not None]
-    return dict(n=int(sum(1 for v in ok if v >= h4spec.testable_min)), med=float(np.median(ok)) if ok else float("-inf"),
-                r=r, p=p, defined=len(ok))
+    return dict(n=int(sum(1 for v in ok if v >= h4spec.testable_min)), med=float(np.median(ok)) if ok else None,
+                r=r, p=p, defined=len(ok))                                  # M.10.8: no defined pair -> None (null)
+
+
+def low_none(x) -> tuple:
+    """A sort key for "higher first" with None (an undefined median, M.10.8) lowest."""
+    return (x is None, -x if x is not None else 0.0)
 
 
 def rank(entries: list, arm: str) -> list:
-    """Best first: n, then the median of r (reward) or -p (punish), then the core's KC input (Σ w_c)."""
-    return sorted(entries, key=lambda e: (-e["n"], -e["med"], -e["kc_input"]))
+    """Best first: n, then the median of r (reward) or -p (punish; None = undefined, lowest), then the core's KC input
+    (Σ w_c)."""
+    return sorted(entries, key=lambda e: (-e["n"], low_none(e["med"]), -e["kc_input"]))
 
 
 def top(ranked: list, k: int) -> list:
@@ -73,9 +79,10 @@ def meets_bar(agg: dict, jspec) -> bool:
 
 
 def choose(aggs: dict, jspec) -> list:
-    """[(name, agg)] best first: bar met, then testable_b, F_a, median m (stable on full ties)."""
+    """[(name, agg)] best first: bar met, then testable_b, F_a, median m (None = undefined, lowest; stable on full
+    ties)."""
     return sorted(aggs.items(), key=lambda kv: (not meets_bar(kv[1], jspec), -kv[1]["testable_b"], -kv[1]["F_a"],
-                                                 -kv[1].get("m_median", 0.0)))
+                                                 low_none(kv[1].get("m_median", 0.0))))
 
 
 # ================================================================ the judgement list (M.10.4)
@@ -112,7 +119,8 @@ def stage3_reading(agg: dict, agg_c3: dict, spec) -> dict:
 
 
 def sentence(outcome: str, ctx: dict) -> str:
-    """M.10.5's sentences, the scope written into them. ctx keys by outcome: STOP_NO_GAIN {combo, n, fa}; B_Tb / B_Fa /
+    """M.10.5's sentences, the scope written into them. ctx keys by outcome: STOP_NO_GAIN {combo, n, fa}, or
+    {excluded} when no combination was left (M.10.8); B_Tb / B_Fa /
     B_NO_CONCLUSION {combo, n, c, k (even selection), h (odd record), n_b} + B_Fa {fa, naive_a, f_a_possible} +
     B_NO_CONCLUSION {fa, note}; SELECTED {combo, n, c, fa, k, h, n_b, moves, top_move, n_cands, m, w, dan = (PPL, PAM)}.
     Every listed key is looked up with ctx[...] (a missing one raises KeyError)."""
@@ -123,6 +131,9 @@ def sentence(outcome: str, ctx: dict) -> str:
         return "특이성 사전 검사를 통과한 후보 가운데 반응 가드를 통과한 core 집단이 없었다. → 이 판독 확장을 닫는다."
     if outcome == STOP_INCUMBENT:
         return "현 조합(PPL105·PAM08)의 core 집단 판독이 반응 가드 또는 z 검사를 통과하지 못했다. → 기록하고 사용자가 판단한다."
+    if outcome == STOP_NO_GAIN and "combo" not in ctx:                     # M.10.8: every combination overlapped
+        return (f"특이성 검사를 통과한 후보의 {SCOPE}(집단 판독) 가운데 겹치지 않는 조합이 없었다(core 겹침으로 제외 "
+                f"{ctx['excluded']}). → 이 범위의 판독 확장을 닫는다.")
     if outcome == STOP_NO_GAIN:
         return (f"특이성 검사를 통과한 후보의 {SCOPE}(집단 판독) 가운데 짝수 (b) 쌍에서 M2 기준을 넘은 조합이 "
                 f"없었다(최대 {ctx['n']}/21·F_a {ctx['fa']}, {ctx['combo']}). → 이 범위의 판독 확장을 닫는다.")
