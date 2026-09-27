@@ -8,15 +8,17 @@
 
 Arms: FLY (learning block with its own pulses, then the evaluation block), RS (learning block with FLY k's pulse
 queue, yoked; only after FLY's whole arm is complete, then the evaluation block), COFF (plasticity off, evaluation
-block only), RND / MAX (FlyCoachPlayer with RandomProvider(seed=fly) / MaxDamageProvider, evaluation block only).
+block only), RND / MAX (FlyCoachPlayer with RandomProvider reseeded per battle / MaxDamageProvider, evaluation block only).
 Evaluation block: swarm mode "eval" (argmax), plasticity off for every fly, no pulse delivered; per-fly weight sha256
 before == after is recorded (weights_bit_identical_across_eval) and a mismatch makes the fly INVALID.
 
 Paths (derived from --out's parent, so smoke and real runs are self-contained): the eval schedule
 <parent>/eval_schedule.json ({digest, schedule}, created by the first arm, digest checked by every other arm) and the
 RS donor <parent>/FLY (its result.json, i.e. FLY's learning and evaluation complete, and logs/flyNN.jsonl).
-Schedules: block ids L-fNN-bNNN / E-fNN-bNNN from SPEC.schedule_seeds[phase]; learn and eval must not share a
-(my_team, opp_team) pair. Brain arms read recovery_per_pulse from results/summary/rescope_taurec.json
+Schedules: block ids <P|J><L|E>-fNN-bNNN (blocks.block_tag: PL / PE pilot, JL / JE judge, so derive_seed never
+repeats between pilot and judge) from SPEC.schedule_seeds[phase]; learn and eval must not share a (my_team, opp_team)
+pair, and every opponent account (fm-h-<id>-<attempt>) must fit 18 characters. RND reseeds its RandomProvider per
+battle (derive_seed("rnd", phase, fly, battle_id)). Brain arms read recovery_per_pulse from results/summary/rescope_taurec.json
 (--smoke: results/rescope-smoke/summary/rescope_taurec.json; status SELECTED). --phase judge refuses unless
 rescope_power.json (same smoke rule) has status SIZED and F / E equal --flies / --eval.
 All refusals run before any pool or server starts. Server errors: an unfinished battle is replayed with the same
@@ -181,6 +183,12 @@ def opponent_name(battle_id: str, attempt: int) -> str:
     return name
 
 
+def check_names(sched, retry_max: int) -> None:
+    """Every battle's last-attempt opponent account fits Showdown's 18 characters (fm-h-PL-f00-b000-3 is 18)."""
+    for sb in sched:
+        opponent_name(sb.battle_id, retry_max)
+
+
 async def on_player_loop(player, coro):
     """Await a player coroutine on the player's own loop (run_m3_smoke.on_player_loop)."""
     from poke_env.concurrency import handle_threaded_coroutines
@@ -221,7 +229,7 @@ class Battles:
                       server_configuration=self.srv_cfg, team=self.team(sb.my_team), max_concurrent_battles=1)
         if arm in ("RND", "MAX"):
             prov = RandomProvider(seed=f) if arm == "RND" else MaxDamageProvider()
-            p = blocks.NoBrainPlayer(f, provider=prov, barrier=None, **common)
+            p = blocks.NoBrainPlayer(f, phase=self.a.phase, provider=prov, barrier=None, **common)
         else:
             dbar, rbar = self.bars[block]
             brain = dict(fly=f, encoder=self.enc, table=ScreenTable.allow_all(), rbarrier=rbar, barrier=dbar, **common)
@@ -301,10 +309,11 @@ def main(argv=None) -> int:
         raise SystemExit("refusing: RS --out would be the FLY donor directory")
     power = check_power(a) if a.phase == "judge" else None
     lseed, eseed = schedule_seeds(a.phase, spec)
-    learn_all = blocks.block_schedule(a.flies, a.learn, lseed, "L")
-    eval_ = blocks.block_schedule(a.flies, a.eval, eseed, "E")
+    learn_all = blocks.block_schedule(a.flies, a.learn, lseed, blocks.block_tag(a.phase, "L"))
+    eval_ = blocks.block_schedule(a.flies, a.eval, eseed, blocks.block_tag(a.phase, "E"))
     try:
         blocks.assert_disjoint(learn_all, eval_)
+        check_names(learn_all + eval_, spec.retry_max)
     except ValueError as e:
         raise SystemExit(f"refusing: {e}")
     learn = learn_all if a.arm in LEARNS else None

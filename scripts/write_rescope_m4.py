@@ -13,6 +13,9 @@ Any input problem - a missing or unreadable arm file, an arm of another phase / 
 digests that differ between arms (or from <root>/<phase>/eval_schedule.json), a malformed row, NaN - writes the
 summary with status INVALID (both verdicts INVALID, never PASS / FAIL) and exits 2. Too few valid pairs in a
 comparison makes only the verdict using it INVALID (plan R10); the summary is written and the exit code is 2.
+Donor trace (spec 10.8): for every k, RS.per_fly[k].donor_sha256 == FLY.per_fly[k].learn_log_sha256 == sha256 of
+<root>/<phase>/FLY/logs/flyNN.jsonl and RS's learn schedule digest == FLY's (stats.donor_mismatches); a mismatch makes
+that vs_rs pair INVALID (named in 2b.reasons and recorded in donor_mismatches).
 Refusals (SystemExit, nothing written): a dirty flymon/rescope/ or this script without --allow-dirty, and an existing
 non-smoke summary without --force (the judged file is not overwritten silently).
 
@@ -144,7 +147,14 @@ def summarize(root: Path, phase: str, smoke: bool, spec=SPEC) -> dict:
     arms, reasons, inputs = load_arms(root, phase, smoke)
     dig, r2 = eval_digests(root, arms)
     reasons += r2
+    donor = {}
+    if isinstance(arms.get("FLY"), dict) and isinstance(arms.get("RS"), dict):
+        donor = stats.donor_mismatches(arms["FLY"], arms["RS"], root / "FLY" / "logs")
+        if donor:                                      # spec 10.8 tracking: that FLY k / RS k pair is INVALID
+            arms = dict(arms, RS=stats.mark_donor_mismatches(arms["RS"], donor))
     v = stats.m4_verdict(arms, spec)
+    if donor and "2b" in v and isinstance(v["2b"].get("reasons"), list):
+        v["2b"]["reasons"] = v["2b"]["reasons"] + [f"vs_rs pair {k}: {why}" for k, why in sorted(donor.items())]
     if reasons:
         v = dict(v, status=stats.INVALID, reasons=reasons + list(v.get("reasons", [])))
         for key in ("2a", "2b"):
@@ -152,6 +162,7 @@ def summarize(root: Path, phase: str, smoke: bool, spec=SPEC) -> dict:
     present = {a: d for a, d in arms.items() if isinstance(d, dict)}
     v["arms"] = {a: arm_record(a, d, spec) for a, d in present.items()}
     v["eval_schedule_digests"] = dig
+    v["donor_mismatches"] = {str(k): why for k, why in sorted(donor.items())}
     v["inputs"] = inputs
     brain = [a for a in BRAIN if a in present]
     v["recorded"] = dict(v.get("recorded", {}),

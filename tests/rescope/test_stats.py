@@ -219,14 +219,26 @@ def test_cli_refuses_dirty(tmp_path, monkeypatch):
     assert load(dirty=True).main(["--phase", "judge", "--allow-dirty"]) == 0
 
 
+def donor_log(root, k) -> str:
+    """Write FLY k's learning-block log (the RS donor) and return its sha256."""
+    import hashlib
+    f = root / "FLY" / "logs" / f"fly{k:02d}.jsonl"; f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps(dict(kind="reinforce", fly=k, pulses=[["PAM08", 400.0]])) + "\n")
+    return hashlib.sha256(f.read_bytes()).hexdigest()
+
+
 def lay_out(tmp_path, phase="judge", smoke=False, n_flies=8, n=40, **kw):
     root = tmp_path / ("results/rescope-smoke" if smoke else "results/rescope") / phase
+    sha = {k: donor_log(root, k) for k in range(n_flies)}
     for name, d in five(n_flies, n, **kw).items():
         d.update(arm=name, phase=phase, smoke=smoke, complete=True, flies=n_flies, eval=n,
-                 schedule_digests={"learn": None, "eval": "e" * 64})
+                 schedule_digests={"learn": "l" * 64 if name in ("FLY", "RS") else None, "eval": "e" * 64})
+        if name == "FLY":
+            for r in d["per_fly"]:
+                r.update(learn_log_sha256=sha[r["fly"]])
         if name == "RS":
             for r in d["per_fly"]:
-                r.update(donor_invalid=False, residual_frac=0.01, donor_sha256="d" * 64)
+                r.update(donor_invalid=False, residual_frac=0.01, donor_sha256=sha[r["fly"]])
         p = root / name / "result.json"; p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(d))
     (root / "eval_schedule.json").write_text(json.dumps({"digest": "e" * 64, "schedule": []}))
@@ -242,7 +254,9 @@ def test_cli_judge_writes_summary(tmp_path, monkeypatch):
     assert load().main(["--phase", "judge", "--allow-dirty"]) == 0
     s = json.loads((tmp_path / "results/summary/rescope_m4.json").read_text())
     assert s["status"] == "OK" and s["2a"]["verdict"] == "PASS" and s["2b"]["verdict"] == "FAIL"
-    assert s["arms"]["RS"]["rs"]["0"]["donor_sha256"] == "d" * 64 and s["arms"]["FLY"]["n_eval"] == 40
+    assert s["arms"]["RS"]["rs"]["0"]["donor_sha256"] == stats._file_sha(
+        tmp_path / "results/rescope/judge/FLY/logs/fly00.jsonl") and s["arms"]["FLY"]["n_eval"] == 40
+    assert s["donor_mismatches"] == {}
     assert s["recorded"]["info_turn_match"]["FLY"]["rate"] == 1.0
     rec = s["recorded"]
     assert rec["fly_decision_fraction"]["FLY"]["eval_only"]["frac"] == 1.0
@@ -331,7 +345,7 @@ def test_learn_curve_rs_mismatch_medians_and_decision_fraction():
 def test_arm_per_fly_carries_learn_records_and_medians(tmp_path):
     from flymon.rescope import blocks
     from .test_run_battles import run_fake
-    learn, ev = blocks.block_schedule(2, 3, 101, "L"), blocks.block_schedule(2, 2, 102, "E")
+    learn, ev = blocks.block_schedule(2, 3, 101, "PL"), blocks.block_schedule(2, 2, 102, "PE")
     run, *_ = run_fake(tmp_path / "FLY", learn=learn, eval_=ev, n=2)
     rows = blocks.arm_per_fly(tmp_path / "FLY", n_flies=2, eval_=ev, run=run, learn=learn, spec=SPEC,
                               weight_medians={0: 0.9, 1: 1.1})
@@ -388,7 +402,7 @@ def test_eval_player_decision_carries_type_multipliers(tmp_path):
                               barrier=BatchBarrier(decide, deadline_ms=5), log_path=tmp_path / "fly00.jsonl",
                               account_configuration=AccountConfiguration("fm-eval-mult", None),
                               battle_format="gen1ou", start_listening=False)
-        p.start_battle("E-f00-b000", 0)
+        p.start_battle("PE-f00-b000", 0)
         battle = _battle("Blastoise", "Charizard")
         await p.choose_move(battle)
         return battle
@@ -430,3 +444,44 @@ def test_recorded_helpers_skip_malformed_rows():
     assert stats.info_turn_stats([1, None, dict(kind="decision", decider="fly", candidates="ab", multipliers=[1],
                                                 chosen="a")])["n_without_multipliers"] == 1
     assert stats.decision_fraction([1, dict(kind="decision", decider="fly")])["n_fly"] == 1
+
+
+# ---- the FLY <-> RS donor trace (spec 10.8; final-review finding 2) -----------------------------------------
+@pytest.mark.parametrize("spoil", ["rs_sha", "fly_sha", "log_changed", "learn_digest"])
+def test_cli_donor_mismatch_makes_that_vs_rs_pair_invalid(tmp_path, monkeypatch, spoil):
+    monkeypatch.chdir(tmp_path)
+    root = lay_out(tmp_path)
+    if spoil == "log_changed":                                   # FLY 1 rerun after RS read its log
+        (root / "FLY" / "logs" / "fly01.jsonl").write_text("{}\n")
+    else:
+        arm = "FLY" if spoil == "fly_sha" else "RS"
+        p = root / arm / "result.json"
+        d = json.loads(p.read_text())
+        if spoil == "rs_sha":
+            d["per_fly"][1]["donor_sha256"] = "0" * 64
+        elif spoil == "fly_sha":
+            d["per_fly"][1]["learn_log_sha256"] = "0" * 64
+        else:
+            d["schedule_digests"]["learn"] = "m" * 64
+        p.write_text(json.dumps(d))
+    rc = load().main(["--phase", "judge", "--allow-dirty"])
+    s = json.loads((tmp_path / "results/summary/rescope_m4.json").read_text())
+    if spoil == "learn_digest":                                  # every pair loses its trace: (2b) INVALID
+        assert rc == 2 and s["2b"]["verdict"] == "INVALID" and sorted(s["donor_mismatches"]) == [str(k) for k in range(8)]
+        assert s["invalid_pairs"]["vs_rs"]["flies"] == list(range(8))
+    else:                                                        # one pair out, 7 >= 6 valid: still judged
+        assert rc == 0 and list(s["donor_mismatches"]) == ["1"] and "donor mismatch" in s["donor_mismatches"]["1"]
+        assert s["invalid_pairs"]["vs_rs"]["flies"] == [1] and s["2b"]["verdict"] in ("PASS", "FAIL")
+        assert any("vs_rs pair 1: donor mismatch" in r for r in s["2b"]["reasons"])
+    assert s["invalid_pairs"]["vs_coff"]["flies"] == [] and s["2a"]["verdict"] == "PASS"
+
+
+def test_donor_mismatches_pure(tmp_path):
+    root = tmp_path / "r"
+    sha = donor_log(root, 0)
+    fly = {"per_fly": [{"fly": 0, "learn_log_sha256": sha}], "schedule_digests": {"learn": "l"}}
+    rs = {"per_fly": [{"fly": 0, "donor_sha256": sha}], "schedule_digests": {"learn": "l"}}
+    assert stats.donor_mismatches(fly, rs, root / "FLY" / "logs") == {}
+    assert set(stats.donor_mismatches(fly, dict(rs, schedule_digests={"learn": "x"}), root / "FLY" / "logs")) == {0}
+    marked = stats.mark_donor_mismatches(rs, {0: "why"})
+    assert stats.row_invalid(marked["per_fly"][0]) and not stats.row_invalid(rs["per_fly"][0])

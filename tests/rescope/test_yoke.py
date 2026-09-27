@@ -13,12 +13,12 @@ def _log(tmp_path, rows):
 
 
 def test_queue_keeps_nonempty_learning_bundles_in_order(tmp_path):
-    rows = [dict(kind="reinforce", battle_id="L-f00-b000", pulses=[["PAM08", 400.0]]),
-            dict(kind="reinforce", battle_id="L-f00-b000", pulses=[]),
-            dict(kind="decision", battle_id="L-f00-b000"),
-            dict(kind="reinforce", battle_id="L-f00-b001", pulses=[["PAM08", 200.0], ["PPL105", 200.0]]),
-            dict(kind="reinforce", battle_id="E-f00-b000", pulses=[["PAM08", 400.0]])]
-    q = YokedQueue.from_log(_log(tmp_path, rows), {"L-f00-b000", "L-f00-b001"})
+    rows = [dict(kind="reinforce", battle_id="PL-f00-b000", pulses=[["PAM08", 400.0]]),
+            dict(kind="reinforce", battle_id="PL-f00-b000", pulses=[]),
+            dict(kind="decision", battle_id="PL-f00-b000"),
+            dict(kind="reinforce", battle_id="PL-f00-b001", pulses=[["PAM08", 200.0], ["PPL105", 200.0]]),
+            dict(kind="reinforce", battle_id="PE-f00-b000", pulses=[["PAM08", 400.0]])]
+    q = YokedQueue.from_log(_log(tmp_path, rows), {"PL-f00-b000", "PL-f00-b001"})
     assert q.total_ms() == 800.0
     assert q.pop() == [("PAM08", 400.0)]
     assert q.pop() == [("PAM08", 200.0), ("PPL105", 200.0)]
@@ -26,31 +26,31 @@ def test_queue_keeps_nonempty_learning_bundles_in_order(tmp_path):
 
 
 def test_empty_turns_never_enter_the_queue(tmp_path):
-    rows = [dict(kind="reinforce", battle_id="L-f00-b000", pulses=[]) for _ in range(5)]
-    rows.insert(2, dict(kind="reinforce", battle_id="L-f00-b000", pulses=[["PPL105", 400.0]]))
-    q = YokedQueue.from_log(_log(tmp_path, rows), {"L-f00-b000"})
+    rows = [dict(kind="reinforce", battle_id="PL-f00-b000", pulses=[]) for _ in range(5)]
+    rows.insert(2, dict(kind="reinforce", battle_id="PL-f00-b000", pulses=[["PPL105", 400.0]]))
+    q = YokedQueue.from_log(_log(tmp_path, rows), {"PL-f00-b000"})
     assert len(q.bundles) == 1 and q.pop() == [("PPL105", 400.0)] and q.pop() is None
     with pytest.raises(ValueError):
         YokedQueue.from_bundles([[("PAM08", 1.0)], []], donor_sha256="x")
 
 
 def test_residual_and_resume(tmp_path):
-    rows = [dict(kind="reinforce", battle_id="L-f00-b000", pulses=[["PAM08", 100.0]]) for _ in range(20)]
-    q = YokedQueue.from_log(_log(tmp_path, rows), {"L-f00-b000"})
+    rows = [dict(kind="reinforce", battle_id="PL-f00-b000", pulses=[["PAM08", 100.0]]) for _ in range(20)]
+    q = YokedQueue.from_log(_log(tmp_path, rows), {"PL-f00-b000"})
     for _ in range(19): q.pop()
     assert abs(q.residual_frac() - 0.05) < 1e-12
     st = q.state()
     assert json.loads(json.dumps(st)) == st
-    q2 = YokedQueue.from_log(_log(tmp_path, rows), {"L-f00-b000"}); q2.load_state(st)
+    q2 = YokedQueue.from_log(_log(tmp_path, rows), {"PL-f00-b000"}); q2.load_state(st)
     assert q2.pop() == [("PAM08", 100.0)] and q2.pop() is None
 
 
 def test_sha_mismatch_refused(tmp_path):
-    rows = [dict(kind="reinforce", battle_id="L-f00-b000", pulses=[["PAM08", 100.0]])]
-    q = YokedQueue.from_log(_log(tmp_path, rows), {"L-f00-b000"})
+    rows = [dict(kind="reinforce", battle_id="PL-f00-b000", pulses=[["PAM08", 100.0]])]
+    q = YokedQueue.from_log(_log(tmp_path, rows), {"PL-f00-b000"})
     st = q.state()
     _log(tmp_path, rows + rows)                       # donor rerun: log changed
-    q3 = YokedQueue.from_log(tmp_path / "fly00.jsonl", {"L-f00-b000"})
+    q3 = YokedQueue.from_log(tmp_path / "fly00.jsonl", {"PL-f00-b000"})
     with pytest.raises(ValueError):
         q3.load_state(st)
 

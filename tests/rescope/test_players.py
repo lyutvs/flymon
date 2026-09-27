@@ -31,7 +31,7 @@ def _kw(tmp_path, name, log="fly00.jsonl"):
 _n = [0]
 
 
-def make_yoked_player(tmp_path, queue, battle_id="L-f00-b000"):
+def make_yoked_player(tmp_path, queue, battle_id="PL-f00-b000"):
     _n[0] += 1
     p = YokedPlayer(fly=0, queue=queue, **_kw(tmp_path, f"fm-yoke-t{_n[0]}", log="rs00.jsonl"))
     p.start_battle(battle_id, 0)
@@ -84,7 +84,7 @@ def test_record_is_schema_valid_and_marked_yoked(tmp_path):
     r = [x for x in recs if x["kind"] == "reinforce"][-1]
     logschema.validate(r)
     assert r["yoked"] is True and r["donor_sha256"] == "abc" and r["pulses"] == [["PPL105", 400.0]]
-    assert r["battle_id"] == "L-f00-b000" and r["odour_move"] == "surf" and r["turn"] == 3
+    assert r["battle_id"] == "PL-f00-b000" and r["odour_move"] == "surf" and r["turn"] == 3
 
 
 def test_donor_log_to_rs_carries_over_across_battles(tmp_path):
@@ -94,23 +94,23 @@ def test_donor_log_to_rs_carries_over_across_battles(tmp_path):
     hit, resisted, miss = (Outcome(dealt_frac=0.9, effectiveness="neutral"),
                            Outcome(dealt_frac=0.5, effectiveness="resisted"),
                            Outcome(dealt_frac=0.0, effectiveness="neutral", missed=True))
-    plan = {"L-f00-b000": [hit, miss, resisted], "L-f00-b001": [miss, hit], "E-f00-b000": [hit]}
+    plan = {"PL-f00-b000": [hit, miss, resisted], "PL-f00-b001": [miss, hit], "PE-f00-b000": [hit]}
     for bi, (bid, outs) in enumerate(plan.items()):
         donor.start_battle(bid, bi)
         for t, o in enumerate(outs, 1):
             _fly_turn(donor, f"battle-gen1ou-{bi}", t, o)
     donor_recs = [json.loads(x) for x in (tmp_path / "fly00.jsonl").read_text().splitlines()]
     expected = [[tuple(pp) for pp in r["pulses"]] for r in donor_recs
-                if r["kind"] == "reinforce" and r["battle_id"].startswith("L-") and r["pulses"]]
-    q = YokedQueue.from_log(tmp_path / "fly00.jsonl", {"L-f00-b000", "L-f00-b001"})
+                if r["kind"] == "reinforce" and r["battle_id"].startswith("PL-") and r["pulses"]]
+    q = YokedQueue.from_log(tmp_path / "fly00.jsonl", {"PL-f00-b000", "PL-f00-b001"})
     assert q.bundles == expected and len(expected) == 3
 
     got = []
-    p = make_yoked_player(tmp_path, q, battle_id="L-f00-b000")
+    p = make_yoked_player(tmp_path, q, battle_id="PL-f00-b000")
     for t in (1, 2):                                   # RS battle 0: two fly turns
         _fly_turn(p, "battle-gen1ou-10", t, miss)
     got += p.pending_pulses("battle-gen1ou-10")
-    p.start_battle("L-f00-b001", 1)                    # RS battle 1: the queue carries over
+    p.start_battle("PL-f00-b001", 1)                    # RS battle 1: the queue carries over
     for t in (1, 2):
         _fly_turn(p, "battle-gen1ou-11", t, miss)
     got += p.pending_pulses("battle-gen1ou-11")

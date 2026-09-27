@@ -1,6 +1,7 @@
 """Stage 4 sizing: variance components, joint (2b) power, the cheapest (F, E), budget / power stops and the
 write_rescope_power CLI (refusal on partial / malformed pilot input, never a silent size)."""
 import copy
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -140,14 +141,23 @@ def lay_out(tmp_path, smoke=False, n_flies=6, learn=40, n=20, seed=0, logs=True)
     root = tmp_path / ("results/rescope-smoke" if smoke else "results/rescope") / "pilot"
     dig = mod.expected_digests(n_flies, learn, n)
     rng = np.random.default_rng(seed)
+    sha = {}
+    for k in range(n_flies):                                     # FLY k's learning log (the RS donor), always there
+        f = root / "FLY" / "logs" / f"fly{k:02d}.jsonl"; f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text("".join(json.dumps(dict(kind="decision", decider="fly")) + "\n" for _ in range(3 * learn))
+                     + json.dumps(dict(kind="decision", decider="coach")) + "\n")
+        sha[k] = hashlib.sha256(f.read_bytes()).hexdigest()
     for name, p in RATES.items():
         lr = learn if name in ("FLY", "RS") else 0
         rows = [{"fly": k, "invalid": False,
                  "eval_battles": [{"won": bool(w), "finished": True} for w in rng.random(n) < p]}
                 for k in range(n_flies)]
+        if name == "FLY":
+            for r in rows:
+                r.update(learn_log_sha256=sha[r["fly"]])
         if name == "RS":
             for r in rows:
-                r.update(donor_invalid=False, residual_frac=0.01, donor_sha256="d" * 64)
+                r.update(donor_invalid=False, residual_frac=0.01, donor_sha256=sha[r["fly"]])
         d = dict(arm=name, phase="pilot", smoke=smoke, complete=True, flies=n_flies, learn=lr, eval=n,
                  per_fly=rows, wall_clock_s=WALL[name], m_overlap_note=None, workers=16,
                  schedule_digests={"learn": dig["learn"] if lr else None, "eval": dig["eval"]},
@@ -413,3 +423,21 @@ def test_battles_sessions_count_aborted_and_leave_killed_open(tmp_path, monkeypa
     assert ss[1]["ended_utc"] is None and ss[2]["played"] == {"L": 2, "E": 1} and ss[2]["complete"] is True
     assert total == pytest.approx(ss[0]["seconds"] + ss[2]["seconds"]) and total >= 15.0
     assert load().session_reasons("FLY", out / "wall_clock.json", total)          # the killed session refuses
+
+
+# ---- the FLY <-> RS donor trace (spec 10.8; final-review finding 2) -----------------------------------------
+@pytest.mark.parametrize("spoil", ["rs_sha", "fly_sha", "log_changed", "learn_digest"])
+def test_cli_refuses_donor_mismatch(tmp_path, monkeypatch, spoil):
+    monkeypatch.chdir(tmp_path)
+    root = lay_out(tmp_path)
+    if spoil == "rs_sha":
+        edit(root, "RS", lambda d: d["per_fly"][2].update(donor_sha256="0" * 64))
+    elif spoil == "fly_sha":
+        edit(root, "FLY", lambda d: d["per_fly"][2].update(learn_log_sha256="0" * 64))
+    elif spoil == "log_changed":
+        (root / "FLY" / "logs" / "fly02.jsonl").write_text("{}\n")
+    else:                                                        # RS learned on another schedule than its donor
+        edit(root, "RS", lambda d: d["schedule_digests"].update(learn="0" * 64))
+    with pytest.raises(SystemExit, match="donor mismatch"):
+        load().main(["--m-overlap", "no", "--allow-dirty"])
+    assert not (tmp_path / "results/summary/rescope_power.json").exists()

@@ -7,9 +7,10 @@ every qualification select and report seed (both odours; C3 engine), X = oracle.
     uv run python scripts/run_rescope_qualify.py --smoke --allow-dirty --workers 4      # 2 qualification seeds
 
 Writes <out>/oracle_rows.json (raw) and results/summary/rescope_qualify.json ({pairs, qualified, m, stop,
-control_qualified, oc_table, pairs_digest, provenance}); --smoke writes under results/rescope-smoke/ only (its summary
+control_qualified, oc_table, pairs_digest, recovery_per_pulse, provenance}); stop is STOP_CONTROL_INVALID when seed0 is
+not qualified (precedence), else STOP_FEW_PAIRS when m < 4, else None; --smoke writes under results/rescope-smoke/ only (its summary
 at results/rescope-smoke/summary/rescope_qualify.json). Refuses (SystemExit) an --out outside the re-scope trees and,
-without --allow-dirty, a dirty flymon/rescope/ or this script.
+without --allow-dirty, a dirty flymon/rescope/ or this script, and a C3 recovery_per_pulse other than 0 (spec 10.2).
 """
 from __future__ import annotations
 
@@ -23,6 +24,7 @@ from pathlib import Path
 from flymon.brain.config import Params
 from flymon.brain.fly_pool import FlyPool, FlySpec
 from flymon.rescope.oracle import qual_x, qualify, reward_oracle_job
+from flymon.rescope.primary import check_recovery
 from flymon.rescope.rules import oc_table
 from flymon.rescope.spec import SPEC
 from flymon.rescope.store import git_provenance, guard, write_json
@@ -103,8 +105,11 @@ def summarize(spec, pairs: dict) -> dict:
     names = spec.pair_names()
     qualified = [n for n in names[1:] if pairs[n]["qualified"]]
     m = len(qualified)
-    return dict(pairs=pairs, qualified=qualified, m=m, stop="STOP_FEW_PAIRS" if m < spec.min_pairs else None,
-                control_qualified=bool(pairs[spec.control]["qualified"]))
+    control = bool(pairs[spec.control]["qualified"])
+    # spec 10.3: an unqualified seed0 stops first (STOP_CONTROL_INVALID), before the pair count (STOP_FEW_PAIRS)
+    stop = "STOP_CONTROL_INVALID" if not control else ("STOP_FEW_PAIRS" if m < spec.min_pairs else None)
+    return dict(pairs=pairs, qualified=qualified, m=m, stop=stop, control_qualified=control)
+
 
 
 def main(argv=None) -> int:
@@ -130,6 +135,7 @@ def main(argv=None) -> int:
     from flymon.rescope.pairs import new_pairs, pair_odors, pairs_digest
 
     cfg = load_c3_config()
+    recovery = check_recovery(cfg.params)
     conn = Connectome.load(a.npz)
     pops = Populations.from_connectome(conn)
     cells = type_cells(conn, [spec.a_type, spec.p_type])
@@ -149,6 +155,7 @@ def main(argv=None) -> int:
     write_json(out / "oracle_rows.json", {n: e["row"] for n, e in res.items()}, gp)
     pairs = {n: {k: v for k, v in e.items() if k != "row"} for n, e in res.items()}
     summ = dict(summarize(spec, pairs), oc_table=oc_table(spec), pairs_digest=digest, smoke=a.smoke,
+                recovery_per_pulse=recovery,
                 spec=dataclasses.asdict(spec),
                 provenance=dict(git=git, started_utc=started, finished_utc=dt.datetime.now(dt.timezone.utc).isoformat(),
                                 argv=list(sys.argv[1:] if argv is None else argv), npz=a.npz))

@@ -52,7 +52,7 @@ def test_eval_block_freezes_weights(synthetic_npz):
         before = pool.w[0].copy()
         assert not np.array_equal(before, pool.w0[None])            # the learning pulse did change fly 0
         blocks.enter_eval(swarm, pool)
-        asyncio.run(swarm.decide_run_batch([req("E-f00-b000")]))
+        asyncio.run(swarm.decide_run_batch([req("PE-f00-b000")]))
         assert swarm.mode == "eval" and np.array_equal(pool.w[0], before)
         assert all(not f["enabled"] for f in pool.state()["flies"])
     finally:
@@ -64,7 +64,7 @@ def test_eval_player_queues_no_pulse(tmp_path):
     from flymon.battle.attribution import Outcome
     from .test_players import _kw
     p = blocks.EvalPlayer(fly=0, **_kw(tmp_path, "fm-eval-t1", log="ev00.jsonl"))
-    p.start_battle("E-f00-b000", 0)
+    p.start_battle("PE-f00-b000", 0)
     tag = "battle-gen1ou-1"
     p._choice[tag] = {"turn": 3, "odour": {"ORN_DM1": 1.0}, "move": "surf"}
     p._on_outcome(tag, 3, Outcome(dealt_frac=1.0, effectiveness="super"))   # would be a PAM08 pulse in learning
@@ -109,8 +109,8 @@ def test_rs_refuses_changed_donor_log(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _taurec(tmp_path)
     rb = load()
-    learn = blocks.block_schedule(2, 2, 101, "L")
-    ev = blocks.block_schedule(2, 2, 102, "E")
+    learn = blocks.block_schedule(2, 2, 101, "PL")
+    ev = blocks.block_schedule(2, 2, 102, "PE")
     rows = []
     for k in range(2):
         log = tmp_path / f"results/rescope/pilot/FLY/logs/fly{k:02d}.jsonl"; log.parent.mkdir(parents=True, exist_ok=True)
@@ -213,18 +213,18 @@ def test_eval_schedule_digest_mismatch_refused(tmp_path, monkeypatch):
 def test_eval_schedule_of_another_size_refused(tmp_path):
     rb = load()
     e = tmp_path / "eval_schedule.json"
-    other = blocks.block_schedule(3, 2, 102, "E")
+    other = blocks.block_schedule(3, 2, 102, "PE")
     e.write_text(json.dumps({"digest": blocks.schedule_digest(other), "schedule": blocks.schedule_rows(other)}))
     assert rb.check_eval_schedule(e, other) is False
     with pytest.raises(SystemExit, match="another eval schedule"):
-        rb.check_eval_schedule(e, blocks.block_schedule(2, 2, 102, "E"))
+        rb.check_eval_schedule(e, blocks.block_schedule(2, 2, 102, "PE"))
     assert rb.check_eval_schedule(tmp_path / "absent.json", other) is True
 
 
 def test_names_fit_showdown():
     rb = load()
     assert rb.account("COFF", "E", 31) == "fm-rCOE-f31" and rb.account("FLY", "L", 0) == "fm-rFLYL-f00"
-    assert rb.opponent_name("E-f31-b299", 3) == "fm-h-E-f31-b299-3"
+    assert rb.opponent_name("PE-f31-b299", 3) == "fm-h-PE-f31-b299-3"
 
 
 # ---- fake arms: retries, rollback, resume -------------------------------------------------------------
@@ -316,7 +316,7 @@ def snapshot(out):
 
 
 def test_fly_arm_runs_both_blocks_and_freezes_eval(tmp_path):
-    learn, ev = blocks.block_schedule(2, 3, 101, "L"), blocks.block_schedule(2, 2, 102, "E")
+    learn, ev = blocks.block_schedule(2, 3, 101, "PL"), blocks.block_schedule(2, 2, 102, "PE")
     run, pool, swarm, _, _ = run_fake(tmp_path / "FLY", learn=learn, eval_=ev, n=2)
     assert run["complete"] and swarm.mode == "eval" and pool.en == [False, False]
     assert run["before"] == run["after"] and run["before"][0] != blocks.weights_sha(pool.w0[None])
@@ -327,7 +327,7 @@ def test_fly_arm_runs_both_blocks_and_freezes_eval(tmp_path):
 
 
 def test_eval_weight_change_is_flagged(tmp_path):
-    learn, ev = blocks.block_schedule(2, 2, 101, "L"), blocks.block_schedule(2, 2, 102, "E")
+    learn, ev = blocks.block_schedule(2, 2, 101, "PL"), blocks.block_schedule(2, 2, 102, "PE")
     run, *_ = run_fake(tmp_path / "FLY", learn=learn, eval_=ev, n=2, eval_learns=True)
     rows = blocks.arm_per_fly(tmp_path / "FLY", n_flies=2, eval_=ev, run=run, learn=learn, spec=SPEC)
     assert all(r["weights_bit_identical_across_eval"] is False and r["invalid"] for r in rows)
@@ -336,10 +336,10 @@ def test_eval_weight_change_is_flagged(tmp_path):
 def test_retry_restores_weights_queue_and_log(tmp_path):
     """An unfinished attempt learned, popped yoked bundles and logged; the retry starts from the pre-battle state,
     so the run equals one without the server error (only the retry count differs)."""
-    learn, ev = blocks.block_schedule(2, 3, 101, "L"), blocks.block_schedule(2, 2, 102, "E")
+    learn, ev = blocks.block_schedule(2, 3, 101, "PL"), blocks.block_schedule(2, 2, 102, "PE")
     clean, pc, _, yc, _ = run_fake(tmp_path / "a", learn=learn, eval_=ev, n=2,
                                    yoke_queues=donor_queues(tmp_path, learn, 2))
-    bad = {("L-f00-b001", 0), ("L-f00-b001", 1), ("E-f01-b000", 0)}
+    bad = {("PL-f00-b001", 0), ("PL-f00-b001", 1), ("PE-f01-b000", 0)}
     faulty, pf, _, yf, resets = run_fake(tmp_path / "b", learn=learn, eval_=ev, n=2, fail=bad,
                                          yoke_queues=donor_queues(tmp_path, learn, 2))
     assert sorted(resets) == [("E", 1), ("L", 0), ("L", 0)]
@@ -352,20 +352,20 @@ def test_retry_restores_weights_queue_and_log(tmp_path):
     strip = lambda rs: [{k: v for k, v in r.items() if k != "retries"} for r in rs]
     assert {p: strip(v) for p, v in rc.items()} == {p: strip(v) for p, v in rf.items()}
     retries = {r["battle_id"]: r["retries"] for p in rf for r in rf[p] if r["retries"]}
-    assert retries == {"L-f00-b001": 2, "E-f01-b000": 1}
+    assert retries == {"PL-f00-b001": 2, "PE-f01-b000": 1}
     moved = blocks.read_jsonl(tmp_path / "b/logs/retries/fly00.jsonl")
-    assert {r["attempt"] for r in moved} == {0, 1} and all(r["battle_id"] == "L-f00-b001" for r in moved)
-    assert json.loads((tmp_path / "b/yoke_state.json").read_text())["flies"]["0"]["after"]["L-f00-b002"] == \
+    assert {r["attempt"] for r in moved} == {0, 1} and all(r["battle_id"] == "PL-f00-b001" for r in moved)
+    assert json.loads((tmp_path / "b/yoke_state.json").read_text())["flies"]["0"]["after"]["PL-f00-b002"] == \
         yc.queues[0].state()
 
 
 def test_retries_exhausted_make_the_fly_invalid(tmp_path):
-    learn, ev = blocks.block_schedule(2, 2, 101, "L"), blocks.block_schedule(2, 2, 102, "E")
-    bad = {("L-f01-b000", i) for i in range(SPEC.retry_max + 1)}
+    learn, ev = blocks.block_schedule(2, 2, 101, "PL"), blocks.block_schedule(2, 2, 102, "PE")
+    bad = {("PL-f01-b000", i) for i in range(SPEC.retry_max + 1)}
     run, pool, *_ = run_fake(tmp_path / "x", learn=learn, eval_=ev, n=2, fail=bad)
     rows = blocks.arm_per_fly(tmp_path / "x", n_flies=2, eval_=ev, run=run, learn=learn, spec=SPEC)
     assert rows[1]["invalid"] and not rows[0]["invalid"]
-    rec = next(r for r in blocks.read_jsonl(tmp_path / "x/logs/battles.jsonl") if r["battle_id"] == "L-f01-b000")
+    rec = next(r for r in blocks.read_jsonl(tmp_path / "x/logs/battles.jsonl") if r["battle_id"] == "PL-f01-b000")
     assert rec["retries"] == SPEC.retry_max and rec["invalid"] and not rec["finished"]
 
 
@@ -373,7 +373,7 @@ def test_retries_exhausted_make_the_fly_invalid(tmp_path):
 def test_resume_gives_the_same_records(tmp_path, stops):
     """Stopped after N battles (in learning, at the block boundary, in evaluation) and resumed: the same battle
     records, fly logs, weights, yoked-queue state and weight hashes as an uninterrupted run."""
-    learn, ev = blocks.block_schedule(2, 3, 101, "L"), blocks.block_schedule(2, 2, 102, "E")
+    learn, ev = blocks.block_schedule(2, 3, 101, "PL"), blocks.block_schedule(2, 2, 102, "PE")
     full, pfull, _, yfull, _ = run_fake(tmp_path / "full", learn=learn, eval_=ev, n=2,
                                         yoke_queues=donor_queues(tmp_path, learn, 2))
     out = tmp_path / "res"
@@ -392,7 +392,7 @@ def test_resume_gives_the_same_records(tmp_path, stops):
 
 
 def test_restart_without_resume_refused(tmp_path):
-    learn, ev = blocks.block_schedule(2, 2, 101, "L"), blocks.block_schedule(2, 2, 102, "E")
+    learn, ev = blocks.block_schedule(2, 2, 101, "PL"), blocks.block_schedule(2, 2, 102, "PE")
     run_fake(tmp_path / "x", learn=learn, eval_=ev, n=2, stop_after=1)
     with pytest.raises(SystemExit, match="pass --resume"):
         run_fake(tmp_path / "x", learn=learn, eval_=ev, n=2)
@@ -400,7 +400,7 @@ def test_restart_without_resume_refused(tmp_path):
 
 def test_rs_resume_refuses_a_rerun_donor(tmp_path):
     """FLY k rerun (its log's sha256 changed) while RS k is part-way: the RS resume refuses."""
-    learn, ev = blocks.block_schedule(2, 3, 101, "L"), blocks.block_schedule(2, 2, 102, "E")
+    learn, ev = blocks.block_schedule(2, 3, 101, "PL"), blocks.block_schedule(2, 2, 102, "PE")
     run_fake(tmp_path / "rs", learn=learn, eval_=ev, n=2, stop_after=3, yoke_queues=donor_queues(tmp_path, learn, 2))
     with pytest.raises(SystemExit, match="must be rerun"):
         run_fake(tmp_path / "rs", learn=learn, eval_=ev, n=2, resume=True,
@@ -408,7 +408,7 @@ def test_rs_resume_refuses_a_rerun_donor(tmp_path):
 
 
 def test_coff_and_nobrain_arms_play_eval_only(tmp_path):
-    ev = blocks.block_schedule(2, 2, 102, "E")
+    ev = blocks.block_schedule(2, 2, 102, "PE")
     pool = FakePool(2, enabled=False)
     run, pool, swarm, _, _ = run_fake(tmp_path / "COFF", learn=None, eval_=ev, n=2, pool=pool)
     assert run["complete"] and set(run["played"]) == {"E"} and run["before"] == run["after"]

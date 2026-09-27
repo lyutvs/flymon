@@ -3,8 +3,9 @@
 Inputs are Task 8's arm result.json dicts ({flies, eval, per_fly: [{fly, invalid, eval_battles: [{won, finished}],
 RS: donor_invalid, residual_frac, donor_sha256}], ...}). A battle counts as a win only when `won is True`; an
 unfinished battle counts as a loss (as in pilot_no_brain). A fly is INVALID in an arm when its row says `invalid`, or
-(RS) `donor_invalid` (FLY k was invalid - blocks.fly_result does not fold it in), a residual above spec.residual_max,
-or eval weights that changed; a comparison drops fly k when it is INVALID in either arm (an INVALID pair).
+(RS) `donor_invalid` (FLY k was invalid - blocks.fly_result does not fold it in), `donor_mismatch` (set by the summary
+writers from donor_mismatches: the RS donor sha256 / learn schedule do not trace to FLY k), a residual above
+spec.residual_max, or eval weights that changed; a comparison drops fly k when it is INVALID in either arm (an INVALID pair).
 
 The verdict is INVALID - never PASS / FAIL - when an arm is missing or malformed (missing / duplicate fly rows, a
 `won` that is not True / False / None, NaN, eval battle counts that differ), or when a comparison keeps fewer valid
@@ -13,7 +14,9 @@ verdict using the comparison INVALID).
 """
 from __future__ import annotations
 
+import hashlib
 import math
+from pathlib import Path
 
 import numpy as np
 
@@ -35,13 +38,49 @@ def _is_number(x) -> bool:
 
 def row_invalid(row: dict, spec=SPEC) -> bool:
     """A fly row is INVALID for pairing: its own flag, the RS donor's (FLY k), residual > max, weights changed."""
-    if row.get("invalid") or row.get("donor_invalid"):
+    if row.get("invalid") or row.get("donor_invalid") or row.get("donor_mismatch"):
         return True
     if "residual_frac" in row:
         r = row["residual_frac"]
         if not _is_number(r) or _bad_number(float(r)) or r > spec.residual_max:
             return True
     return row.get("weights_bit_identical_across_eval") is False
+
+
+def _file_sha(p: Path):
+    return hashlib.sha256(p.read_bytes()).hexdigest() if p.exists() else None
+
+
+def donor_mismatches(fly: dict, rs: dict, fly_logs) -> dict:
+    """{k: reason} for every RS fly k whose donor trace does not hold (spec 10.8 tracking): RS.per_fly[k].donor_sha256
+    == FLY.per_fly[k].learn_log_sha256 == sha256 of <FLY>/logs/flyNN.jsonl (fly_logs = that logs directory), and RS's
+    learn schedule digest == FLY's (a differing digest names every k). Malformed arms give no entries (check_arm
+    reports them)."""
+    frows, rrows = dict(fly_rows(fly)), dict(fly_rows(rs))
+    fd = ((fly or {}).get("schedule_digests") or {}).get("learn") if isinstance(fly, dict) else None
+    rd = ((rs or {}).get("schedule_digests") or {}).get("learn") if isinstance(rs, dict) else None
+    out = {}
+    for k in sorted(rrows):
+        why = []
+        if fd is None or rd != fd:
+            why.append(f"RS learn schedule digest {str(rd)[:12]} != FLY's {str(fd)[:12]}")
+        donor = rrows[k].get("donor_sha256")
+        fls = (frows.get(k) or {}).get("learn_log_sha256")
+        disk = _file_sha(Path(fly_logs) / f"fly{k:02d}.jsonl")
+        if donor is None or donor != fls:
+            why.append(f"RS donor_sha256 {str(donor)[:12]} != FLY learn_log_sha256 {str(fls)[:12]}")
+        if fls is None or fls != disk:
+            why.append(f"FLY learn_log_sha256 {str(fls)[:12]} != sha256 of FLY logs/fly{k:02d}.jsonl {str(disk)[:12]}")
+        if why:
+            out[k] = "donor mismatch: " + "; ".join(why)
+    return out
+
+
+def mark_donor_mismatches(rs: dict, mism: dict) -> dict:
+    """A copy of the RS arm whose rows k in mism carry donor_mismatch (row_invalid: the FLY k / RS k pair is INVALID)."""
+    rows = [dict(r, donor_mismatch=mism[r["fly"]]) if isinstance(r, dict) and r.get("fly") in mism else r
+            for r in rs.get("per_fly", [])]
+    return dict(rs, per_fly=rows)
 
 
 def win_table(result: dict, spec=SPEC) -> dict:
@@ -72,7 +111,6 @@ def check_arm(name: str, result, spec=SPEC) -> list:
         return out + [f"{name}: eval {e!r} is not an integer"]
     if sorted(flies) != list(range(n)):
         out.append(f"{name}: fly rows {sorted(flies)} are not exactly 0..{n - 1} (missing or duplicate rows)")
-    e = result.get("eval")
     for r in rows:
         f = r.get("fly")
         if not isinstance(r.get("invalid", False), bool):

@@ -21,6 +21,7 @@ import dataclasses
 import hashlib
 import json
 import os
+import re
 import tempfile
 from pathlib import Path
 
@@ -28,18 +29,31 @@ import numpy as np
 
 from ..agent.checkpoint import CheckpointStore, filter_log
 from ..agent.player import AgentPlayer
+from ..agent.policy import derive_seed
 from ..agent.runner import run_cohort
 from ..battle.fly_coach_player import FlyCoachPlayer
+from ..battle.providers import RandomProvider
 from ..battle.schedule import ScheduledBattle, make_schedule
 
-BLOCKS = ("L", "E")
+PHASE_TAG = {"pilot": "P", "judge": "J"}
+BLOCKS = ("PL", "PE", "JL", "JE")          # phase (P pilot / J judge) + block (L learn / E eval), plan R6 supplement
+_ID = re.compile(r"^(PL|PE|JL|JE)-f(\d{2})-b(\d{3})$")
 
 
 # ---- schedules ------------------------------------------------------------------------------
-def block_schedule(n_flies, n_battles, seed, block) -> list:
-    if block not in BLOCKS:
-        raise ValueError(f"block must be one of {BLOCKS}, got {block!r}")
-    return [dataclasses.replace(sb, battle_id=f"{block}-{sb.battle_id}")
+def block_tag(phase: str, block: str) -> str:
+    """The battle-id prefix of a phase's block: pilot learn PL, pilot eval PE, judge learn JL, judge eval JE. The
+    phase is in the id so derive_seed (keyed on the battle id) never repeats between the pilot and the judge run."""
+    if phase not in PHASE_TAG or block not in ("L", "E"):
+        raise ValueError(f"phase must be one of {tuple(PHASE_TAG)} and block L / E, got {phase!r} / {block!r}")
+    return PHASE_TAG[phase] + block
+
+
+def block_schedule(n_flies, n_battles, seed, tag) -> list:
+    """make_schedule with battle ids <tag>-fNN-bNNN, tag one of BLOCKS (block_tag(phase, block))."""
+    if tag not in BLOCKS:
+        raise ValueError(f"block tag must be one of {BLOCKS}, got {tag!r}")
+    return [dataclasses.replace(sb, battle_id=f"{tag}-{sb.battle_id}")
             for sb in make_schedule(n_flies, n_battles, "heuristic", seed=seed)]
 
 
@@ -64,7 +78,11 @@ def assert_disjoint(learn, eval_) -> None:
 
 
 def battle_index(battle_id: str) -> int:
-    return int(battle_id[-3:])
+    """The within-block battle number of a <tag>-fNN-bNNN id (tau's battle index); any other id is a ValueError."""
+    m = _ID.match(str(battle_id))
+    if m is None:
+        raise ValueError(f"battle id {battle_id!r} is not <PL|PE|JL|JE>-fNN-bNNN")
+    return int(m.group(3))
 
 
 def ids_of(sched, fly=None) -> list:
@@ -109,14 +127,24 @@ async def refuse_pulses(reqs) -> list:
 
 class NoBrainPlayer(FlyCoachPlayer):
     """FlyCoachPlayer whose log records carry fly and battle_id (the checkpoint key run_cohort's filter_log and the
-    retry rollback use); decisions are its provider's."""
+    retry rollback use); decisions are its provider's. A RandomProvider is reseeded at every battle start from
+    derive_seed("rnd", phase, fly, battle_id), so a resumed or retried RND fly draws exactly what an uninterrupted one
+    would (no generator state carried between battles)."""
 
-    def __init__(self, fly: int, **kw):
+    def __init__(self, fly: int, phase: str = None, **kw):
         super().__init__(**kw)
-        self.fly, self.battle_id, self.battle_index = int(fly), None, 0
+        self.fly, self.phase, self.battle_id, self.battle_index = int(fly), phase, None, 0
 
     def start_battle(self, battle_id: str, battle_index: int) -> None:
         self.battle_id, self.battle_index = battle_id, int(battle_index)
+        if isinstance(self.provider, RandomProvider):
+            if self.phase is None:
+                raise ValueError("a RandomProvider NoBrainPlayer needs its phase (the per-battle seed)")
+            self.provider.rng = np.random.default_rng(rnd_seed(self.phase, self.fly, battle_id))
+
+
+def rnd_seed(phase: str, fly: int, battle_id: str) -> int:
+    return derive_seed("rnd", phase, int(fly), battle_id)
 
     def _write(self, rec: dict) -> None:
         super()._write({"fly": self.fly, "battle_id": self.battle_id, **rec})

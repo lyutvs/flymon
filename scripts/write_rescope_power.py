@@ -22,7 +22,8 @@ Refusals (SystemExit, nothing written): a pilot arm file missing / unreadable / 
 not complete / malformed (stats.check_arm); fly or eval counts that differ between arms, or (non-smoke) a pilot size
 other than R9 (6 flies, learn 40, eval 20); schedule digests that are not the pilot ones (SPEC.schedule_seeds
 "pilot", recomputed from the arm's flies / learn / eval) or an eval_schedule.json that differs; fewer than two valid
-flies in an arm; for FLY and RND (the rate arms): a wall_clock_s that is missing, None, non-finite or <= 0, a
+flies in an arm; an RS fly whose donor trace fails (stats.donor_mismatches: RS donor_sha256, FLY learn_log_sha256,
+the sha256 of pilot/FLY/logs/flyNN.jsonl and the two arms' learn schedule digests must agree); for FLY and RND (the rate arms): a wall_clock_s that is missing, None, non-finite or <= 0, a
 `workers` that is not an integer >= 1, a session log <arm>/wall_clock.json that is missing / unreadable / empty, any
 session without an end record (status ok / aborted, ended_utc, seconds; a hard-killed session's time is unknown), or
 session seconds that do not sum to wall_clock_s (never sized on an undercounted or guessed rate); a dirty
@@ -79,8 +80,8 @@ def _wall(d: dict):
 
 def expected_digests(flies: int, learn: int, eval_: int, spec=SPEC) -> dict:
     lseed, eseed = {p: (l, e) for p, l, e in spec.schedule_seeds}["pilot"]
-    return dict(learn=blocks.schedule_digest(blocks.block_schedule(flies, learn, lseed, "L")),
-                eval=blocks.schedule_digest(blocks.block_schedule(flies, eval_, eseed, "E")))
+    return dict(learn=blocks.schedule_digest(blocks.block_schedule(flies, learn, lseed, blocks.block_tag("pilot", "L"))),
+                eval=blocks.schedule_digest(blocks.block_schedule(flies, eval_, eseed, blocks.block_tag("pilot", "E"))))
 
 
 def load_pilot(root: Path, smoke: bool, spec=SPEC) -> tuple:
@@ -145,6 +146,8 @@ def load_pilot(root: Path, smoke: bool, spec=SPEC) -> tuple:
                 fd = f"unreadable ({e!r})"
             if fd != want["eval"]:
                 reasons.append(f"{f} digest {str(fd)[:12]} is not the pilot one ({want['eval'][:12]})")
+    for k, why in sorted(stats.donor_mismatches(arms["FLY"], arms["RS"], root / "FLY" / "logs").items()):
+        reasons.append(f"RS fly {k}: {why} (spec 10.8: FLY {k} / RS {k} must be rerun together)")
     for a, d in arms.items():
         n = len(stats.win_table(d, spec))
         if n < 2:

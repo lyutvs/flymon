@@ -141,3 +141,80 @@ def overall(control: dict, pairs: dict, spec) -> dict:
         return dict(base, status=STOP_FEW_PAIRS)
     t = threshold_t(m, spec)
     return dict(base, t=t, status=PASS if base["n_pass"] >= t else FAIL)
+
+
+# ---- spec 10.4 item 6: recorded only, never judged -------------------------------------------------------------
+def _med(xs):
+    xs = [float(v) for v in xs if v is not None and not (isinstance(v, float) and math.isnan(v))]
+    return float(np.median(xs)) if xs else None
+
+
+def _fly_dv(idx, spec, x, brain, fly, stage, seeds):
+    """Per probe seed V(X) - V(Y) of one brain / fly / stage (None when a row is missing)."""
+    y = _other(x)
+    try:
+        return np.array([v_of(idx[(brain, fly, stage, s)][x], spec) - v_of(idx[(brain, fly, stage, s)][y], spec)
+                         for s in seeds])
+    except KeyError:
+        return None
+
+
+def _choice(dv):
+    """Mean over probe seeds of [V(X) > V(Y)], ties 1/2."""
+    return None if dv is None or dv.size == 0 else float(np.mean(np.where(dv > 0, 1.0, np.where(dv == 0, 0.5, 0.0))))
+
+
+def recorded_items(records, x, spec, xcore=None, floor_frac=None) -> dict:
+    """Spec 10.4 item 6 (recorded, no verdict effect), on the probe records of one pair.
+
+    naive_dprime: d'(dV_Rr,pre) over every fly's Rr pre probe seeds pooled (the naive brains are identical; F's
+      pooled naive d'), plus the per-fly d' and their median.
+    choice: c_s[b][stage] for b in Rr / N / N2, stage pre / S1 = per fly the mean over probe seeds of [V(X) > V(Y)]
+      (ties 1/2): per-fly values and their median; rr_minus_n_S1 = per fly c_Rr,S1 - c_N,S1 and its median.
+    self_change[b] for b in N / N2 = per fly d'(dV_b,S1 - dV_b,pre) (probe seed by seed; J.12.9): median and max.
+    xcore (when given {"Rr": [per-fly w/w0 arrays], "N": [...]} on the X-core MBON05 edge mask): per fly the median
+      w/w0, per brain the median over flies, ratio Rr / N of those medians; floor_contact = per fly the share of the
+      mask's edges at w/w0 <= floor_frac (min_weight_frac), per brain the median over flies.
+    dV = V(X) - V(Y) at each probe seed, V = z_A - z_P (b_rules.v_of)."""
+    idx = _index(records)
+    flies = sorted({r["fly"] for r in records if r["brain"] == "Rr" and r["stage"] == "pre"})
+    seeds = {f: sorted({r["seed"] for r in records if r["brain"] == "Rr" and r["fly"] == f and r["stage"] == "pre"})
+             for f in flies}
+    dv = {(b, f, st): _fly_dv(idx, spec, x, b, f, st, seeds[f])
+          for b in ("Rr", "N", "N2") for f in flies for st in ("pre", "S1")}
+
+    pooled = [v for f in flies if dv[("Rr", f, "pre")] is not None for v in dv[("Rr", f, "pre")]]
+    per_fly_naive = [None if dv[("Rr", f, "pre")] is None else dprime(dv[("Rr", f, "pre")]) for f in flies]
+    naive = dict(pooled=dprime(pooled), n_pooled=len(pooled), per_fly=per_fly_naive, fly_median=_med(per_fly_naive))
+
+    choice = {}
+    for b in ("Rr", "N", "N2"):
+        choice[b] = {}
+        for st in ("pre", "S1"):
+            c = [_choice(dv[(b, f, st)]) for f in flies]
+            choice[b][st] = dict(per_fly=c, median=_med(c))
+    diff = [None if None in (choice["Rr"]["S1"]["per_fly"][i], choice["N"]["S1"]["per_fly"][i])
+            else choice["Rr"]["S1"]["per_fly"][i] - choice["N"]["S1"]["per_fly"][i] for i in range(len(flies))]
+    choice["rr_minus_n_S1"] = dict(per_fly=diff, median=_med(diff))
+
+    self_change = {}
+    for b in ("N", "N2"):
+        d = [None if dv[(b, f, "S1")] is None or dv[(b, f, "pre")] is None
+             else dprime(dv[(b, f, "S1")] - dv[(b, f, "pre")]) for f in flies]
+        ok = [v for v in d if v is not None and not math.isnan(v)]
+        self_change[b] = dict(per_fly=d, median=_med(d), max=float(max(ok)) if ok else None)
+
+    out = dict(naive_dprime=naive, choice=choice, self_change=self_change, flies=flies, xcore=None)
+    if xcore is not None:
+        xc = {}
+        for b in ("Rr", "N"):
+            arrs = [np.asarray(a, float) for a in xcore.get(b, [])]
+            meds = [float(np.median(a)) if a.size else None for a in arrs]
+            fl = ([float(np.mean(a <= floor_frac + 1e-9)) if a.size else None for a in arrs]
+                  if floor_frac is not None else [None] * len(arrs))
+            xc[b] = dict(per_fly_median=meds, median=_med(meds), floor_contact_per_fly=fl, floor_contact=_med(fl))
+        rr, n = xc["Rr"]["median"], xc["N"]["median"]
+        n_edges = int(np.asarray(xcore["Rr"][0]).size) if xcore.get("Rr") else 0
+        out["xcore"] = dict(xc, ratio_rr_over_n=None if rr is None or not n else rr / n, floor_frac=floor_frac,
+                            n_edges=n_edges)
+    return out

@@ -7,10 +7,13 @@ rules.control_verdict / rules.pair_verdict and rules.overall.
     uv run python scripts/run_rescope_primary.py --smoke --allow-dirty --workers 4
 
 Refuses (SystemExit) unless results/summary/rescope_qualify.json (--smoke: results/rescope-smoke/summary/
-rescope_qualify.json) exists with stop None and control_qualified; refuses an --out outside the re-scope trees and,
-without --allow-dirty, a dirty flymon/rescope/ or this script. Writes <out>/<pair>/checkpoint.npz and records.json and
-results/summary/rescope_primary.json ({control, pairs, overall, oc_table, recorded: {<pair>: {level, sign, naive,
-qual_x_vs_x}}, provenance}); --smoke writes under results/rescope-smoke/ only.
+rescope_qualify.json) exists with stop None and control_qualified; refuses an --out outside the re-scope trees,
+without --allow-dirty a dirty flymon/rescope/ or this script, a C3 recovery_per_pulse other than 0 (spec 10.2), and a
+designed-pairs digest that is not SPEC.pairs_digest or not the qualification summary's. Writes <out>/<pair>/
+checkpoint.npz and records.json and results/summary/rescope_primary.json ({control, pairs, overall, oc_table,
+recorded: {<pair>: {level, sign, naive, qual_x_vs_x, naive_dprime, choice, self_change, xcore, xcore_mask, flies}},
+recovery_per_pulse, pairs_digest, min_weight_frac, provenance}); --smoke writes under results/rescope-smoke/ only.
+The recorded items (spec 10.4 item 6, rules.recorded_items) have no verdict effect.
 """
 from __future__ import annotations
 
@@ -56,23 +59,39 @@ def load_qualification(path: Path) -> dict:
     return q
 
 
-def recorded(records, x, spec, verdict, qual_x) -> dict:
-    """Recorded, not judged: the level / sign medians, the naive MBON05 medians (Rr pre) and X vs the qualification X."""
+def recorded(records, x, spec, verdict, qual_x, xcore=None, floor_frac=None) -> dict:
+    """Recorded, not judged: the level / sign medians, the naive MBON05 medians (Rr pre), X vs the qualification X and
+    spec 10.4 item 6 (rules.recorded_items: naive d', choice ratios, N / N' self change, X-core MBON05 w/w0 Rr vs N
+    and floor contact)."""
     return dict(level=verdict.get("level_median"), sign=verdict.get("sign_median"),
                 naive={o: rules.naive_p(records, o, spec) for o in ("a", "b")},
-                qual_x_vs_x=None if qual_x is None else bool(qual_x == x))
+                qual_x_vs_x=None if qual_x is None else bool(qual_x == x),
+                **rules.recorded_items(records, x, spec, xcore=xcore, floor_frac=floor_frac))
+
+
+def check_pairs_digest(digest: str, spec, qual: dict) -> str:
+    """The designed pairs rebuilt from the connectome must be the pinned ones and the ones the qualification ran on."""
+    if digest != spec.pairs_digest:
+        raise SystemExit(f"refusing: the designed pairs' digest {digest[:12]} is not the pinned {spec.pairs_digest[:12]}")
+    if qual.get("pairs_digest") != digest:
+        raise SystemExit(f"refusing: the qualification's pairs digest {str(qual.get('pairs_digest'))[:12]} is not this "
+                         f"run's {digest[:12]}")
+    return digest
 
 
 def run_all(pool, spec, qual: dict, odors_of: dict, cells: dict, out: Path, key: str, params_list, provenance,
-            log=print) -> dict:
-    """seed0 then every qualified pair; the pool is reset to its initial (naive) state before each pair."""
+            log=print, floor_frac=None) -> dict:
+    """seed0 then every qualified pair; the pool is reset to its initial (naive) state before each pair. The X-core
+    mask (both odours) is built on the naive pool before run_pair and its weights read right after it."""
     initial = pool.state()
     names = [spec.control] + list(qual["qualified"])
     control, pairs, rec = None, {}, {}
     for name in names:
         pool.load_state(initial)
+        masks = primary.xcore_masks(pool, spec, name, odors_of[name], cells)
         ck = Checkpoint(out / name, f"{key}-{name}", params_list)
         r = primary.run_pair(pool, spec, name, odors_of[name], cells, checkpoint=ck, log=log, provenance=provenance)
+        xw = primary.xcore_weights(pool, r["layout"], masks[r["x"]])
         write_json(out / name / "records.json", dict(pair=name, x=r["x"], layout=r["layout"], records=r["records"],
                                                      provenance=r["provenance"], replayed=r["replayed"]), params_list)
         if name == spec.control:
@@ -83,7 +102,9 @@ def run_all(pool, spec, qual: dict, odors_of: dict, cells: dict, out: Path, key:
             full = pairs[name] = rules.pair_verdict(r["records"], r["x"], spec, name)
             log(f"{name}: {full['status']} {full['reasons']}")
         qx = (qual.get("pairs") or {}).get(name, {}).get("x")
-        rec[name] = recorded(r["records"], r["x"], spec, full, qx)
+        rec[name] = recorded(r["records"], r["x"], spec, full, qx, xcore=xw, floor_frac=floor_frac)
+        rec[name]["xcore_mask"] = dict(seed=masks["seed"], n_active_kc=masks["n_active"],
+                                       n_edges={o: int(masks[o].sum()) for o in ("a", "b")})
     return dict(control=control, pairs=pairs, overall=rules.overall(control, pairs, spec), oc_table=rules.oc_table(spec),
                 recorded=rec)
 
@@ -112,11 +133,13 @@ def main(argv=None) -> int:
     from flymon.brain.connectome import Connectome
     from flymon.brain.fly_pool import FlyPool, FlySpec
     from flymon.brain.h4_jobs import type_cells
-    from flymon.rescope.pairs import pair_odors
+    from flymon.rescope.pairs import new_pairs, pair_odors, pairs_digest
 
     cfg = load_c3_config()
+    recovery = primary.check_recovery(cfg.params)
     conn = Connectome.load(a.npz)
     pops = Populations.from_connectome(conn)
+    digest = check_pairs_digest(pairs_digest(new_pairs(pops, spec)), spec, qual)
     cells = type_cells(conn, [spec.a_type, spec.p_type])
     odors_of = {n: pair_odors(pops, n, spec) for n in [spec.control] + list(qual["qualified"])}
     started = dt.datetime.now(dt.timezone.utc).isoformat()
@@ -127,8 +150,9 @@ def main(argv=None) -> int:
     with FlyPool(a.npz, cfg.params, [FlySpec(**d) for d in fly_specs(primary.layout(spec))], workers=a.workers,
                  timeout_s=POOL_TIMEOUT_S) as pool:
         res = run_all(pool, spec, qual, odors_of, cells, out, git["commit"] + ("-smoke" if a.smoke else ""), gp, prov,
-                      log)
-    summ = dict(res, smoke=a.smoke, spec=dataclasses.asdict(spec),
+                      log, floor_frac=float(cfg.params.min_weight_frac))
+    summ = dict(res, smoke=a.smoke, spec=dataclasses.asdict(spec), recovery_per_pulse=recovery, pairs_digest=digest,
+                min_weight_frac=float(cfg.params.min_weight_frac),
                 provenance=dict(prov, finished_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
     write_json(summary, summ, gp)
     log(f"overall {res['overall']['status']} (m {res['overall']['m']}, t {res['overall']['t']}, "

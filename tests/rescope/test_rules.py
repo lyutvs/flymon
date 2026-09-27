@@ -88,3 +88,58 @@ def test_overall_propagation():
     assert R.overall(ok, dict(four_pass, p1004=_p(R.STOP_MACHINE)), SPEC)["status"] == R.STOP_MACHINE
     assert R.overall({"status": R.STOP_PROTOCOL}, four_pass, SPEC)["status"] == R.STOP_PROTOCOL
     assert R.overall(ok, {k: four_pass[k] for k in list(four_pass)[:3]}, SPEC)["status"] == R.STOP_FEW_PAIRS
+
+
+# ---- spec 10.4 item 6: recorded items (final-review finding 1) ---------------------------------------------
+def test_recorded_items_match_the_definitions():
+    import numpy as np
+    from flymon.brain.b_rules import dprime, v_of
+    from flymon.rescope import rules
+    from flymon.rescope.spec import SPEC
+    from .rescope_fixtures import records
+    recs = records(x="a", dx=8, dy=1, null=2, noise=3, seed=4)
+    rec = rules.recorded_items(recs, "a", SPEC)
+    idx = {(r["brain"], r["fly"], r["stage"], r["seed"]): r["counts"] for r in recs}
+    dv = lambda b, f, st: np.array([v_of(idx[(b, f, st, s)]["a"], SPEC) - v_of(idx[(b, f, st, s)]["b"], SPEC)
+                                    for s in SPEC.probe_seeds("p1000", f)])
+    flies = range(SPEC.n_flies)
+    assert rec["flies"] == list(flies)
+    assert rec["naive_dprime"]["pooled"] == dprime(np.concatenate([dv("Rr", f, "pre") for f in flies]))
+    assert rec["naive_dprime"]["n_pooled"] == SPEC.n_flies * SPEC.n_probe
+    assert rec["naive_dprime"]["per_fly"][2] == dprime(dv("Rr", 2, "pre"))
+    c = lambda d: float(np.mean(np.where(d > 0, 1.0, np.where(d == 0, 0.5, 0.0))))
+    for b in ("Rr", "N", "N2"):
+        for st in ("pre", "S1"):
+            want = [c(dv(b, f, st)) for f in flies]
+            assert rec["choice"][b][st]["per_fly"] == want and rec["choice"][b][st]["median"] == float(np.median(want))
+    d = [c(dv("Rr", f, "S1")) - c(dv("N", f, "S1")) for f in flies]
+    assert rec["choice"]["rr_minus_n_S1"]["per_fly"] == d
+    for b in ("N", "N2"):
+        sc = [dprime(dv(b, f, "S1") - dv(b, f, "pre")) for f in flies]
+        assert rec["self_change"][b]["per_fly"] == sc
+        assert rec["self_change"][b]["median"] == float(np.median(sc)) and rec["self_change"][b]["max"] == max(sc)
+    assert rec["xcore"] is None
+
+
+def test_recorded_choice_ties_are_half_and_xcore():
+    import numpy as np
+    from flymon.rescope import rules
+    from flymon.rescope.spec import SPEC
+    from .rescope_fixtures import records
+    rec = rules.recorded_items(records(x="a", x_bias=0), "a", SPEC,                    # V(X) == V(Y) everywhere
+                               xcore={"Rr": [np.array([0.1, 0.5, 1.0])] * 2, "N": [np.array([1.0, 1.0, 0.2])] * 2},
+                               floor_frac=0.2)
+    assert rec["choice"]["Rr"]["pre"]["median"] == 0.5 and rec["choice"]["N"]["S1"]["per_fly"] == [0.5] * SPEC.n_flies
+    xc = rec["xcore"]
+    assert xc["Rr"]["median"] == 0.5 and xc["N"]["median"] == 1.0 and xc["ratio_rr_over_n"] == 0.5
+    assert xc["Rr"]["floor_contact"] == xc["N"]["floor_contact"] == 1 / 3 and xc["n_edges"] == 3
+
+
+def test_recorded_items_do_not_change_the_verdict():
+    from flymon.rescope import rules
+    from flymon.rescope.spec import SPEC
+    from .rescope_fixtures import records
+    recs = records(x="a", dx=8, noise=3, seed=4)
+    before = rules.pair_verdict(recs, "a", SPEC, "p1000")
+    rules.recorded_items(recs, "a", SPEC)
+    assert rules.pair_verdict(recs, "a", SPEC, "p1000") == before

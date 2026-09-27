@@ -155,6 +155,16 @@ def _provenance() -> dict:
         return {"commit": None, "dirty": None, "dirty_files": [], "error": repr(e)}
 
 
+def _c3_params() -> list:
+    """[C3 Params] for the write guard, or [] when results/summary/m0d.json is absent (the checks then fail on their
+    own and are recorded)."""
+    from flymon.agent.config import load_c3_config
+    try:
+        return [load_c3_config().params]
+    except FileNotFoundError:
+        return []
+
+
 def main(argv=None) -> int:
     global NPZ
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -162,7 +172,7 @@ def main(argv=None) -> int:
     ap.add_argument("--allow-dirty", action="store_true")
     a = ap.parse_args(argv)
     NPZ = a.npz
-    gp = [Params()]
+    gp = [Params()] + _c3_params()                   # as the qualification: the default and the C3 engine
     guard(OUT, gp)
     git = _provenance()
     if (git["dirty"] or git["dirty"] is None) and not a.allow_dirty:
