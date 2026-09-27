@@ -43,6 +43,7 @@
 - R7. The paired bootstrap resamples fly index k jointly for both arms of a comparison, then battles within each fly, 10,000 draws, seed 20260928.
 - R9. Pilot size: 6 flies per arm (FLY, RS, COFF, RND), L = 40, E = 20 (spec 10.7 "FLY·RS ≥ 6"; 4.4's example 20 eval battles).
 - R8. Power: normal approximation with variance components (between-fly variance × 1.5 margin, binomial within), joint (2b) power by Monte Carlo of two correlated-by-FLY z statistics (FLY noise shared), 20,000 draws, seed 20260928.
+- R10 (2026-09-28 supplement). M4 valid pairs: each comparison (FLY − RND, FLY − C-off, FLY − RS) needs at least ceil(F · 6/8) valid pairs, and never fewer than 2 (`stats.min_valid_pairs`). A pair counts as INVALID when fly k is INVALID in either arm (RS: `invalid`, `donor_invalid`, residual > 5 %, eval weights changed). A shortage is per verdict: (2a) is INVALID only when FLY/RND is short; (2b) is INVALID when FLY/C-off or FLY/RS is short; the other verdict is still judged. A missing or malformed arm file, or eval schedule digests that differ, make the whole M4 summary INVALID. An INVALID verdict is never PASS or FAIL.
 
 ---
 

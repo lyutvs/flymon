@@ -362,9 +362,11 @@ def main(argv=None) -> int:
             try:
                 with ShowdownServer(port=_port()) as srv:
                     run = asyncio.run(_drive(a, out, srv_config(srv), key, spec, learn, eval_, pool, swarm, enc, yoke))
+                medians = {f: swarm.median_ratio(f) for f in range(a.flies)} if run["complete"] else None
             finally:
                 swarm._exec.shutdown(wait=True)   # BrainSwarm has no close(); its executor must not outlive the pool
     else:
+        medians = None
         with ShowdownServer(port=_port()) as srv:
             run = asyncio.run(_drive(a, out, srv_config(srv), key, spec, None, eval_, None, None, None, None))
 
@@ -376,7 +378,8 @@ def main(argv=None) -> int:
     per_fly = blocks.arm_per_fly(out, n_flies=a.flies, eval_=eval_, run=run, learn=learn, yoke=yoke, spec=spec,
                                  brain=a.arm in BRAIN,
                                  extra=None if donor is None else {row["fly"]: dict(donor_invalid=row["invalid"])
-                                                                   for row in donor["per_fly"]})
+                                                                   for row in donor["per_fly"]},
+                                 weight_medians=medians)
     frozen = all(row["weights_bit_identical_across_eval"] is not False for row in per_fly)
     res = dict(phase=a.phase, arm=a.arm, flies=a.flies, learn=a.learn if learn else 0, eval=a.eval,
                recovery_per_pulse=r, schedule_digests=digests, per_fly=per_fly, wall_clock_s=wall,

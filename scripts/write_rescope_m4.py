@@ -10,14 +10,17 @@ results/rescope-smoke) and writes results/summary/rescope_m4.json (--smoke: resu
 rescope_m4.json; never results/summary/). Without --smoke only --phase judge is accepted (the pilot is not judged).
 
 Any input problem - a missing or unreadable arm file, an arm of another phase / arm name / smoke flag, eval schedule
-digests that differ between arms (or from <root>/<phase>/eval_schedule.json), a malformed row, NaN, too few valid
-pairs - writes the summary with status INVALID and its reasons (never PASS / FAIL) and exits 2.
+digests that differ between arms (or from <root>/<phase>/eval_schedule.json), a malformed row, NaN - writes the
+summary with status INVALID (both verdicts INVALID, never PASS / FAIL) and exits 2. Too few valid pairs in a
+comparison makes only the verdict using it INVALID (plan R10); the summary is written and the exit code is 2.
 Refusals (SystemExit, nothing written): a dirty flymon/rescope/ or this script without --allow-dirty, and an existing
 non-smoke summary without --force (the judged file is not overwritten silently).
 
-Also recorded, never judged: per-arm n_flies / n_eval / invalid flies, RS residuals and donor sha256s, and the
-information-turn type match of each brain arm's eval-block fly decisions (stats.info_turn_stats over
-<arm>/logs/eval/flyNN.jsonl of valid flies; decision records need per-candidate `multipliers`, see stats).
+Also recorded, never judged (spec 4.5): per-arm n_flies / n_eval / invalid flies, RS residuals and donor sha256s;
+the information-turn type match of each brain arm's eval-block fly decisions (stats.info_turn_stats over the valid
+flies' <arm>/logs/eval/flyNN.jsonl, whose decision records carry `multipliers` from blocks.EvalPlayer); the fly
+decision fraction (eval only, learn only, both blocks); the learning-block win curve (FLY, RS); RS turn / pulse
+mismatch (dropped bundles, exhausted turns); the final plastic weight median / w0 per fly (brain arms).
 """
 from __future__ import annotations
 
@@ -111,21 +114,31 @@ def arm_record(arm: str, d: dict, spec=SPEC) -> dict:
     return out
 
 
-def info_turns(root: Path, arm: str, d: dict, spec=SPEC) -> dict:
-    """Recorded only: stats.info_turn_stats over the valid flies' eval-block decision records."""
-    logs = root / arm / "logs" / "eval"
+def _valid_logs(root: Path, arm: str, d: dict, sub: str, spec=SPEC) -> tuple:
+    """(records, missing log paths) of the valid flies' fly logs in <arm>/<sub>."""
     recs, missing = [], []
     for r in d.get("per_fly") or []:
         if not isinstance(r, dict) or "fly" not in r or stats.row_invalid(r, spec):
             continue
-        p = logs / f"fly{int(r['fly']):02d}.jsonl"
+        p = root / arm / sub / f"fly{int(r['fly']):02d}.jsonl"
         if not p.exists():
             missing.append(str(p))
         recs += read_jsonl(p)
-    out = stats.info_turn_stats(recs)
-    n_dec = sum(1 for x in recs if x.get("kind") == "decision")
-    out.update(missing_logs=missing, fly_decision_frac=out["n_fly_turns"] / n_dec if n_dec else None)
-    return out
+    return recs, missing
+
+
+def info_turns(root: Path, arm: str, d: dict, spec=SPEC) -> dict:
+    """Recorded only: stats.info_turn_stats over the valid flies' eval-block decision records."""
+    recs, missing = _valid_logs(root, arm, d, "logs/eval", spec)
+    return dict(stats.info_turn_stats(recs), missing_logs=missing)
+
+
+def decision_fractions(root: Path, arm: str, d: dict, spec=SPEC) -> dict:
+    """Recorded only: the fly-decided share of decisions in the eval block, the learning block and both."""
+    ev, m1 = _valid_logs(root, arm, d, "logs/eval", spec)
+    le, m2 = ([], []) if not d.get("learn") else _valid_logs(root, arm, d, "logs", spec)
+    return dict(eval_only=stats.decision_fraction(ev), learn_only=stats.decision_fraction(le) if d.get("learn") else None,
+                both_blocks=stats.decision_fraction(ev + le), missing_logs=m1 + m2)
 
 
 def summarize(root: Path, phase: str, smoke: bool, spec=SPEC) -> dict:
@@ -141,8 +154,13 @@ def summarize(root: Path, phase: str, smoke: bool, spec=SPEC) -> dict:
     v["arms"] = {a: arm_record(a, d, spec) for a, d in present.items()}
     v["eval_schedule_digests"] = dig
     v["inputs"] = inputs
+    brain = [a for a in BRAIN if a in present]
     v["recorded"] = dict(v.get("recorded", {}),
-                         info_turn_match={a: info_turns(root, a, present[a], spec) for a in BRAIN if a in present})
+                         info_turn_match={a: info_turns(root, a, present[a], spec) for a in brain},
+                         fly_decision_fraction={a: decision_fractions(root, a, present[a], spec) for a in brain},
+                         learn_curve={a: stats.learn_curve(present[a], spec) for a in ("FLY", "RS") if a in present},
+                         rs_mismatch=stats.rs_mismatch(present["RS"]) if "RS" in present else None,
+                         final_weight_median_ratio={a: stats.weight_medians(present[a]) for a in brain})
     return v
 
 
@@ -174,10 +192,12 @@ def main(argv=None) -> int:
         print(f"M4 INVALID: {v['reasons']}; wrote {summary}", file=sys.stderr, flush=True)
         return 2
     c2a, c2b = v["2a"], v["2b"]
-    print(f"(2a) FLY - RND {c2a['diff']:.3f} [{c2a['lo']:.3f}, {c2a['hi']:.3f}] -> {c2a['verdict']}; "
-          f"(2b) FLY - COFF {c2b['vs_coff']['diff']:.3f} [{c2b['vs_coff']['lo']:.3f}, {c2b['vs_coff']['hi']:.3f}], "
-          f"FLY - RS {c2b['vs_rs']['diff']:.3f} [{c2b['vs_rs']['lo']:.3f}, {c2b['vs_rs']['hi']:.3f}] -> "
-          f"{c2b['verdict']}; wrote {summary}", flush=True)
+    ci = lambda c: "n/a" if c.get("lo") is None else f"{c['diff']:.3f} [{c['lo']:.3f}, {c['hi']:.3f}]"
+    print(f"(2a) FLY - RND {ci(c2a)} -> {c2a['verdict']}; (2b) FLY - COFF {ci(c2b['vs_coff'])}, "
+          f"FLY - RS {ci(c2b['vs_rs'])} -> {c2b['verdict']}; wrote {summary}", flush=True)
+    if stats.INVALID in (c2a["verdict"], c2b["verdict"]):
+        print(f"INVALID verdict(s): {c2a['reasons'] + c2b['reasons']}", file=sys.stderr, flush=True)
+        return 2
     return 0
 
 

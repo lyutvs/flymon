@@ -85,6 +85,22 @@ class EvalPlayer(AgentPlayer):
     def _on_outcome(self, tag: str, turn: int, outcome) -> None:
         self._choice.pop(tag, None)
 
+    def _log(self, battle, who, decision, cands, chosen, detail=None) -> None:
+        """A fly decision record also carries `multipliers`: each candidate's type multiplier against the opponent's
+        active Pokemon (poke-env `damage_multiplier`, the coach's attack_score type factor and the spec 3.x
+        effectiveness check), in candidate order - the input of the information-turn type match (spec 4.5, recorded
+        only; logschema allows extra fields)."""
+        if who == "fly":
+            detail = dict(detail or {}, multipliers=type_multipliers(battle, cands))
+        super()._log(battle, who, decision, cands, chosen, detail)
+
+
+def type_multipliers(battle, cands) -> list | None:
+    opp = battle.opponent_active_pokemon
+    if opp is None:
+        return None
+    return [float(opp.damage_multiplier(m)) for m in cands]
+
 
 async def refuse_pulses(reqs) -> list:
     """The eval block's reinforcement barrier: any pulse reaching it is a leak of learning into evaluation."""
@@ -358,8 +374,10 @@ async def run_arm(out, *, eval_, attempt_for, cfg_hash: str, retry_max: int, res
 
 
 def arm_per_fly(out, *, n_flies: int, eval_, run: dict, learn=None, yoke: YokeBook | None = None, spec=None,
-                brain: bool = True, extra: dict | None = None) -> list:
-    """per_fly entries of result.json from the committed battle records (both blocks) and the run's weight hashes."""
+                brain: bool = True, extra: dict | None = None, weight_medians: dict | None = None) -> list:
+    """per_fly entries of result.json from the committed battle records (both blocks) and the run's weight hashes.
+    Learning arms also get learn_records (per battle, schedule order: the learning-block win curve); weight_medians
+    (fly -> plastic weight median / w0 at the arm's end, brain arms) goes to final_weight_median_ratio."""
     out = Path(out)
     erecs = {r["battle_id"]: r for r in read_jsonl(out / "logs" / "eval" / "battles.jsonl")}
     lrecs = {r["battle_id"]: r for r in read_jsonl(out / "logs" / "battles.jsonl")} if learn else {}
@@ -379,7 +397,11 @@ def arm_per_fly(out, *, n_flies: int, eval_, run: dict, learn=None, yoke: YokeBo
         if learn:
             row.update(learn_battles=len(le), learn_wins=sum(r["won"] is True for r in le),
                        learn_retries=sum(r["retries"] for r in le),
-                       learn_log_sha256=file_sha(out / "logs" / f"fly{f:02d}.jsonl"))
+                       learn_log_sha256=file_sha(out / "logs" / f"fly{f:02d}.jsonl"),
+                       learn_records=[dict(battle_id=r["battle_id"], won=r["won"], finished=r["finished"],
+                                           retries=r["retries"]) for r in le])
+        if weight_medians is not None:
+            row["final_weight_median_ratio"] = weight_medians.get(f)
         if yoke:
             row["yoke"] = yoke.queues[f].summary(spec.residual_max)
         if extra and f in extra:

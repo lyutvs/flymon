@@ -99,15 +99,55 @@ def test_rs_residual_over_max_is_invalid_even_if_unflagged():
     assert stats.m4_verdict(arms, SPEC)["invalid_pairs"]["vs_rs"]["flies"] == [0]
 
 
-def test_too_few_valid_pairs_invalid():
+def test_rs_pair_shortage_invalidates_2b_only():
     arms = five(n_flies=8)
     for k in (0, 1, 2):
-        arms["RS"]["per_fly"][k]["donor_invalid"] = True       # 5 valid pairs < 6 (6/8)
+        arms["RS"]["per_fly"][k]["donor_invalid"] = True       # 5 valid FLY/RS pairs < 6 (6/8)
     v = stats.m4_verdict(arms, SPEC)
-    assert v["status"] == stats.INVALID and v["2b"]["verdict"] == stats.INVALID and v["2b"]["pass"] is None
-    assert v["2a"]["verdict"] == stats.INVALID and v["2a"]["pass"] is None
+    assert v["status"] == stats.OK and v["min_valid_pairs"] == 6
+    assert v["2b"]["verdict"] == stats.INVALID and v["2b"]["pass"] is None and v["2b"]["reasons"]
+    assert v["2a"]["verdict"] == stats.PASS and v["2a"]["pass"] is True and not v["2a"]["reasons"]
     arms["RS"]["per_fly"][2]["donor_invalid"] = False          # 6 valid pairs: judged
-    assert stats.m4_verdict(arms, SPEC)["status"] == stats.OK
+    assert stats.m4_verdict(arms, SPEC)["2b"]["verdict"] == stats.FAIL
+
+
+def test_coff_pair_shortage_invalidates_2b_only():
+    arms = five(n_flies=8)
+    for k in (0, 1, 2):
+        arms["COFF"]["per_fly"][k]["invalid"] = True
+    v = stats.m4_verdict(arms, SPEC)
+    assert v["2b"]["verdict"] == stats.INVALID and v["2a"]["verdict"] == stats.PASS
+
+
+def test_rnd_pair_shortage_invalidates_2a_only():
+    arms = five(n_flies=8, rs=0.2)                              # (2b) judged and passes
+    for k in (0, 1, 2):
+        arms["RND"]["per_fly"][k]["invalid"] = True
+    v = stats.m4_verdict(arms, SPEC)
+    assert v["status"] == stats.OK
+    assert v["2a"]["verdict"] == stats.INVALID and v["2a"]["pass"] is None
+    assert v["2b"]["verdict"] == stats.PASS and v["2b"]["pass"] is True
+
+
+def test_fly_shortage_invalidates_both():
+    arms = five(n_flies=8)
+    for k in (0, 1, 2):
+        arms["FLY"]["per_fly"][k]["invalid"] = True
+    v = stats.m4_verdict(arms, SPEC)
+    assert v["2a"]["verdict"] == v["2b"]["verdict"] == stats.INVALID
+
+
+def test_min_valid_pairs():
+    assert [stats.min_valid_pairs(f) for f in (1, 2, 4, 6, 8, 12)] == [2, 2, 3, 5, 6, 9]
+
+
+@pytest.mark.parametrize("bad", ["0.01", None, [0.01], {"x": 1}, True, float("nan"), float("inf")])
+def test_non_numeric_residual_is_invalid_not_an_error(bad):
+    assert stats.row_invalid({"fly": 0, "invalid": False, "residual_frac": bad}) is True
+    arms = five(n_flies=8, n=40)
+    arms["RS"]["per_fly"][0]["residual_frac"] = bad
+    v = stats.m4_verdict(arms, SPEC)
+    assert v["status"] == stats.INVALID and v["2b"]["pass"] is None
 
 
 @pytest.mark.parametrize("break_it", [
@@ -204,6 +244,11 @@ def test_cli_judge_writes_summary(tmp_path, monkeypatch):
     assert s["status"] == "OK" and s["2a"]["verdict"] == "PASS" and s["2b"]["verdict"] == "FAIL"
     assert s["arms"]["RS"]["rs"]["0"]["donor_sha256"] == "d" * 64 and s["arms"]["FLY"]["n_eval"] == 40
     assert s["recorded"]["info_turn_match"]["FLY"]["rate"] == 1.0
+    rec = s["recorded"]
+    assert rec["fly_decision_fraction"]["FLY"]["eval_only"]["frac"] == 1.0
+    assert set(rec["fly_decision_fraction"]["FLY"]) >= {"eval_only", "learn_only", "both_blocks"}
+    assert set(rec["learn_curve"]) == {"FLY", "RS"} and rec["rs_mismatch"]["per_fly"]["0"]["residual_frac"] == 0.01
+    assert set(rec["final_weight_median_ratio"]) == {"FLY", "RS", "COFF"}
     assert s["boot_draws"] == SPEC.boot_draws and s["boot_seed"] == SPEC.boot_seed
     with pytest.raises(SystemExit):                              # the judged file is not overwritten silently
         load().main(["--phase", "judge", "--allow-dirty"])
@@ -247,3 +292,117 @@ def test_cli_bad_input_writes_invalid(tmp_path, monkeypatch, break_it):
     s = json.loads((tmp_path / "results/summary/rescope_m4.json").read_text())
     assert s["status"] == "INVALID" and s["2a"]["pass"] is None and s["2b"]["pass"] is None
     assert s["2a"]["verdict"] == s["2b"]["verdict"] == "INVALID"
+
+
+# ---- the other recorded items -------------------------------------------------------------------------
+def test_learn_curve_rs_mismatch_medians_and_decision_fraction():
+    res = {"per_fly": [
+        {"fly": 0, "invalid": False, "learn_records": [{"won": True}, {"won": False}, {"won": None}],
+         "yoke": {"dropped_bundles": 2, "exhausted_turns": 0, "delivered_bundles": 5, "n_bundles": 7},
+         "residual_frac": 0.01, "final_weight_median_ratio": 0.93},
+        {"fly": 1, "invalid": False, "learn_records": [{"won": True}, {"won": True}, {"won": False}],
+         "yoke": {"dropped_bundles": 0, "exhausted_turns": 3, "delivered_bundles": 4, "n_bundles": 4},
+         "residual_frac": 0.0, "final_weight_median_ratio": 1.02},
+        {"fly": 2, "invalid": True, "learn_records": [{"won": True}] * 3}]}
+    c = stats.learn_curve(res, SPEC, bin_size=2)
+    assert c["per_battle"] == [1.0, 0.5, 0.0] and c["bins"] == [0.75, 0.0] and c["n_flies"] == 2
+    assert stats.learn_curve({"per_fly": [{"fly": 0, "invalid": False}]}) is None
+    m = stats.rs_mismatch(res)
+    assert (m["dropped_bundles"], m["exhausted_turns"]) == (2, 3) and m["per_fly"][1]["exhausted_turns"] == 3
+    assert stats.weight_medians(res) == {0: 0.93, 1: 1.02, 2: None}
+    d = stats.decision_fraction([dict(kind="decision", decider="fly"), dict(kind="decision", decider="coach"),
+                                 dict(kind="outcome")])
+    assert d == dict(n_decisions=2, n_fly=1, frac=0.5)
+
+
+def test_arm_per_fly_carries_learn_records_and_medians(tmp_path):
+    from flymon.rescope import blocks
+    from .test_run_battles import run_fake
+    learn, ev = blocks.block_schedule(2, 3, 101, "L"), blocks.block_schedule(2, 2, 102, "E")
+    run, *_ = run_fake(tmp_path / "FLY", learn=learn, eval_=ev, n=2)
+    rows = blocks.arm_per_fly(tmp_path / "FLY", n_flies=2, eval_=ev, run=run, learn=learn, spec=SPEC,
+                              weight_medians={0: 0.9, 1: 1.1})
+    assert [r["battle_id"] for r in rows[1]["learn_records"]] == blocks.ids_of(learn, 1)
+    assert sum(b["won"] is True for b in rows[0]["learn_records"]) == rows[0]["learn_wins"]
+    assert [r["final_weight_median_ratio"] for r in rows] == [0.9, 1.1]
+
+
+def _battle(my_species, opp_species):
+    import logging
+    from poke_env.battle import Battle
+    from flymon.battle.moves import gen1
+    from flymon.battle.pool import POOL, by_species
+    stats_ = {"atk": 200, "def": 200, "spa": 200, "spd": 200, "spe": 200}
+    my = by_species[my_species]
+    bench = [m for m in POOL if m.species != my.species][:2]
+    side = [{"ident": f"p1: {m.species}", "details": f"{m.species}, L100", "condition": "300/300", "active": i == 0,
+             "stats": stats_, "moves": [gen1(x).id for x in m.attacks + m.support], "baseAbility": "none",
+             "item": "", "pokeball": "pokeball"} for i, m in enumerate([my] + bench)]
+    active = {"moves": [{"move": x, "id": gen1(x).id, "pp": 16, "maxpp": 16, "target": "normal", "disabled": False}
+                        for x in my.attacks + my.support]}
+    b = Battle("battle-gen1ou-t", "p1", logging.getLogger("t"), gen=1)
+    b.parse_message(["", "switch", f"p2a: {opp_species}", f"{opp_species}, L100", "300/300"])
+    b.parse_request({"side": {"name": "p1", "id": "p1", "pokemon": side}, "rqid": 2, "active": [active]})
+    return b
+
+
+def test_eval_player_decision_carries_type_multipliers(tmp_path):
+    """On a fake battle the eval player's fly decision record carries each candidate's damage_multiplier against the
+    opponent's active Pokemon, still passes logschema, and feeds info_turn_match."""
+    import asyncio
+    from poke_env.ps_client import AccountConfiguration
+    from flymon.agent import logschema
+    from flymon.agent.screen import ScreenTable
+    from flymon.battle.barrier import BatchBarrier
+    from flymon.battle.coach import Coach
+    from flymon.battle.router import candidates
+    from flymon.rescope import blocks
+    from .test_players import FakeEncoder
+
+    async def decide(reqs):
+        for r in reqs:
+            n = len(r.candidates)
+            r.context["detail"] = {"v": [0.0] * n, "a": [0] * n, "p": [0] * n, "kc_active": [0] * n, "tau": 1.0,
+                                   "seed": 1}
+        return [0] * len(reqs)
+
+    async def batch(reqs):
+        return [0] * len(reqs)
+
+    async def go():
+        p = blocks.EvalPlayer(fly=0, encoder=FakeEncoder(), table=ScreenTable.allow_all(),
+                              rbarrier=BatchBarrier(batch, deadline_ms=5), coach=Coach(),
+                              barrier=BatchBarrier(decide, deadline_ms=5), log_path=tmp_path / "fly00.jsonl",
+                              account_configuration=AccountConfiguration("fm-eval-mult", None),
+                              battle_format="gen1ou", start_listening=False)
+        p.start_battle("E-f00-b000", 0)
+        battle = _battle("Blastoise", "Charizard")
+        await p.choose_move(battle)
+        return battle
+
+    battle = asyncio.run(go())
+    recs = blocks.read_jsonl(tmp_path / "fly00.jsonl")
+    for r in recs:
+        logschema.validate(r)
+    d = [r for r in recs if r["kind"] == "decision"][-1]
+    assert d["decider"] == "fly"
+    opp = battle.opponent_active_pokemon
+    want = [float(opp.damage_multiplier(m)) for m in candidates(battle)]
+    assert d["multipliers"] == want and len(want) == len(d["candidates"]) >= 2
+    assert max(want) == 2.0                                    # Blastoise's water move vs Charizard
+    rate = stats.info_turn_match([d])
+    assert rate == (1.0 if want[0] == max(want) else 0.0) and rate is not None
+
+
+def test_cli_pair_shortage_writes_judged_2a_and_invalid_2b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    root = lay_out(tmp_path)
+    p = root / "RS" / "result.json"
+    d = json.loads(p.read_text())
+    for k in (0, 1, 2):
+        d["per_fly"][k]["donor_invalid"] = True
+    p.write_text(json.dumps(d))
+    assert load().main(["--phase", "judge", "--allow-dirty"]) == 2
+    s = json.loads((tmp_path / "results/summary/rescope_m4.json").read_text())
+    assert s["status"] == "OK" and s["2a"]["verdict"] == "PASS" and s["2b"]["verdict"] == "INVALID"
+    assert s["invalid_pairs"]["vs_rs"]["flies"] == [0, 1, 2]
