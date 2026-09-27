@@ -101,26 +101,25 @@ def eval_digests(root: Path, arms: dict) -> tuple:
 
 
 def arm_record(arm: str, d: dict, spec=SPEC) -> dict:
-    rows = d.get("per_fly") or []
+    rows = stats.fly_rows(d)                           # malformed rows skipped: this runs on INVALID arms too
     out = dict(n_flies=d.get("flies"), n_eval=d.get("eval"), learn=d.get("learn"),
                recovery_per_pulse=d.get("recovery_per_pulse"), schedule_digests=d.get("schedule_digests"),
-               invalid_flies=sorted(int(r["fly"]) for r in rows if isinstance(r, dict) and "fly" in r
-                                    and stats.row_invalid(r, spec)),
+               invalid_flies=sorted(k for k, r in rows if stats.row_invalid(r, spec)),
                eval_weights_frozen=d.get("eval_weights_frozen"))
     if arm == "RS":
-        out["rs"] = {int(r["fly"]): dict(residual_frac=r.get("residual_frac"), donor_sha256=r.get("donor_sha256"),
-                                         donor_invalid=r.get("donor_invalid"), invalid=r.get("invalid"))
-                     for r in rows if isinstance(r, dict) and "fly" in r}
+        out["rs"] = {k: dict(residual_frac=r.get("residual_frac"), donor_sha256=r.get("donor_sha256"),
+                             donor_invalid=r.get("donor_invalid"), invalid=r.get("invalid"))
+                     for k, r in rows}
     return out
 
 
 def _valid_logs(root: Path, arm: str, d: dict, sub: str, spec=SPEC) -> tuple:
     """(records, missing log paths) of the valid flies' fly logs in <arm>/<sub>."""
     recs, missing = [], []
-    for r in d.get("per_fly") or []:
-        if not isinstance(r, dict) or "fly" not in r or stats.row_invalid(r, spec):
+    for k, r in stats.fly_rows(d):
+        if stats.row_invalid(r, spec):
             continue
-        p = root / arm / sub / f"fly{int(r['fly']):02d}.jsonl"
+        p = root / arm / sub / f"fly{k:02d}.jsonl"
         if not p.exists():
             missing.append(str(p))
         recs += read_jsonl(p)

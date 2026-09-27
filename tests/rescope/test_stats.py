@@ -270,7 +270,8 @@ def test_cli_refuses_pilot_without_smoke(tmp_path, monkeypatch):
         load().main(["--phase", "pilot", "--allow-dirty"])
 
 
-@pytest.mark.parametrize("break_it", ["missing", "digest", "schedule-file", "phase", "unreadable"])
+@pytest.mark.parametrize("break_it", ["missing", "digest", "schedule-file", "phase", "unreadable", "row-no-fly",
+                                      "learn-records-int", "rs-row-no-fly", "row-not-object", "flies-str"])
 def test_cli_bad_input_writes_invalid(tmp_path, monkeypatch, break_it):
     monkeypatch.chdir(tmp_path)
     root = lay_out(tmp_path)
@@ -281,6 +282,18 @@ def test_cli_bad_input_writes_invalid(tmp_path, monkeypatch, break_it):
         p.write_text("{not json")
     elif break_it == "schedule-file":
         (root / "eval_schedule.json").write_text(json.dumps({"digest": "f" * 64}))
+    elif break_it in ("row-no-fly", "learn-records-int", "rs-row-no-fly", "row-not-object", "flies-str"):
+        q = root / ("RS" if break_it == "rs-row-no-fly" else "FLY") / "result.json"
+        d = json.loads(q.read_text())
+        if break_it in ("row-no-fly", "rs-row-no-fly"):
+            d["per_fly"][1].pop("fly")
+        elif break_it == "learn-records-int":
+            d["per_fly"][1]["learn_records"] = [1]
+        elif break_it == "row-not-object":
+            d["per_fly"][1] = 1
+        else:
+            d["flies"] = "8"
+        q.write_text(json.dumps(d))
     else:
         d = json.loads(p.read_text())
         if break_it == "digest":
@@ -406,3 +419,14 @@ def test_cli_pair_shortage_writes_judged_2a_and_invalid_2b(tmp_path, monkeypatch
     s = json.loads((tmp_path / "results/summary/rescope_m4.json").read_text())
     assert s["status"] == "OK" and s["2a"]["verdict"] == "PASS" and s["2b"]["verdict"] == "INVALID"
     assert s["invalid_pairs"]["vs_rs"]["flies"] == [0, 1, 2]
+
+
+def test_recorded_helpers_skip_malformed_rows():
+    res = {"per_fly": [1, {"invalid": False}, {"fly": "0"}, {"fly": 2, "invalid": False, "learn_records": [1, "x"],
+                                                              "yoke": 5, "final_weight_median_ratio": 0.9}]}
+    assert stats.learn_curve(res) is None and stats.weight_medians(res) == {2: 0.9}
+    assert stats.rs_mismatch(res)["per_fly"][2]["dropped_bundles"] is None
+    assert stats.learn_curve({"per_fly": "x"}) is None and stats.fly_rows(None) == []
+    assert stats.info_turn_stats([1, None, dict(kind="decision", decider="fly", candidates="ab", multipliers=[1],
+                                                chosen="a")])["n_without_multipliers"] == 1
+    assert stats.decision_fraction([1, dict(kind="decision", decider="fly")])["n_fly"] == 1

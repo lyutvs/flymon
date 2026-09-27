@@ -60,11 +60,16 @@ def check_arm(name: str, result, spec=SPEC) -> list:
     out = []
     if "complete" in result and result["complete"] is not True:
         out.append(f"{name}: arm not complete")
-    try:
-        flies = [int(r["fly"]) for r in rows]
-    except (KeyError, TypeError, ValueError):
-        return out + [f"{name}: a per_fly row has no integer fly"]
+    if len(fly_rows(result)) != len(rows):
+        return out + [f"{name}: a per_fly row is not an object with an integer fly"]
+    flies = [k for k, _ in fly_rows(result)]
     n = result.get("flies", len(rows))
+    if not _is_number(n) or n != int(n):
+        return out + [f"{name}: flies {n!r} is not an integer"]
+    n = int(n)
+    e = result.get("eval")
+    if e is not None and (not _is_number(e) or e != int(e)):
+        return out + [f"{name}: eval {e!r} is not an integer"]
     if sorted(flies) != list(range(n)):
         out.append(f"{name}: fly rows {sorted(flies)} are not exactly 0..{n - 1} (missing or duplicate rows)")
     e = result.get("eval")
@@ -74,6 +79,9 @@ def check_arm(name: str, result, spec=SPEC) -> list:
             out.append(f"{name} fly {f}: invalid flag {r.get('invalid')!r} is not a bool")
         if "residual_frac" in r and (not _is_number(r["residual_frac"]) or _bad_number(float(r["residual_frac"]))):
             out.append(f"{name} fly {f}: residual_frac {r['residual_frac']!r}")
+        lr = r.get("learn_records")
+        if "learn_records" in r and not (isinstance(lr, list) and all(isinstance(b, dict) for b in lr)):
+            out.append(f"{name} fly {f}: learn_records is not a list of objects")
         ev = r.get("eval_battles")
         if not isinstance(ev, list):
             out.append(f"{name} fly {f}: eval_battles missing")
@@ -204,11 +212,12 @@ def info_turn_stats(records) -> dict:
     info_frac}; rate / info_frac are None when undefined."""
     n_fly = n_info = n_hit = n_missing = 0
     for r in records:
-        if r.get("kind") != "decision" or r.get("decider") != "fly":
+        if not isinstance(r, dict) or r.get("kind") != "decision" or r.get("decider") != "fly":
             continue
         n_fly += 1
-        cands, mult, chosen = r.get("candidates") or [], r.get("multipliers"), r.get("chosen")
-        if mult is None or len(mult) != len(cands) or chosen not in cands:
+        cands, mult, chosen = r.get("candidates"), r.get("multipliers"), r.get("chosen")
+        if (not isinstance(cands, list) or not isinstance(mult, list) or len(mult) != len(cands)
+                or chosen not in cands or not all(_is_number(x) for x in mult)):
             n_missing += 1
             continue
         m = [float(x) for x in mult]
@@ -223,14 +232,28 @@ def info_turn_stats(records) -> dict:
 
 
 # ---- recorded only: the other spec 4.5 records ---------------------------------------------------------
+# These run on every present arm, also after the verdict is INVALID, so they skip what they cannot read (non-dict
+# rows, rows without an integer `fly`, non-dict entries) instead of raising: a malformed arm still gets its INVALID
+# summary written.
+def fly_rows(result) -> list:
+    """[(fly, row)] of the dict rows with an integer `fly` (malformed rows skipped)."""
+    rows = result.get("per_fly") if isinstance(result, dict) else None
+    if not isinstance(rows, list):
+        return []
+    return [(r["fly"], r) for r in rows
+            if isinstance(r, dict) and isinstance(r.get("fly"), int) and not isinstance(r.get("fly"), bool)]
+
+
 def learn_curve(result: dict, spec=SPEC, bin_size: int = 10) -> dict | None:
     """Learning-block win curve over the valid flies' learn_records (schedule order; unfinished = loss): the win
     rate at each battle number and in bins of bin_size. None for an arm without a learning block."""
-    rows = [r for r in result.get("per_fly") or [] if r.get("learn_records") and not row_invalid(r, spec)]
+    rows = [[b for b in r["learn_records"] if isinstance(b, dict)] for _, r in fly_rows(result)
+            if isinstance(r.get("learn_records"), list) and not row_invalid(r, spec)]
+    rows = [r for r in rows if r]
     if not rows:
         return None
-    n = min(len(r["learn_records"]) for r in rows)
-    m = np.array([[1.0 if b.get("won") is True else 0.0 for b in r["learn_records"][:n]] for r in rows])
+    n = min(len(r) for r in rows)
+    m = np.array([[1.0 if b.get("won") is True else 0.0 for b in r[:n]] for r in rows])
     per = m.mean(axis=0)
     bins = [float(m[:, i:i + bin_size].mean()) for i in range(0, n, bin_size)]
     return dict(per_battle=[float(x) for x in per], bins=bins, bin_size=bin_size, n_flies=len(rows),
@@ -241,9 +264,9 @@ def rs_mismatch(result: dict) -> dict:
     """RS turn / pulse mismatch per fly (YokedQueue.summary in the row's `yoke`): bundles dropped (donor pulses
     left over), turns with the queue exhausted (RS turns beyond the donor's), residual share; and the totals."""
     per = {}
-    for r in result.get("per_fly") or []:
-        y = r.get("yoke") or {}
-        per[int(r["fly"])] = dict(dropped_bundles=y.get("dropped_bundles"), exhausted_turns=y.get("exhausted_turns"),
+    for k, r in fly_rows(result):
+        y = r.get("yoke") if isinstance(r.get("yoke"), dict) else {}
+        per[k] = dict(dropped_bundles=y.get("dropped_bundles"), exhausted_turns=y.get("exhausted_turns"),
                                   delivered_bundles=y.get("delivered_bundles"), n_bundles=y.get("n_bundles"),
                                   residual_frac=r.get("residual_frac"))
     tot = lambda k: sum(v[k] for v in per.values() if _is_number(v[k]))
@@ -252,11 +275,11 @@ def rs_mismatch(result: dict) -> dict:
 
 def weight_medians(result: dict) -> dict:
     """fly -> final plastic weight median / w0 (the brain arm's end), as the row carries it."""
-    return {int(r["fly"]): r.get("final_weight_median_ratio") for r in result.get("per_fly") or []}
+    return {k: r.get("final_weight_median_ratio") for k, r in fly_rows(result)}
 
 
 def decision_fraction(records) -> dict:
     """Fly-decided share of all decision records (coach turns and forced switches included in the denominator)."""
-    dec = [r for r in records if r.get("kind") == "decision"]
+    dec = [r for r in records if isinstance(r, dict) and r.get("kind") == "decision"]
     n_fly = sum(1 for r in dec if r.get("decider") == "fly")
     return dict(n_decisions=len(dec), n_fly=n_fly, frac=n_fly / len(dec) if dec else None)
