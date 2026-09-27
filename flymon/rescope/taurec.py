@@ -1,5 +1,6 @@
 """Stage 1 (spec 10.6): pick recovery_per_pulse without battles — 1,000 synthetic pulses, the runtime safety population
-(median w/w0 over all plastic KC->MBON edges, flymon.agent.swarm.BrainSwarm.median_ratio), path minimum >= 0.5.
+(median w/w0 over all plastic KC->MBON edges, flymon.agent.swarm.BrainSwarm.median_ratio), path minimum >= 0.5, and
+(2026-09-28 amendment of spec 10.6) the taught-edge floor-contact share of the alt trajectory, path maximum <= 0.5.
 
 Two flies per recovery value: fly 0 ("alt", the selection trajectory) is pulsed on the synthetic odours in turn
 (pulse i on odours[i % n]); fly 1 ("same", recorded only) gets every pulse on odours[0]. Both get the same DAN plan
@@ -96,10 +97,26 @@ def trajectory(pool, odours, plan, spec, taught_mask) -> dict:
     return out
 
 
+RULE = "10.6 amendment 2026-09-28"
+
+
 def select(results: dict, spec) -> dict:
-    """The smallest recovery value whose alt path minimum is >= median_floor; none -> STOP_NO_RECOVERY."""
-    path_min = {str(r): float(min(res["alt"]["ratio"])) for r, res in results.items()}
-    ok = sorted(r for r, res in results.items() if min(res["alt"]["ratio"]) >= spec.median_floor)
+    """Spec 10.6 as amended 2026-09-28: the smallest recovery value whose alt trajectory satisfies both
+    (a) path minimum of the overall median ratio >= median_floor and
+    (b) path maximum of the taught-edge floor-contact share (floor_frac_taught) <= taurec_taught_floor_max;
+    none -> STOP_NO_RECOVERY. The same trajectory is record-only. A value whose alt floor_frac_taught has no sample
+    (no taught edges: every entry None) fails (b). `failed` lists, per value, the conditions it fails ([] = passes)."""
+    path_min, floor_max, failed = {}, {}, {}
+    for r, res in results.items():
+        pm = float(min(res["alt"]["ratio"]))
+        fl = [float(x) for x in res["alt"]["floor_frac_taught"] if x is not None]
+        fm = max(fl) if fl else None
+        path_min[str(r)], floor_max[str(r)] = pm, fm
+        failed[str(r)] = ([] if pm >= spec.median_floor else ["a"]) + \
+                         ([] if fm is not None and fm <= spec.taurec_taught_floor_max else ["b"])
+    ok = sorted(r for r in results if not failed[str(r)])
+    out = dict(rule=RULE, path_min=path_min, floor_frac_taught_path_max=floor_max, failed=failed,
+               median_floor=float(spec.median_floor), taught_floor_max=float(spec.taurec_taught_floor_max))
     if not ok:
-        return dict(status="STOP_NO_RECOVERY", recovery_per_pulse=None, path_min=path_min)
-    return dict(status="SELECTED", recovery_per_pulse=ok[0], path_min=path_min)
+        return dict(out, status="STOP_NO_RECOVERY", recovery_per_pulse=None)
+    return dict(out, status="SELECTED", recovery_per_pulse=ok[0])

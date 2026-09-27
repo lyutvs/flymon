@@ -51,6 +51,7 @@ class RSpec:
     qual_base: int = 980_000
     recovery_grid: tuple = (0.0, 0.001, 0.002, 0.005, 0.01, 0.02)
     median_floor: float = 0.5
+    taurec_taught_floor_max: float = 0.5   # spec 10.6 amendment 2026-09-28: alt floor_frac_taught path max <= this
     taurec_pulses: int = 1000
     taurec_odours: int = 50
     taurec_gen_seed: int = 990_000
