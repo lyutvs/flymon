@@ -142,12 +142,12 @@ class NoBrainPlayer(FlyCoachPlayer):
                 raise ValueError("a RandomProvider NoBrainPlayer needs its phase (the per-battle seed)")
             self.provider.rng = np.random.default_rng(rnd_seed(self.phase, self.fly, battle_id))
 
+    def _write(self, rec: dict) -> None:
+        super()._write({"fly": self.fly, "battle_id": self.battle_id, **rec})
+
 
 def rnd_seed(phase: str, fly: int, battle_id: str) -> int:
     return derive_seed("rnd", phase, int(fly), battle_id)
-
-    def _write(self, rec: dict) -> None:
-        super()._write({"fly": self.fly, "battle_id": self.battle_id, **rec})
 
 
 # ---- per-battle bookkeeping ------------------------------------------------------------------

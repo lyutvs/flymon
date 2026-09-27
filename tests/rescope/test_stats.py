@@ -485,3 +485,41 @@ def test_donor_mismatches_pure(tmp_path):
     assert set(stats.donor_mismatches(fly, dict(rs, schedule_digests={"learn": "x"}), root / "FLY" / "logs")) == {0}
     marked = stats.mark_donor_mismatches(rs, {0: "why"})
     assert stats.row_invalid(marked["per_fly"][0]) and not stats.row_invalid(rs["per_fly"][0])
+
+
+# ---- residual fix: NoBrainPlayer keeps its _write (fly / battle_id on every record) -------------------------
+def test_nobrain_player_defines_write():
+    import ast
+    import inspect
+    from flymon.rescope import blocks
+    assert "_write" in vars(blocks.NoBrainPlayer)
+    tree = ast.parse(inspect.getsource(blocks))
+    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "NoBrainPlayer")
+    assert {f.name for f in cls.body if isinstance(f, ast.FunctionDef)} >= {"__init__", "start_battle", "_write"}
+    fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "rnd_seed")
+    assert not [n for n in ast.walk(fn) if isinstance(n, ast.FunctionDef) and n is not fn]
+
+
+@pytest.mark.parametrize("kind", ["RND", "MAX"])
+def test_nobrain_decision_record_carries_fly_and_battle_id(tmp_path, kind):
+    """Through the real player path (choose_move -> _log -> _write): the record carries fly and battle_id, so
+    filter_log keeps it on --resume and the retry rollback can divert it."""
+    import asyncio
+    from poke_env.ps_client import AccountConfiguration
+    from flymon.agent.checkpoint import filter_log
+    from flymon.battle.coach import Coach
+    from flymon.battle.providers import MaxDamageProvider, RandomProvider
+    from flymon.rescope import blocks
+
+    log = tmp_path / "fly02.jsonl"
+    p = blocks.NoBrainPlayer(2, phase="judge", provider=RandomProvider(seed=2) if kind == "RND" else MaxDamageProvider(),
+                             coach=Coach(), barrier=None, log_path=log,
+                             account_configuration=AccountConfiguration(f"fm-nb-{kind}", None),
+                             battle_format="gen1ou", start_listening=False)
+    p.start_battle("JE-f02-b004", 4)
+    asyncio.run(p.choose_move(_battle("Blastoise", "Charizard")))
+    recs = blocks.read_jsonl(log)
+    assert recs and all(r["fly"] == 2 and r["battle_id"] == "JE-f02-b004" for r in recs)
+    assert any(r["kind"] == "decision" for r in recs)
+    filter_log(log, {"JE-f02-b004"})                          # a committed battle's records survive a resume
+    assert blocks.read_jsonl(log) == recs

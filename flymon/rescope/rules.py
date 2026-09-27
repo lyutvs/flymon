@@ -174,7 +174,8 @@ def recorded_items(records, x, spec, xcore=None, floor_frac=None) -> dict:
     self_change[b] for b in N / N2 = per fly d'(dV_b,S1 - dV_b,pre) (probe seed by seed; J.12.9): median and max.
     xcore (when given {"Rr": [per-fly w/w0 arrays], "N": [...]} on the X-core MBON05 edge mask): per fly the median
       w/w0, per brain the median over flies, ratio Rr / N of those medians; floor_contact = per fly the share of the
-      mask's edges at w/w0 <= floor_frac (min_weight_frac), per brain the median over flies.
+      mask's edges at w/w0 <= floor_frac (min_weight_frac) with a relative tolerance 1e-6 (the
+      engine floors in float32, so a floored edge's w/w0 is 0.2 (1 +- ~6e-8)), per brain the median over flies.
     dV = V(X) - V(Y) at each probe seed, V = z_A - z_P (b_rules.v_of)."""
     idx = _index(records)
     flies = sorted({r["fly"] for r in records if r["brain"] == "Rr" and r["stage"] == "pre"})
@@ -210,7 +211,7 @@ def recorded_items(records, x, spec, xcore=None, floor_frac=None) -> dict:
         for b in ("Rr", "N"):
             arrs = [np.asarray(a, float) for a in xcore.get(b, [])]
             meds = [float(np.median(a)) if a.size else None for a in arrs]
-            fl = ([float(np.mean(a <= floor_frac + 1e-9)) if a.size else None for a in arrs]
+            fl = ([float(np.mean(a <= floor_frac * (1 + 1e-6))) if a.size else None for a in arrs]
                   if floor_frac is not None else [None] * len(arrs))
             xc[b] = dict(per_fly_median=meds, median=_med(meds), floor_contact_per_fly=fl, floor_contact=_med(fl))
         rr, n = xc["Rr"]["median"], xc["N"]["median"]

@@ -143,3 +143,22 @@ def test_recorded_items_do_not_change_the_verdict():
     before = rules.pair_verdict(recs, "a", SPEC, "p1000")
     rules.recorded_items(recs, "a", SPEC)
     assert rules.pair_verdict(recs, "a", SPEC, "p1000") == before
+
+
+def test_recorded_floor_contact_counts_float32_floored_edges():
+    """The engine floors in float32 (np.maximum(w, w0 * min_weight_frac)), so a floored edge's w/w0 is 0.2 (1 +- ~6e-8);
+    every one of them must count as floor contact."""
+    import numpy as np
+    from flymon.rescope import rules
+    from flymon.rescope.spec import SPEC
+    from .rescope_fixtures import records
+    rng = np.random.default_rng(7)
+    w0 = rng.uniform(0.1, 3.0, 2000).astype(np.float32)
+    floored = np.maximum(np.float32(1e-6) * w0, w0 * np.float32(0.2)).astype(np.float32)
+    r_floor = floored.astype(float) / w0.astype(float)
+    assert (r_floor > 0.2).any()                                 # the float32 floor sits above 0.2 on some edges
+    free = (np.float32(0.5) * w0).astype(float) / w0.astype(float)
+    rec = rules.recorded_items(records(x="a"), "a", SPEC, xcore={"Rr": [r_floor, np.concatenate([r_floor, free])],
+                                                                  "N": [free, free]}, floor_frac=0.2)
+    assert rec["xcore"]["Rr"]["floor_contact_per_fly"] == [1.0, 0.5]
+    assert rec["xcore"]["N"]["floor_contact_per_fly"] == [0.0, 0.0]
