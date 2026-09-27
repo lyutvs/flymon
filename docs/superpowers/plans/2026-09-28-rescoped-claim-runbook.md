@@ -18,6 +18,7 @@ needs FLY's complete `result.json` (FLY first, and RS only after FLY exits 0); p
    (four checks: pairs_digest, oracle_copy_real, pool_equivalence_c3, naive_vs_oracle_pre; exit 1 = a check failed —
    read that check's entry, it carries `error` / `traceback` if it raised)
 3. `uv run python scripts/run_rescope_taurec.py --smoke --out results/rescope-smoke/taurec`
+   then `uv run python scripts/run_rescope_taurec.py --smoke --reselect --out results/rescope-smoke/taurec` (amended selection, spec 10.6 2026-09-28)
    (no `--workers` flag: one 1-worker pool, then a 2-worker pool per recovery value; smoke = 20 pulses every 5,
    4 odours, grid (0.0, 0.02); exit 0 even on STOP_NO_RECOVERY, but then step 6's brain arms refuse — record it)
 4. `uv run python scripts/run_rescope_qualify.py --smoke --workers 4 --out results/rescope-smoke/qualify`
@@ -64,7 +65,11 @@ record the answer as `--m-overlap-note` / `--m-overlap`).
 
 S1  controller: check `orca worktree ps` for M's oracle/scan and report to the user first
     `uv run python scripts/run_rescope_taurec.py --out results/rescope/taurec`
-    (stop if status STOP_NO_RECOVERY)
+    then, only after that process has exited (it writes the old-rule summary at the end; spec 10.6 amendment 2026-09-28):
+    `uv run python scripts/run_rescope_taurec.py --reselect --out results/rescope/taurec`
+    (no trajectories; rewrites `results/summary/rescope_taurec.json` with `rule: "10.6 amendment 2026-09-28"` and the
+    old selection under `superseded_rule_v1`; report every r's `path_min`, `floor_frac_taught_path_max` and `failed`;
+    stop if status STOP_NO_RECOVERY)
 S2  controller: check `orca worktree ps` for M's oracle/scan and report to the user first
     `uv run python scripts/run_rescope_qualify.py --workers 16 --out results/rescope/qualify`
     (stop if STOP_FEW_PAIRS / control not qualified; the floor is rule B — spec 10.3 amendment 2026-09-28; report
