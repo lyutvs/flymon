@@ -22,9 +22,12 @@ needs FLY's complete `result.json` (FLY first, and RS only after FLY exits 0); p
    4 odours, grid (0.0, 0.02); exit 0 even on STOP_NO_RECOVERY, but then step 6's brain arms refuse — record it)
 4. `uv run python scripts/run_rescope_qualify.py --smoke --workers 4 --out results/rescope-smoke/qualify`
    (smoke spec: 2 qualification seeds; STOP_FEW_PAIRS in the smoke summary is not an error, exit 0)
+   (floor rule B, spec 10.3 amendment 2026-09-28: the smoke has 4 seeds per odour, so 1/8 allows no silent seed —
+   the smoke seed0 Y `[45, 49, 1, 52]` still fails there and STOP_CONTROL_INVALID on smoke is expected, not a code
+   failure; check that each pair entry carries `floor` and `silent_share`)
 5. `uv run python scripts/run_rescope_primary.py --smoke --workers 4 --out results/rescope-smoke/primary`
    (refuses unless step 4's smoke summary has stop None and control_qualified; if the 2-seed smoke qualification
-   stops, record it and skip 5 — it is not a code failure)
+   stops, record it and skip 5 — it is not a code failure; when it runs, each `recorded.<pair>` carries `silent`)
 6. Pilot arms, one after the other (each starts its own Showdown server; `--smoke` forces flies 2, learn 2, eval 2,
    workers 2 — `--workers` / `--flies` / `--learn` / `--eval` are ignored):
    `for ARM in FLY RS COFF RND MAX; do uv run python scripts/run_rescope_battles.py --smoke --phase pilot --arm $ARM --out results/rescope-smoke/pilot/$ARM || break; done`
@@ -35,7 +38,8 @@ needs FLY's complete `result.json` (FLY first, and RS only after FLY exits 0); p
 8. `uv run python scripts/write_rescope_m4.py --smoke --phase pilot`
    → `results/rescope-smoke/summary/rescope_m4.json` (the CLI accepts `--phase pilot` only with `--smoke`; it reads all
    five smoke arms incl. MAX). Exit 0 = PASS / FAIL verdicts written; exit 2 = INVALID (read `reasons`; with 2 flies a
-   single INVALID fly already makes a verdict INVALID via the pair floor of 2).
+   single INVALID fly already makes a verdict INVALID via the pair floor of 2). `recorded.silent_decisions` holds
+   FLY / RS / COFF (record-only, spec 10.3 amendment 2026-09-28).
 
 Record wall-clock of each smoke step in the ledger (feeds the cost estimates of spec 5).
 
@@ -63,7 +67,8 @@ S1  controller: check `orca worktree ps` for M's oracle/scan and report to the u
     (stop if status STOP_NO_RECOVERY)
 S2  controller: check `orca worktree ps` for M's oracle/scan and report to the user first
     `uv run python scripts/run_rescope_qualify.py --workers 16 --out results/rescope/qualify`
-    (stop if STOP_FEW_PAIRS / control not qualified)
+    (stop if STOP_FEW_PAIRS / control not qualified; the floor is rule B — spec 10.3 amendment 2026-09-28; report
+    every pair's `silent_share` with the result)
 S3  controller: check `orca worktree ps` for M's oracle/scan and report to the user first
     `uv run python scripts/run_rescope_primary.py --workers 16 --out results/rescope/primary`
 S4  controller: check `orca worktree ps` for M's oracle/scan and report to the user first
