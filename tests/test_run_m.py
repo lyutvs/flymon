@@ -31,7 +31,7 @@ def _script(name):
     return mod
 
 
-@pytest.mark.parametrize("name", ["run_m_spec", "run_m_stage0"])
+@pytest.mark.parametrize("name", ["run_m_spec", "run_m_stage0", "run_m_oc", "run_m_stage1"])
 def test_refuses_outside_the_root(name, tmp_path, monkeypatch, capsys):
     mod = _script(name)
     monkeypatch.chdir(tmp_path)
@@ -40,7 +40,7 @@ def test_refuses_outside_the_root(name, tmp_path, monkeypatch, capsys):
     assert not any(tmp_path.iterdir())
 
 
-@pytest.mark.parametrize("name", ["run_m_spec", "run_m_stage0"])
+@pytest.mark.parametrize("name", ["run_m_spec", "run_m_stage0", "run_m_oc", "run_m_stage1"])
 def test_refuses_an_out_outside_m(name, monkeypatch, capsys):
     mod = _script(name)
     monkeypatch.chdir(ROOT)
@@ -48,7 +48,7 @@ def test_refuses_an_out_outside_m(name, monkeypatch, capsys):
     assert "results/m0d/m/" in capsys.readouterr().err
 
 
-@pytest.mark.parametrize("name", ["run_m_spec", "run_m_stage0"])
+@pytest.mark.parametrize("name", ["run_m_spec", "run_m_stage0", "run_m_oc", "run_m_stage1"])
 def test_refuses_dirty_hashed_files(name, monkeypatch, capsys):
     mod = _script(name)
     monkeypatch.setattr(mod, "git_state", lambda files: dict(commit="x", dirty_hashed=["flymon/brain/m_cli.py"],
@@ -451,3 +451,292 @@ def test_stage0_refuses_a_passing_name_it_does_not_hold(synthetic_npz, tmp_path,
     doc["spec_check"]["passing"]["reward"] = ["PAM13"]
     p.write_text(json.dumps(doc))
     assert run() == 2 and "PAM13" in capsys.readouterr().err
+
+
+# ---------------------------------------------------------------- run_m_oc (pure)
+def test_oc_rows_are_written_to_a_smoke_summary(tmp_path, monkeypatch, capsys):
+    mod = _script("run_m_oc")
+    monkeypatch.chdir(tmp_path)                                                # m_store's guard is cwd-relative
+    monkeypatch.setattr(mod, "out_allowed", lambda out: True)
+    monkeypatch.setattr(m_cli, "out_allowed", lambda out: True)               # read_previous's smoke rule (tmp root)
+    monkeypatch.setattr(mod, "git_state", CLEAN)
+    monkeypatch.setattr(mod, "code_keys", lambda npz: ({"key": None, "files": {}}, {"key": None}))
+    monkeypatch.setattr(mod, "same_code", lambda *a: True)
+    (tmp_path / "malecns.npz").write_bytes(b"stand-in")
+    s = tmp_path / "results/m0d/m/smoke/m.json"
+    s.parent.mkdir(parents=True)
+    s.write_text(json.dumps({"stage0": {"run_id": "r0", "measure_key": None, "code": None}, "stage1": {}}))
+    assert mod.main(["--smoke", "--allow-dirty", "--npz", "malecns.npz", "--summary", str(s)], require_root=False) == 0
+    b = json.loads(s.read_text())["oc"]
+    assert b["stage0_run_id"] == "r0" and b["smoke"] and b["n_b"] == SPEC.judge_n_b and "smoke" in b["n_b_note"]
+    assert len(b["rows"]) == len(SPEC.oc_q_b) * len(SPEC.oc_ratio) * len(SPEC.oc_naive_a) * len(SPEC.oc_c)
+    assert all(sum(r["P"].values()) == pytest.approx(1.0) for r in b["rows"]) and b["report_sha256"]
+    assert b["assumption"].startswith("u = 0") and b["provenance"]["sha256"]
+    assert sum("P(SELECTED)" in ln for ln in capsys.readouterr().out.splitlines()) == len(SPEC.oc_q_b)
+
+
+def test_oc_refuses_a_missing_stage0_other_code_and_a_later_block(tmp_path, monkeypatch, capsys):
+    mod = _script("run_m_oc")
+    monkeypatch.chdir(ROOT)
+    monkeypatch.setattr(mod, "git_state", CLEAN)
+    monkeypatch.setattr(mod, "code_keys", lambda p: (dict(key="k" * 64, files={}), {"key": "m" * 64}))
+    npz = tmp_path / "malecns.npz"
+    npz.write_bytes(b"stand-in")
+    npz = str(npz)
+    s = tmp_path / "m.json"                                   # untracked: OC needs stage0 present only (reading 16)
+    s.write_text(json.dumps({"spec_check": {}}))
+    assert mod.main(["--npz", npz, "--summary", str(s)]) == 2 and "['stage0']" in capsys.readouterr().err
+    s.write_text(json.dumps({"stage0": dict(measure_key="x", code={"key": "m" * 64})}))
+    assert mod.main(["--npz", npz, "--summary", str(s)]) == 2 and "other code" in capsys.readouterr().err
+    s.write_text(json.dumps({"stage0": dict(measure_key="k" * 64, code={"key": "m" * 64}), "stage1": {}}))
+    assert mod.main(["--npz", npz, "--summary", str(s)]) == 2 and "later blocks ['stage1']" in capsys.readouterr().err
+
+
+def test_oc_table_spec_keeps_the_declared_n_b():
+    mod = _script("run_m_oc")
+    assert mod.table_spec(SPEC) is SPEC and mod.table_spec(smoke(SPEC)).judge_n_b == SPEC.judge_n_b
+
+
+# ---------------------------------------------------------------- run_m_stage1: refusals before any pool
+def test_stage1_refuses_missing_blocks_listing_each(tmp_path, monkeypatch, capsys):
+    mod = _script("run_m_stage1")
+    monkeypatch.chdir(ROOT)
+    monkeypatch.setattr(mod, "check_committed", lambda *a: None)
+    s = tmp_path / "m.json"
+    s.write_text(json.dumps({"spec_check": {}}))
+    assert mod.main(["--summary", str(s), "--allow-dirty"]) == 2
+    err = capsys.readouterr().err
+    assert "stage0" in err and "oc" in err
+
+
+def test_stage1_refuses_an_uncommitted_summary(tmp_path, monkeypatch, capsys):
+    mod = _script("run_m_stage1")
+    monkeypatch.chdir(ROOT)
+    s = tmp_path / "m.json"
+    s.write_text(json.dumps({"spec_check": {}, "stage0": {}, "oc": {}}))
+    assert mod.main(["--summary", str(s), "--allow-dirty"]) == 2 and "tracked" in capsys.readouterr().err
+
+
+def test_stage1_refuses_a_broken_run_id_chain(tmp_path, monkeypatch, capsys):
+    mod = _script("run_m_stage1")
+    monkeypatch.chdir(ROOT)
+    monkeypatch.setattr(mod, "check_committed", lambda *a: None)
+    monkeypatch.setattr(mod, "same_code", lambda *a: True)
+    monkeypatch.setattr(mod, "code_keys", lambda npz: ({"key": "k", "files": {}}, {"key": "m"}))
+    s = tmp_path / "m.json"
+    s.write_text(json.dumps({"spec_check": {"run_id": "a"}, "stage0": {"run_id": "b", "spec_check_run_id": "zzz"},
+                             "oc": {"run_id": "c", "stage0_run_id": "b"}}))
+    assert mod.main(["--summary", str(s), "--allow-dirty"]) == 2
+    assert "other upstream runs" in capsys.readouterr().err
+    s.write_text(json.dumps({"spec_check": {"run_id": "a"}, "stage0": {"run_id": "b", "spec_check_run_id": "a"},
+                             "oc": {"run_id": "c", "stage0_run_id": "q"}}))
+    assert mod.main(["--summary", str(s), "--allow-dirty"]) == 2
+    assert "block oc was produced on other upstream runs" in capsys.readouterr().err
+
+
+def _chain(**s0):
+    return {"spec_check": _sc_block(), "stage0": dict(_sc_block(run_id="r1", spec_check_run_id="r0"), **s0),
+            "oc": _sc_block(run_id="r2", stage0_run_id="r1")}
+
+
+def test_stage1_refuses_other_code_a_later_block_and_a_stage0_not_done(tmp_path, monkeypatch, capsys):
+    mod = _script("run_m_stage1")
+    monkeypatch.chdir(ROOT)
+    npz, _ = _keys(monkeypatch, mod, tmp_path)
+    monkeypatch.setattr(mod, "code_keys", lambda p: (dict(key="k" * 64, files={
+        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), {"key": "m" * 64}))
+    s = tmp_path / "m.json"
+    doc = _chain(status="done")
+    doc["oc"]["measure_key"] = "x"
+    s.write_text(json.dumps(doc))
+    assert mod.main(["--npz", npz, "--summary", str(s)]) == 2 and "['oc'] were produced under other code" in \
+        capsys.readouterr().err
+    s.write_text(json.dumps(dict(_chain(status="done"), stage2={})))
+    assert mod.main(["--npz", npz, "--summary", str(s)]) == 2 and "later blocks ['stage2']" in capsys.readouterr().err
+    s.write_text(json.dumps(_chain(status="STOP_NO_CANDIDATE")))
+    assert mod.main(["--npz", npz, "--summary", str(s)]) == 2 and "STOP_NO_CANDIDATE" in capsys.readouterr().err
+
+
+def test_stage1_refuses_another_m0d(tmp_path, monkeypatch, capsys):
+    mod = _script("run_m_stage1")
+    monkeypatch.chdir(ROOT)
+    npz, _ = _keys(monkeypatch, mod, tmp_path)
+    monkeypatch.setattr(mod, "code_keys", lambda p: (dict(key="k" * 64, files={
+        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), {"key": "m" * 64}))
+    monkeypatch.setattr(mod, "FlyPool", lambda *a, **k: pytest.fail("pool started before the m0d refusal"))
+    other = tmp_path / "m0d.json"
+    other.write_text((ROOT / SPEC.m0d_path).read_text() + "\n")
+    s = tmp_path / "m.json"
+    s.write_text(json.dumps(_chain(status="done")))
+    assert mod.main(["--npz", npz, "--summary", str(s), "--m0d", str(other)]) == 2
+    assert "not the one stage 0 ran on" in capsys.readouterr().err
+
+
+# ---------------------------------------------------------------- run_m_stage1: the flow with stand-in measurers
+BIG = [[3, 0], [4, 0]]                    # dV of these probes (z = (0, 1)) has d' 4.95: r (or -p) passes
+ZERO = [[0, 0], [0, 0]]
+
+
+def _rep(r_ok: bool, p_ok: bool) -> dict:
+    """A report whose r >= 2 iff r_ok and -p >= 2 iff p_ok (the P readout silent, z = (0, 1))."""
+    r1 = BIG if r_ok else ZERO
+    r2 = [[a - (b if p_ok else 0) for a, b in zip(x, y)] for x, y in zip(r1, BIG)]
+    return {"pre": {"A": ZERO, "P": ZERO}, "R1": {"A": r1, "P": ZERO}, "R2": {"A": r2, "P": ZERO}}
+
+
+def _pairs():
+    od = lambda k: {"g0": float(k), "g1": 1.0}
+    return ([dict(axis="a", turn=0, x="m0", y="m1", odor_x=od(0), odor_y=od(1))]
+            + [dict(axis="b", turn=0, x=f"m{i} vs A", y=f"m{i} vs B", odor_x=od(i), odor_y=od(i + 5)) for i in range(3)])
+
+
+def _stage1_world(monkeypatch, tmp_path, synthetic_npz, plan: dict, self_ok=True, overlap_ppl103=False):
+    """plan: {(reward_type, punish_type): [(r_ok, p_ok) per scanned pair]}."""
+    import dataclasses
+    from flymon.brain.h4_formula import pair_stats
+    from flymon.brain.h4_pairs import pair_key, pairs_digest
+    from flymon.brain.j_runner import params_json
+    mod = _script("run_m_stage1")
+    conn, pops, cands = _world(synthetic_npz)
+    if overlap_ppl103:                                                         # PPL103's core cell inside PAM08's
+        c = cands["punish"][0]
+        cands["punish"][0] = dict(c, cells=[cands["reward"][0]["cells"][0]],
+                                  digest=cells_digest([cands["reward"][0]["cells"][0]]))
+    cells = sorted(int(i) for i in pops.mbon)
+    pairs = _pairs()
+    even = [p for p in pairs if p["axis"] == "b"][:2]
+    base = smoke(SPEC)
+    spec = dataclasses.replace(base, j=dataclasses.replace(base.j, h4=dataclasses.replace(
+        base.j.h4, pairs_digest=pairs_digest(pairs))))
+    readout, z_c3, pools = {"A": "MBON13", "P": "MBON05"}, {"A": [0.0, 1.0], "P": [0.0, 1.0]}, {"A": ["x"], "P": ["y"]}
+    c3_rep = _rep(True, False)
+    want = dict(zip(("axis", "turn", "x", "y"), pair_key(even[0])), **pair_stats(c3_rep, z_c3, 2.0))
+    rec = [want if self_ok else dict(want, r=want["r"] + 1.0),
+           dict(zip(("axis", "turn", "x", "y"), pair_key(even[1])), r=0.0, p=-3.0, testable=False)]
+    m0d = tmp_path / "m0d.json"
+    m0d.write_text(json.dumps({"h4": {"h4": {"combos": {"C3": {"oracle": {"pairs": rec}}}}}}))
+    npz = tmp_path / "malecns.npz"
+    npz.write_bytes(Path(synthetic_npz).read_bytes())
+    kc = {"PAM08": 5.0, "PAM10": 1.0, "PPL103": 2.0, "PPL105": 4.0}
+    sc = dict(outcome=SPEC_GO, measure_key="k" * 64, code={"key": "m" * 64}, run_id="r0",
+              candidates={arm: [dict(name=c["name"], digest=c["digest"], kc_input=kc[c["name"]]) for c in cands[arm]]
+                          for arm in cands})
+    groups = [dict(name=c["name"], arm=arm, cells=c["cells"], digest=c["digest"], z=[0.0, 1.0])
+              for arm in cands for c in cands[arm]]
+    s0 = dict(status="done", measure_key="k" * 64, code={"key": "m" * 64}, run_id="r1", spec_check_run_id="r0",
+              inputs=dict(m0d=dict(path=str(m0d), sha256=sha256_file(m0d))), c3=params_json(Params()),
+              readout=readout, z_c3=z_c3, pools=pools, cells=cells, groups=groups,
+              arms={"reward": ["PAM10"], "punish": ["PPL103"]})
+    oc = dict(measure_key="k" * 64, code={"key": "m" * 64}, run_id="r2", stage0_run_id="r1")
+    summ = tmp_path / "results/summary/m_readout.json"
+    summ.parent.mkdir(parents=True)
+    summ.write_text(json.dumps({"spec_check": sc, "stage0": s0, "oc": oc}))
+    calls = {"pre": [], "edit": [], "h4": []}
+
+    class H4:
+        def __init__(self, pool, h4spec, pairs_, pools_, cache, h3):
+            assert pairs_ == even[:1] and pools_ == pools and h3 is None
+            self.params_seen = [Params()]
+
+        def oracle(self, params, ro, z):
+            calls["h4"].append((ro, z))
+            return [dict(report=c3_rep)]
+
+    class M:
+        def __init__(self, pool, spec_, cache):
+            self.params_seen = [Params()]
+
+        def pre(self, params, pairs_, cells_):
+            assert pairs_ == even and cells_ == cells
+            calls["pre"].append(len(pairs_))
+            return [dict(i=i) for i in range(len(pairs_))]
+
+        def edit(self, params, pairs_, pres, cells_, groups_, ro, z, reward_type, punish_type):
+            assert pairs_ == even and pres == [dict(i=i) for i in range(len(pairs_))]
+            calls["edit"].append(dict(groups=groups_, readout=ro, z=z, reward=reward_type, punish=punish_type))
+            ed = {"reward": {"group": ro["P"], "cells": groups_[ro["P"]]},
+                  "punish": {"group": ro["A"], "cells": groups_[ro["A"]]}}
+            return [dict(report=_rep(*ok), edited=ed) for ok in plan[(reward_type, punish_type)]]
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(mod, "git_state", CLEAN)
+    monkeypatch.setattr(mod, "out_allowed", lambda out: True)
+    monkeypatch.setattr(mod, "check_committed", lambda *a: None)
+    monkeypatch.setattr(mod, "code_keys", lambda p: (dict(key="k" * 64, files={
+        "npz:malecns.npz": SPEC.j.h4.h3.connectome_sha256}), {"key": "m" * 64}))
+    monkeypatch.setattr(mod, "load_c3_record", lambda path, s: (Params(), readout, z_c3, pools))
+    monkeypatch.setattr(mod, "even_pairs", lambda pops_: pairs)
+    monkeypatch.setattr(mod, "FlyPool", _Pool)
+    monkeypatch.setattr(mod, "H4Measurer", H4)
+    monkeypatch.setattr(mod, "MMeasurer", M)
+    run = lambda *extra: mod.main(["--npz", str(npz), "--m0d", str(m0d), *extra], spec=spec, summary_spec=spec,
+                                  require_root=False)
+    return run, calls, cands, summ
+
+
+PLAN = {("PAM08", "PPL105"): [(True, False), (False, True)],                    # reference: n_r 1, n_p 1
+        ("PAM10", "PPL105"): [(True, True), (True, False)],                     # reward PAM10: n 2
+        ("PAM08", "PPL103"): [(False, True), (True, True)]}                     # punish PPL103: n 2
+
+
+def test_stage1_scans_both_arms_ranks_and_writes_the_block(synthetic_npz, tmp_path, monkeypatch, capsys):
+    run, calls, cands, summ = _stage1_world(monkeypatch, tmp_path, synthetic_npz, PLAN)
+    assert run() == 0
+    b = json.loads(summ.read_text())["stage1"]
+    assert b["status"] == "done" and b["self_check"]["ok"] and calls["pre"] == [2]            # pre once, shared
+    assert calls["h4"] == [({"A": "MBON13", "P": "MBON05"}, {"A": [0.0, 1.0], "P": [0.0, 1.0]})]
+    assert b["stage0_run_id"] == "r1" and b["oc_run_id"] == "r2" and b["spec_check_run_id"] == "r0"
+    assert b["n_pairs"] == 2 and [k[0] for k in b["pairs"]] == ["b", "b"] and len(b["pairs_digest"]) == 64
+    ref = next(c for c in calls["edit"] if c["reward"] == "PAM08" and c["punish"] == "PPL105")
+    assert ref["readout"] == {"A": "PPL105", "P": "PAM08"} and len(calls["edit"]) == 3          # reference measured once
+    rw = next(c for c in calls["edit"] if c["reward"] == "PAM10")
+    assert rw["readout"] == {"A": "PPL105", "P": "PAM10"} and rw["punish"] == "PPL105"
+    assert rw["groups"] == {"PAM10": cands["reward"][1]["cells"], "PPL105": cands["punish"][1]["cells"]}
+    pu = next(c for c in calls["edit"] if c["punish"] == "PPL103")
+    assert pu["readout"] == {"A": "PPL103", "P": "PAM08"} and pu["reward"] == "PAM08"
+    assert b["reference"]["n_r"] == 1 and b["reference"]["n_p"] == 1 and b["reference"]["edited_ok"]
+    e = {x["name"]: x for arm in b["entries"] for x in b["entries"][arm]}
+    assert e["PAM10"]["n"] == 2 and e["PPL103"]["n"] == 2 and e["PAM10"]["kc_input"] == 1.0
+    assert len(e["PAM10"]["r"]) == 2 and len(e["PPL103"]["p"]) == 2 and e["PAM10"]["edited_ok"]
+    assert e["PAM10"]["edited"]["reward"] == {"group": "PAM10", "cells": cands["reward"][1]["cells"]}
+    assert b["ranked"] == {"reward": ["PAM10"], "punish": ["PPL103"]}
+    assert [t["name"] for t in b["top"]["reward"]] == ["PAM10"] and b["top"]["reward"][0]["digest"]
+    pj = b["predicted_joint"]
+    assert pj == {"PAM10|PPL103": 2, "PAM10|PPL105": 1, "PAM08|PPL103": 1, "PAM08|PPL105": 0}
+    assert b["c3_baseline"] == dict(b["c3_baseline"], n_pairs=2, n_r=1, n_p=1)
+    assert b["skipped"] == {"reward": [], "punish": []} and b["report_sha256"] and "cache" in b
+
+
+def test_stage1_skips_an_overlapping_candidate_and_falls_back_to_the_incumbent(synthetic_npz, tmp_path, monkeypatch):
+    run, calls, cands, summ = _stage1_world(monkeypatch, tmp_path, synthetic_npz, PLAN, overlap_ppl103=True)
+    assert run() == 0
+    b = json.loads(summ.read_text())["stage1"]
+    assert b["skipped"] == {"reward": [], "punish": [{"name": "PPL103", "overlaps": "PAM08"}]}
+    assert not any(c["punish"] == "PPL103" for c in calls["edit"]) and b["entries"]["punish"] == []
+    assert b["top"]["punish"] == [dict(name="PPL105", cells=cands["punish"][1]["cells"],
+                                       digest=cands["punish"][1]["digest"], n=1, med=b["top"]["punish"][0]["med"],
+                                       incumbent=True)]
+    assert set(b["predicted_joint"]) == {"PAM10|PPL105", "PAM08|PPL105"}
+
+
+def test_stage1_self_check_mismatch_exits_5_before_the_scan(synthetic_npz, tmp_path, monkeypatch, capsys):
+    run, calls, _, summ = _stage1_world(monkeypatch, tmp_path, synthetic_npz, PLAN, self_ok=False)
+    assert run() == 5
+    assert "stage1" not in json.loads(summ.read_text()) and not calls["pre"] and not calls["edit"]
+    rep = json.loads(next((tmp_path / "results/m0d/m/run/runs").glob("*-stage1.json")).read_text())
+    assert rep["status"] == "mismatch" and rep["self_check"]["mismatched"] == ["r"] and "entries" not in rep
+    assert "DIFFERS" in capsys.readouterr().out
+
+
+def test_stage1_refuses_a_stage0_group_whose_digest_moved(synthetic_npz, tmp_path, monkeypatch, capsys):
+    run, calls, _, summ = _stage1_world(monkeypatch, tmp_path, synthetic_npz, PLAN)
+    doc = json.loads(summ.read_text())
+    doc["stage0"]["groups"][1]["cells"] = doc["stage0"]["groups"][0]["cells"]          # PAM10's cells, digest kept
+    summ.write_text(json.dumps(doc))
+    assert run() == 2 and "['PAM10']" in capsys.readouterr().err and not calls["h4"]
+
+
+def test_stage1_refuses_another_even_pair_list(synthetic_npz, tmp_path, monkeypatch, capsys):
+    run, calls, _, _ = _stage1_world(monkeypatch, tmp_path, synthetic_npz, PLAN)
+    monkeypatch.setattr(sys.modules["run_m_stage1"], "even_pairs", lambda pops: _pairs()[:3])
+    assert run() == 2 and "even pair list differs" in capsys.readouterr().err and not calls["h4"]
