@@ -92,6 +92,9 @@ def test_pre_and_edit_compose_to_oracle_job(conn_pops):
                     fx_val=pre["fx_val"], cells=cells, groups=groups, readout=readout, z=z, pre_sel=pre["pre_sel"],
                     **EDIT)
     assert compose(pre, ed, cells, groups) == o
+    assert o["counts"]["R1"] != o["counts"]["pre"]                          # non-vacuous: the edit moved the probes
+    ch = [v["change"] for arm in ("reward", "punish") for v in o["select"][arm].values()]
+    assert any(np.isfinite(x) and x != 0 for x in ch)
     assert J._RIG[P][1].weights_frac() == 1.0 and J._RIG[P][1].enabled          # weights and plasticity restored
     assert ed["edited"] == {"reward": {"group": "MBON01", "cells": groups["MBON01"]},
                             "punish": {"group": "MBON03", "cells": groups["MBON03"]}}
