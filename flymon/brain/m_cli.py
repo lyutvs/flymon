@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 from pathlib import Path
 
 from . import h3_store, m_store
@@ -70,6 +71,33 @@ def later_blocks(summary, name: str, doc: dict | None = None) -> str | None:
     later = [b for b in ORDER[ORDER.index(name) + 1:] if isinstance(doc, dict) and b in doc]
     return None if not later else (f"{summary} already holds the later blocks {later}: block {name} is not rewritten "
                                    f"under them (start a new summary, or --smoke)")
+
+
+def head_text(summary) -> str | None:
+    """The summary's committed text at HEAD, or None (outside the repository or not tracked)."""
+    rel = os.path.relpath(os.path.abspath(str(summary)), ROOT).replace(os.sep, "/")
+    if rel.startswith("../"):
+        return None
+    r = subprocess.run(["git", "-C", str(ROOT), "show", f"HEAD:{rel}"], capture_output=True, text=True)
+    return r.stdout if r.returncode == 0 else None
+
+
+def blocks_committed(summary, blocks, show=head_text) -> str | None:
+    """Block-level commit gate (reading 16's "committed" for a CLI whose previous block need only be present): None when
+    the summary is tracked and each of `blocks` equals its HEAD version; other blocks may be uncommitted. Else the
+    refusal (it says "tracked" or "uncommitted")."""
+    text = show(summary)
+    if text is None:
+        return f"{summary} is not tracked by git: commit its blocks {list(blocks)} before this stage"
+    try:
+        head, now = json.loads(text), json.loads(Path(summary).read_text())
+    except (OSError, ValueError) as e:
+        return f"no usable summary at {summary} (or at HEAD): {e}"
+    norm = lambda x: json.dumps(x, sort_keys=True)
+    bad = [b for b in blocks if not isinstance(head, dict) or b not in head or not isinstance(now, dict)
+           or norm(head[b]) != norm(now.get(b))]
+    return None if not bad else (f"{summary} has uncommitted changes in the blocks {bad}: commit them before this "
+                                 f"stage")
 
 
 # M's own copy: l_cli.write_block writes through l_store (results/m0d/l/, l_screen.json), which refuses M's paths.

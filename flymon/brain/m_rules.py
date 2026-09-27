@@ -114,7 +114,8 @@ def stage3_reading(agg: dict, agg_c3: dict, spec) -> dict:
 def sentence(outcome: str, ctx: dict) -> str:
     """M.10.5's sentences, the scope written into them. ctx keys by outcome: STOP_NO_GAIN {combo, n, fa}; B_Tb / B_Fa /
     B_NO_CONCLUSION {combo, n, c, k (even selection), h (odd record), n_b} + B_Fa {fa, naive_a, f_a_possible} +
-    B_NO_CONCLUSION {fa, note}; SELECTED {combo, n, c, fa, h, n_b, moves, top_move, n_cands, m, w, dan = (PPL, PAM)}."""
+    B_NO_CONCLUSION {fa, note}; SELECTED {combo, n, c, fa, k, h, n_b, moves, top_move, n_cands, m, w, dan = (PPL, PAM)}.
+    Every listed key is looked up with ctx[...] (a missing one raises KeyError)."""
     if outcome == STOP_NO_SPECIFICITY:
         return ("C3에서 어느 PPL1·PAM 구획의 core KC 입력도 짝수 (b) 21쌍의 X 전용 가중 몫이 현 조합(PPL105·PAM08)보다 "
                 "크지 않았다. → 이 판독 확장을 닫는다.")
@@ -125,8 +126,10 @@ def sentence(outcome: str, ctx: dict) -> str:
     if outcome == STOP_NO_GAIN:
         return (f"특이성 검사를 통과한 후보의 {SCOPE}(집단 판독) 가운데 짝수 (b) 쌍에서 M2 기준을 넘은 조합이 "
                 f"없었다(최대 {ctx['n']}/21·F_a {ctx['fa']}, {ctx['combo']}). → 이 범위의 판독 확장을 닫는다.")
-    nb = ctx.get("n_b")
-    tail = f"(짝수 선택 {ctx.get('k')}/21, 홀수 기록 {ctx.get('h')}/20)"
+    if outcome not in (B_TB, B_FA, B_NO_CONCLUSION, SELECTED):
+        return f"{outcome}: 기록하고 사용자가 판단한다 ({ctx})."
+    nb = ctx["n_b"]                                           # a missing key fails loudly (never a silent None)
+    tail = f"(짝수 선택 {ctx['k']}/21, 홀수 기록 {ctx['h']}/20)"
     if outcome == B_TB:
         return (f"선택된 구획 쌍 {ctx['combo']}({SCOPE}에서 선택)의 집단 판독이 새 판정 세트에서 "
                 f"{ctx['n']}/{nb}로 같은 세트의 C3 {ctx['c']}/{nb}보다 오르지 않았다{tail}. → 이 범위의 판독 확장을 닫는다.")
@@ -135,9 +138,9 @@ def sentence(outcome: str, ctx: dict) -> str:
                 f"같은 세트의 C3 {ctx['c']}/{nb}보다 높았으나 (a) F_a {ctx['fa']} < 2였다(naive_a {ctx['naive_a']}, "
                 f"f_a_possible {ctx['f_a_possible']}){tail}. → 기록하고 사용자가 판단한다.")
     if outcome == B_NO_CONCLUSION:
-        note = f" {ctx['note']}." if ctx.get("note") else ""
+        note = f" {ctx['note']}." if ctx["note"] else ""
         return (f"선택된 구획 쌍 {ctx['combo']}({SCOPE}에서 선택)의 집단 판독이 새 판정 세트에서 {ctx['n']}/{nb}"
-                f"(F_a {ctx.get('fa')}), 같은 세트의 C3 {ctx['c']}/{nb}였다{tail}.{note} → 기록하고 사용자가 판단한다.")
+                f"(F_a {ctx['fa']}), 같은 세트의 C3 {ctx['c']}/{nb}였다{tail}.{note} → 기록하고 사용자가 판단한다.")
     if outcome == SELECTED:
         ppl, pam = ctx["dan"]
         return (f"C3 엔진에서 구획 {ctx['combo']}({SCOPE}에서 선택)·core 집단 판독이 새 판정 세트 (b) {nb}쌍에서 오라클 "
@@ -146,4 +149,3 @@ def sentence(outcome: str, ctx: dict) -> str:
                 f"학습 시험이 아니다. {ctx['n_cands']}후보(특이성 통과 {ctx['m']}개)에서 골랐고 짝수 21쌍은 G·H·J·K·L·M에 "
                 f"걸쳐 선택에 쓰였다. I 뒤 다섯 번째 선언(J·K·L·M)이다. core w_mbon {ctx['w']}, DAN 세포 수 "
                 f"PPL {ppl}·PAM {pam}. → F v4 학습 시험 선언(3.4 펄스 표 개정, J.12.8 억압 진단을 선행 과제로).")
-    return f"{outcome}: 기록하고 사용자가 판단한다 ({ctx})."

@@ -162,3 +162,16 @@ def test_open_readings_go_to_the_user():
     s = R.sentence(R.B_FA, dict(combo="PPL103·PAM10", n=12, c=4, fa=1, k=13, h=4, n_b=21, naive_a=1,
                                 f_a_possible=False))
     assert "사용자" in s and "F_a 1" in s and "naive_a 1" in s and "팔별 상위 2 × 2" in s
+
+
+def test_sentence_ctx_keys_fail_loudly():
+    """Task 9: k / h / n_b / note are looked up with ctx[...]; a missing one is a KeyError, never "None" in the text."""
+    base = dict(combo="PPL103·PAM10", n=5, c=6, k=12, h=3, n_b=21)
+    for drop in ("k", "h", "n_b"):
+        with pytest.raises(KeyError):
+            R.sentence(R.B_TB, {x: v for x, v in base.items() if x != drop})
+    with pytest.raises(KeyError):
+        R.sentence(R.B_NO_CONCLUSION, dict(base, fa=3))                       # note missing
+    with pytest.raises(KeyError):
+        R.sentence(R.SELECTED, {x: v for x, v in _SEL.items() if x != "dan"})
+    assert "기록하고 사용자가 판단한다" in R.sentence("OTHER", {})
