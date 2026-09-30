@@ -30,6 +30,7 @@ from .engine_cpu import Engine
 from .h3_jobs import edge_sources
 from .h4_formula import dprime, dv
 from .h4_jobs import _present_kc, type_cells
+from .n_spec import train_seed
 from .plasticity import Plasticity
 from .presentation import decide
 from .stimuli import present
@@ -205,12 +206,6 @@ def punish_only_oracle_job(eng, pl, pops, comps, ro, params, odor_x: dict, odor_
 
 
 # ================================================================ N2: absolute punishment conditioning (N.4, N.8.7)
-def train_seed(seed: int, trial: int, seed_base: int, seed_stride: int) -> int:
-    """The training reset seed, conditioning.train_block's rule (base + seed x stride + trial); the one definition in
-    n_jobs. Python ints: ~2.1e10 reaches default_rng unchanged."""
-    return int(seed_base) + int(seed) * int(seed_stride) + int(trial)
-
-
 def train_plus_only(e, p, pops, cs_plus, strength: float, seed: int, punish: str, trials: int, present_ms: float,
                     gap_ms: float, settle_ms: float, seed_base: int, seed_stride: int) -> None:
     """conditioning.train_block's CS+ half alone (no CS- during training). Per trial:

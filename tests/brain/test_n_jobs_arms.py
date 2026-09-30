@@ -11,6 +11,7 @@ from flymon.brain import n_jobs as N
 from flymon.brain.circuits import Populations
 from flymon.brain.conditioning import train_block
 from flymon.brain.config import Params
+from flymon.brain import n_spec
 from flymon.brain.n_spec import SPEC
 from flymon.brain.h4_jobs import oracle_job
 from flymon.brain.presentation import decide
@@ -82,10 +83,11 @@ def test_train_seed_is_train_blocks_rule_and_the_specs(conn_pops, monkeypatch):
     train_block(e, p, pops, X, Y, 3.0, 7, "PPL105", None, trials=2, present_ms=10.0, gap_ms=10.0, settle_ms=10.0)
     p.reset_weights()
     base, stride = SPEC.train_seed_base, SPEC.train_seed_stride
-    assert seen == [N.train_seed(7, t, base, stride) for t in range(2) for _ in ("plus", "minus")]
+    assert N.train_seed is n_spec.train_seed                          # one formula (n_spec), imported by n_jobs
+    assert seen == [n_spec.train_seed(7, t, base, stride) for t in range(2) for _ in ("plus", "minus")]
     big = 21_002_063                                     # a judge seed
-    assert N.train_seed(big, 11, base, stride) == SPEC.train_seed(big, 11) == 1_000_000 + big * 1000 + 11
-    assert N.train_seed(big, 11, base, stride) > 2**32 and isinstance(N.train_seed(big, 11, base, stride), int)
+    assert n_spec.train_seed(big, 11, base, stride) == SPEC.train_seed(big, 11) == 1_000_000 + big * 1000 + 11
+    assert SPEC.train_seed(big, 11) > 2**32 and isinstance(SPEC.train_seed(big, 11), int)
 
 
 def test_train_plus_only_uses_train_blocks_seed_rule(conn_pops, monkeypatch):

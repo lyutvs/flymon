@@ -28,6 +28,12 @@ def _load_fetch():
 _FETCH = _load_fetch()
 
 
+def train_seed(seed: int, trial: int, base: int, stride: int) -> int:
+    """The training reset seed, conditioning.train_block's rule (base + seed x stride + trial): the one formula (NSpec and
+    n_jobs call it). Python ints: ~2.1e10 reaches default_rng unchanged."""
+    return int(base) + int(seed) * int(stride) + int(trial)
+
+
 @dataclass(frozen=True)
 class NSpec:
     l: LSpec = L_SPEC
@@ -132,7 +138,7 @@ class NSpec:
         return tuple(range(self.judge_seed0, self.judge_seed0 + int(n)))
 
     def train_seed(self, seed: int, trial: int) -> int:
-        return self.train_seed_base + int(seed) * self.train_seed_stride + int(trial)
+        return train_seed(seed, trial, self.train_seed_base, self.train_seed_stride)
 
 
 SPEC = NSpec()
