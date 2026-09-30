@@ -53,6 +53,24 @@ def test_runaway_share_and_zero_share_bounds():
     assert with_rows(zeros2)["floor"] and not with_rows(zeros3)["floor"]
 
 
+@pytest.mark.parametrize("stim", SPEC.judged_stimuli)
+def test_clauses_two_and_three_also_fail_on_the_on_condition(stim):
+    def with_on(rows_on):
+        c = _cells()
+        c[stim]["on"] = R.cell_stats(rows_on, SPEC)
+        return R.point_checks(c, SPEC)
+    one = [_row(hz=151)] + [_row()] * 7; two = [_row(hz=151)] * 2 + [_row()] * 6
+    assert with_on(one)["ok"]
+    got = with_on(two)                                   # (2) on: sub-window > 150 Hz in 2/8 presentations
+    assert (got["band"], got["runaway"], got["floor"], got["ok"]) == (True, False, True, False)
+    hot = with_on([_row(kc=0.31)] * 8)                   # (2) on: KC median above 30% (it also leaves the band)
+    assert not hot["runaway"] and not hot["ok"]
+    for k in ("A", "P"):                                 # (3) on: a readout's zero share 3/8 > 25%
+        got = with_on([_row(**{k: 0})] * 3 + [_row()] * 5)
+        assert (got["band"], got["runaway"], got["floor"], got["ok"]) == (True, True, False, False)
+        assert with_on([_row(**{k: 0})] * 2 + [_row()] * 6)["ok"]
+
+
 def test_ia_and_eb_alone_never_count():
     c = _cells()
     c["IA"]["on"] = R.cell_stats([_row(kc=0.9, hz=900, A=0, P=0)] * 8, SPEC)
@@ -124,3 +142,7 @@ def test_n1_outcome():
     dis_only = R.n1_outcome({"sim": f, "dis": t})
     assert dis_only["outcome"] == R.STOP_UNTESTABLE and "비슷한 쌍" in dis_only["note"]
     assert R.n1_outcome({"sim": t, "dis": f}) == {"outcome": R.STOP_UNTESTABLE, "note": None}
+    assert R.n1_outcome({"sim": f, "dis": f}) == {"outcome": R.STOP_UNTESTABLE, "note": None}
+    for missing in ({}, {"sim": t}, {"dis": t}):         # a missing pair raises: all() over nothing is never N1_GO
+        with pytest.raises(KeyError):
+            R.n1_outcome(missing)

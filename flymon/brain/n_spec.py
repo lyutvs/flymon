@@ -89,6 +89,7 @@ class NSpec:
     alt_frac: float = 0.75
     n_grid: tuple = (16, 24, 32, 48, 64)
     sd_mults: tuple = (1.0, 2.0)
+    oc_pairings: tuple = ("same", "independent")  # block arm from the on arm's own resample (N.8.6) / its own (reading 6)
     null_max: float = 0.05
     power_min: float = 0.8
     oc_draws: int = 2000                          # reading 7: experiments per (n, spread, hypothesis) cell
