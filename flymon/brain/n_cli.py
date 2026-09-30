@@ -98,16 +98,23 @@ def head_spec(path) -> str | None:
     return r.stdout if r.returncode == 0 else None
 
 
+def note_start(text: str, marker: str) -> int | None:
+    """Where the `marker` paragraph starts: a line starting "**N.8a" (or a heading "### N.8a"); None without one. The
+    one definition of the note's form (the gate below and scripts/write_n_notes.py read it)."""
+    m = re.search(rf"^(?:#+\s*|\*\*){re.escape(marker)}\b", text, re.M)
+    return m.start() if m else None
+
+
 def spec_note(text: str | None, marker: str, rid) -> str | None:
-    """Plan reading 12: a line starting "**N.8a" (or a heading "### N.8a") in the committed spec, and the upstream
-    block's run id somewhere after it."""
+    """Plan reading 12: a `marker` paragraph (note_start) in the committed spec, and the upstream block's run id
+    somewhere after it."""
     if text is None:
         return "the spec is not tracked at HEAD"
-    m = re.search(rf"^(?:#+\s*|\*\*){re.escape(marker)}\b", text, re.M)
-    if not m:
+    at = note_start(text, marker)
+    if at is None:
         return (f"the spec at HEAD has no {marker} paragraph: write it (scripts/write_n_notes.py) and commit it before "
                 f"this stage (N.8.9)")
-    if not rid or str(rid) not in text[m.start():]:
+    if not rid or str(rid) not in text[at:]:
         return f"the spec's {marker} paragraph does not cite block run_id {rid}"
     return None
 
