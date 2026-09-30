@@ -10294,5 +10294,448 @@
   },
   "wall_s": 206.42839193344116,
   "wall_s_per_step": 0.002274751771079276
+ },
+ "n1": {
+  "argv": [],
+  "c3": {
+   "readout": {
+    "A": "MBON13",
+    "P": "MBON05"
+   },
+   "z": {
+    "A": [
+     10.78125,
+     9.412096743243064
+    ],
+    "P": [
+     26.25,
+     19.30889259728101
+    ]
+   }
+  },
+  "code": {
+   "files": {
+    "data/odor/door_mappings_subset.csv": "cacf48b235936086f269ddf2dfc1c4e62f3fa2547a410ad4ccc7e98bc2c60005",
+    "data/odor/hallem2006_subset.csv": "d65f2711c73cc7d6e7f547e4e65c0eef5bfaac56b7f08ff4410d69e50c471445",
+    "flymon/brain/circuits.py": "7b149d8195a06f7232097640fd790ef6c610eae41dd575e10ac0f2c12abf65b1",
+    "flymon/brain/config.py": "613b8c660b8d94410d997835f183397a9caf3670d7dfe69aaccf8fdab6895077",
+    "flymon/brain/connectome.py": "670a4cfad683ddef89d04bb5c3b73441992592c97714af328325bf8f922d0f30",
+    "flymon/brain/engine_cpu.py": "939d354ee1cb4c27f219223c5aabc89cb37dfa2ad978f6cd1cf5fc0c33535a5a",
+    "flymon/brain/fly_pool.py": "bed8e773df18cd172c2834f6cbfe1401584416aeb97cc636a88fbba2ad26e091",
+    "flymon/brain/h3_jobs.py": "0903032c18ec1615ea51f02acee135774904dd595c989a3cdb1b69653474930b",
+    "flymon/brain/h3_measure.py": "b68f72cf172b250a9bfb56245c087545c613151e5772fb65902b4c1e5565b1b7",
+    "flymon/brain/h3_store.py": "fdfea72e784293410a9b5ae048f39b8953390acef2d2283753c83c12221f3bee",
+    "flymon/brain/h4_formula.py": "20051be1e473981eeb3e9fc8c3ba49c3e1e03c6782c47ef82639fc6a0a6483ef",
+    "flymon/brain/h4_jobs.py": "1e5e09041b2913384a6bb38a86acf91ee0e443a40886d602f996218978edac30",
+    "flymon/brain/measure.py": "25a7cd321a54dfe8c96f076824f20efb39d83f34ec5a953aaaa89af40a8ad2f3",
+    "flymon/brain/n_cli.py": "6fcc960619e83d654a1f1d360b5f73a32e5e6faf3c01f2c3dab16b45eac64cbe",
+    "flymon/brain/n_jobs.py": "21529ffa8d40e2bc5189147617bd0b249771c58736acafc588111c260ada40b8",
+    "flymon/brain/n_measure.py": "fa9a0a236e7cde0fb4a13e7617eaf1a42a9202f1f98a1068e9e8111fcd32d669",
+    "flymon/brain/n_oc.py": "4e0789feb845d117baa81d570916443b8bff5b4cfdeed974b43ef39921c45e94",
+    "flymon/brain/n_rules.py": "d2c22414e1697b034237798dfccfcd5549701cb7befbd4b4d6d5e72927ecb536",
+    "flymon/brain/n_spec.py": "2078763e96dd201e3ce9a79a8501e0ebce9a503f8dbec0028bb5e0ce50050260",
+    "flymon/brain/n_store.py": "1016c558b3940f52517dc6e798fa89ebbb8bac6761f07a38a44849d970b188b2",
+    "flymon/brain/odor_real.py": "47c355211b7104a4f59471b031e158238f6bee459e5bfa98a32eb200e0899945",
+    "flymon/brain/plasticity.py": "fed3ac2f62e97ec45c56a1d93c6ca98d970c5a4a15594d124b2b281eb1cc7ed0",
+    "flymon/brain/presentation.py": "2eab2be0e33f26edd750fe33be47f070d41a026b4ad826c9eefdf1ce14b699a0",
+    "flymon/brain/stimuli.py": "1cf05a7e2ceeee60c5b299065e30a3034199a7a92509227b98c95f763086c642",
+    "flymon/brain/thresholds.py": "12916a2ebfb2aa43e2e3f3de001e480a475e60065ab404b445b07581e559352a",
+    "npz:malecns.npz": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+    "scripts/fetch_door_hallem.py": "2da5b686d846a1dd7822a47e5e8fd15776ed0393d24a43cf26fcae99422fc2d5",
+    "scripts/run_n0.py": "698e25183a89c90bdb688333dacc783604ab0ac49078608bd766e4ce0a990733",
+    "scripts/run_n0f.py": "ee95e3316af74939079341a5d3b5323c7402417c630270e880d5b000f2326205",
+    "scripts/run_n1.py": "41c28f54818239d55df969f1cb14babeef4f18e1719c4eec2833599d6e2dc4f2",
+    "scripts/run_n2_judge.py": "f97947141ef131c714143a3e7982c18f21c54b31dc19d945087032ac40dc8af7",
+    "scripts/run_n2_pilot.py": "df06382240eea63412946a1a3e995d4364cb2fb32a1b4994b076c4c8776f7ade",
+    "scripts/write_n_notes.py": "06fc345eaf1f414e445be1cc81c35784bd5f0e016bbcd032477f37d2e40bb06d",
+    "uv.lock": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e"
+   },
+   "key": "55208e242df2a1cc4f6c2fb509aec4f4c9a05465528641190e278a7e820c2f87",
+   "versions": {
+    "numpy": "2.5.3",
+    "python": "3.13.13"
+   }
+  },
+  "git": {
+   "commit": "85b179698e085b5d6db95468d66ad24f0913c092",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "inputs": {
+   "data_sha256": {
+    "door_mappings_subset.csv": "cacf48b235936086f269ddf2dfc1c4e62f3fa2547a410ad4ccc7e98bc2c60005",
+    "hallem2006_subset.csv": "d65f2711c73cc7d6e7f547e4e65c0eef5bfaac56b7f08ff4410d69e50c471445"
+   },
+   "m0d_sha256": "64f2c0bb804c613c4af271e099ae4e076610e17305b22fcf1d85ed6fa5a8b564"
+  },
+  "measure_key": "e39756f5fc911e7d77872538a1cbcaaebceb974cba3d0a876b8c495528ea42a5",
+  "name": "n1",
+  "note": "\ub2e4\ub978 \uc30d\ub9cc \uc2dc\ud5d8 \uac00\ub2a5: APL\uc774 \uc788\uc5b4\ub3c4 \ube44\uc2b7\ud55c \uc30d\uc758 \ubcc0\ubcc4\uc774 \uc0ac\uc804 \uc9c0\uc815 \ud3b8\uc9d1 \ud504\ub85c\ud1a0\ucf5c\uc5d0\uc11c \uc11c\uc9c0 \uc54a\ub294\ub2e4",
+  "outcome": "STOP_UNTESTABLE",
+  "pairs": {
+   "dis": {
+    "alpha": 0.8,
+    "changes": {
+     "0.2": -1.1701855736184752,
+     "0.5": -1.1918263911454658,
+     "0.8": -2.9300352043660527
+    },
+    "d_pre": 0.17591928281981503,
+    "floor": {
+     "A_zero_share": 0.0,
+     "P_zero_share": 0.03125
+    },
+    "jaccard": 0.1872791519434629,
+    "o": -2.432549973324825,
+    "p0": -3.7342059954118785,
+    "sd": 0.6514236162422844,
+    "testable": true
+   },
+   "sim": {
+    "alpha": 0.8,
+    "changes": {
+     "0.2": -1.0271067036137145,
+     "0.5": -1.1479372119825846,
+     "0.8": -2.1154729922415605
+    },
+    "d_pre": 2.7532973948814075,
+    "floor": {
+     "A_zero_share": 0.0,
+     "P_zero_share": 0.03125
+    },
+    "jaccard": 0.47834645669291337,
+    "o": -2.3482251689228724,
+    "p0": -1.955137261316069,
+    "sd": 1.2010538673597795,
+    "testable": false
+   }
+  },
+  "point": {
+   "c_delta": 8.0,
+   "g": 0.25
+  },
+  "report": "results/n/run/runs/20260930T110137Z-a6097a-n1.json",
+  "report_sha256": "d4152b453e407b610cd884f8c578e0f4fbc99b15067b961e8f69e154e526578b",
+  "run_id": "20260930T110137Z-a6097a",
+  "sentence": "N1: p0 \ube44\uc2b7\ud55c \uc30d -1.955137261316069, \ub2e4\ub978 \uc30d -3.7342059954118785 \u2014 STOP_UNTESTABLE: \uc0ac\uc804 \uc9c0\uc815 \ud3b8\uc9d1 \ud504\ub85c\ud1a0\ucf5c(\ud3b8\uc9d1\uc2dd \ud558\ub098, \u03b1 3\uc810)\uc5d0\uc11c \uc2dc\ud5d8\uc774 \uc131\ub9bd\ud558\uc9c0 \uc54a\ub294\ub2e4. \ub2e4\ub978 \uc30d\ub9cc \uc2dc\ud5d8 \uac00\ub2a5: APL\uc774 \uc788\uc5b4\ub3c4 \ube44\uc2b7\ud55c \uc30d\uc758 \ubcc0\ubcc4\uc774 \uc0ac\uc804 \uc9c0\uc815 \ud3b8\uc9d1 \ud504\ub85c\ud1a0\ucf5c\uc5d0\uc11c \uc11c\uc9c0 \uc54a\ub294\ub2e4",
+  "smoke": false,
+  "smoke_bypass": [],
+  "spec": {
+   "act_seeds": [
+    21000000,
+    21000001,
+    21000002,
+    21000003,
+    21000004,
+    21000005,
+    21000006,
+    21000007,
+    21000008,
+    21000009,
+    21000010,
+    21000011,
+    21000012,
+    21000013,
+    21000014,
+    21000015
+   ],
+   "alt_frac": 0.75,
+   "boot_draws": 10000,
+   "boot_seed": 20260930,
+   "budget_h": 48.0,
+   "budget_workers": 16,
+   "c1_frac": 0.25,
+   "c_delta_grid": [
+    1.0,
+    2.0,
+    4.0,
+    8.0
+   ],
+   "ci_level": 0.95,
+   "conditions": [
+    [
+     "on",
+     "none"
+    ],
+    [
+     "block",
+     "apl_to_kc_zero"
+    ],
+    [
+     "all",
+     "apl_all_zero"
+    ]
+   ],
+   "data_dir": "data/odor",
+   "data_sha256": [
+    [
+     "hallem2006_subset.csv",
+     "d65f2711c73cc7d6e7f547e4e65c0eef5bfaac56b7f08ff4410d69e50c471445"
+    ],
+    [
+     "door_mappings_subset.csv",
+     "cacf48b235936086f269ddf2dfc1c4e62f3fa2547a410ad4ccc7e98bc2c60005"
+    ]
+   ],
+   "delta_min_frac": 0.5,
+   "door_column": "Hallem.2006.EN",
+   "door_commit": "db323a496577c4b4a72b5c2fcd1859e07521ffb5",
+   "door_repo": "ropensci/DoOR.data",
+   "eps_frac": 0.25,
+   "equiv_ci_level": 0.9,
+   "g_grid": [
+    0.125,
+    0.25,
+    0.5,
+    1.0,
+    2.0,
+    4.0
+   ],
+   "judge_seed0": 21002000,
+   "judged_stimuli": [
+    "4:1",
+    "1:4",
+    "dDL"
+   ],
+   "kc_band": [
+    0.03,
+    0.15
+   ],
+   "kc_block_max": 0.3,
+   "kc_target": 0.0554,
+   "lin_tol": 0.01,
+   "lin_totals": [
+    [
+     "IA",
+     2030.0
+    ],
+    [
+     "EB",
+     1860.0
+    ],
+    [
+     "dDL",
+     286.0
+    ]
+   ],
+   "mixtures": [
+    [
+     "4:1",
+     [
+      [
+       "IA",
+       0.8
+      ],
+      [
+       "EB",
+       0.2
+      ]
+     ]
+    ],
+    [
+     "1:4",
+     [
+      [
+       "IA",
+       0.2
+      ],
+      [
+       "EB",
+       0.8
+      ]
+     ]
+    ],
+    [
+     "dDL",
+     [
+      [
+       "dDL",
+       1.0
+      ]
+     ]
+    ],
+    [
+     "IA",
+     [
+      [
+       "IA",
+       1.0
+      ]
+     ]
+    ],
+    [
+     "EB",
+     [
+      [
+       "EB",
+       1.0
+      ]
+     ]
+    ]
+   ],
+   "n0f_seeds": [
+    21003000,
+    21003001,
+    21003002,
+    21003003,
+    21003004,
+    21003005,
+    21003006,
+    21003007
+   ],
+   "n0f_stimuli": [
+    "4:1",
+    "1:4",
+    "dDL",
+    "IA",
+    "EB"
+   ],
+   "n2_conditions": [
+    [
+     "sim_on",
+     "sim",
+     "none"
+    ],
+    [
+     "sim_off",
+     "sim",
+     "apl_to_kc_zero"
+    ],
+    [
+     "dis_on",
+     "dis",
+     "none"
+    ],
+    [
+     "dis_off",
+     "dis",
+     "apl_to_kc_zero"
+    ]
+   ],
+   "n2_record_conditions": [
+    [
+     "sim_all",
+     "sim",
+     "apl_all_zero"
+    ],
+    [
+     "dis_all",
+     "dis",
+     "apl_all_zero"
+    ]
+   ],
+   "n_grid": [
+    16,
+    24,
+    32,
+    48,
+    64
+   ],
+   "n_receptors": 24,
+   "null_max": 0.05,
+   "oc_boot": 1000,
+   "oc_draws": 2000,
+   "oc_pairings": [
+    "same",
+    "independent"
+   ],
+   "oc_seed": 20261001,
+   "odorant_cas": [
+    [
+     "IA",
+     "123-92-2"
+    ],
+    [
+     "EB",
+     "105-54-4"
+    ],
+    [
+     "dDL",
+     "705-86-2"
+    ]
+   ],
+   "pairs": [
+    [
+     "sim",
+     "4:1",
+     "1:4"
+    ],
+    [
+     "dis",
+     "4:1",
+     "dDL"
+    ]
+   ],
+   "pilot_seeds": [
+    21001000,
+    21001001,
+    21001002,
+    21001003,
+    21001004,
+    21001005,
+    21001006,
+    21001007,
+    21001008,
+    21001009,
+    21001010,
+    21001011,
+    21001012,
+    21001013,
+    21001014,
+    21001015
+   ],
+   "plumbing_seeds": 2,
+   "pool_timeout_s": 14400.0,
+   "power_min": 0.8,
+   "report_seeds": [
+    21000200,
+    21000201,
+    21000202,
+    21000203,
+    21000204,
+    21000205,
+    21000206,
+    21000207,
+    21000208,
+    21000209,
+    21000210,
+    21000211,
+    21000212,
+    21000213,
+    21000214,
+    21000215
+   ],
+   "runaway_hz": 150.0,
+   "runaway_share_max": 0.125,
+   "sd_mults": [
+    1.0,
+    2.0
+   ],
+   "select_seeds": [
+    21000100,
+    21000101,
+    21000102,
+    21000103,
+    21000104,
+    21000105,
+    21000106,
+    21000107
+   ],
+   "smoke_point": [
+    1.0,
+    1.0
+   ],
+   "spec_path": "docs/superpowers/specs/2026-09-14-flymon-design.md",
+   "state_diff_flag": 0.25,
+   "state_p_min": 5,
+   "train_seed_base": 1000000,
+   "train_seed_stride": 1000,
+   "workers": 16
+  },
+  "upstream": {
+   "n0": "20260930T110046Z-b7677e",
+   "n0f": "20260930T105700Z-0b0092"
+  },
+  "wall_s": 318.84519600868225
  }
 }
