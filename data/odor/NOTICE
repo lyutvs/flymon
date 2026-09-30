@@ -1,0 +1,7 @@
+data/odor/ is derived from DoOR.data (https://github.com/ropensci/DoOR.data), commit db323a496577c4b4a72b5c2fcd1859e07521ffb5,
+licensed CC BY-SA 4.0 (its DESCRIPTION: "License: CC BY-SA 4.0").
+Changes: only the Hallem.2006.EN column for isopentyl acetate (CAS 123-92-2), ethyl butyrate (CAS 105-54-4) and
+delta-decalactone (CAS 705-86-2) on the 24 receptors that carry it, and those receptors' glomerulus column of
+door_mappings.csv, reformatted as comma-separated files. These files are distributed under CC BY-SA 4.0
+(LICENSE-CC-BY-SA-4.0.txt). provenance.json records every source file's sha256.
+Sources: Hallem & Carlson 2006, Cell 125:143-160; Muench & Galizia 2016, Sci Rep 6:21841 (DoOR 2.0).
