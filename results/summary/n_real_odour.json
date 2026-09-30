@@ -1,4 +1,709 @@
 {
+ "n0": {
+  "argv": [],
+  "c3": {
+   "readout": {
+    "A": "MBON13",
+    "P": "MBON05"
+   },
+   "z": {
+    "A": [
+     10.78125,
+     9.412096743243064
+    ],
+    "P": [
+     26.25,
+     19.30889259728101
+    ]
+   }
+  },
+  "code": {
+   "files": {
+    "data/odor/door_mappings_subset.csv": "cacf48b235936086f269ddf2dfc1c4e62f3fa2547a410ad4ccc7e98bc2c60005",
+    "data/odor/hallem2006_subset.csv": "d65f2711c73cc7d6e7f547e4e65c0eef5bfaac56b7f08ff4410d69e50c471445",
+    "flymon/brain/circuits.py": "7b149d8195a06f7232097640fd790ef6c610eae41dd575e10ac0f2c12abf65b1",
+    "flymon/brain/config.py": "613b8c660b8d94410d997835f183397a9caf3670d7dfe69aaccf8fdab6895077",
+    "flymon/brain/connectome.py": "670a4cfad683ddef89d04bb5c3b73441992592c97714af328325bf8f922d0f30",
+    "flymon/brain/engine_cpu.py": "939d354ee1cb4c27f219223c5aabc89cb37dfa2ad978f6cd1cf5fc0c33535a5a",
+    "flymon/brain/fly_pool.py": "bed8e773df18cd172c2834f6cbfe1401584416aeb97cc636a88fbba2ad26e091",
+    "flymon/brain/h3_jobs.py": "0903032c18ec1615ea51f02acee135774904dd595c989a3cdb1b69653474930b",
+    "flymon/brain/h3_measure.py": "b68f72cf172b250a9bfb56245c087545c613151e5772fb65902b4c1e5565b1b7",
+    "flymon/brain/h3_store.py": "fdfea72e784293410a9b5ae048f39b8953390acef2d2283753c83c12221f3bee",
+    "flymon/brain/h4_formula.py": "20051be1e473981eeb3e9fc8c3ba49c3e1e03c6782c47ef82639fc6a0a6483ef",
+    "flymon/brain/h4_jobs.py": "1e5e09041b2913384a6bb38a86acf91ee0e443a40886d602f996218978edac30",
+    "flymon/brain/measure.py": "25a7cd321a54dfe8c96f076824f20efb39d83f34ec5a953aaaa89af40a8ad2f3",
+    "flymon/brain/n_cli.py": "6fcc960619e83d654a1f1d360b5f73a32e5e6faf3c01f2c3dab16b45eac64cbe",
+    "flymon/brain/n_jobs.py": "21529ffa8d40e2bc5189147617bd0b249771c58736acafc588111c260ada40b8",
+    "flymon/brain/n_measure.py": "fa9a0a236e7cde0fb4a13e7617eaf1a42a9202f1f98a1068e9e8111fcd32d669",
+    "flymon/brain/n_oc.py": "4e0789feb845d117baa81d570916443b8bff5b4cfdeed974b43ef39921c45e94",
+    "flymon/brain/n_rules.py": "d2c22414e1697b034237798dfccfcd5549701cb7befbd4b4d6d5e72927ecb536",
+    "flymon/brain/n_spec.py": "2078763e96dd201e3ce9a79a8501e0ebce9a503f8dbec0028bb5e0ce50050260",
+    "flymon/brain/n_store.py": "1016c558b3940f52517dc6e798fa89ebbb8bac6761f07a38a44849d970b188b2",
+    "flymon/brain/odor_real.py": "47c355211b7104a4f59471b031e158238f6bee459e5bfa98a32eb200e0899945",
+    "flymon/brain/plasticity.py": "fed3ac2f62e97ec45c56a1d93c6ca98d970c5a4a15594d124b2b281eb1cc7ed0",
+    "flymon/brain/presentation.py": "2eab2be0e33f26edd750fe33be47f070d41a026b4ad826c9eefdf1ce14b699a0",
+    "flymon/brain/stimuli.py": "1cf05a7e2ceeee60c5b299065e30a3034199a7a92509227b98c95f763086c642",
+    "flymon/brain/thresholds.py": "12916a2ebfb2aa43e2e3f3de001e480a475e60065ab404b445b07581e559352a",
+    "npz:malecns.npz": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+    "scripts/fetch_door_hallem.py": "2da5b686d846a1dd7822a47e5e8fd15776ed0393d24a43cf26fcae99422fc2d5",
+    "scripts/run_n0.py": "698e25183a89c90bdb688333dacc783604ab0ac49078608bd766e4ce0a990733",
+    "scripts/run_n0f.py": "ee95e3316af74939079341a5d3b5323c7402417c630270e880d5b000f2326205",
+    "scripts/run_n1.py": "41c28f54818239d55df969f1cb14babeef4f18e1719c4eec2833599d6e2dc4f2",
+    "scripts/run_n2_judge.py": "f97947141ef131c714143a3e7982c18f21c54b31dc19d945087032ac40dc8af7",
+    "scripts/run_n2_pilot.py": "df06382240eea63412946a1a3e995d4364cb2fb32a1b4994b076c4c8776f7ade",
+    "scripts/write_n_notes.py": "06fc345eaf1f414e445be1cc81c35784bd5f0e016bbcd032477f37d2e40bb06d",
+    "uv.lock": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e"
+   },
+   "key": "55208e242df2a1cc4f6c2fb509aec4f4c9a05465528641190e278a7e820c2f87",
+   "versions": {
+    "numpy": "2.5.3",
+    "python": "3.13.13"
+   }
+  },
+  "drives": {
+   "1:4": {
+    "capped": [],
+    "clipped_hz": {},
+    "clipped_total_hz": 0.0,
+    "drive_hz": {
+     "ORN_D": 0.0,
+     "ORN_DA1": 0.0,
+     "ORN_DA2": 0.0,
+     "ORN_DA3": 6.300000000000001,
+     "ORN_DA4l": 10.5,
+     "ORN_DA4m": 7.65,
+     "ORN_DC1": 25.900000000000002,
+     "ORN_DC2": 0.0,
+     "ORN_DC3": 0.0,
+     "ORN_DC4": 0.0,
+     "ORN_DL1": 19.700000000000003,
+     "ORN_DL2d": 0.0,
+     "ORN_DL2v": 0.0,
+     "ORN_DL3": 3.4000000000000004,
+     "ORN_DL4": 8.3,
+     "ORN_DL5": 2.8,
+     "ORN_DM1": 0.0,
+     "ORN_DM2": 51.2,
+     "ORN_DM3": 35.1,
+     "ORN_DM4": 10.600000000000001,
+     "ORN_DM5": 41.650000000000006,
+     "ORN_DM6": 42.6,
+     "ORN_DP1l": 0.0,
+     "ORN_DP1m": 0.0,
+     "ORN_V": 0.0,
+     "ORN_VA1d": 4.65,
+     "ORN_VA1v": 6.65,
+     "ORN_VA2": 0.0,
+     "ORN_VA3": 0.0,
+     "ORN_VA4": 0.0,
+     "ORN_VA5": 1.9500000000000002,
+     "ORN_VA6": 11.35,
+     "ORN_VA7l": 0.0,
+     "ORN_VA7m": 0.0,
+     "ORN_VC1": 0.0,
+     "ORN_VC2": 0.0,
+     "ORN_VC3": 29.55,
+     "ORN_VC4": 26.3,
+     "ORN_VC5": 0.0,
+     "ORN_VL1": 0.0,
+     "ORN_VL2a": 0.0,
+     "ORN_VL2p": 0.0,
+     "ORN_VM1": 0.0,
+     "ORN_VM2": 45.1,
+     "ORN_VM3": 31.900000000000002,
+     "ORN_VM4": 0.0,
+     "ORN_VM5d": 35.2,
+     "ORN_VM5v": 31.6,
+     "ORN_VM6l": 0.0,
+     "ORN_VM6m": 0.0,
+     "ORN_VM6v": 0.0,
+     "ORN_VM7d": 0.0,
+     "ORN_VM7v": 0.0
+    },
+    "weights": {
+     "EB": 0.8,
+     "IA": 0.2
+    }
+   },
+   "4:1": {
+    "capped": [],
+    "clipped_hz": {
+     "ORN_DL5": 2.3000000000000003
+    },
+    "clipped_total_hz": 2.3000000000000003,
+    "drive_hz": {
+     "ORN_D": 0.0,
+     "ORN_DA1": 0.0,
+     "ORN_DA2": 0.0,
+     "ORN_DA3": 7.2,
+     "ORN_DA4l": 9.75,
+     "ORN_DA4m": 15.600000000000001,
+     "ORN_DC1": 27.1,
+     "ORN_DC2": 0.0,
+     "ORN_DC3": 0.0,
+     "ORN_DC4": 0.0,
+     "ORN_DL1": 46.550000000000004,
+     "ORN_DL2d": 0.0,
+     "ORN_DL2v": 0.0,
+     "ORN_DL3": 6.1000000000000005,
+     "ORN_DL4": 8.450000000000001,
+     "ORN_DL5": 0.0,
+     "ORN_DM1": 0.0,
+     "ORN_DM2": 57.050000000000004,
+     "ORN_DM3": 37.65,
+     "ORN_DM4": 11.650000000000002,
+     "ORN_DM5": 15.850000000000001,
+     "ORN_DM6": 36.9,
+     "ORN_DP1l": 0.0,
+     "ORN_DP1m": 0.0,
+     "ORN_V": 0.0,
+     "ORN_VA1d": 5.85,
+     "ORN_VA1v": 3.35,
+     "ORN_VA2": 0.0,
+     "ORN_VA3": 0.0,
+     "ORN_VA4": 0.0,
+     "ORN_VA5": 4.050000000000001,
+     "ORN_VA6": 13.15,
+     "ORN_VA7l": 0.0,
+     "ORN_VA7m": 0.0,
+     "ORN_VC1": 0.0,
+     "ORN_VC2": 0.0,
+     "ORN_VC3": 14.700000000000001,
+     "ORN_VC4": 16.700000000000003,
+     "ORN_VC5": 0.0,
+     "ORN_VL1": 0.0,
+     "ORN_VL2a": 0.0,
+     "ORN_VL2p": 0.0,
+     "ORN_VM1": 0.0,
+     "ORN_VM2": 29.650000000000002,
+     "ORN_VM3": 34.6,
+     "ORN_VM4": 0.0,
+     "ORN_VM5d": 54.550000000000004,
+     "ORN_VM5v": 56.65,
+     "ORN_VM6l": 0.0,
+     "ORN_VM6m": 0.0,
+     "ORN_VM6v": 0.0,
+     "ORN_VM7d": 0.0,
+     "ORN_VM7v": 0.0
+    },
+    "weights": {
+     "EB": 0.2,
+     "IA": 0.8
+    }
+   },
+   "dDL": {
+    "capped": [],
+    "clipped_hz": {},
+    "clipped_total_hz": 0.0,
+    "drive_hz": {
+     "ORN_D": 0.0,
+     "ORN_DA1": 0.0,
+     "ORN_DA2": 0.0,
+     "ORN_DA3": 14.0,
+     "ORN_DA4l": 10.0,
+     "ORN_DA4m": 16.0,
+     "ORN_DC1": 12.0,
+     "ORN_DC2": 0.0,
+     "ORN_DC3": 0.0,
+     "ORN_DC4": 0.0,
+     "ORN_DL1": 6.0,
+     "ORN_DL2d": 0.0,
+     "ORN_DL2v": 0.0,
+     "ORN_DL3": 26.0,
+     "ORN_DL4": 12.0,
+     "ORN_DL5": 4.0,
+     "ORN_DM1": 0.0,
+     "ORN_DM2": 30.0,
+     "ORN_DM3": 82.0,
+     "ORN_DM4": 8.0,
+     "ORN_DM5": 110.0,
+     "ORN_DM6": 26.0,
+     "ORN_DP1l": 0.0,
+     "ORN_DP1m": 0.0,
+     "ORN_V": 0.0,
+     "ORN_VA1d": 50.0,
+     "ORN_VA1v": 86.0,
+     "ORN_VA2": 0.0,
+     "ORN_VA3": 0.0,
+     "ORN_VA4": 0.0,
+     "ORN_VA5": 8.0,
+     "ORN_VA6": 22.0,
+     "ORN_VA7l": 0.0,
+     "ORN_VA7m": 0.0,
+     "ORN_VC1": 0.0,
+     "ORN_VC2": 0.0,
+     "ORN_VC3": 14.0,
+     "ORN_VC4": 12.0,
+     "ORN_VC5": 0.0,
+     "ORN_VL1": 0.0,
+     "ORN_VL2a": 0.0,
+     "ORN_VL2p": 0.0,
+     "ORN_VM1": 0.0,
+     "ORN_VM2": 8.0,
+     "ORN_VM3": 2.0,
+     "ORN_VM4": 0.0,
+     "ORN_VM5d": 74.0,
+     "ORN_VM5v": 40.0,
+     "ORN_VM6l": 0.0,
+     "ORN_VM6m": 0.0,
+     "ORN_VM6v": 0.0,
+     "ORN_VM7d": 0.0,
+     "ORN_VM7v": 0.0
+    },
+    "weights": {
+     "dDL": 8.0
+    }
+   }
+  },
+  "git": {
+   "commit": "02b493e7dd60f19b21b019751aa89ab540626d9b",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "inputs": {
+   "data_sha256": {
+    "door_mappings_subset.csv": "cacf48b235936086f269ddf2dfc1c4e62f3fa2547a410ad4ccc7e98bc2c60005",
+    "hallem2006_subset.csv": "d65f2711c73cc7d6e7f547e4e65c0eef5bfaac56b7f08ff4410d69e50c471445"
+   },
+   "m0d_sha256": "64f2c0bb804c613c4af271e099ae4e076610e17305b22fcf1d85ed6fa5a8b564"
+  },
+  "kc": {
+   "1:4": {
+    "A_median": 6.5,
+    "A_zero_share": 0.0,
+    "P_median": 22.0,
+    "P_zero_share": 0.0625,
+    "apl_out_mean": 0.0782555356202647,
+    "firing_share": 0.875,
+    "kc_frac": [
+     0.04921259842519685,
+     0.048474409448818895,
+     0.03198818897637795,
+     0.04502952755905512,
+     0.0406003937007874,
+     0.047244094488188976,
+     0.05388779527559055,
+     0.04502952755905512,
+     0.043799212598425195,
+     0.05044291338582677,
+     0.041830708661417325,
+     0.041830708661417325,
+     0.04773622047244094,
+     0.048474409448818895,
+     0.051181102362204724,
+     0.02312992125984252
+    ],
+    "kc_frac_median": 0.04613681102362205,
+    "max_win_hz_max": 60.0,
+    "n": 16,
+    "runaway_share": 0.0,
+    "wall_s_median": 1.918138603970874
+   },
+   "4:1": {
+    "A_median": 35.5,
+    "A_zero_share": 0.0,
+    "P_median": 12.0,
+    "P_zero_share": 0.125,
+    "apl_out_mean": 0.2872506905863217,
+    "firing_share": 0.625,
+    "kc_frac": [
+     0.07627952755905512,
+     0.051919291338582675,
+     0.07357283464566929,
+     0.07627952755905512,
+     0.05708661417322835,
+     0.055364173228346455,
+     0.055364173228346455,
+     0.05757874015748032,
+     0.07578740157480315,
+     0.06274606299212598,
+     0.05241141732283464,
+     0.0625,
+     0.05044291338582677,
+     0.0733267716535433,
+     0.05093503937007874,
+     0.04084645669291338
+    ],
+    "kc_frac_median": 0.05733267716535433,
+    "max_win_hz_max": 95.0,
+    "n": 16,
+    "runaway_share": 0.0,
+    "wall_s_median": 1.9744340415054467
+   },
+   "dDL": {
+    "A_median": 39.5,
+    "A_zero_share": 0.0,
+    "P_median": 14.5,
+    "P_zero_share": 0.0625,
+    "apl_out_mean": 0.2104243377968669,
+    "firing_share": 0.9375,
+    "kc_frac": [
+     0.0531496062992126,
+     0.051181102362204724,
+     0.03789370078740158,
+     0.05241141732283464,
+     0.05216535433070866,
+     0.05142716535433071,
+     0.05388779527559055,
+     0.05093503937007874,
+     0.05364173228346457,
+     0.05437992125984252,
+     0.05511811023622047,
+     0.051919291338582675,
+     0.05019685039370079,
+     0.05388779527559055,
+     0.05290354330708662,
+     0.05093503937007874
+    ],
+    "kc_frac_median": 0.05228838582677165,
+    "max_win_hz_max": 95.0,
+    "n": 16,
+    "runaway_share": 0.0,
+    "wall_s_median": 2.027107292000437
+   }
+  },
+  "measure_key": "e39756f5fc911e7d77872538a1cbcaaebceb974cba3d0a876b8c495528ea42a5",
+  "name": "n0",
+  "outcome": "SIMILARITY_GO",
+  "point": {
+   "c_delta": 8.0,
+   "g": 0.25
+  },
+  "report": "results/n/run/runs/20260930T110046Z-b7677e-n0.json",
+  "report_sha256": "3a3466b1f5342f1433a6006e8638ead6fd0ed96cbfe734670ac70686daa278d0",
+  "run_id": "20260930T110046Z-b7677e",
+  "sentence": "N0: \u0394r = r(4:1, 1:4) \u2212 r(4:1, \u03b4-DL) = 0.336, 95% CI [0.296, 0.356] \u2014 \uc720\uc0ac\ub3c4 \uc21c\uc11c \ud1b5\uacfc, N1\ub85c \uac04\ub2e4.",
+  "similarity": {
+   "ci95": [
+    0.29632022981031403,
+    0.35583731978498095
+   ],
+   "delta_r": 0.3356909988794577,
+   "draws": 10000,
+   "n_seeds": 16,
+   "outcome": "SIMILARITY_GO",
+   "r_dis": 0.2529874732300624,
+   "r_sim": 0.5886784721095201
+  },
+  "smoke": false,
+  "smoke_bypass": [],
+  "spec": {
+   "act_seeds": [
+    21000000,
+    21000001,
+    21000002,
+    21000003,
+    21000004,
+    21000005,
+    21000006,
+    21000007,
+    21000008,
+    21000009,
+    21000010,
+    21000011,
+    21000012,
+    21000013,
+    21000014,
+    21000015
+   ],
+   "alt_frac": 0.75,
+   "boot_draws": 10000,
+   "boot_seed": 20260930,
+   "budget_h": 48.0,
+   "budget_workers": 16,
+   "c1_frac": 0.25,
+   "c_delta_grid": [
+    1.0,
+    2.0,
+    4.0,
+    8.0
+   ],
+   "ci_level": 0.95,
+   "conditions": [
+    [
+     "on",
+     "none"
+    ],
+    [
+     "block",
+     "apl_to_kc_zero"
+    ],
+    [
+     "all",
+     "apl_all_zero"
+    ]
+   ],
+   "data_dir": "data/odor",
+   "data_sha256": [
+    [
+     "hallem2006_subset.csv",
+     "d65f2711c73cc7d6e7f547e4e65c0eef5bfaac56b7f08ff4410d69e50c471445"
+    ],
+    [
+     "door_mappings_subset.csv",
+     "cacf48b235936086f269ddf2dfc1c4e62f3fa2547a410ad4ccc7e98bc2c60005"
+    ]
+   ],
+   "delta_min_frac": 0.5,
+   "door_column": "Hallem.2006.EN",
+   "door_commit": "db323a496577c4b4a72b5c2fcd1859e07521ffb5",
+   "door_repo": "ropensci/DoOR.data",
+   "eps_frac": 0.25,
+   "equiv_ci_level": 0.9,
+   "g_grid": [
+    0.125,
+    0.25,
+    0.5,
+    1.0,
+    2.0,
+    4.0
+   ],
+   "judge_seed0": 21002000,
+   "judged_stimuli": [
+    "4:1",
+    "1:4",
+    "dDL"
+   ],
+   "kc_band": [
+    0.03,
+    0.15
+   ],
+   "kc_block_max": 0.3,
+   "kc_target": 0.0554,
+   "lin_tol": 0.01,
+   "lin_totals": [
+    [
+     "IA",
+     2030.0
+    ],
+    [
+     "EB",
+     1860.0
+    ],
+    [
+     "dDL",
+     286.0
+    ]
+   ],
+   "mixtures": [
+    [
+     "4:1",
+     [
+      [
+       "IA",
+       0.8
+      ],
+      [
+       "EB",
+       0.2
+      ]
+     ]
+    ],
+    [
+     "1:4",
+     [
+      [
+       "IA",
+       0.2
+      ],
+      [
+       "EB",
+       0.8
+      ]
+     ]
+    ],
+    [
+     "dDL",
+     [
+      [
+       "dDL",
+       1.0
+      ]
+     ]
+    ],
+    [
+     "IA",
+     [
+      [
+       "IA",
+       1.0
+      ]
+     ]
+    ],
+    [
+     "EB",
+     [
+      [
+       "EB",
+       1.0
+      ]
+     ]
+    ]
+   ],
+   "n0f_seeds": [
+    21003000,
+    21003001,
+    21003002,
+    21003003,
+    21003004,
+    21003005,
+    21003006,
+    21003007
+   ],
+   "n0f_stimuli": [
+    "4:1",
+    "1:4",
+    "dDL",
+    "IA",
+    "EB"
+   ],
+   "n2_conditions": [
+    [
+     "sim_on",
+     "sim",
+     "none"
+    ],
+    [
+     "sim_off",
+     "sim",
+     "apl_to_kc_zero"
+    ],
+    [
+     "dis_on",
+     "dis",
+     "none"
+    ],
+    [
+     "dis_off",
+     "dis",
+     "apl_to_kc_zero"
+    ]
+   ],
+   "n2_record_conditions": [
+    [
+     "sim_all",
+     "sim",
+     "apl_all_zero"
+    ],
+    [
+     "dis_all",
+     "dis",
+     "apl_all_zero"
+    ]
+   ],
+   "n_grid": [
+    16,
+    24,
+    32,
+    48,
+    64
+   ],
+   "n_receptors": 24,
+   "null_max": 0.05,
+   "oc_boot": 1000,
+   "oc_draws": 2000,
+   "oc_pairings": [
+    "same",
+    "independent"
+   ],
+   "oc_seed": 20261001,
+   "odorant_cas": [
+    [
+     "IA",
+     "123-92-2"
+    ],
+    [
+     "EB",
+     "105-54-4"
+    ],
+    [
+     "dDL",
+     "705-86-2"
+    ]
+   ],
+   "pairs": [
+    [
+     "sim",
+     "4:1",
+     "1:4"
+    ],
+    [
+     "dis",
+     "4:1",
+     "dDL"
+    ]
+   ],
+   "pilot_seeds": [
+    21001000,
+    21001001,
+    21001002,
+    21001003,
+    21001004,
+    21001005,
+    21001006,
+    21001007,
+    21001008,
+    21001009,
+    21001010,
+    21001011,
+    21001012,
+    21001013,
+    21001014,
+    21001015
+   ],
+   "plumbing_seeds": 2,
+   "pool_timeout_s": 14400.0,
+   "power_min": 0.8,
+   "report_seeds": [
+    21000200,
+    21000201,
+    21000202,
+    21000203,
+    21000204,
+    21000205,
+    21000206,
+    21000207,
+    21000208,
+    21000209,
+    21000210,
+    21000211,
+    21000212,
+    21000213,
+    21000214,
+    21000215
+   ],
+   "runaway_hz": 150.0,
+   "runaway_share_max": 0.125,
+   "sd_mults": [
+    1.0,
+    2.0
+   ],
+   "select_seeds": [
+    21000100,
+    21000101,
+    21000102,
+    21000103,
+    21000104,
+    21000105,
+    21000106,
+    21000107
+   ],
+   "smoke_point": [
+    1.0,
+    1.0
+   ],
+   "spec_path": "docs/superpowers/specs/2026-09-14-flymon-design.md",
+   "state_diff_flag": 0.25,
+   "state_p_min": 5,
+   "train_seed_base": 1000000,
+   "train_seed_stride": 1000,
+   "workers": 16
+  },
+  "upstream": {
+   "n0f": "20260930T105700Z-0b0092"
+  },
+  "wall_s": 38.269394874572754
+ },
  "n0f": {
   "apl_shift": {
    "1:4": {
