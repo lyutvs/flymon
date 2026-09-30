@@ -4,7 +4,11 @@
 - The spec-note gate: an N.8a / N.8b paragraph committed in the spec at HEAD, citing the upstream block's run id.
 - The hooks: a script imports the hook names and passes `hooks(its own module)`, so its tests patch them on the script.
 - The pool and measurer (timeout and worker default from n_spec), the stimuli at a point and their drive record.
-- `main_stage`: every refusal before any pool, in order, then the stage body, the report and the summary block.
+- The arm helpers of N2.0 / N2: the arm items of a condition list, the rows grouped per condition with every declared
+  seed present (else ValueError), the firing-state shares (an aggregate: the per-presentation state stays in the raw
+  per-(condition, seed) cache entries), and the KC vector blocks per stimulus.
+- `main_stage`: every refusal before any pool, in order, then the stage body, the report and the summary block; with
+  `after`, a second step that runs only once the block is written (the judge's post-verdict record).
 Every number is n_spec's; an n_rules error in a body (missing or incomplete input) is never caught into an outcome."""
 from __future__ import annotations
 
@@ -15,13 +19,16 @@ import os
 import re
 import subprocess
 import time
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
 from . import h3_store, n_store
 from .h3_store import ROOT, code_key, sha256_file
 from .l_cli import check_committed, load_c3_record, other_code, refuse, run_id, same_code  # noqa: F401
+from .n_jobs import EDITS
 from .n_measure import HASHED_FILES, MEASURE_FILES, NCache, NMeasurer
+from .n_rules import state
 from .n_spec import SPEC, NSpec, smoke
 from .odor_real import DataMismatch, cap_hz, glomerular, load_table, stimuli
 
@@ -33,6 +40,7 @@ SMOKE_OUT = n_store.ALLOWED_DIR + "smoke"
 SMOKE_SUMMARY = f"{SMOKE_OUT}/{Path(n_store.SUMMARY).name}"
 HOOK_NAMES = ("check_committed", "code_keys", "git_state", "head_spec", "load_c3", "m0d_sha", "make_measurer",
               "model_types")
+UNEDITED = EDITS[0]                      # "none": the APL-on engine, the only one N0, N1 and N2.0 ever run
 DRIVE_KEYS = ("drive_hz", "clipped_hz", "clipped_total_hz", "capped", "weights")
 
 
@@ -160,6 +168,56 @@ def drives(st: dict, names=None) -> dict:
     return {s: {k: st[s][k] for k in DRIVE_KEYS} for s in (st if names is None else names)}
 
 
+def arm_items(st: dict, spec, conds, seeds, plastic: bool) -> list:
+    """NMeasurer.arms items: every (name, pair, edit) of `conds` on every seed, at the stimuli `st`."""
+    ps = spec.pair_stimuli()
+    return [dict(cond=name, edit=edit, odor_x=st[ps[pair][0]]["odor"], odor_y=st[ps[pair][1]]["odor"], seed=int(s),
+                 plastic=bool(plastic)) for name, pair, edit in conds for s in seeds]
+
+
+def by_condition(rows, names, seeds, what: str) -> dict:
+    """{condition: its rows in seed order}. ValueError unless every name of `names` holds exactly `seeds`, each once,
+    and no row belongs elsewhere: a short or empty measurement never reaches a rule."""
+    names, want = list(names), sorted(int(s) for s in seeds)
+    if not names or not want:
+        raise ValueError(f"{what}: no condition or no seed was declared ({names}, {want})")
+    by = {c: [] for c in names}
+    for r in rows:
+        if r.get("cond") not in by:
+            raise ValueError(f"{what}: a row of the undeclared condition {r.get('cond')!r}")
+        by[r["cond"]].append(r)
+    for c in names:
+        by[c].sort(key=lambda r: int(r["seed"]))
+        got = [int(r["seed"]) for r in by[c]]
+        if got != want:
+            raise ValueError(f"{what}: rows are missing for condition {c}: {len(got)} of {len(want)} declared seeds "
+                             f"(lacking {sorted(set(want) - set(got))[:8]}, extra or repeated "
+                             f"{sorted((Counter(got) - Counter(want)).elements())[:8]})")
+    return by
+
+
+def firing_shares(by: dict, spec) -> dict:
+    """N.8.8's record per condition: the share of its probes (pre / post x X / Y over the seeds) in the firing state."""
+    out = {}
+    for c, rows in by.items():
+        f = [state(r[ph][k]["P"], spec) == "firing" for r in rows for ph in ("pre", "post") for k in ("x", "y")]
+        if not f:
+            raise ValueError(f"condition {c} has no probe to read a state from")
+        out[c] = sum(f) / len(f)
+    return out
+
+
+def kc_blocks(rows, names, seeds) -> tuple:
+    """({name: its KC-vector rows}, the KC count) of one kc_vectors call over `names`; ValueError unless every name has
+    a row for every seed and the rows agree on the KC count."""
+    names = list(names)
+    n_kc = {int(r["n_kc"]) for rr in rows for r in rr}
+    if len(rows) != len(names) or any(len(rr) != len(seeds) for rr in rows) or len(n_kc) != 1:
+        raise ValueError(f"KC vectors are missing: {len(rows)} of {len(names)} stimuli, seeds per stimulus "
+                         f"{sorted({len(rr) for rr in rows})} for {len(seeds)}, KC counts {sorted(n_kc)}")
+    return dict(zip(names, rows)), n_kc.pop()
+
+
 def spec_record(spec) -> dict:
     return {f.name: getattr(spec, f.name) for f in dataclasses.fields(spec) if f.name != "l"}
 
@@ -200,7 +258,7 @@ def parser(doc_help: str | None) -> argparse.ArgumentParser:
 
 
 def main_stage(name: str, argv, body, hooks: dict, *, need=(), outcomes=None, note=None, spec=None,
-               require_root: bool = True, doc_help: str | None = None) -> int:
+               require_root: bool = True, doc_help: str | None = None, after=None) -> int:
     """Refusals (exit 2) before any pool, in order:
     1. another directory;
     2. --out outside results/n/;
@@ -215,7 +273,10 @@ def main_stage(name: str, argv, body, hooks: dict, *, need=(), outcomes=None, no
     11. no usable C3 record.
     Then body(ctx) -> (res, exit code); a DataMismatch inside a later stage's body is a refusal. Any other error of a
     body (n_rules raises on missing or incomplete input) propagates: nothing is written and the exit is non-zero. The
-    report goes under <out>/runs/ and block `name` into the summary (a --smoke run: its smoke summary)."""
+    report goes under <out>/runs/ and block `name` into the summary (a --smoke run: its smoke summary).
+    `after(ctx, res) -> dict` runs only once that block is on disk; its fields are added and the block is written again
+    (N.8.6: the judge's block-condition KC record comes after its written verdict). If `after` raises, the block
+    written before it stays as it is."""
     a = parser(doc_help).parse_args(argv)
     if require_root and Path.cwd().resolve() != ROOT:
         return refuse(f"not at the repository root {ROOT}")
@@ -274,7 +335,15 @@ def main_stage(name: str, argv, body, hooks: dict, *, need=(), outcomes=None, no
                git=git, inputs=dict(m0d_sha256=m0d, data_sha256=spec.sha_pins()),
                upstream={b: doc[b].get("run_id") for b in need}, c3=dict(readout=readout, z=z),
                spec=spec_record(spec), argv=list(argv or []), wall_s=time.time() - t0)
-    report = write_report(out, rid, name, res, [c3])
-    n_store.write_summary_block(summary, name, dict(res, report=str(report), report_sha256=sha256_file(report)), [c3])
+
+    def write(res: dict) -> None:
+        report = write_report(out, rid, name, res, [c3])
+        n_store.write_summary_block(summary, name, dict(res, report=str(report), report_sha256=sha256_file(report)),
+                                    [c3])
+
+    write(res)
+    if after is not None:
+        res = dict(res, **after(ctx, res))
+        write(dict(res, wall_s=time.time() - t0))
     print(res.get("sentence", ""))
     return code
