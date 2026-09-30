@@ -370,6 +370,7 @@ def test_the_two_pairings_give_different_operating_characteristics():
     assert p[("same", 2.0, "alt")] != p[("independent", 2.0, "alt")]
     only = simulate(pilot, C1, 0.5, 0.25, replace(SMALL, n_grid=(8,)), pairings=("independent",))
     assert {r["pairing"] for r in only["rows"]} == {"independent"} and only["pairings"] == ["independent"]
+    assert only["partial"] is True and only["n"] is None and not oc["partial"]   # a subset never yields a design n
     with pytest.raises(ValueError, match="pairing"):
         simulate(pilot, C1, 0.5, 0.25, SMALL, pairings=("paired",))
     with pytest.raises(ValueError, match="pairing"):
@@ -392,9 +393,24 @@ def test_simulate_refuses_a_degenerate_pilot():
 
 
 def test_choose_n_needs_both_spreads_and_both_hypotheses():
-    rows = [dict(sd_mult=m, hyp=h, n=n, p_supported=p) for n in (4, 8) for m in (1.0, 2.0)
+    bare = [dict(sd_mult=m, hyp=h, n=n, p_supported=p) for n in (4, 8) for m in (1.0, 2.0)
             for h, p in (("null", 0.0), ("alt", 0.9 if (n, m) != (4, 2.0) else 0.7))]
+    rows = [dict(r, pairing=p) for p in SPEC.oc_pairings for r in bare]
     assert choose_n(rows, SMALL) == 8
+    with pytest.raises(ValueError, match="incomplete"):               # rows without a pairing key are no table
+        choose_n(bare, SMALL)
+
+
+def test_a_subset_of_pairings_is_partial_and_has_no_design_n():
+    clear = {"sim": -1.0 + 0.05 * np.linspace(-1, 1, 16), "dis": -1.0 + 0.05 * np.linspace(-1, 1, 16)}
+    for p in SPEC.oc_pairings:
+        part = simulate(clear, C1, 0.5, 0.25, SMALL, pairings=(p,))
+        assert part["partial"] is True and part["n"] is None
+        assert part["scenario_n"] == {scenario_key(p, m): 4 for m in SPEC.sd_mults}      # the record is still there
+        with pytest.raises(ValueError, match="incomplete"):
+            choose_n(part["rows"], SMALL)
+    full = simulate(clear, C1, 0.5, 0.25, SMALL, pairings=tuple(reversed(SPEC.oc_pairings)))
+    assert full["partial"] is False and full["n"] == 4
 
 
 def _rows(min_n: dict, grid=(4, 8, 16)):
@@ -450,8 +466,14 @@ def test_choose_n_never_passes_on_a_missing_cell():
     with pytest.raises(ValueError, match="incomplete"):
         choose_n(no_spread, WIDE)
     no_pairing = [r for r in full if r["pairing"] != "same"]
-    assert choose_n(no_pairing, WIDE) == 4                             # rows alone: the pairings they hold
-    with pytest.raises(ValueError, match="incomplete"):                # asked for both: a missing reading is refused
-        choose_n(no_pairing, WIDE, pairings=SPEC.oc_pairings)
+    with pytest.raises(ValueError, match="incomplete"):                # a whole pairing missing: never an n
+        choose_n(no_pairing, WIDE)
+    with pytest.raises(ValueError, match="incomplete"):
+        scenario_n(no_pairing, WIDE)
+    assert scenario_n(no_pairing, WIDE, pairings=("independent",)) == {scenario_key("independent", m): 4
+                                                                       for m in SPEC.sd_mults}
+    keyless = [{k: v for k, v in r.items() if k != "pairing"} for r in full]
+    with pytest.raises(ValueError, match="incomplete"):                # no pairing key at all
+        choose_n(keyless, WIDE)
     nan = [dict(r, p_supported=float("nan")) for r in full]
     assert choose_n(nan, WIDE) is None

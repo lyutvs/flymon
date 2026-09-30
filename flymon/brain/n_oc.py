@@ -43,7 +43,8 @@ def arms(sim, dis, mu: dict, on, off, d_sim: float, mult: float, pairing: str) -
 
 def simulate(pilot: dict, c1: dict, delta_min: float, eps: float, spec, pairings=None) -> dict:
     """The OC table over pairings (default: every spec.oc_pairings) x spec.sd_mults x {null, alt} x spec.n_grid, and
-    the n it implies. Deterministic (spec.oc_seed)."""
+    the n it implies. A run on a subset of spec.oc_pairings is a record only: partial = True and n = None (its
+    scenario_n is still filled). Deterministic (spec.oc_seed)."""
     pairings = list(spec.oc_pairings if pairings is None else pairings)
     if not pairings:
         raise ValueError("no pairing to simulate")
@@ -70,7 +71,9 @@ def simulate(pilot: dict, c1: dict, delta_min: float, eps: float, spec, pairings
                     p = wins / spec.oc_draws
                     rows.append(dict(pairing=pairing, sd_mult=float(mult), hyp=hyp, n=int(n), p_supported=p,
                                      mc_se=math.sqrt(p * (1 - p) / spec.oc_draws)))
-    return dict(rows=rows, n=choose_n(rows, spec, pairings), scenario_n=scenario_n(rows, spec, pairings),
+    partial = not set(spec.oc_pairings) <= set(pairings)          # a design n needs every declared pairing
+    return dict(rows=rows, n=None if partial else choose_n(rows, spec), partial=partial,
+                scenario_n=scenario_n(rows, spec, pairings),
                 draws=spec.oc_draws, boot=spec.oc_boot, judge_boot=spec.boot_draws,
                 boot_note=(f"each simulated experiment bootstraps {spec.oc_boot} draws; the judgement uses "
                            f"{spec.boot_draws} (an approximation of the judged rule's CIs)"),
@@ -80,9 +83,10 @@ def simulate(pilot: dict, c1: dict, delta_min: float, eps: float, spec, pairings
 
 
 def _cells(rows: list, spec, pairings) -> dict:
-    """{(pairing, mult, n): passes} for every declared cell; ValueError if a cell or one of its hypotheses is absent."""
+    """{(pairing, mult, n): passes} for every declared cell (pairings default: every spec.oc_pairings, never the ones
+    the rows happen to hold); ValueError if a cell or one of its hypotheses is absent."""
     if pairings is None:
-        pairings = sorted({r.get("pairing") for r in rows}, key=str)
+        pairings = spec.oc_pairings
     out = {}
     for p in pairings:
         for mult in spec.sd_mults:
@@ -98,7 +102,8 @@ def _cells(rows: list, spec, pairings) -> dict:
 
 
 def scenario_n(rows: list, spec, pairings=None) -> dict:
-    """{scenario_key: that scenario's own smallest passing n, or None} (the record N.8b reports)."""
+    """{scenario_key: that scenario's own smallest passing n, or None} (the record N.8b reports). `pairings` narrows the
+    record to a subset (a partial table); the default is every spec.oc_pairings."""
     ok = _cells(rows, spec, pairings) if rows else {}
     out = {}
     for (p, mult, n), good in ok.items():
@@ -109,12 +114,13 @@ def scenario_n(rows: list, spec, pairings=None) -> dict:
     return out
 
 
-def choose_n(rows: list, spec, pairings=None) -> int | None:
-    """The smallest grid n at which every scenario passes both hypotheses (when passing is monotone in n, the largest
-    of scenario_n). No rows: None. A missing cell: ValueError, never a pass."""
+def choose_n(rows: list, spec) -> int | None:
+    """The design n: the smallest grid n at which every spec.oc_pairings x spec.sd_mults scenario passes both
+    hypotheses (when passing is monotone in n, the largest of scenario_n). No rows: None. A missing cell, a missing
+    pairing or rows without a `pairing` key: ValueError, never an n."""
     if not rows:
         return None
-    ok = _cells(rows, spec, pairings)
+    ok = _cells(rows, spec, None)
     for n in sorted(spec.n_grid):
         if all(good for (_, _, m), good in ok.items() if m == n):
             return int(n)
