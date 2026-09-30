@@ -99,7 +99,7 @@ class NSpec:
     budget_workers: int = 16                      # reading 11: the budget's assumed worker count
     # ---- runs ------------------------------------------------------------------------------------------------------------
     workers: int = 16                             # the stage CLIs' --workers default
-    pool_timeout_s: float = 3600.0                # FlyPool timeout per call (m_cli's: teach jobs run whole)
+    pool_timeout_s: float = 14400.0               # FlyPool timeout per round; sized from R0 smoke for the N1 oracle item
     # ---- where -----------------------------------------------------------------------------------------------------------
     spec_path: str = "docs/superpowers/specs/2026-09-14-flymon-design.md"
     smoke_point: tuple = (1.0, 1.0)               # reading 13
