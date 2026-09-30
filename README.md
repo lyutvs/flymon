@@ -2,7 +2,7 @@
 
 MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
 M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
-M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). 판독 확장(가르치는 구획 재선택) — 닫힘(부록 M.11). M3 인프라만 완료(판정 없음), M4는 보류.
+M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). 판독 확장(가르치는 구획 재선택) — 닫힘(부록 M.11). 실제 냄새(Lin 2014 패턴) — N1에서 닫힘(부록 N.9). M3 인프라만 완료(판정 없음), M4는 보류.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
 
@@ -161,6 +161,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
 - **안 된 것(판독 확장, 2026-09-28, 스펙 부록 M.11)**: 판독이 MBON13·MBON05 두 타입뿐이라는 대안 설명을 겨눠, 가르치는 DAN 구획(PPL1 처벌 × PAM 보상)을 다시 고르고
   그 core MBON 세포 집단으로 읽었다. core KC 입력의 X 전용 몫이 현 조합보다 큰 후보(보상 5·처벌 2) 가운데 반응 가드를 통과한 것을 팔별로 스캔하고 상위 조합을 함께 편집했더니
   최선 PPL106·PAM12도 짝수 턴 시험 가능 **7/21**(C3와 같음, F_a 1)로 M2 기준에 못 미쳤다(`STOP_NO_GAIN`). 판정 세트는 쓰지 않았다. 이것으로 이번 라운드의 지렛대 탐색을 끝낸다.
+- **안 된 것(실제 냄새, 2026-09-30, 스펙 부록 N.9)**: 포켓몬 쌍 대신 Hallem 2006 실측 반응(DoOR 매핑)으로 만든 IA:EB 4:1 대 1:4(비슷한 쌍)·4:1 대 δ-DL(다른 쌍)을 C3 엔진에 넣어
+  Lin 2014의 APL 의존 미세 변별 패턴을 겨눴다. 작동점은 잡혔고(g 0.25, c_δ 8, KC 활성 5.19%) 유사도 순서도 섰지만(Δr 0.336, 95% CI [0.296, 0.356]),
+  처벌만 오라클에서 비슷한 쌍이 p0 **−1.955**로 기준 −2에 못 미쳤다(다른 쌍 −3.734는 통과, `STOP_UNTESTABLE`). 사전 선언대로 N1에서 닫았고 학습 판정(N2)은 재지 않았다.
+  상한이 아니라 "사전 지정 편집 프로토콜에서 시험 불성립"이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -222,6 +226,13 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   punish) and that passed the reactivity guard, a per-arm scan and a joint check of the top combinations gave at best
   PPL106·PAM12 with 7 of 21 testable even-turn pairs (same as C3, F_a 1), below the M2 bar (`STOP_NO_GAIN`); the
   judgement set was never used. This ends this round's lever search.
+- **Real odours: closed at N1 (2026-09-30, spec N.9).** Instead of Pokémon pairs, measured Hallem 2006 responses (DoOR
+  mapping) drove the C3 engine with IA:EB 4:1 vs 1:4 (similar pair) and 4:1 vs δ-DL (dissimilar pair), aiming at the
+  APL-dependent fine discrimination of Lin 2014. An operating point was found (g 0.25, c_δ 8, KC activity 5.19%) and the
+  similarity order held (Δr 0.336, 95% CI [0.296, 0.356]), but in the punish-only oracle the similar pair reached
+  p0 = −1.955 against the bar of −2 (the dissimilar pair passed at −3.734; `STOP_UNTESTABLE`). As pre-declared, the
+  claim was closed at N1 and the learning judgement (N2) was never measured. This is not an upper bound, only "not
+  testable under the pre-specified edit protocol".
 
 ## 실행
 
