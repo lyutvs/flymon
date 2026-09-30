@@ -2,7 +2,7 @@
 
 MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
 M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
-M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). 판독 확장(가르치는 구획 재선택) — 닫힘(부록 M.11). 실제 냄새(Lin 2014 패턴) — N1에서 닫힘(부록 N.9). M3 인프라만 완료(판정 없음), M4는 보류.
+M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). 판독 확장(가르치는 구획 재선택) — 닫힘(부록 M.11). 실제 냄새(Lin 2014 패턴) — N1에서 닫힘(부록 N.9). 주장 재범위(기계 대조 + 승률) — 두 층 모두 시험하지 않고 닫힘(재범위 스펙 11.3·11.4). M3 인프라만 완료(판정 없음), M4는 보류.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
 
@@ -165,6 +165,11 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   Lin 2014의 APL 의존 미세 변별 패턴을 겨눴다. 작동점은 잡혔고(g 0.25, c_δ 8, KC 활성 5.19%) 유사도 순서도 섰지만(Δr 0.336, 95% CI [0.296, 0.356]),
   처벌만 오라클에서 비슷한 쌍이 p0 **−1.955**로 기준 −2에 못 미쳤다(다른 쌍 −3.734는 통과, `STOP_UNTESTABLE`). 사전 선언대로 N1에서 닫았고 학습 판정(N2)은 재지 않았다.
   상한이 아니라 "사전 지정 편집 프로토콜에서 시험 불성립"이다.
+- **안 된 것(주장 재범위, 2026-09-30, 재범위 스펙 11.3·11.4)**: 1차 주장을 "보상 쪽 기계 대조(C3, 설계쌍)"와 "배틀 승률(FLY 대 RND·가소성 끈 초파리·yoked 강화)" 두 층으로 다시 잡았다
+  (`docs/superpowers/specs/2026-09-28-rescoped-claim-design.md`). 1차는 양성 대조 seed0의 Y가 16시드 중 4시드에서 조용한 상태라 자격을 얻지 못해(`STOP_CONTROL_INVALID`) 시험하지 않았다.
+  2차는 검정력 파일럿(팔마다 6마리 × 평가 20배틀)의 분산으로 계산한 (2b) 동시 검정력이 사전 고정 격자 어디에서도 0.8에 닿지 않았다 — 60시간 안 최대 **0.140**(F 32·E 40),
+  격자 전체 최대 0.186(F 32·E 300, 234.8시간) (`STOP_POWER`). 판정 실행은 돌리지 않았고 (2a)·(2b)는 재지 않았다. 결과를 본 뒤 규칙·수치는 바꾸지 않았다.
+  "승률 효과 없음"이 아니라 "이 규모에서 시험 불성립"이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -233,6 +238,15 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   p0 = −1.955 against the bar of −2 (the dissimilar pair passed at −3.734; `STOP_UNTESTABLE`). As pre-declared, the
   claim was closed at N1 and the learning judgement (N2) was never measured. This is not an upper bound, only "not
   testable under the pre-specified edit protocol".
+- **Claim re-scope: closed, neither layer tested (2026-09-30, re-scope spec 11.3, 11.4).** The primary claim was
+  re-cut into two layers (`docs/superpowers/specs/2026-09-28-rescoped-claim-design.md`): a reward-side mechanism
+  contrast on C3 design pairs, and battle win rate (FLY vs RND, vs plasticity-off flies, vs yoked reinforcement). Layer 1
+  was not tested: the positive control seed0 did not qualify (its Y odour was in the silent state in 4 of 16 seeds,
+  `STOP_CONTROL_INVALID`). Layer 2 stopped at the power pilot (6 flies x 20 evaluation battles per arm): with the pilot's
+  variance components the joint (2b) power never reached 0.8 anywhere on the pre-fixed grid — at most 0.140 within the
+  60 h budget (F 32, E 40) and 0.186 on the whole grid (F 32, E 300, 234.8 h) (`STOP_POWER`). The judgement run was
+  never started and (2a)/(2b) were not measured; no rule or number was changed after seeing the result. This is not
+  "no win-rate effect", only "not testable at this scale".
 
 ## 실행
 
