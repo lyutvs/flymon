@@ -85,7 +85,7 @@ def smoke(spec: ESpec = SPEC) -> ESpec:
     s = spec.smoke_seeds
     return dataclasses.replace(spec, drive_seeds=s[0:2], strength_seeds=s[2:4], even_act_seeds=s[4:6],
                                even_select_seeds=s[6:8], even_report_seeds=s[8:10], s_grid=(0.35, 0.7),
-                               anneal_iters=2_000, anneal_restarts=2, raw_dir="results/encoder/smoke")
+                               anneal_iters=20_000, anneal_restarts=2, raw_dir="results/encoder/smoke")
 
 
 def track_seeds(spec: ESpec = SPEC) -> set:
