@@ -100,8 +100,8 @@ def read_band(n, c, f_a, n_b, n_a, n_a_declared, naive_a, spec) -> dict:
 
 _NUMS = " ({n}/21 대 {c}/21, F_a {f_a}/{n_a})"
 SENTENCES = {
-    STOP_NO_ELIGIBLE: "결합 부호 E-grid의 선언한 4설정 가운데 하드 제약 위반 0과 KC 활성 자격(중앙값 5–9%, 3% 미만 ≤ 5%)을 "
-                      "함께 만족한 설정이 없었다({reasons}).",
+    STOP_NO_ELIGIBLE: "결합 부호 E-grid의 선언한 4설정 가운데 하드 제약 위반 0·고유성과 KC 활성 자격(냄새 단위 중앙값 5–9%, "
+                      "단일·이중 각각 하단·상단 꼬리 ≤ 10%, ORN 상한)을 함께 만족한 설정이 없었다({reasons}).",
     STOP_EVEN_LOW: "E-grid 자격 설정 가운데 짝수 (b) 21쌍에서 M2 기준(testable_b ≥ 11 ∧ F_a ≥ 2)을 넘은 설정이 없었다"
                    "(설정별 {table}).",
     STOP_SET_SHORT: "L 생성기 턴 64–209에서 E-grid 키 중복을 뺀 (b) 쌍이 21개에 못 미쳤다({m}쌍).",

@@ -158,3 +158,22 @@ def test_oc_row_layout():
     pn = sum(comb(21, i) for i in range(11, 22)) / 2 ** 21
     pf = 1 - (1 + 4) / 16
     assert abs(r["P"][R.SELECTED] - pn * pf) < 1e-12
+
+
+def test_sentence_templates_match_spec_text():
+    """Every literal fragment of every 5.4 template (split on {field}) appears in the spec, except the B_Fa sentence
+    (no spec prose) and the numbers suffix of the B_결론없음 sentences."""
+    import re
+    from pathlib import Path
+    spec_path = Path(__file__).resolve().parents[2] / "docs/superpowers/specs/2026-10-01-encoder-redesign-design.md"
+    text = spec_path.read_text(encoding="utf-8")
+    flat = re.sub(r"\n\s*", " ", text)
+    for key, tmpl in R.SENTENCES.items():
+        if key == R.B_FA:
+            continue
+        if key.startswith(R.B_NC + ":"):
+            assert tmpl.endswith(R._NUMS)
+            tmpl = tmpl[: -len(R._NUMS)]
+        for frag in re.split(r"\{[A-Za-z_]+\}", tmpl):
+            if frag.strip():
+                assert frag in text or frag in flat, (key, frag)
