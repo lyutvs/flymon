@@ -2,7 +2,7 @@
 h4_jobs.oracle_job), unchanged, behind the track's content-key cache (e_store.ECache).
 
 Resume: every entry is written as soon as its last item is back from a worker round, so an interrupted run loses at
-most one round. Cache kinds: "drive" (one per glomerulus), "activity" (one per odour, strength and seed batch),
+most one round. Every cache key carries the engine Params. Cache kinds: "drive" (one per glomerulus), "activity" (one per odour, strength and seed batch),
 "oracle" (one per pair)."""
 from __future__ import annotations
 
@@ -57,7 +57,7 @@ class EMeasurer:
 
     # ---- drive (4.1) ---------------------------------------------------------------------------
     def _drive_inputs(self, g: str, odour: dict) -> dict:
-        return dict(glomerulus=g, odour=odour, strength=float(self.spec.drive_strength),
+        return dict(params=self.params, glomerulus=g, odour=odour, strength=float(self.spec.drive_strength),
                     seeds=[int(s) for s in self.spec.drive_seeds], **self._windows())
 
     def drive(self, glomeruli: list, c_norm: float, receptor_counts: dict) -> dict:
@@ -78,7 +78,7 @@ class EMeasurer:
 
     # ---- activity (4.3) ------------------------------------------------------------------------
     def _act_inputs(self, oid: str, odour: dict, s: float, seeds) -> dict:
-        return dict(odour_id=str(oid), odour=_odour(odour), strength=float(s), seeds=[int(x) for x in seeds],
+        return dict(params=self.params, odour_id=str(oid), odour=_odour(odour), strength=float(s), seeds=[int(x) for x in seeds],
                     **self._windows())
 
     def activity(self, odours: dict, s: float, seeds) -> dict:
@@ -96,7 +96,8 @@ class EMeasurer:
 
     # ---- oracle (4.4, 5.x) ---------------------------------------------------------------------
     def _oracle_kw(self, row: dict, strength: float, readout: dict, z: dict, types, seeds: dict) -> dict:
-        return dict(odor_x=_odour(row["odor_x"]), odor_y=_odour(row["odor_y"]), readout=dict(readout),
+        """Both the cache inputs and the oracle_job kwargs (params included)."""
+        return dict(params=self.params, odor_x=_odour(row["odor_x"]), odor_y=_odour(row["odor_y"]), readout=dict(readout),
                     z={k: [float(v) for v in z[k]] for k in z}, types=[str(t) for t in types],
                     act_seeds=[int(s) for s in seeds["act"]], select_seeds=[int(s) for s in seeds["select"]],
                     report_seeds=[int(s) for s in seeds["report"]], alphas=[float(a) for a in self.spec.alphas],
@@ -112,7 +113,7 @@ class EMeasurer:
             print(f"oracle {tag}: {len(todo)}/{len(rows)} pairs to measure", file=sys.stderr)
         for a in range(0, len(todo), n_w):
             batch = todo[a:a + n_w]
-            res = self.pool.run_jobs(h4_jobs.oracle_job, [dict(kws[k], params=self.params) for k in batch])
+            res = self.pool.run_jobs(h4_jobs.oracle_job, [kws[k] for k in batch])
             for k, r in zip(batch, res):
                 self.cache.put("oracle", kws[k], r, self.params_list)
             print(f"oracle {tag}: {min(a + n_w, len(todo))}/{len(todo)}", file=sys.stderr)
@@ -121,5 +122,8 @@ class EMeasurer:
             r = self.cache.get("oracle", kw)
             if r is None:
                 raise RuntimeError(f"oracle {tag}: pair {row.get('x')}/{row.get('y')} missing after the run")
+            clash = sorted(set(row) & set(r))
+            if clash:
+                raise ValueError(f"oracle {tag}: result keys {clash} collide with row fields")
             out.append({**row, **r})
         return out

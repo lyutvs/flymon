@@ -1,3 +1,5 @@
+import dataclasses
+
 import pytest
 
 from flymon.agent.e_measure import EMeasurer
@@ -22,12 +24,14 @@ class FakePool:
         return out[:-1] if self.drop_oracle else out
 
 
+@dataclasses.dataclass(frozen=True)
 class P:  # params stand-in (the store's guard needs a full Params; tests pass guard_params=False)
-    kc_kc_scale = 0.0
+    kc_kc_scale: float = 0.0
 
 
-def _m(pool, spec):
-    return EMeasurer(pool, ECache("results/encoder/cache", {"k": 1}), P(), n_kc=100, spec=spec, guard_params=False)
+def _m(pool, spec, params=None):
+    return EMeasurer(pool, ECache("results/encoder/cache", {"k": 1}), params or P(), n_kc=100, spec=spec,
+                     guard_params=False)
 
 
 def test_activity_cached_and_resumed(tmp_path, monkeypatch):
@@ -108,3 +112,33 @@ def test_scripted_measurer():
     out = sm.oracle(rows, 0.35, {}, {}, [], {}, "t")
     assert out[0]["report"]["R1"] != out[0]["report"]["pre"] and out[1]["report"]["R1"] == out[1]["report"]["pre"]
     assert out[0]["kc"] == {"jaccard": 0.2} and [c[0] for c in sm.calls] == ["activity", "oracle"]
+
+
+ROWS = [dict(axis="b", turn=i, x=f"x{i}", y=f"y{i}", odor_x={"ORN_X": 1.0 + i}, odor_y={"ORN_Y": 1.0}) for i in range(2)]
+ORACLE_ARGS = (0.35, {"A": "MBON13", "P": "MBON05"}, {"A": (1, 1), "P": (1, 1)}, ["MBON13", "MBON05"],
+               dict(act=SPEC.even_act_seeds, select=SPEC.even_select_seeds, report=SPEC.even_report_seeds), "t")
+
+
+def test_params_in_every_cache_key(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    od = {"a": {"ORN_X": 1.0}}
+    for params in (P(0.0), P(0.5)):
+        pool = FakePool()
+        m = _m(pool, SPEC, params)
+        m.drive(["ORN_A"], 1.0, {"ORN_A": 1})
+        m.activity(od, 0.35, SPEC.strength_seeds)
+        m.oracle(ROWS, *ORACLE_ARGS)
+        assert [c[0] for c in pool.calls] == ["activity_job", "activity_job", "oracle_job"]
+        assert all(kw["params"] == params for _, kws in pool.kws for kw in kws)
+    pool = FakePool()
+    m = _m(pool, SPEC, P(0.5))
+    m.drive(["ORN_A"], 1.0, {"ORN_A": 1}); m.activity(od, 0.35, SPEC.strength_seeds); m.oracle(ROWS, *ORACLE_ARGS)
+    assert pool.calls == []
+
+
+def test_oracle_result_row_collision_raises(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    m = _m(FakePool(), SPEC)
+    rows = [dict(r, kc="row field") for r in ROWS]
+    with pytest.raises(ValueError, match="collide"):
+        m.oracle(rows, *ORACLE_ARGS)
