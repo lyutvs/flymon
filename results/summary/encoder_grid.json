@@ -1,4 +1,404 @@
 {
+ "drive": {
+  "c_norm": 34.0,
+  "code_key": "6d88ddb2a3c46bf5eaa90ded16cfcebc8bec917ad090120d03ecb48bccc616d4",
+  "git": {
+   "commit": "2c6a2921dd09dc3ce6347f52330665ce731dbed1",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "glomeruli": [
+   "ORN_D",
+   "ORN_DA2",
+   "ORN_DA3",
+   "ORN_DA4l",
+   "ORN_DA4m",
+   "ORN_DC1",
+   "ORN_DC2",
+   "ORN_DC3",
+   "ORN_DC4",
+   "ORN_DL1",
+   "ORN_DL2d",
+   "ORN_DL2v",
+   "ORN_DL3",
+   "ORN_DL4",
+   "ORN_DL5",
+   "ORN_DM1",
+   "ORN_DM2",
+   "ORN_DM3",
+   "ORN_DM4",
+   "ORN_DM5",
+   "ORN_DM6",
+   "ORN_DP1l",
+   "ORN_DP1m",
+   "ORN_VA1d",
+   "ORN_VA1v",
+   "ORN_VA2",
+   "ORN_VA3",
+   "ORN_VA4",
+   "ORN_VA5",
+   "ORN_VA6",
+   "ORN_VA7l",
+   "ORN_VA7m",
+   "ORN_VC1",
+   "ORN_VC2",
+   "ORN_VC3",
+   "ORN_VC4",
+   "ORN_VC5",
+   "ORN_VL1",
+   "ORN_VL2a",
+   "ORN_VL2p",
+   "ORN_VM1",
+   "ORN_VM2",
+   "ORN_VM3",
+   "ORN_VM4",
+   "ORN_VM5d",
+   "ORN_VM5v",
+   "ORN_VM6l",
+   "ORN_VM6m",
+   "ORN_VM6v",
+   "ORN_VM7d",
+   "ORN_VM7v"
+  ],
+  "inputs": {
+   "data/malecns.npz": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+   "results/summary/m0d.json": "64f2c0bb804c613c4af271e099ae4e076610e17305b22fcf1d85ed6fa5a8b564"
+  },
+  "mean_spikes": {
+   "ORN_D": 216.125,
+   "ORN_DA2": 588.875,
+   "ORN_DA3": 3.875,
+   "ORN_DA4l": 727.5,
+   "ORN_DA4m": 459.625,
+   "ORN_DC1": 1916.125,
+   "ORN_DC2": 664.0,
+   "ORN_DC3": 391.625,
+   "ORN_DC4": 487.875,
+   "ORN_DL1": 1275.75,
+   "ORN_DL2d": 844.25,
+   "ORN_DL2v": 1059.75,
+   "ORN_DL3": 116.5,
+   "ORN_DL4": 135.5,
+   "ORN_DL5": 366.875,
+   "ORN_DM1": 983.125,
+   "ORN_DM2": 240.375,
+   "ORN_DM3": 131.75,
+   "ORN_DM4": 572.0,
+   "ORN_DM5": 122.75,
+   "ORN_DM6": 268.0,
+   "ORN_DP1l": 839.5,
+   "ORN_DP1m": 2142.0,
+   "ORN_VA1d": 201.75,
+   "ORN_VA1v": 8.875,
+   "ORN_VA2": 804.0,
+   "ORN_VA3": 299.375,
+   "ORN_VA4": 408.125,
+   "ORN_VA5": 391.0,
+   "ORN_VA6": 952.375,
+   "ORN_VA7l": 449.875,
+   "ORN_VA7m": 127.625,
+   "ORN_VC1": 541.5,
+   "ORN_VC2": 530.5,
+   "ORN_VC3": 355.375,
+   "ORN_VC4": 28.125,
+   "ORN_VC5": 312.625,
+   "ORN_VL1": 251.125,
+   "ORN_VL2a": 709.5,
+   "ORN_VL2p": 410.875,
+   "ORN_VM1": 286.375,
+   "ORN_VM2": 67.625,
+   "ORN_VM3": 127.5,
+   "ORN_VM4": 209.375,
+   "ORN_VM5d": 136.25,
+   "ORN_VM5v": 601.125,
+   "ORN_VM6l": 8.25,
+   "ORN_VM6m": 4.75,
+   "ORN_VM6v": 624.125,
+   "ORN_VM7d": 700.125,
+   "ORN_VM7v": 389.625
+  },
+  "provenance": {
+   "args": {
+    "smoke": false,
+    "stage": "drive"
+   },
+   "argv": [
+    "scripts/run_encoder_grid.py",
+    "--stage",
+    "drive",
+    "--workers",
+    "16"
+   ],
+   "commit": "2c6a2921dd09dc3ce6347f52330665ce731dbed1",
+   "dirty": [],
+   "sha256": {
+    "docs/superpowers/specs/2026-10-01-encoder-redesign-design.md": "bb6477cf068caa4f1e1bd404e7fa48e8a96a985e334b27690c979de196437025",
+    "flymon/agent/config.py": "cedd7fbdfd052942492df34fc1ded819cfc4f0a4de828b05c006a44f6b089141",
+    "flymon/agent/e_codebook.py": "7f8d62447b7073df2bc41480db57929f6cefb5865ad0dee2bcc6c5ceb9ecb21c",
+    "flymon/agent/e_measure.py": "918c3b820ad953f03b73285e8c82efc5db7639eaa4bd8fd6046396aa400b0711",
+    "flymon/agent/e_pairs.py": "428ff01c76aa36458882a9a5772dbd9899e6b4479332fe58b4e15dc86987b61e",
+    "flymon/agent/e_rules.py": "1feb1e59584a7c98f101b55e86254af74fdb439958c053ca3a3bdf7a4176dce9",
+    "flymon/agent/e_runner.py": "400d19a36a7028225bc466982b0fc98e34de4c278e4b814524f2dd0699bba6c5",
+    "flymon/agent/e_spec.py": "e553c9a3054d1caf0b9cd1137083c1f1653734b4906b739583d5dfac33aa6f84",
+    "flymon/agent/e_store.py": "bf81cb5d9fb64113ac7223a84f0ce5feff6d3e99eb0f35ec4516bc3ca1543c42",
+    "flymon/agent/encode_grid.py": "7d5785b5e8c6e9f054804d6d357f5810630a6e0e36aa91dd9dafc68232a04203",
+    "flymon/battle/pool.py": "ef1bc6e93844eb434ab11d2ba8fb684c4a3cba35e2c2fe76bc41e19c05cb044a",
+    "flymon/brain/circuits.py": "7b149d8195a06f7232097640fd790ef6c610eae41dd575e10ac0f2c12abf65b1",
+    "flymon/brain/conditioning.py": "44de4ce3384c2b7fa321bee121eca48e91f9076edbc41f20fe36ad38ea544552",
+    "flymon/brain/config.py": "613b8c660b8d94410d997835f183397a9caf3670d7dfe69aaccf8fdab6895077",
+    "flymon/brain/connectome.py": "670a4cfad683ddef89d04bb5c3b73441992592c97714af328325bf8f922d0f30",
+    "flymon/brain/d6a.py": "9303db489c7c9a001a31eba30b54705e3cc47c57c3bc54ac87858cb297788d51",
+    "flymon/brain/engine_cpu.py": "939d354ee1cb4c27f219223c5aabc89cb37dfa2ad978f6cd1cf5fc0c33535a5a",
+    "flymon/brain/fly_pool.py": "bed8e773df18cd172c2834f6cbfe1401584416aeb97cc636a88fbba2ad26e091",
+    "flymon/brain/h3_c3.py": "716bd63a1bf7e5c5526ef81779f0702223df69859753c1fc7370bd695d30bb76",
+    "flymon/brain/h3_jobs.py": "0903032c18ec1615ea51f02acee135774904dd595c989a3cdb1b69653474930b",
+    "flymon/brain/h3_measure.py": "b68f72cf172b250a9bfb56245c087545c613151e5772fb65902b4c1e5565b1b7",
+    "flymon/brain/h3_spec.py": "e9f9c0a50ea6f6f8f04715cf7b062e629d519de3e6d29be04b18fab1e1d6e740",
+    "flymon/brain/h3_store.py": "fdfea72e784293410a9b5ae048f39b8953390acef2d2283753c83c12221f3bee",
+    "flymon/brain/h4_formula.py": "20051be1e473981eeb3e9fc8c3ba49c3e1e03c6782c47ef82639fc6a0a6483ef",
+    "flymon/brain/h4_jobs.py": "1e5e09041b2913384a6bb38a86acf91ee0e443a40886d602f996218978edac30",
+    "flymon/brain/h4_pairs.py": "042149c73ff087c156586e1fd4b3d85c077c42f9121953b149205c568ace4c7c",
+    "flymon/brain/h4_spec.py": "65de724924e8bdccc2496dd5fa40c7aaba936f7c4761dc5de13a92df70f420ad",
+    "flymon/brain/j_params.py": "d18285bcbbf835ac4a455398d11086b224ff7e15c68e7296190544de89a7625e",
+    "flymon/brain/j_store.py": "3f9b0d1618229b5071e97889c37d70f359d38ef4ed5c95e638b8ef776ec71748",
+    "flymon/brain/k_jobs.py": "6e52f790ff564ddc784827e79b0c3f0bf7a6d5ed5178c8535a99ef7b9fc7d1ad",
+    "flymon/brain/k_pairs.py": "50bb21e85d673d76e3deb5a52fd1519db29b05b8951ddcb101de10244d1f9eec",
+    "flymon/brain/l_pairs.py": "6da577dabee37eb4e03570ce1b48b5f7ce9c465e3a657f8c8f22c28606e757d5",
+    "flymon/brain/measure.py": "25a7cd321a54dfe8c96f076824f20efb39d83f34ec5a953aaaa89af40a8ad2f3",
+    "flymon/brain/odor_real.py": "47c355211b7104a4f59471b031e158238f6bee459e5bfa98a32eb200e0899945",
+    "flymon/brain/plasticity.py": "fed3ac2f62e97ec45c56a1d93c6ca98d970c5a4a15594d124b2b281eb1cc7ed0",
+    "flymon/brain/pool_bench.py": "668eb17087d57afac7f70ddd8c8db298fcf9b3a410504faec1c76f7410315373",
+    "flymon/brain/presentation.py": "2eab2be0e33f26edd750fe33be47f070d41a026b4ad826c9eefdf1ce14b699a0",
+    "flymon/brain/stimuli.py": "1cf05a7e2ceeee60c5b299065e30a3034199a7a92509227b98c95f763086c642",
+    "flymon/brain/thresholds.py": "12916a2ebfb2aa43e2e3f3de001e480a475e60065ab404b445b07581e559352a",
+    "results/summary/m0d.json": "64f2c0bb804c613c4af271e099ae4e076610e17305b22fcf1d85ed6fa5a8b564",
+    "scripts/run_encoder_grid.py": "621c1bb51ede437c0ee6c770a519d217380b123eb008366fa51c7ef1fa582761",
+    "tests/agent/e_scripted.py": "190d5e5aebbb520102375d787699d8a40759eee7199c76b0f700201137ce6df2",
+    "tests/agent/test_e_runner.py": "e33355e4d6646cf8e899fd0d851ba8019fdb885a2e26bd233a86602c7568e6a8",
+    "uv.lock": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e"
+   }
+  },
+  "seeds": [
+   24001000,
+   24001001,
+   24001002,
+   24001003,
+   24001004,
+   24001005,
+   24001006,
+   24001007
+  ],
+  "smoke": false,
+  "stage": "drive",
+  "strength": 0.35,
+  "table": {
+   "ORN_D": {
+    "kc_frac_mean": 0.015871062992125984,
+    "mean_spikes": 216.125
+   },
+   "ORN_DA2": {
+    "kc_frac_mean": 0.010180856299212598,
+    "mean_spikes": 588.875
+   },
+   "ORN_DA3": {
+    "kc_frac_mean": 0.0008612204724409449,
+    "mean_spikes": 3.875
+   },
+   "ORN_DA4l": {
+    "kc_frac_mean": 0.014456200787401575,
+    "mean_spikes": 727.5
+   },
+   "ORN_DA4m": {
+    "kc_frac_mean": 0.008765994094488189,
+    "mean_spikes": 459.625
+   },
+   "ORN_DC1": {
+    "kc_frac_mean": 0.0625,
+    "mean_spikes": 1916.125
+   },
+   "ORN_DC2": {
+    "kc_frac_mean": 0.019438976377952756,
+    "mean_spikes": 664.0
+   },
+   "ORN_DC3": {
+    "kc_frac_mean": 0.014640748031496063,
+    "mean_spikes": 391.625
+   },
+   "ORN_DC4": {
+    "kc_frac_mean": 0.011903297244094488,
+    "mean_spikes": 487.875
+   },
+   "ORN_DL1": {
+    "kc_frac_mean": 0.02703617125984252,
+    "mean_spikes": 1275.75
+   },
+   "ORN_DL2d": {
+    "kc_frac_mean": 0.026697834645669292,
+    "mean_spikes": 844.25
+   },
+   "ORN_DL2v": {
+    "kc_frac_mean": 0.03426427165354331,
+    "mean_spikes": 1059.75
+   },
+   "ORN_DL3": {
+    "kc_frac_mean": 0.0030450295275590553,
+    "mean_spikes": 116.5
+   },
+   "ORN_DL4": {
+    "kc_frac_mean": 0.00375246062992126,
+    "mean_spikes": 135.5
+   },
+   "ORN_DL5": {
+    "kc_frac_mean": 0.012272391732283465,
+    "mean_spikes": 366.875
+   },
+   "ORN_DM1": {
+    "kc_frac_mean": 0.034910187007874016,
+    "mean_spikes": 983.125
+   },
+   "ORN_DM2": {
+    "kc_frac_mean": 0.01703986220472441,
+    "mean_spikes": 240.375
+   },
+   "ORN_DM3": {
+    "kc_frac_mean": 0.006612942913385827,
+    "mean_spikes": 131.75
+   },
+   "ORN_DM4": {
+    "kc_frac_mean": 0.02312992125984252,
+    "mean_spikes": 572.0
+   },
+   "ORN_DM5": {
+    "kc_frac_mean": 0.004952017716535433,
+    "mean_spikes": 122.75
+   },
+   "ORN_DM6": {
+    "kc_frac_mean": 0.012210875984251968,
+    "mean_spikes": 268.0
+   },
+   "ORN_DP1l": {
+    "kc_frac_mean": 0.03697096456692914,
+    "mean_spikes": 839.5
+   },
+   "ORN_DP1m": {
+    "kc_frac_mean": 0.0927965059055118,
+    "mean_spikes": 2142.0
+   },
+   "ORN_VA1d": {
+    "kc_frac_mean": 0.006551427165354331,
+    "mean_spikes": 201.75
+   },
+   "ORN_VA1v": {
+    "kc_frac_mean": 0.0011687992125984253,
+    "mean_spikes": 8.875
+   },
+   "ORN_VA2": {
+    "kc_frac_mean": 0.028973917322834646,
+    "mean_spikes": 804.0
+   },
+   "ORN_VA3": {
+    "kc_frac_mean": 0.010519192913385827,
+    "mean_spikes": 299.375
+   },
+   "ORN_VA4": {
+    "kc_frac_mean": 0.015871062992125984,
+    "mean_spikes": 408.125
+   },
+   "ORN_VA5": {
+    "kc_frac_mean": 0.014179379921259842,
+    "mean_spikes": 391.0
+   },
+   "ORN_VA6": {
+    "kc_frac_mean": 0.027897391732283464,
+    "mean_spikes": 952.375
+   },
+   "ORN_VA7l": {
+    "kc_frac_mean": 0.011995570866141732,
+    "mean_spikes": 449.875
+   },
+   "ORN_VA7m": {
+    "kc_frac_mean": 0.005136564960629922,
+    "mean_spikes": 127.625
+   },
+   "ORN_VC1": {
+    "kc_frac_mean": 0.018362450787401573,
+    "mean_spikes": 541.5
+   },
+   "ORN_VC2": {
+    "kc_frac_mean": 0.019346702755905512,
+    "mean_spikes": 530.5
+   },
+   "ORN_VC3": {
+    "kc_frac_mean": 0.012210875984251968,
+    "mean_spikes": 355.375
+   },
+   "ORN_VC4": {
+    "kc_frac_mean": 0.0027066929133858267,
+    "mean_spikes": 28.125
+   },
+   "ORN_VC5": {
+    "kc_frac_mean": 0.015071358267716536,
+    "mean_spikes": 312.625
+   },
+   "ORN_VL1": {
+    "kc_frac_mean": 0.005044291338582678,
+    "mean_spikes": 251.125
+   },
+   "ORN_VL2a": {
+    "kc_frac_mean": 0.017839566929133858,
+    "mean_spikes": 709.5
+   },
+   "ORN_VL2p": {
+    "kc_frac_mean": 0.01236466535433071,
+    "mean_spikes": 410.875
+   },
+   "ORN_VM1": {
+    "kc_frac_mean": 0.010888287401574803,
+    "mean_spikes": 286.375
+   },
+   "ORN_VM2": {
+    "kc_frac_mean": 0.0052903543307086616,
+    "mean_spikes": 67.625
+   },
+   "ORN_VM3": {
+    "kc_frac_mean": 0.007074311023622048,
+    "mean_spikes": 127.5
+   },
+   "ORN_VM4": {
+    "kc_frac_mean": 0.006243848425196851,
+    "mean_spikes": 209.375
+   },
+   "ORN_VM5d": {
+    "kc_frac_mean": 0.007720226377952756,
+    "mean_spikes": 136.25
+   },
+   "ORN_VM5v": {
+    "kc_frac_mean": 0.015563484251968504,
+    "mean_spikes": 601.125
+   },
+   "ORN_VM6l": {
+    "kc_frac_mean": 0.0012610728346456692,
+    "mean_spikes": 8.25
+   },
+   "ORN_VM6m": {
+    "kc_frac_mean": 0.000953494094488189,
+    "mean_spikes": 4.75
+   },
+   "ORN_VM6v": {
+    "kc_frac_mean": 0.02546751968503937,
+    "mean_spikes": 624.125
+   },
+   "ORN_VM7d": {
+    "kc_frac_mean": 0.01624015748031496,
+    "mean_spikes": 700.125
+   },
+   "ORN_VM7v": {
+    "kc_frac_mean": 0.010734498031496063,
+    "mean_spikes": 389.625
+   }
+  },
+  "written_at": "2026-10-01T14:02:49.146415+00:00"
+ },
  "set": {
   "code_key": "6d88ddb2a3c46bf5eaa90ded16cfcebc8bec917ad090120d03ecb48bccc616d4",
   "digest_e0_a": "78509547f571ec8ddbd0b2b575d989f761a547b2b52a48cc89bd0e8fe7c3b5c1",
