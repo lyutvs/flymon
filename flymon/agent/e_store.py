@@ -21,7 +21,7 @@ def guard(path, params_list) -> None:
     for p in params_list:
         refuse_old_engine_output(str(path), p.kc_kc_scale)
         refuse_modified_engine_output(str(path), p)
-    rel = os.path.relpath(os.path.abspath(str(path)), os.getcwd()).replace(os.sep, "/")
+    rel = os.path.relpath(os.path.realpath(str(path)), os.path.realpath(os.getcwd())).replace(os.sep, "/")
     if not (rel.startswith(ALLOWED_DIR) or rel == SUMMARY):
         print(f"refusing to write {path}: the encoder track writes only under {ALLOWED_DIR} and {SUMMARY}",
               file=sys.stderr)

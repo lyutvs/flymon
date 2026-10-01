@@ -7,12 +7,21 @@ refused). The measurer (EMeasurer, or tests' ScriptedMeasurer) and the situation
 Smoke (R5): the summary is results/encoder/smoke/summary.json (never results/summary/encoder_grid.json), stage_even
 does not need the oc block, and stage_judge refuses. Recovery (5.6): a stage interrupted mid-measurement wrote no
 block; rerunning it reuses the measurer's cached entries. stage_judge writes nothing unless every pair is back and the
-counts are the declared ones (INCOMPLETE = not yet a judgement); once a judge block exists it never runs again (D8)."""
+counts are the declared ones (INCOMPLETE = not yet a judgement); once a judge block exists it never runs again (D8).
+
+Final review: every block records the cache code key (`code_key`); every non-smoke stage refuses while
+results/summary/encoder_grid.json has uncommitted changes (4.0: each stage's result is committed before the next);
+stage_judge additionally refuses unless the summary is tracked and clean, no committed version of it ever held a judge
+block, no block is a smoke block, every block's code key and inputs equal the current ones, the even block's sha256 of
+every hashed file equals the current one (other provenance files that differ are recorded only), and the winner
+codebook actually used has the even block's digest."""
 from __future__ import annotations
 
 import datetime as _dt
 import hashlib
+import json
 import math
+import subprocess
 import sys
 from pathlib import Path
 from statistics import median
@@ -30,6 +39,20 @@ SMOKE_SUMMARY = "summary.json"                 # under spec.raw_dir (results/enc
 SCRIPT = "scripts/run_encoder_grid.py"
 B_TB_CLOSE = " → 이 범위(사구체 서로소 결합 부호, 선언한 4설정)의 인코더 재설계를 닫는다."
 KS = (3, 2)
+STATS_176 = "not measured (spec 4.3 decision 95258dd)"
+NPZ = "data/malecns.npz"
+M0D = "results/summary/m0d.json"
+INPUT_FILES = (NPZ, M0D)                       # the inputs every block records by sha256 (CLI)
+# The cache code key (what a cached measurement's value depends on): the H.3 engine and measurement files, every
+# brain module oracle_job and activity_job import (h4_measure / n_measure / b_files form), and the track's measurer
+# and store.
+MEASURE_FILES_E = tuple(dict.fromkeys(tuple(MEASURE_FILES) + (
+    "flymon/brain/plasticity.py", "flymon/brain/presentation.py", "flymon/brain/conditioning.py",
+    "flymon/brain/h4_jobs.py", "flymon/brain/k_jobs.py", "flymon/brain/h4_formula.py",
+    "flymon/agent/e_measure.py", "flymon/agent/e_store.py")))
+# Recorded in every block's provenance; a difference between the even block and the judge is recorded, never refused.
+RECORD_ONLY_FILES = ("docs/superpowers/specs/2026-10-01-encoder-redesign-design.md", "tests/agent/e_scripted.py",
+                     "tests/agent/test_e_runner.py")
 
 
 def provenance_files() -> list:
@@ -39,12 +62,15 @@ def provenance_files() -> list:
 
 
 def hashed_files() -> tuple:
-    """Files whose dirty state blocks the judgement: the measurement files, the brain jobs and formulas the track
-    calls, and the track's own code."""
-    brain = ("flymon/brain/h4_jobs.py", "flymon/brain/k_jobs.py", "flymon/brain/h4_formula.py",
-             "flymon/brain/h4_pairs.py", "flymon/brain/l_pairs.py", "flymon/brain/h3_spec.py",
-             "flymon/brain/odor_real.py", "flymon/brain/pool_bench.py", "flymon/brain/d6a.py")
-    return tuple(MEASURE_FILES) + brain + tuple(provenance_files())
+    """Files whose dirty state blocks the judgement and whose sha256 must not change between the even block and the
+    judge: the code key's files, every brain/agent/battle module the track imports (C3 loading, situations,
+    formulas, guards), the track's own code, and the M0d summary (C3 thresholds, pools, readout)."""
+    deps = ("flymon/agent/config.py", "flymon/battle/pool.py",
+            "flymon/brain/h4_pairs.py", "flymon/brain/l_pairs.py", "flymon/brain/k_pairs.py",
+            "flymon/brain/h3_spec.py", "flymon/brain/h4_spec.py", "flymon/brain/h3_c3.py",
+            "flymon/brain/j_store.py", "flymon/brain/j_params.py", "flymon/brain/odor_real.py",
+            "flymon/brain/pool_bench.py", "flymon/brain/d6a.py", M0D)
+    return tuple(dict.fromkeys(MEASURE_FILES_E + deps + tuple(provenance_files())))
 
 
 def git_state() -> dict:
@@ -53,8 +79,35 @@ def git_state() -> dict:
 
 
 def provenance(args: dict) -> dict:
-    files = [ROOT / f for f in provenance_files() if (ROOT / f).exists()]
+    """sha256 of every hashed file (refused on change before the judge) and the record-only files."""
+    names = dict.fromkeys(hashed_files() + tuple(provenance_files()) + RECORD_ONLY_FILES)
+    files = [ROOT / f for f in names if (ROOT / f).exists()]
     return l_cli.provenance(files, args, sys.argv)
+
+
+def summary_git(path) -> dict:
+    """Git facts about the summary file (tests monkeypatch this): tracked, dirty (uncommitted changes, untracked
+    included) and the commits whose version of the file holds a judge block."""
+    def run(*args):
+        return subprocess.run(["git", *args], capture_output=True, text=True)
+    path = str(path)
+    tracked = run("ls-files", "--error-unmatch", "--", path).returncode == 0
+    st = run("status", "--porcelain", "--", path)
+    dirty = st.returncode != 0 or bool(st.stdout.strip())
+    judged = []
+    log = run("log", "--format=%H", "--", path)
+    for c in (log.stdout.split() if log.returncode == 0 else []):
+        rel = run("ls-tree", "--name-only", "--full-name", c, "--", path).stdout.strip()
+        if not rel:
+            continue
+        shown = run("show", f"{c}:{rel}")
+        try:
+            doc = json.loads(shown.stdout) if shown.returncode == 0 else {}
+        except ValueError:
+            doc = {}
+        if isinstance(doc, dict) and "judge" in doc:
+            judged.append(c)
+    return dict(tracked=tracked, dirty=dirty, judge_commits=judged)
 
 
 def refuse(msg: str):
@@ -85,10 +138,13 @@ def _median_or_none(xs):
 
 class Runner:
     def __init__(self, measurer, pops_info: dict, spec, oracle: dict, situations, summary_path=e_store.SUMMARY,
-                 smoke: bool = False, inputs: dict | None = None):
+                 smoke: bool = False, inputs: dict | None = None, code: dict | None = None):
         self.measurer, self.info, self.spec = measurer, dict(pops_info), spec
         self.oracle_cfg, self.sit, self.smoke = dict(oracle), situations, bool(smoke)
         self.inputs = dict(inputs or {})
+        if code is None:
+            code = getattr(getattr(measurer, "cache", None), "code", None)
+        self.code_key = (code or {}).get("key")
         if self.smoke:
             if not str(spec.raw_dir).rstrip("/").startswith("results/encoder/smoke"):
                 refuse(f"smoke raw_dir {spec.raw_dir} is not under results/encoder/smoke")
@@ -105,7 +161,18 @@ class Runner:
     def _doc(self) -> dict:
         return e_store.read_summary(self.summary_path)
 
+    def _summary_committed(self, stage: str):
+        """Spec 4.0: each stage's result is committed before the next stage (full runs only)."""
+        if self.smoke:
+            return
+        if Path(self.summary_path).exists():
+            g = summary_git(self.summary_path)
+            if not g["tracked"] or g["dirty"]:
+                refuse(f"stage {stage}: {self.summary_path} has uncommitted changes (tracked={g['tracked']}, "
+                       f"dirty={g['dirty']}); commit the previous stage's block first (spec 4.0)")
+
     def _require(self, stage: str, *blocks) -> dict:
+        self._summary_committed(stage)
         doc = self._doc()
         missing = [b for b in blocks if b not in doc]
         if missing:
@@ -118,7 +185,7 @@ class Runner:
         return doc
 
     def _write(self, stage: str, body: dict) -> dict:
-        block = dict(body, stage=stage, smoke=self.smoke, inputs=self.inputs, git=git_state(),
+        block = dict(body, stage=stage, smoke=self.smoke, inputs=self.inputs, code_key=self.code_key, git=git_state(),
                      provenance=provenance(dict(stage=stage, smoke=self.smoke)),
                      written_at=_dt.datetime.now(_dt.timezone.utc).isoformat())
         e_store.write_summary_block(self.summary_path, stage, block, self.params_list)
@@ -167,6 +234,7 @@ class Runner:
         return out
 
     def _require_set(self):
+        self._summary_committed("set")
         doc = self._doc()
         later = [b for b in ORDER[1:] if b in doc]
         if later:
@@ -255,7 +323,7 @@ class Runner:
             ch = e_rules.choose_strength(table, sp)
             configs[cfg] = dict(status="OK" if ch["s"] is not None else "NO_ELIGIBLE_S", s=ch["s"],
                                 reasons=ch["reasons"], table=record, n_odours=len(odours), n_single=len(single),
-                                n_dual=len(dual), stats_176="not measured")
+                                n_dual=len(dual), stats_176=STATS_176)
         self._write("strength", dict(configs=configs, seeds=list(sp.strength_seeds), s_grid=list(sp.s_grid),
                                      cap_hz=float(info["cap_hz"]), max_rate_hz=float(info["max_rate_hz"])))
         return dict(outcome="OK", s={c: v["s"] for c, v in configs.items()})
@@ -357,7 +425,37 @@ class Runner:
         doc = self._doc()
         if "judge" in doc:
             refuse("block judge exists; the judgement set is never run again (D8)")
+        g = summary_git(self.summary_path)
+        if not Path(self.summary_path).exists() or not g["tracked"] or g["dirty"]:
+            refuse(f"{self.summary_path} must be committed and clean before the judgement (tracked={g['tracked']}, "
+                   f"dirty={g['dirty']})")
+        if g["judge_commits"]:
+            refuse(f"git history of {self.summary_path} already holds a judge block ({g['judge_commits']}); the "
+                   f"judgement set is never run again (D8)")
         doc = self._require("judge", "set", "drive", "codebook", "strength", "oc", "even")
+        prior = ORDER[:-1]
+        smoke_blocks = [b for b in prior if doc[b].get("smoke", True) is not False]
+        if smoke_blocks:
+            refuse(f"block(s) {smoke_blocks} are smoke blocks or carry no smoke flag")
+        if not self.code_key:
+            refuse("no cache code key given; the judgement must run on the code the selection ran on")
+        missing_inputs = [f for f in INPUT_FILES if f not in self.inputs]
+        if missing_inputs:
+            refuse(f"inputs {missing_inputs} are not hashed")
+        for b in prior:
+            if doc[b].get("code_key") != self.code_key:
+                refuse(f"block {b}'s code key {doc[b].get('code_key')} is not the current {self.code_key}")
+            if doc[b].get("inputs") != self.inputs:
+                refuse(f"block {b}'s inputs {doc[b].get('inputs')} differ from the current {self.inputs}")
+        prev = (doc["even"].get("provenance") or {}).get("sha256")
+        if prev is None:
+            refuse("block even has no provenance sha256")
+        cur = provenance(dict(stage="judge", smoke=self.smoke)).get("sha256", {})
+        hashed = set(hashed_files())
+        changed = sorted(f for f in set(prev) | set(cur) if prev.get(f) != cur.get(f))
+        if [f for f in changed if f in hashed]:
+            refuse(f"hashed files differ from block even's provenance: {[f for f in changed if f in hashed]}")
+        record_only_changed = [f for f in changed if f not in hashed]
         sp, ev = self.spec, doc["even"]
         if ev.get("outcome") != e_rules.SELECTED:
             refuse(f"block even's outcome is {ev.get('outcome')}, not SELECTED")
@@ -365,6 +463,9 @@ class Runner:
         k = str(sp.k_of(win))
         if not (ev.get("winner_digest") == doc["codebook"]["configs"][win]["digest"] == doc["codebook"]["k"][k]["digest"]):
             refuse(f"winner {win}'s codebook digest differs between blocks even and codebook")
+        book_used = doc["codebook"]["k"][k]["codebook"]
+        if book_used is None or e_codebook.digest(book_used) != ev.get("winner_digest"):
+            refuse(f"winner {win}'s codebook does not hash to block even's winner_digest")
         s = doc["strength"]["configs"][win].get("s")
         if s is None or s != ev.get("winner_s"):
             refuse(f"winner {win}'s strength is not recorded consistently ({s} vs {ev.get('winner_s')})")
@@ -401,6 +502,7 @@ class Runner:
         if rb["band"] == e_rules.B_FA:
             out["f_a_possible"] = rb["f_a_possible"]
         self._write("judge", dict(out, winner=win, strength=s, e0_strength=sp.e0_strength, seeds=seeds,
+                                  record_only_changed_since_even=record_only_changed,
                                   aggregate=dict(winner=aw, e0=ae), pairs=dict(winner=pw, e0=pe),
                                   kc_jaccard=dict(winner=[p["kc_jaccard"] for p in pw],
                                                   e0=[p["kc_jaccard"] for p in pe]),

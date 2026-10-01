@@ -67,3 +67,15 @@ def test_cache_roundtrip(tmp_path, monkeypatch):
     assert c.get_or_compute("oracle", {"x": 1}, f, []) == {"v": 3}
     assert calls == [1] and c.hits == 1 and c.misses == 1
     assert c.get("oracle", {"x": 2}) is None
+
+def test_guard_refuses_symlink_escape(tmp_path, monkeypatch):
+    """Final review 10: realpath on both sides, so results/encoder/<link> pointing outside is refused."""
+    root, outside = tmp_path / "repo", tmp_path / "outside"
+    (root / "results/encoder").mkdir(parents=True)
+    outside.mkdir()
+    (root / "results/encoder/link").symlink_to(outside, target_is_directory=True)
+    monkeypatch.chdir(root)
+    with pytest.raises(SystemExit):
+        e_store.write_json("results/encoder/link/x.json", {"a": 1}, [])
+    assert not (outside / "x.json").exists()
+    e_store.write_json("results/encoder/ok.json", {"a": 1}, [])        # a real path inside still writes

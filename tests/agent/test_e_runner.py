@@ -18,6 +18,9 @@ INFO = dict(receptor_counts={g: 1 + i % 5 for i, g in enumerate(GLOMS)}, c_norm=
 ORACLE = dict(readout={"A": "MBON13", "P": "MBON05"}, z={"A": (10.0, 9.0), "P": (26.0, 19.0)},
               types=["MBON13", "MBON18", "MBON05", "MBON21"])
 CLEAN = dict(commit="test", dirty_hashed=[], dirty_other=[])
+SUMMARY_CLEAN = dict(tracked=True, dirty=False, judge_commits=[])
+INPUTS = {"data/malecns.npz": "npzsha", "results/summary/m0d.json": "m0dsha"}
+CODE = dict(key="codekey")
 
 ST, _MI, _MON, MOVE = pool_vocabulary()
 OPPS = sorted({tuple(sorted(v)) for v in ST.values()})
@@ -67,6 +70,7 @@ class FakeSituations:
 
 FAKE_SITUATIONS = FakeSituations()
 _real_build = e_codebook.build
+_real_summary_git = e_runner.summary_git          # the autouse fixture patches e_runner.summary_git
 
 
 @functools.lru_cache(maxsize=None)
@@ -91,13 +95,15 @@ def _patch(monkeypatch):
     monkeypatch.setattr(e_runner.e_codebook, "build", fast_build)
     monkeypatch.setattr(e_runner, "git_state", lambda: dict(CLEAN))
     monkeypatch.setattr(e_runner, "provenance", lambda args: dict(sha256={}, args=args))
+    monkeypatch.setattr(e_runner, "summary_git", lambda path: dict(SUMMARY_CLEAN))
 
 
-def runner(tmp_path, monkeypatch, sm=False, testable=None, info=INFO, situations=FAKE_SITUATIONS):
+def runner(tmp_path, monkeypatch, sm=False, testable=None, info=INFO, situations=FAKE_SITUATIONS, inputs=INPUTS,
+           code=CODE):
     monkeypatch.chdir(tmp_path)
     spec = smoke(SPEC) if sm else SPEC
     return Runner(ScriptedMeasurer(testable=testable or {}, n_report=len(spec.even_report_seeds)), info, spec,
-                  oracle=ORACLE, situations=situations, smoke=sm)
+                  oracle=ORACLE, situations=situations, smoke=sm, inputs=inputs, code=code)
 
 
 def _upto(r, last):
@@ -128,6 +134,9 @@ def test_full_chain_to_stop_even_low(tmp_path, monkeypatch):
     for k in ("3", "2"):
         assert cbk["k"][k]["status"] == "OK" and cbk["k"][k]["C"] == 16 and cbk["k"][k]["colouring_digest"]
         assert len(cbk["k"][k]["colouring"]) == 96 and cbk["k"][k]["digest"]
+        rs = cbk["k"][k]["anneal"]["restarts"]                                       # final review 7
+        assert [x["r"] for x in rs] == [0] and {"J", "dup", "soft", "logvar"} <= set(rs[0])
+    assert all(b["code_key"] == "codekey" and b["inputs"] == INPUTS for b in doc.values())   # final review 3
     assert all(c["overlap"] == {"cross": 0, "within": 0} for c in cbk["configs"].values())
     assert all(b["git"] == CLEAN and "written_at" in b for b in doc.values())
     with pytest.raises(SystemExit):
@@ -164,7 +173,7 @@ def test_capped_strengths_never_measured(tmp_path, monkeypatch):
             assert cfg["table"][s]["measured"] == (why != "ORN_CAP")
     for cfg in blk["configs"].values():
         assert cfg["s"] == 0.175 and cfg["n_odours"] == 112 and cfg["n_single"] == 32 and cfg["n_dual"] == 80
-        assert cfg["stats_176"] == "not measured"
+        assert cfg["stats_176"] == "not measured (spec 4.3 decision 95258dd)"          # final review 11
 
 
 def _selected_testable():
@@ -293,3 +302,187 @@ def test_cli_refuses_outside_repo_root(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     assert mod.main(["--stage", "set"]) == 2
     assert not (tmp_path / "results").exists()
+
+
+# ---- final review fixes ------------------------------------------------------------------------------------------
+def _judge_ready(tmp_path, monkeypatch, **kw):
+    r = runner(tmp_path, monkeypatch, testable=_selected_testable(), **kw)
+    _upto(r, "even")
+    return r
+
+
+def _edit_summary(tmp_path, fn):
+    doc = e_store.read_summary()
+    fn(doc)
+    (tmp_path / e_store.SUMMARY).write_text(json.dumps(doc))
+
+
+@pytest.mark.parametrize("state", [dict(dirty=True), dict(tracked=False)])
+def test_stage_refuses_uncommitted_summary(tmp_path, monkeypatch, state):
+    """Final review 4: spec 4.0 — every full-run stage refuses while the summary has uncommitted changes."""
+    r = runner(tmp_path, monkeypatch)
+    r.stage_set()
+    monkeypatch.setattr(e_runner, "summary_git", lambda path: dict(SUMMARY_CLEAN, **state))
+    before = (tmp_path / e_store.SUMMARY).read_text()
+    with pytest.raises(SystemExit):
+        r.stage_drive()
+    with pytest.raises(SystemExit):
+        r.stage_set()
+    assert (tmp_path / e_store.SUMMARY).read_text() == before
+
+
+def test_smoke_ignores_summary_git(tmp_path, monkeypatch):
+    r = runner(tmp_path, monkeypatch, sm=True)
+    monkeypatch.setattr(e_runner, "summary_git", lambda path: dict(SUMMARY_CLEAN, dirty=True, tracked=False))
+    r.stage_set()
+    r.stage_drive()
+
+
+@pytest.mark.parametrize("state", [dict(dirty=True), dict(tracked=False), dict(judge_commits=["abc123"])])
+def test_judge_refuses_summary_not_committed_or_already_judged(tmp_path, monkeypatch, state):
+    """Final review 4: the judge needs a committed, clean summary whose history never held a judge block."""
+    r = _judge_ready(tmp_path, monkeypatch)
+    monkeypatch.setattr(e_runner, "summary_git", lambda path: dict(SUMMARY_CLEAN, **state))
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+    assert "judge" not in e_store.read_summary()
+    assert not any(c[0] == "oracle" and c[1].startswith("judge") for c in r.measurer.calls)     # nothing measured
+
+
+@pytest.mark.parametrize("edit", [lambda d: d["drive"].update(smoke=True), lambda d: d["oc"].pop("smoke")])
+def test_judge_refuses_smoke_blocks(tmp_path, monkeypatch, edit):
+    """Final review 9: a smoke block (or one with no smoke flag) never feeds a judgement."""
+    r = _judge_ready(tmp_path, monkeypatch)
+    _edit_summary(tmp_path, edit)
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+    assert "judge" not in e_store.read_summary()
+
+
+def test_judge_refuses_code_key_or_inputs_change(tmp_path, monkeypatch):
+    """Final review 3: the judge's code key and inputs must be the ones every block (the selection) recorded."""
+    r = _judge_ready(tmp_path, monkeypatch)
+    r.code_key = "other"
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+    r.code_key = CODE["key"]
+    r.inputs = dict(INPUTS, **{"results/summary/m0d.json": "changed"})
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+    r.inputs = {"data/malecns.npz": "npzsha"}                       # m0d.json not hashed at all
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+    r.inputs = dict(INPUTS)
+    _edit_summary(tmp_path, lambda d: d["even"].pop("code_key"))
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+    assert "judge" not in e_store.read_summary()
+
+
+def test_runner_without_code_key_refuses_judge(tmp_path, monkeypatch):
+    r = _judge_ready(tmp_path, monkeypatch, code=None)
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+
+
+def test_judge_provenance_hashed_refuses_record_only_recorded(tmp_path, monkeypatch):
+    """Final review 3: a hashed file whose sha256 changed since block even refuses; a record-only file is recorded."""
+    sha = {"flymon/agent/e_rules.py": "a", "flymon/brain/h4_jobs.py": "b", e_runner.RECORD_ONLY_FILES[0]: "c"}
+    monkeypatch.setattr(e_runner, "provenance", lambda args: dict(sha256=dict(sha), args=args))
+    r = _judge_ready(tmp_path, monkeypatch)
+    sha["flymon/agent/e_rules.py"] = "changed"
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+    sha["flymon/agent/e_rules.py"] = "a"
+    sha[e_runner.RECORD_ONLY_FILES[0]] = "changed"
+    assert r.stage_judge()["band"] == "SELECTED"
+    assert e_store.read_summary()["judge"]["record_only_changed_since_even"] == [e_runner.RECORD_ONLY_FILES[0]]
+
+
+def test_judge_refuses_used_codebook_not_matching_digest(tmp_path, monkeypatch):
+    """Final review 5: the codebook list actually used must hash to winner_digest (digests alone agree here)."""
+    r = _judge_ready(tmp_path, monkeypatch)
+
+    def swap(d):
+        book = d["codebook"]["k"]["3"]["codebook"]
+        book[0], book[1] = book[1], book[0]
+    _edit_summary(tmp_path, swap)
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+    assert "judge" not in e_store.read_summary()
+
+
+def test_hashed_files_and_code_key_files():
+    """Final review 1-2: the code key covers every oracle_job/activity_job dependency; the hashed files cover the
+    modules the track imports and the M0d summary."""
+    import importlib.util
+    from flymon.brain.h3_store import ROOT
+    for f in ("flymon/brain/presentation.py", "flymon/brain/plasticity.py", "flymon/brain/conditioning.py",
+              "flymon/brain/h4_jobs.py", "flymon/brain/k_jobs.py", "flymon/brain/engine_cpu.py"):
+        assert f in e_runner.MEASURE_FILES_E
+    h = set(e_runner.hashed_files())
+    assert set(e_runner.MEASURE_FILES_E) <= h
+    for f in ("flymon/agent/config.py", "flymon/brain/h3_c3.py", "flymon/brain/h4_spec.py", "flymon/brain/k_pairs.py",
+              "flymon/brain/j_store.py", "flymon/brain/j_params.py", "flymon/battle/pool.py",
+              "results/summary/m0d.json", "flymon/agent/e_runner.py", "scripts/run_encoder_grid.py"):
+        assert f in h
+    assert all((ROOT / f).exists() for f in h)
+    spec = importlib.util.spec_from_file_location("run_encoder_grid", ROOT / "scripts/run_encoder_grid.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.measure_files() == e_runner.MEASURE_FILES_E
+
+
+def _git(cwd, *args):
+    import subprocess
+    subprocess.run(["git", "-C", str(cwd), *args], check=True, capture_output=True)
+
+
+def test_summary_git_on_a_temp_repo(tmp_path, monkeypatch):
+    """Final review 4: the real git helper — untracked, dirty, clean, and a judge block anywhere in history."""
+    _git(tmp_path, "init", "-q")
+    _git(tmp_path, "config", "user.email", "t@t")
+    _git(tmp_path, "config", "user.name", "t")
+    monkeypatch.chdir(tmp_path)
+    p = tmp_path / e_store.SUMMARY
+    p.parent.mkdir(parents=True)
+    p.write_text(json.dumps({"set": {}}))
+    g = _real_summary_git(e_store.SUMMARY)
+    assert not g["tracked"] and g["dirty"] and g["judge_commits"] == []
+    _git(tmp_path, "add", e_store.SUMMARY)
+    _git(tmp_path, "commit", "-qm", "set")
+    assert _real_summary_git(e_store.SUMMARY) == dict(tracked=True, dirty=False, judge_commits=[])
+    p.write_text(json.dumps({"set": {}, "judge": {}}))
+    assert _real_summary_git(e_store.SUMMARY)["dirty"]
+    _git(tmp_path, "commit", "-qam", "judge")
+    p.write_text(json.dumps({"set": {}}))                          # judge block removed again later
+    _git(tmp_path, "commit", "-qam", "drop judge")
+    g = _real_summary_git(e_store.SUMMARY)
+    assert g["tracked"] and not g["dirty"] and len(g["judge_commits"]) == 1
+
+
+def _cli():
+    import importlib.util
+    from flymon.brain.h3_store import ROOT
+    spec = importlib.util.spec_from_file_location("run_encoder_grid", ROOT / "scripts/run_encoder_grid.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_cli_e0_strength_check():
+    """Final review 6: E0's strength must be the M0d H.4 strength recorded in results/summary/m0d.json."""
+    from flymon.brain.h3_store import ROOT
+    mod = _cli()
+    m0d = json.loads((ROOT / "results/summary/m0d.json").read_text())
+    assert mod.check_e0_strength(SPEC, m0d) is None
+    assert mod.check_e0_strength(dataclasses.replace(SPEC, e0_strength=0.5), m0d)
+
+
+def test_cli_exit_codes():
+    """Final review 8: judge INCOMPLETE exits 3; STOP outcomes and READ bands exit 0."""
+    mod = _cli()
+    assert mod.exit_code("judge", dict(status="INCOMPLETE", band=None)) == 3
+    assert mod.exit_code("judge", dict(status="READ", band="B_Tb")) == 0
+    assert mod.exit_code("even", dict(outcome="STOP_EVEN_LOW")) == 0
+    assert mod.exit_code("set", dict(outcome="STOP_SET_SHORT")) == 0

@@ -129,7 +129,14 @@ def test_incremental_anneal_matches_full_reference(k):
     import dataclasses
     sp = dataclasses.replace(SPEC, anneal_iters=400, anneal_restarts=2)
     start, alpha = _start(k)
-    assert cb.anneal(start, ADJ, alpha, DRIVE, k, sp) == _anneal_full_reference(start, ADJ, alpha, DRIVE, k, sp)
+    got = cb.anneal(start, ADJ, alpha, DRIVE, k, sp)
+    restarts = got.pop("restarts")
+    assert got == _anneal_full_reference(start, ADJ, alpha, DRIVE, k, sp)
+    # final review 7: every restart's (r, J, dup, soft, logvar) is recorded; the adopted one is the smallest J
+    assert [x["r"] for x in restarts] == [0, 1] and set(restarts[0]) == {"r", "J", "dup", "soft", "logvar"}
+    best = min(restarts, key=lambda x: (x["J"], x["r"]))
+    assert (best["r"], best["J"], best["dup"], best["soft"], best["logvar"]) == \
+        (got["restart"], got["J"], got["dup"], got["soft"], got["logvar"])
 
 
 def test_alphabet_rejects_other_k():

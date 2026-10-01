@@ -11,8 +11,9 @@
     ... --smoke [--workers 4]                                       # smoke seeds, results/encoder/smoke only
 
 Writes results/summary/encoder_grid.json (smoke: results/encoder/smoke/summary.json) and the cache under
-results/encoder/. Exit 0 for every recorded outcome (a STOP is a result, not an error) and prints its sentence;
-exit 2 on a refusal (wrong cwd, connectome sha256, chain)."""
+results/encoder/. Exit 0 for every recorded outcome (a STOP is a result, not an error; a READ band) and prints its
+sentence; exit 3 when the judge is INCOMPLETE (not yet a judgement, nothing written: resume); exit 2 on a refusal
+(wrong cwd, connectome sha256, E0 strength, chain)."""
 from __future__ import annotations
 
 import argparse
@@ -49,10 +50,26 @@ class Situations:
         return e_pairs.used_situations(self.pops, self.spec)
 
 
+EXIT_INCOMPLETE = 3
+
+
 def measure_files() -> tuple:
-    from flymon.brain.h3_store import MEASURE_FILES
-    return tuple(MEASURE_FILES) + ("flymon/brain/h4_jobs.py", "flymon/brain/k_jobs.py", "flymon/brain/h4_formula.py",
-                                   "flymon/agent/e_measure.py", "flymon/agent/e_store.py")
+    """The cache code key's files (e_runner.MEASURE_FILES_E: every file oracle_job and activity_job depend on)."""
+    from flymon.agent.e_runner import MEASURE_FILES_E
+    return MEASURE_FILES_E
+
+
+def check_e0_strength(spec, m0d: dict) -> str | None:
+    """E0's judgement strength must be the M0d H.4 strength (m0d["h4"]["spec"]["h3"]["strength"]); else the reason."""
+    want = m0d["h4"]["spec"]["h3"]["strength"]
+    if float(spec.e0_strength) != float(want):
+        return f"spec e0_strength {spec.e0_strength} is not the M0d H.4 strength {want}"
+    return None
+
+
+def exit_code(stage: str, out: dict) -> int:
+    """0 for every recorded outcome (STOP, READ band); 3 for a judge that is INCOMPLETE (nothing written)."""
+    return EXIT_INCOMPLETE if stage == "judge" and out.get("status") == "INCOMPLETE" else 0
 
 
 def main(argv=None) -> int:
@@ -87,6 +104,10 @@ def main(argv=None) -> int:
     spec = smoke(SPEC) if a.smoke else SPEC
     cfg = load_c3_config(SPEC.m0d_summary)
     m0d = json.loads(Path(SPEC.m0d_summary).read_text())
+    why = check_e0_strength(SPEC, m0d)
+    if why:
+        print(f"refusing: {why}", file=sys.stderr)
+        return 2
     types = m0d["h4"]["pools"]["A"] + m0d["h4"]["pools"]["P"]
     pops = Populations.from_connectome(Connectome.load(NPZ))
     gloms, c_norm = h3_spec.all51_glomeruli(pops)
@@ -94,7 +115,8 @@ def main(argv=None) -> int:
                 glomeruli=gloms, n_kc=len(pops.kc), max_rate_hz=float(cfg.params.max_rate_hz),
                 cap_hz=float(odor_real.cap_hz(cfg.params)))
     oracle = dict(readout=dict(cfg.readout), z=dict(cfg.z), types=types)
-    inputs = {NPZ: sha256_file(NPZ), SPEC.m0d_summary: sha256_file(SPEC.m0d_summary)}
+    assert (NPZ, SPEC.m0d_summary) == e_runner.INPUT_FILES
+    inputs = {f: sha256_file(f) for f in e_runner.INPUT_FILES}
     code = code_key(NPZ, files=measure_files())
 
     needs_pool = a.stage in ("drive", "strength", "even", "judge")
@@ -105,7 +127,7 @@ def main(argv=None) -> int:
     try:
         m = EMeasurer(pool, ECache(f"{spec.raw_dir}/cache", code), cfg.params, info["n_kc"], spec)
         r = e_runner.Runner(m, info, spec, oracle=oracle, situations=Situations(pops, spec), smoke=a.smoke,
-                            inputs=inputs)
+                            inputs=inputs, code=code)
         out = getattr(r, f"stage_{a.stage}")()
     finally:
         if pool is not None:
@@ -114,7 +136,7 @@ def main(argv=None) -> int:
                                              default=str)
     print(f"{a.stage}: {out.get('outcome', out.get('band', out.get('status')))}")
     print(line)
-    return 0
+    return exit_code(a.stage, out)
 
 
 if __name__ == "__main__":

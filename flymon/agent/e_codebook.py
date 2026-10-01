@@ -219,7 +219,7 @@ class _AnnealState:
 def anneal(start, adj, alpha, drive, k, spec) -> dict:
     """Moves swap one glomerulus of one cell for an alphabet glomerulus not in it; moves creating a hard violation
     are rejected. Same accept rule and RNG call order as a full recompute; the objective is updated incrementally."""
-    best = None
+    best, restarts = None, []
     for r in range(spec.anneal_restarts):
         rng = np.random.default_rng(spec.anneal_seed0 + 1000 * k + r)
         st = _AnnealState(start, adj, alpha, drive, spec)
@@ -239,9 +239,10 @@ def anneal(start, adj, alpha, drive, k, spec) -> dict:
                 st.accept()
         book = [tuple(w) for w in st.book]
         J, d, s, v = objective(book, adj, drive, spec)
+        restarts.append(dict(r=r, J=J, dup=d, soft=s, logvar=v))
         if best is None or J < best["J"]:
             best = dict(codebook=book, J=J, restart=r, dup=d, soft=s, logvar=v)
-    return best
+    return dict(best, restarts=restarts)        # spec 6: every restart's objective (재시작별 목적값)
 
 
 def digest(book) -> str:
@@ -278,4 +279,4 @@ def build(drive: dict, k: int, spec, unique_check=None) -> dict:
     uniq = (unique_check or (lambda b: dup_pairs(b) == 0))(book)
     status = "OK" if (dup_pairs(book) == 0 and uniq) else "NOT_UNIQUE"
     return dict(out, status=status, codebook=[list(w) for w in book],
-                anneal={kk: an[kk] for kk in ("J", "restart", "dup", "soft", "logvar")}, digest=digest(book))
+                anneal={kk: an[kk] for kk in ("J", "restart", "dup", "soft", "logvar", "restarts")}, digest=digest(book))
