@@ -232,9 +232,75 @@ def test_pre_state_strata_and_state_conditional():
 def test_sentences():
     ok = sentence(p_judge(make_rows(), ZU, C1, T))
     assert ok.startswith("P: LEARNS_CONFIRMATORY") and "확인 시험" in ok and "발견이 아니라 재현" in ok and "C3" in ok and "r2(X = dDL)" in ok
-    for r in (dict(effect={"r1": 0.0, "r2": 0.0}), dict(effect={"r1": 2.4, "r2": 0.0})):
-        s = sentence(p_judge(make_rows(**r), ZU, C1, T))
-        assert "재현" in s and "확인 시험" in s
+    assert "실제 냄새" in ok and "처벌 쪽" in ok and "4:1 대 δ-DL" in ok
+    for r in (dict(effect={"r1": 0.0, "r2": 0.0}), dict(effect={"r1": 2.4, "r2": 0.0}), dict(effect={"r1": 0.6, "r2": 0.6})):
+        res = p_judge(make_rows(**r), ZU, C1, T)
+        s = sentence(res)
+        assert "재현" in s and "확인 시험" in s and "실제 냄새" in s and "처벌 쪽" in s and "4:1 대 δ-DL" in s
+    assert res["label"] == INCONCLUSIVE and sentence(res).startswith("P: INCONCLUSIVE")
     rows = make_rows()
     rows.pop()
     assert sentence(p_judge(rows, ZU, C1, T)).startswith("P INVALID:")
+
+
+# ---- Task 4: the operating characteristic (P.6.4) and the literal guard
+import ast  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+from flymon.brain.o_spec import SPEC as O_SPEC  # noqa: E402
+from flymon.brain.p_rules import OC_RECORDED, null_shift, o2_vectors, oc_run, oc_sentence  # noqa: E402
+
+ROOT = Path(__file__).resolve().parents[2]
+TO = replace(T, oc_draws=40)
+
+
+def make_o2_rows(effect=None, n=16, jitter=0.4):
+    """O2-shaped rows (O's pairs, all four arms, seeds 22_001_000 + i): the punish arm lowers A_X by 2 + effect[x] + j."""
+    effect = effect or {"4:1": 2.0, "dDL": 2.4}
+    out = []
+    for x, y, _ in O_SPEC.o2_pairs:
+        for a, pu, pl, dz in O_SPEC.o2_arms:
+            for i in range(n):
+                s = O_SPEC.o2_seed0 + i
+                j = jitter * ((i % 4) - 1.5)
+                ax = {"plastic": 2.0, "frozen": 0.0, "punish": 2.0 + effect[x] + j, "da_zero": 0.0}[a]
+                out.append(dict(x=x, y=y, arm=a, seed=s, punish=pu, plastic=pl, da_zero=dz,
+                                pre={"x": _probe(s), "y": _probe(s)},
+                                post={"x": _probe(s, A=20.0 - ax), "y": _probe(s)}))
+    return out
+
+
+def test_o2_vectors_map_each_direction_to_the_o2_x():
+    vec = o2_vectors(make_o2_rows(), ZU, T, O_SPEC)
+    assert vec["r1"]["x"] == "4:1" and vec["r1"]["o2_y"] == "1:4" and vec["r1"]["y_matches"] is False
+    assert vec["r2"]["x"] == "dDL" and vec["r2"]["o2_y"] == "4:1" and vec["r2"]["y_matches"] is True
+    assert np.mean(vec["r1"]["dl"]) == pytest.approx(2.0) and np.mean(vec["r2"]["dl"]) == pytest.approx(2.4)
+    assert vec["r1"]["seeds"] == vec["r2"]["seeds"] == [O_SPEC.o2_seed0 + i for i in range(16)]
+
+
+def test_null_shift_puts_the_mean_at_c1_and_keeps_y():
+    v = o2_vectors(make_o2_rows(), ZU, T, O_SPEC)["r2"]
+    w = null_shift(v, C1)
+    assert np.mean(w["dl"]) == pytest.approx(C1) and np.array_equal(w["dt"], v["dt"])
+    assert np.allclose(w["dl"], w["dt"] - w["ds"]) and np.std(w["dl"]) == pytest.approx(np.std(v["dl"]))
+
+
+def test_oc_run_records_every_scenario_deterministically():
+    vec = o2_vectors(make_o2_rows(), ZU, T, O_SPEC)
+    a, b = oc_run(vec, C1, TO), oc_run(vec, C1, TO)
+    assert json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+    assert a["outcome"] == OC_RECORDED and a["n"] == 16 and a["source_n"] == 16 and a["draws"] == 40
+    assert set(a["scenarios"]) == {"observed", "null_both", "null_r1", "null_r2"}
+    for sc in a["scenarios"].values():
+        assert sum(sc["labels"].values()) == pytest.approx(1.0)
+        assert sc["p_learns"] == sc["labels"][LEARNS_CONFIRMATORY]
+    assert a["scenarios"]["observed"]["p_learns"] == 1.0
+    assert a["false_pass_max"] == max(a["scenarios"][k]["p_learns"] for k in ("null_both", "null_r1", "null_r2"))
+    assert a["false_pass_max"] < 1.0 and a["o2_point"]["r1"]["y_matches"] is False
+    assert "r1은 O2의 X = 4:1 행" in oc_sentence(a)
+
+
+def test_p_rules_holds_no_threshold_literal():
+    tree = ast.parse((ROOT / "flymon/brain/p_rules.py").read_text())
+    nums = {n.value for n in ast.walk(tree) if isinstance(n, ast.Constant) and type(n.value) in (int, float)}
+    assert nums <= {0, 1, 2, 3, 12}, nums           # indices, "at least 2 seeds", reason / sha excerpts

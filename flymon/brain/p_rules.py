@@ -285,4 +285,63 @@ def sentence(res: dict) -> str:
              f"{s['ell_ci'][1]:.3f}], s {s['s']:.3f}, t {s['t']:.3f}" for d, s in res["directions"].items()]
     return (f"P: {res['label']} — " + " / ".join(parts) + f"; c₁ {c1:.3f}. 통과는 발견이 아니라 재현(O2를 본 뒤의 확인 시험, "
             "새 시드, P.0)이다. 연합성은 가소성 규칙(KC 흔적 × 위상 도파민)의 귀결이지 측정이 아니다(P.6.1). 결론은 이 커넥톰 모델(C3)·"
-            "이 쌍·이 절차까지이며 포켓몬 1차 주장의 판정이 아니다(P.1, P.5).")
+            "이 쌍·이 절차까지이며, 범위는 실제 냄새 다른 쌍 하나(4:1 대 δ-DL)의 처벌 쪽 절대 조건화다. "
+            "포켓몬 1차 주장의 판정이 아니다(P.1, P.5).")
+
+
+# ================================================================ the operating characteristic (P.6.4)
+def o2_vectors(rows: list, z: dict, spec, o_spec) -> dict:
+    """O2's per-seed vectors for each P direction: the O2 X equal to the direction's X, arms ① and ③. r1's Y differs
+    in O2 (X = 4:1 ran with Y = 1:4): recorded as y_matches False (P.6.4's stated limitation)."""
+    o2_y = {x: y for x, y, _ in o_spec.o2_pairs}
+    by = defaultdict(lambda: defaultdict(list))
+    for r in rows:
+        by[r["x"]][r["arm"]].append(r)
+    out = {}
+    for d, (x, y) in spec.pairs().items():
+        if x not in o2_y:
+            raise ValueError(f"O2 ran no X = {x}")
+        arms = {a: sorted(by[x][a], key=lambda r: int(r["seed"])) for a in spec.arms}
+        out[d] = dict(arm_vectors(arms, z, spec), x=x, y=y, o2_y=o2_y[x], y_matches=o2_y[x] == y)
+    return out
+
+
+def null_shift(v: dict, c1: float) -> dict:
+    """The null at c1: X's own change ds moved by mean(dl) - c1 on every seed, Y untouched, so mean(dl) = c1 exactly."""
+    ds = np.asarray(v["ds"], float) + (float(np.mean(v["dl"])) - float(c1))
+    return dict(v, ds=ds, dl=np.asarray(v["dt"], float) - ds)
+
+
+def oc_run(vec: dict, c1: float, spec) -> dict:
+    """P.6.4: oc_draws simulated experiments of n = o2_n_seeds seeds, each resampled with replacement from O2's seeds
+    (one index vector for both directions), judged by judge_vectors with the real bootstrap. Scenarios: observed;
+    null_both (both directions at c1); null_<d> (direction d at c1, the other as observed). Label shares per scenario."""
+    n = spec.o.o2_n_seeds
+    src_n = len(next(iter(vec.values()))["dl"])
+    scen = {"observed": vec, "null_both": {d: null_shift(v, c1) for d, v in vec.items()}}
+    for d in spec.directions:
+        scen[f"null_{d}"] = {e: (null_shift(v, c1) if e == d else v) for e, v in vec.items()}
+    W = boot_weights(n, spec.o.boot_draws, spec.o.boot_seed)
+    rng = np.random.default_rng(spec.oc_seed)
+    counts = {k: Counter() for k in scen}
+    for _ in range(int(spec.oc_draws)):
+        idx = rng.integers(0, src_n, n)
+        for k, vv in scen.items():
+            draw = {d: dict(seeds=list(range(n)), **{f: np.asarray(v[f], float)[idx] for f in ("dl", "ds", "dt")})
+                    for d, v in vv.items()}
+            counts[k][judge_vectors(draw, c1, spec, W)["label"]] += 1
+    m = int(spec.oc_draws)
+    return dict(outcome=OC_RECORDED, n=n, source_n=src_n, draws=m, seed=spec.oc_seed, c1=float(c1),
+                scenarios={k: dict(p_learns=c[LEARNS_CONFIRMATORY] / m, labels={lab: c[lab] / m for lab in LABELS[1:]})
+                           for k, c in counts.items()},
+                false_pass_max=max(counts[k][LEARNS_CONFIRMATORY] / m for k in scen if k != "observed"),
+                o2_point={d: dict(ell=float(np.mean(v["dl"])), s=float(np.mean(v["ds"])), t=float(np.mean(v["dt"])),
+                                  x=v.get("x"), y=v.get("y"), o2_y=v.get("o2_y"), y_matches=v.get("y_matches"))
+                          for d, v in vec.items()})
+
+
+def oc_sentence(res: dict) -> str:
+    sc = res["scenarios"]
+    nulls = ", ".join(f"{k} {v['p_learns']:.3f}" for k, v in sc.items() if k != "observed")
+    return (f"P OC: n = {res['n']}에서 LEARNS_CONFIRMATORY 확률 — 관측 {sc['observed']['p_learns']:.3f}, c₁ 귀무 {nulls} "
+            f"(실험 {res['draws']}회). r1은 O2의 X = 4:1 행(Y = 1:4)으로 대신했다(P.6.4). n은 바꾸지 않는다.")
