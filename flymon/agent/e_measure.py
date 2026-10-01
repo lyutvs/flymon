@@ -103,6 +103,11 @@ class EMeasurer:
                     report_seeds=[int(s) for s in seeds["report"]], alphas=[float(a) for a in self.spec.alphas],
                     strength=float(strength), **self._windows(), punish_type=PUNISH_TYPE, reward_type=REWARD_TYPE)
 
+    def oracle_key(self, row: dict, strength: float, readout: dict, z: dict, types, seeds: dict) -> tuple:
+        """(cache key, cache file path) of one pair's oracle entry — the run manifest's record (spec 5.6)."""
+        kw = self._oracle_kw(row, strength, readout, z, types, seeds)
+        return self.cache.key("oracle", kw), str(self.cache._path("oracle", kw))
+
     def oracle(self, rows: list, strength: float, readout: dict, z: dict, types, seeds: dict, tag: str) -> list:
         """[row + oracle result] in row order; one cache entry per pair; missing pairs run in rounds of
         pool.n_workers, each round's results cached before the next. Never returns a partial list."""
