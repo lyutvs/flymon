@@ -77,3 +77,10 @@ def test_smoke_changes_scale_only():
             assert getattr(SM, f.name) == getattr(SPEC, f.name), f.name
     assert len(SM.o1_g_grid) == 2 and set(SM.o1_g_grid) <= set(SPEC.o1_g_grid)
     assert SM.boot_draws == SPEC.smoke_boot_draws
+
+
+def test_ci_level_is_read_from_n_and_not_restated():
+    from pathlib import Path
+    assert SPEC.ci_level == N.ci_level
+    src = (Path(__file__).resolve().parents[2] / "flymon" / "brain" / "o_spec.py").read_text()
+    assert "0.95" not in src

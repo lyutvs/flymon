@@ -29,7 +29,7 @@ class OSpec:
     auc_min: float = 0.9                           # (b) APL, (c) KC
     nature_share: tuple = (2, 3)                   # >= 2/3 of mixed cells
     path_ratio: float = 0.25                       # O.7.2-3: q_c <= 0.25 q_on
-    ci_level: float = 0.95
+    ci_level: float = N_SPEC.ci_level
     slope_ci_level: float = 0.99                   # O.7.2-4: Bonferroni over five stimuli
     flat_range: float = 0.15
     phi_band: tuple = (0.1, 0.9)                   # O.2 record: cell pairs with silent share in [0.1, 0.9]
