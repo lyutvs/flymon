@@ -182,3 +182,59 @@ def test_zero_variance_effects_are_judged_not_crashed():
     assert p_judge(make_rows(jitter=0.0), ZU, C1, T)["label"] == LEARNS_CONFIRMATORY
     res = p_judge(make_rows(effect={"r1": 0.0, "r2": 0.0}, jitter=0.0), ZU, C1, T)
     assert res["label"] == NO_LEARNING and res["directions"]["r1"]["ell_ci"] == [0.0, 0.0]
+
+
+# ---- Task 3: the records (P.3, P.6.2, P.6.3) and the sentence
+from flymon.brain.p_rules import FLIP_NOTE, sentence  # noqa: E402
+
+
+def test_raw_and_nonassociative_records():
+    rec = p_judge(make_rows(), ZU, C1, T)["records"]["r1"]
+    raw = rec["raw"]
+    assert raw["arms"]["punish"]["dA_x"]["mean"] == pytest.approx(-4.4)
+    assert raw["arms"]["frozen"]["dA_x"]["mean"] == 0.0 and raw["arms"]["plastic"]["dA_y"]["mean"] == 0.0
+    assert raw["punish_minus_plastic"]["dA_x"]["mean"] == pytest.approx(-2.4)
+    assert raw["nonassociative"]["d_dV"]["mean"] == pytest.approx(-2.0)
+    assert raw["nonassociative"]["dV_X"]["mean"] == pytest.approx(-2.0)
+    assert rec["da_integral"]["punish"] == {"PPL105": 1.0} and rec["da_integral"]["plastic"] == {"PPL105": 0.0}
+    assert rec["weights_frac"]["frozen"]["all"] == 1.0 and rec["frozen_probes_identical"] is True
+
+
+def test_no_flip_no_reanalysis():
+    f = p_judge(make_rows(), ZU, C1, T)["flip"]
+    assert f["triggered"] is False and f["reanalysis"] is None and f["limit"] == T.o.flip_max_frac * 16
+
+
+def test_flips_give_an_unsuffixed_reanalysis_and_leave_the_label_alone():
+    res = p_judge(make_rows(flip={0, 1, 2, 3, 5}), ZU, C1, T)
+    f = res["flip"]
+    assert f["triggered"] is True and f["flips"]["r1"]["plastic"] == [T.seeds[i] for i in (0, 1, 2, 3, 5)]
+    assert f["dropped"] == [T.seeds[i] for i in (0, 1, 2, 3, 5)]
+    assert f["reanalysis"]["label"] == LEARNS_CONFIRMATORY and f["reanalysis"]["directions"]["r1"]["n"] == 11
+    assert res["label"] == LEARNS_CONFIRMATORY and "SENSITIVE" not in json.dumps(res) and f["note"] == FLIP_NOTE
+
+
+def test_flips_leaving_fewer_than_two_seeds_give_no_reanalysis():
+    f = p_judge(make_rows(flip=set(range(15))), ZU, C1, T)["flip"]
+    assert f["triggered"] is True and f["reanalysis"] is None
+
+
+def test_pre_state_strata_and_state_conditional():
+    rec = p_judge(make_rows(silent_pre={0, 1, 2, 3}), ZU, C1, T)["records"]["r2"]
+    st = rec["strata"]
+    assert st["pre_identical"] is True and st["silent"]["n"] == 4 and st["firing"]["n"] == 12
+    assert st["firing"]["stats"]["outcome"] == CONFIRMED and st["silent"]["stats"] is not None
+    assert rec["state_conditional"]["n"] == 12
+    one = p_judge(make_rows(silent_pre={0}), ZU, C1, T)["records"]["r2"]["strata"]["silent"]
+    assert one["n"] == 1 and one["stats"] is None
+
+
+def test_sentences():
+    ok = sentence(p_judge(make_rows(), ZU, C1, T))
+    assert ok.startswith("P: LEARNS_CONFIRMATORY") and "확인 시험" in ok and "발견이 아니라 재현" in ok and "C3" in ok and "r2(X = dDL)" in ok
+    for r in (dict(effect={"r1": 0.0, "r2": 0.0}), dict(effect={"r1": 2.4, "r2": 0.0})):
+        s = sentence(p_judge(make_rows(**r), ZU, C1, T))
+        assert "재현" in s and "확인 시험" in s
+    rows = make_rows()
+    rows.pop()
+    assert sentence(p_judge(rows, ZU, C1, T)).startswith("P INVALID:")
