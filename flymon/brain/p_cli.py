@@ -11,7 +11,8 @@
   measurement code (p_measure.MEASURE_FILES), so only a measurement-code change refreshes entries (reading 11).
 - Cache roots: a --smoke run under results/p/smoke/, a declared run under results/p/run/ (default); an --out or
   --summary crossing between the two is refused both ways; a declared run's summary is results/summary/p_learning.json
-  only, and when it holds block <name> or <name>_invalid it must be committed and clean (check_committed) first.
+  only, and whenever that file exists (whatever blocks it holds) it must be committed and clean (check_committed)
+  first, so deleting the P blocks by hand never reopens a run; a first run with no summary file has nothing to check.
   The cache key covers MEASURE_FILES, the manifest HASHED_FILES; a missing hashed file is a refusal.
 - O2's per-seed source (P.6.4): block o2's run only; both O2 X rows (4:1, δ-DL) must carry identical seeds in the
   same order before the OC runs. The OC's null (p_rules.null_shift) is stated as OC_NULL in the record.
@@ -253,9 +254,10 @@ def main_stage(name: str, argv, body, hooks: dict, *, spec=None, require_root: b
     except (OSError, ValueError) as e:
         return refuse(f"no usable summary at {summary}: {e}")
     held = [b for b in (name, f"{name}_invalid") if isinstance(doc, dict) and b in doc]
-    if not a.smoke and held:                      # the reruns are counted on the committed summary, not a working copy
-        why = hooks["check_committed"](summary, held)
-        if why:
+    if not a.smoke and summary.exists():          # reruns are counted on the committed summary, not a working copy;
+        blocks = held or (list(doc) if isinstance(doc, dict) else [])   # any existing real summary must be committed
+        why = hooks["check_committed"](summary, blocks)   # and clean, so deleting P blocks by hand never reopens a
+        if why:                                           # run (P.6.5); a first run has no file to check
             return refuse(why)
     prior = None
     if not a.smoke and name in doc:

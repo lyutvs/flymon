@@ -140,18 +140,16 @@ def test_o2_source_states_the_oc_null_and_returns_rows_in_key_order(tmp_path):
 
 
 def test_code_keys_cover_measure_files_for_the_cache_and_hashed_files_for_the_manifest(monkeypatch):
-    seen, root = [], Path(__file__).resolve().parents[2]
-    monkeypatch.setattr(p_cli, "HASHED_FILES", tuple(f for f in p_cli.HASHED_FILES if (root / f).exists()))  # Task 7
+    seen = []
     monkeypatch.setattr(p_cli, "code_key", lambda npz, files: seen.append(files) or {"key": str(len(seen))})
     key, manifest = p_cli.code_keys("x.npz")
     assert seen == [p_cli.MEASURE_FILES, p_cli.HASHED_FILES] and key == {"key": "1"} and manifest == {"key": "2"}
     assert "flymon/brain/p_measure.py" in p_cli.MEASURE_FILES
 
 
-def test_every_p_hashed_file_but_the_scripts_exists():
+def test_every_p_hashed_file_exists():
     root = Path(__file__).resolve().parents[2]
-    missing = [f for f in p_cli.HASHED_FILES if not (root / f).exists()]
-    assert set(missing) <= {"scripts/run_p.py", "scripts/p_oc.py"}          # Task 7 adds the two scripts
+    assert [f for f in p_cli.HASHED_FILES if not (root / f).exists()] == []   # Task 7 added the two scripts
 
 
 CLEAN = lambda files: dict(commit="x", dirty_hashed=[], dirty_other=[])   # noqa: E731
@@ -300,3 +298,24 @@ def test_a_summary_holding_a_p_block_must_be_committed_first(at_tmp, capsys, doc
     assert _stage(["--rerun-after-invalid"], check_committed=committed) == 2
     assert "uncommitted" in capsys.readouterr().err and json.loads(p.read_text()) == doc
     assert asked == [(Path("results/summary/p_learning.json"), list(doc))]
+
+
+# ---- Task 7 ruling: a declared run needs an existing real summary committed and clean, whatever blocks it holds
+@pytest.mark.parametrize("doc", [{}, {"oc": {"outcome": "RECORDED", "run_id": "oc1"}}])
+def test_deleting_every_p_block_by_hand_does_not_reopen_a_declared_run(at_tmp, capsys, doc):
+    p = _real(doc)                                   # block p (and p_invalid) removed by hand: the summary is dirty
+    asked, seen = [], []
+    committed = lambda path, blocks: asked.append((Path(path), list(blocks))) or "has uncommitted changes"  # noqa
+    assert _stage([], _body(seen=seen), check_committed=committed) == 2
+    assert "uncommitted" in capsys.readouterr().err and json.loads(p.read_text()) == doc and seen == []
+    assert asked == [(Path("results/summary/p_learning.json"), list(doc))]
+    assert _stage([], _body(seen=seen)) == 0 and len(seen) == 1          # committed and clean: the run goes ahead
+
+
+def test_a_first_declared_run_without_a_summary_and_smoke_need_no_commit_check(at_tmp):
+    never = lambda path, blocks: pytest.fail("no summary file / smoke: nothing to check")  # noqa: E731
+    assert _stage(["--smoke"], check_committed=never) == 0
+    assert _stage(["--smoke"], _body("INVALID", 5), check_committed=never) == 5      # the smoke summary now exists
+    assert not Path("results/summary/p_learning.json").exists()
+    assert _stage([], check_committed=never) == 0
+    assert json.loads(Path("results/summary/p_learning.json").read_text())["p"]["smoke"] is False
