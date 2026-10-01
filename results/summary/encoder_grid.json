@@ -1,0 +1,2163 @@
+{
+ "set": {
+  "code_key": "6d88ddb2a3c46bf5eaa90ded16cfcebc8bec917ad090120d03ecb48bccc616d4",
+  "digest_e0_a": "78509547f571ec8ddbd0b2b575d989f761a547b2b52a48cc89bd0e8fe7c3b5c1",
+  "digest_e0_b": "4b9bccc9a640d8affb36754f862f8ed67ea04c0b07e64f3d1529c57c6fe1ea3f",
+  "digest_keys": "33be39a1c5b086a7034e941ad20f4fbe055ce0708bc84ea6e138ba8fe44e028e",
+  "git": {
+   "commit": "28e4787a7209c1ff2a78eeb6cdfc0285b5c85a22",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "inputs": {
+   "data/malecns.npz": "ff5ffa885d9e0d2e31258fab6b5a613e602f644f6f9e1257c8ba1b49e4247d88",
+   "results/summary/m0d.json": "64f2c0bb804c613c4af271e099ae4e076610e17305b22fcf1d85ed6fa5a8b564"
+  },
+  "last_turn": 103,
+  "n_a": 32,
+  "n_b": 21,
+  "outcome": "OK",
+  "provenance": {
+   "args": {
+    "smoke": false,
+    "stage": "set"
+   },
+   "argv": [
+    "scripts/run_encoder_grid.py",
+    "--stage",
+    "set",
+    "--workers",
+    "16"
+   ],
+   "commit": "28e4787a7209c1ff2a78eeb6cdfc0285b5c85a22",
+   "dirty": [],
+   "sha256": {
+    "docs/superpowers/specs/2026-10-01-encoder-redesign-design.md": "bb6477cf068caa4f1e1bd404e7fa48e8a96a985e334b27690c979de196437025",
+    "flymon/agent/config.py": "cedd7fbdfd052942492df34fc1ded819cfc4f0a4de828b05c006a44f6b089141",
+    "flymon/agent/e_codebook.py": "7f8d62447b7073df2bc41480db57929f6cefb5865ad0dee2bcc6c5ceb9ecb21c",
+    "flymon/agent/e_measure.py": "918c3b820ad953f03b73285e8c82efc5db7639eaa4bd8fd6046396aa400b0711",
+    "flymon/agent/e_pairs.py": "428ff01c76aa36458882a9a5772dbd9899e6b4479332fe58b4e15dc86987b61e",
+    "flymon/agent/e_rules.py": "1feb1e59584a7c98f101b55e86254af74fdb439958c053ca3a3bdf7a4176dce9",
+    "flymon/agent/e_runner.py": "400d19a36a7028225bc466982b0fc98e34de4c278e4b814524f2dd0699bba6c5",
+    "flymon/agent/e_spec.py": "e553c9a3054d1caf0b9cd1137083c1f1653734b4906b739583d5dfac33aa6f84",
+    "flymon/agent/e_store.py": "bf81cb5d9fb64113ac7223a84f0ce5feff6d3e99eb0f35ec4516bc3ca1543c42",
+    "flymon/agent/encode_grid.py": "7d5785b5e8c6e9f054804d6d357f5810630a6e0e36aa91dd9dafc68232a04203",
+    "flymon/battle/pool.py": "ef1bc6e93844eb434ab11d2ba8fb684c4a3cba35e2c2fe76bc41e19c05cb044a",
+    "flymon/brain/circuits.py": "7b149d8195a06f7232097640fd790ef6c610eae41dd575e10ac0f2c12abf65b1",
+    "flymon/brain/conditioning.py": "44de4ce3384c2b7fa321bee121eca48e91f9076edbc41f20fe36ad38ea544552",
+    "flymon/brain/config.py": "613b8c660b8d94410d997835f183397a9caf3670d7dfe69aaccf8fdab6895077",
+    "flymon/brain/connectome.py": "670a4cfad683ddef89d04bb5c3b73441992592c97714af328325bf8f922d0f30",
+    "flymon/brain/d6a.py": "9303db489c7c9a001a31eba30b54705e3cc47c57c3bc54ac87858cb297788d51",
+    "flymon/brain/engine_cpu.py": "939d354ee1cb4c27f219223c5aabc89cb37dfa2ad978f6cd1cf5fc0c33535a5a",
+    "flymon/brain/fly_pool.py": "bed8e773df18cd172c2834f6cbfe1401584416aeb97cc636a88fbba2ad26e091",
+    "flymon/brain/h3_c3.py": "716bd63a1bf7e5c5526ef81779f0702223df69859753c1fc7370bd695d30bb76",
+    "flymon/brain/h3_jobs.py": "0903032c18ec1615ea51f02acee135774904dd595c989a3cdb1b69653474930b",
+    "flymon/brain/h3_measure.py": "b68f72cf172b250a9bfb56245c087545c613151e5772fb65902b4c1e5565b1b7",
+    "flymon/brain/h3_spec.py": "e9f9c0a50ea6f6f8f04715cf7b062e629d519de3e6d29be04b18fab1e1d6e740",
+    "flymon/brain/h3_store.py": "fdfea72e784293410a9b5ae048f39b8953390acef2d2283753c83c12221f3bee",
+    "flymon/brain/h4_formula.py": "20051be1e473981eeb3e9fc8c3ba49c3e1e03c6782c47ef82639fc6a0a6483ef",
+    "flymon/brain/h4_jobs.py": "1e5e09041b2913384a6bb38a86acf91ee0e443a40886d602f996218978edac30",
+    "flymon/brain/h4_pairs.py": "042149c73ff087c156586e1fd4b3d85c077c42f9121953b149205c568ace4c7c",
+    "flymon/brain/h4_spec.py": "65de724924e8bdccc2496dd5fa40c7aaba936f7c4761dc5de13a92df70f420ad",
+    "flymon/brain/j_params.py": "d18285bcbbf835ac4a455398d11086b224ff7e15c68e7296190544de89a7625e",
+    "flymon/brain/j_store.py": "3f9b0d1618229b5071e97889c37d70f359d38ef4ed5c95e638b8ef776ec71748",
+    "flymon/brain/k_jobs.py": "6e52f790ff564ddc784827e79b0c3f0bf7a6d5ed5178c8535a99ef7b9fc7d1ad",
+    "flymon/brain/k_pairs.py": "50bb21e85d673d76e3deb5a52fd1519db29b05b8951ddcb101de10244d1f9eec",
+    "flymon/brain/l_pairs.py": "6da577dabee37eb4e03570ce1b48b5f7ce9c465e3a657f8c8f22c28606e757d5",
+    "flymon/brain/measure.py": "25a7cd321a54dfe8c96f076824f20efb39d83f34ec5a953aaaa89af40a8ad2f3",
+    "flymon/brain/odor_real.py": "47c355211b7104a4f59471b031e158238f6bee459e5bfa98a32eb200e0899945",
+    "flymon/brain/plasticity.py": "fed3ac2f62e97ec45c56a1d93c6ca98d970c5a4a15594d124b2b281eb1cc7ed0",
+    "flymon/brain/pool_bench.py": "668eb17087d57afac7f70ddd8c8db298fcf9b3a410504faec1c76f7410315373",
+    "flymon/brain/presentation.py": "2eab2be0e33f26edd750fe33be47f070d41a026b4ad826c9eefdf1ce14b699a0",
+    "flymon/brain/stimuli.py": "1cf05a7e2ceeee60c5b299065e30a3034199a7a92509227b98c95f763086c642",
+    "flymon/brain/thresholds.py": "12916a2ebfb2aa43e2e3f3de001e480a475e60065ab404b445b07581e559352a",
+    "results/summary/m0d.json": "64f2c0bb804c613c4af271e099ae4e076610e17305b22fcf1d85ed6fa5a8b564",
+    "scripts/run_encoder_grid.py": "621c1bb51ede437c0ee6c770a519d217380b123eb008366fa51c7ef1fa582761",
+    "tests/agent/e_scripted.py": "190d5e5aebbb520102375d787699d8a40759eee7199c76b0f700201137ce6df2",
+    "tests/agent/test_e_runner.py": "e33355e4d6646cf8e899fd0d851ba8019fdb885a2e26bd233a86602c7568e6a8",
+    "uv.lock": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e"
+   }
+  },
+  "rows_a": [
+   {
+    "axis": "a",
+    "move_x": "WATER",
+    "move_y": "ELECTRIC",
+    "opp_x": [
+     "GROUND",
+     "ROCK"
+    ],
+    "opp_y": [
+     "GROUND",
+     "ROCK"
+    ],
+    "turn": 64,
+    "x": "Surf",
+    "y": "Thunderbolt"
+   },
+   {
+    "axis": "a",
+    "move_x": "WATER",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "WATER"
+    ],
+    "opp_y": [
+     "WATER"
+    ],
+    "turn": 65,
+    "x": "Surf",
+    "y": "Psychic"
+   },
+   {
+    "axis": "a",
+    "move_x": "PSYCHIC",
+    "move_y": "ELECTRIC",
+    "opp_x": [
+     "WATER"
+    ],
+    "opp_y": [
+     "WATER"
+    ],
+    "turn": 65,
+    "x": "Psychic",
+    "y": "Thunderbolt"
+   },
+   {
+    "axis": "a",
+    "move_x": "PSYCHIC",
+    "move_y": "GRASS",
+    "opp_x": [
+     "NORMAL"
+    ],
+    "opp_y": [
+     "NORMAL"
+    ],
+    "turn": 66,
+    "x": "Psychic",
+    "y": "Mega Drain"
+   },
+   {
+    "axis": "a",
+    "move_x": "WATER",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "FIRE",
+     "FLYING"
+    ],
+    "opp_y": [
+     "FIRE",
+     "FLYING"
+    ],
+    "turn": 67,
+    "x": "Surf",
+    "y": "Psychic"
+   },
+   {
+    "axis": "a",
+    "move_x": "GROUND",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "FIRE",
+     "FLYING"
+    ],
+    "opp_y": [
+     "FIRE",
+     "FLYING"
+    ],
+    "turn": 67,
+    "x": "Earthquake",
+    "y": "Psychic"
+   },
+   {
+    "axis": "a",
+    "move_x": "ELECTRIC",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "FIRE",
+     "FLYING"
+    ],
+    "opp_y": [
+     "FIRE",
+     "FLYING"
+    ],
+    "turn": 70,
+    "x": "Thunderbolt",
+    "y": "Psychic"
+   },
+   {
+    "axis": "a",
+    "move_x": "ELECTRIC",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "opp_y": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "turn": 71,
+    "x": "Thunderbolt",
+    "y": "Psychic"
+   },
+   {
+    "axis": "a",
+    "move_x": "PSYCHIC",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "FIRE",
+     "FLYING"
+    ],
+    "opp_y": [
+     "FIRE",
+     "FLYING"
+    ],
+    "turn": 75,
+    "x": "Psychic",
+    "y": "Tri Attack"
+   },
+   {
+    "axis": "a",
+    "move_x": "GROUND",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "POISON",
+     "WATER"
+    ],
+    "opp_y": [
+     "POISON",
+     "WATER"
+    ],
+    "turn": 77,
+    "x": "Earthquake",
+    "y": "Strength"
+   },
+   {
+    "axis": "a",
+    "move_x": "WATER",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "POISON",
+     "WATER"
+    ],
+    "opp_y": [
+     "POISON",
+     "WATER"
+    ],
+    "turn": 77,
+    "x": "Surf",
+    "y": "Strength"
+   },
+   {
+    "axis": "a",
+    "move_x": "WATER",
+    "move_y": "GRASS",
+    "opp_x": [
+     "WATER"
+    ],
+    "opp_y": [
+     "WATER"
+    ],
+    "turn": 79,
+    "x": "Surf",
+    "y": "Mega Drain"
+   },
+   {
+    "axis": "a",
+    "move_x": "ELECTRIC",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "FIGHTING"
+    ],
+    "opp_y": [
+     "FIGHTING"
+    ],
+    "turn": 81,
+    "x": "Thunderbolt",
+    "y": "Psychic"
+   },
+   {
+    "axis": "a",
+    "move_x": "PSYCHIC",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "FIGHTING",
+     "WATER"
+    ],
+    "opp_y": [
+     "FIGHTING",
+     "WATER"
+    ],
+    "turn": 85,
+    "x": "Psychic",
+    "y": "Tri Attack"
+   },
+   {
+    "axis": "a",
+    "move_x": "FIRE",
+    "move_y": "GROUND",
+    "opp_x": [
+     "PSYCHIC",
+     "WATER"
+    ],
+    "opp_y": [
+     "PSYCHIC",
+     "WATER"
+    ],
+    "turn": 87,
+    "x": "Flamethrower",
+    "y": "Earthquake"
+   },
+   {
+    "axis": "a",
+    "move_x": "FIRE",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "PSYCHIC",
+     "WATER"
+    ],
+    "opp_y": [
+     "PSYCHIC",
+     "WATER"
+    ],
+    "turn": 87,
+    "x": "Flamethrower",
+    "y": "Strength"
+   },
+   {
+    "axis": "a",
+    "move_x": "GROUND",
+    "move_y": "ROCK",
+    "opp_x": [
+     "FIRE",
+     "FLYING"
+    ],
+    "opp_y": [
+     "FIRE",
+     "FLYING"
+    ],
+    "turn": 88,
+    "x": "Earthquake",
+    "y": "Rock Slide"
+   },
+   {
+    "axis": "a",
+    "move_x": "ROCK",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "FIRE",
+     "FLYING"
+    ],
+    "opp_y": [
+     "FIRE",
+     "FLYING"
+    ],
+    "turn": 88,
+    "x": "Rock Slide",
+    "y": "Strength"
+   },
+   {
+    "axis": "a",
+    "move_x": "PSYCHIC",
+    "move_y": "GRASS",
+    "opp_x": [
+     "WATER"
+    ],
+    "opp_y": [
+     "WATER"
+    ],
+    "turn": 90,
+    "x": "Psychic",
+    "y": "Mega Drain"
+   },
+   {
+    "axis": "a",
+    "move_x": "GRASS",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "POISON",
+     "WATER"
+    ],
+    "opp_y": [
+     "POISON",
+     "WATER"
+    ],
+    "turn": 92,
+    "x": "Mega Drain",
+    "y": "Cut"
+   },
+   {
+    "axis": "a",
+    "move_x": "GROUND",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 93,
+    "x": "Earthquake",
+    "y": "Psychic"
+   },
+   {
+    "axis": "a",
+    "move_x": "ELECTRIC",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "GROUND",
+     "POISON"
+    ],
+    "opp_y": [
+     "GROUND",
+     "POISON"
+    ],
+    "turn": 95,
+    "x": "Thunderbolt",
+    "y": "Psychic"
+   },
+   {
+    "axis": "a",
+    "move_x": "FIRE",
+    "move_y": "GROUND",
+    "opp_x": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 96,
+    "x": "Flamethrower",
+    "y": "Earthquake"
+   },
+   {
+    "axis": "a",
+    "move_x": "FIRE",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 96,
+    "x": "Flamethrower",
+    "y": "Strength"
+   },
+   {
+    "axis": "a",
+    "move_x": "GROUND",
+    "move_y": "ROCK",
+    "opp_x": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "opp_y": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "turn": 98,
+    "x": "Earthquake",
+    "y": "Rock Slide"
+   },
+   {
+    "axis": "a",
+    "move_x": "ROCK",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "opp_y": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "turn": 98,
+    "x": "Rock Slide",
+    "y": "Strength"
+   },
+   {
+    "axis": "a",
+    "move_x": "GROUND",
+    "move_y": "ROCK",
+    "opp_x": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 99,
+    "x": "Earthquake",
+    "y": "Rock Slide"
+   },
+   {
+    "axis": "a",
+    "move_x": "ROCK",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 99,
+    "x": "Rock Slide",
+    "y": "Strength"
+   },
+   {
+    "axis": "a",
+    "move_x": "WATER",
+    "move_y": "GRASS",
+    "opp_x": [
+     "ICE",
+     "WATER"
+    ],
+    "opp_y": [
+     "ICE",
+     "WATER"
+    ],
+    "turn": 101,
+    "x": "Surf",
+    "y": "Mega Drain"
+   },
+   {
+    "axis": "a",
+    "move_x": "WATER",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "PSYCHIC"
+    ],
+    "opp_y": [
+     "PSYCHIC"
+    ],
+    "turn": 102,
+    "x": "Surf",
+    "y": "Strength"
+   },
+   {
+    "axis": "a",
+    "move_x": "FIRE",
+    "move_y": "GROUND",
+    "opp_x": [
+     "WATER"
+    ],
+    "opp_y": [
+     "WATER"
+    ],
+    "turn": 103,
+    "x": "Flamethrower",
+    "y": "Earthquake"
+   },
+   {
+    "axis": "a",
+    "move_x": "FIRE",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "WATER"
+    ],
+    "opp_y": [
+     "WATER"
+    ],
+    "turn": 103,
+    "x": "Flamethrower",
+    "y": "Strength"
+   }
+  ],
+  "rows_b": [
+   {
+    "axis": "b",
+    "move_x": "PSYCHIC",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "WATER"
+    ],
+    "opp_y": [
+     "NORMAL"
+    ],
+    "turn": 65,
+    "x": "Psychic vs Blastoise",
+    "y": "Psychic vs Snorlax"
+   },
+   {
+    "axis": "b",
+    "move_x": "PSYCHIC",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "NORMAL"
+    ],
+    "opp_y": [
+     "PSYCHIC"
+    ],
+    "turn": 66,
+    "x": "Psychic vs Kangaskhan",
+    "y": "Psychic vs Hypno"
+   },
+   {
+    "axis": "b",
+    "move_x": "PSYCHIC",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "FIRE",
+     "FLYING"
+    ],
+    "opp_y": [
+     "GROUND",
+     "POISON"
+    ],
+    "turn": 67,
+    "x": "Psychic vs Charizard",
+    "y": "Psychic vs Nidoking"
+   },
+   {
+    "axis": "b",
+    "move_x": "FIRE",
+    "move_y": "FIRE",
+    "opp_x": [
+     "NORMAL"
+    ],
+    "opp_y": [
+     "PSYCHIC"
+    ],
+    "turn": 68,
+    "x": "Flamethrower vs Kangaskhan",
+    "y": "Flamethrower vs Hypno"
+   },
+   {
+    "axis": "b",
+    "move_x": "ELECTRIC",
+    "move_y": "ELECTRIC",
+    "opp_x": [
+     "FIRE",
+     "FLYING"
+    ],
+    "opp_y": [
+     "GROUND",
+     "POISON"
+    ],
+    "turn": 70,
+    "x": "Thunderbolt vs Charizard",
+    "y": "Thunderbolt vs Nidoking"
+   },
+   {
+    "axis": "b",
+    "move_x": "GROUND",
+    "move_y": "GROUND",
+    "opp_x": [
+     "FIGHTING",
+     "WATER"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 73,
+    "x": "Earthquake vs Poliwrath",
+    "y": "Earthquake vs Exeggutor"
+   },
+   {
+    "axis": "b",
+    "move_x": "WATER",
+    "move_y": "WATER",
+    "opp_x": [
+     "FIGHTING",
+     "WATER"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 73,
+    "x": "Surf vs Poliwrath",
+    "y": "Surf vs Exeggutor"
+   },
+   {
+    "axis": "b",
+    "move_x": "NORMAL",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "FIGHTING",
+     "WATER"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 73,
+    "x": "Strength vs Poliwrath",
+    "y": "Strength vs Exeggutor"
+   },
+   {
+    "axis": "b",
+    "move_x": "GROUND",
+    "move_y": "GROUND",
+    "opp_x": [
+     "POISON",
+     "WATER"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 77,
+    "x": "Earthquake vs Tentacruel",
+    "y": "Earthquake vs Exeggutor"
+   },
+   {
+    "axis": "b",
+    "move_x": "WATER",
+    "move_y": "WATER",
+    "opp_x": [
+     "POISON",
+     "WATER"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 77,
+    "x": "Surf vs Tentacruel",
+    "y": "Surf vs Exeggutor"
+   },
+   {
+    "axis": "b",
+    "move_x": "NORMAL",
+    "move_y": "NORMAL",
+    "opp_x": [
+     "POISON",
+     "WATER"
+    ],
+    "opp_y": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "turn": 77,
+    "x": "Strength vs Tentacruel",
+    "y": "Strength vs Exeggutor"
+   },
+   {
+    "axis": "b",
+    "move_x": "ELECTRIC",
+    "move_y": "ELECTRIC",
+    "opp_x": [
+     "NORMAL"
+    ],
+    "opp_y": [
+     "PSYCHIC"
+    ],
+    "turn": 78,
+    "x": "Thunderbolt vs Kangaskhan",
+    "y": "Thunderbolt vs Hypno"
+   },
+   {
+    "axis": "b",
+    "move_x": "FIRE",
+    "move_y": "FIRE",
+    "opp_x": [
+     "PSYCHIC",
+     "WATER"
+    ],
+    "opp_y": [
+     "GRASS",
+     "POISON"
+    ],
+    "turn": 87,
+    "x": "Flamethrower vs Slowbro",
+    "y": "Flamethrower vs Venusaur"
+   },
+   {
+    "axis": "b",
+    "move_x": "ROCK",
+    "move_y": "ROCK",
+    "opp_x": [
+     "FIRE",
+     "FLYING"
+    ],
+    "opp_y": [
+     "GROUND",
+     "POISON"
+    ],
+    "turn": 88,
+    "x": "Rock Slide vs Charizard",
+    "y": "Rock Slide vs Nidoking"
+   },
+   {
+    "axis": "b",
+    "move_x": "GRASS",
+    "move_y": "GRASS",
+    "opp_x": [
+     "POISON",
+     "WATER"
+    ],
+    "opp_y": [
+     "NORMAL"
+    ],
+    "turn": 92,
+    "x": "Mega Drain vs Tentacruel",
+    "y": "Mega Drain vs Snorlax"
+   },
+   {
+    "axis": "b",
+    "move_x": "ELECTRIC",
+    "move_y": "ELECTRIC",
+    "opp_x": [
+     "GROUND",
+     "POISON"
+    ],
+    "opp_y": [
+     "NORMAL"
+    ],
+    "turn": 95,
+    "x": "Thunderbolt vs Nidoking",
+    "y": "Thunderbolt vs Kangaskhan"
+   },
+   {
+    "axis": "b",
+    "move_x": "PSYCHIC",
+    "move_y": "PSYCHIC",
+    "opp_x": [
+     "GROUND",
+     "POISON"
+    ],
+    "opp_y": [
+     "NORMAL"
+    ],
+    "turn": 95,
+    "x": "Psychic vs Nidoking",
+    "y": "Psychic vs Kangaskhan"
+   },
+   {
+    "axis": "b",
+    "move_x": "FIRE",
+    "move_y": "FIRE",
+    "opp_x": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "opp_y": [
+     "NORMAL"
+    ],
+    "turn": 96,
+    "x": "Flamethrower vs Exeggutor",
+    "y": "Flamethrower vs Chansey"
+   },
+   {
+    "axis": "b",
+    "move_x": "ROCK",
+    "move_y": "ROCK",
+    "opp_x": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "opp_y": [
+     "FIGHTING"
+    ],
+    "turn": 98,
+    "x": "Rock Slide vs Dragonite",
+    "y": "Rock Slide vs Machamp"
+   },
+   {
+    "axis": "b",
+    "move_x": "ROCK",
+    "move_y": "ROCK",
+    "opp_x": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "opp_y": [
+     "NORMAL"
+    ],
+    "turn": 99,
+    "x": "Rock Slide vs Exeggutor",
+    "y": "Rock Slide vs Chansey"
+   },
+   {
+    "axis": "b",
+    "move_x": "FIRE",
+    "move_y": "FIRE",
+    "opp_x": [
+     "WATER"
+    ],
+    "opp_y": [
+     "NORMAL"
+    ],
+    "turn": 103,
+    "x": "Flamethrower vs Blastoise",
+    "y": "Flamethrower vs Snorlax"
+   }
+  ],
+  "shared_odour_count": 10,
+  "skipped": [
+   {
+    "key": [
+     "a",
+     64,
+     "Surf",
+     "Psychic"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     64,
+     "Psychic",
+     "Thunderbolt"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     64,
+     "Surf vs Rhydon",
+     "Surf vs Slowbro"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     64,
+     "Psychic vs Rhydon",
+     "Psychic vs Slowbro"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     64,
+     "Thunderbolt vs Rhydon",
+     "Thunderbolt vs Slowbro"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     65,
+     "Surf",
+     "Thunderbolt"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     65,
+     "Surf vs Blastoise",
+     "Surf vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     65,
+     "Thunderbolt vs Blastoise",
+     "Thunderbolt vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     66,
+     "Mega Drain vs Kangaskhan",
+     "Mega Drain vs Hypno"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     67,
+     "Surf",
+     "Earthquake"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     67,
+     "Surf vs Charizard",
+     "Surf vs Nidoking"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     67,
+     "Earthquake vs Charizard",
+     "Earthquake vs Nidoking"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     68,
+     "Flamethrower",
+     "Earthquake"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     68,
+     "Flamethrower",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     68,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     68,
+     "Earthquake vs Kangaskhan",
+     "Earthquake vs Hypno"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     68,
+     "Strength vs Kangaskhan",
+     "Strength vs Hypno"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     69,
+     "Earthquake",
+     "Surf"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     69,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     69,
+     "Surf",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     69,
+     "Earthquake vs Blastoise",
+     "Earthquake vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     69,
+     "Surf vs Blastoise",
+     "Surf vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     69,
+     "Strength vs Blastoise",
+     "Strength vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     70,
+     "Psychic vs Charizard",
+     "Psychic vs Nidoking"
+    ],
+    "reason": "in_set"
+   },
+   {
+    "key": [
+     "b",
+     71,
+     "Thunderbolt vs Dragonite",
+     "Thunderbolt vs Machamp"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     71,
+     "Psychic vs Dragonite",
+     "Psychic vs Machamp"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     72,
+     "Earthquake",
+     "Rock Slide"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     72,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     72,
+     "Rock Slide",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     72,
+     "Earthquake vs Venusaur",
+     "Earthquake vs Charizard"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     72,
+     "Rock Slide vs Venusaur",
+     "Rock Slide vs Charizard"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     72,
+     "Strength vs Venusaur",
+     "Strength vs Charizard"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     73,
+     "Earthquake",
+     "Surf"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     73,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     73,
+     "Surf",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     74,
+     "Surf",
+     "Psychic"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     74,
+     "Surf vs Tentacruel",
+     "Surf vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     74,
+     "Psychic vs Tentacruel",
+     "Psychic vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     75,
+     "Psychic vs Charizard",
+     "Psychic vs Nidoking"
+    ],
+    "reason": "in_set"
+   },
+   {
+    "key": [
+     "b",
+     75,
+     "Tri Attack vs Charizard",
+     "Tri Attack vs Nidoking"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     76,
+     "Surf",
+     "Psychic"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     76,
+     "Surf vs Machamp",
+     "Surf vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     76,
+     "Psychic vs Machamp",
+     "Psychic vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     77,
+     "Earthquake",
+     "Surf"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     78,
+     "Surf",
+     "Psychic"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     78,
+     "Surf",
+     "Thunderbolt"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     78,
+     "Psychic",
+     "Thunderbolt"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     78,
+     "Surf vs Kangaskhan",
+     "Surf vs Hypno"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     78,
+     "Psychic vs Kangaskhan",
+     "Psychic vs Hypno"
+    ],
+    "reason": "in_set"
+   },
+   {
+    "key": [
+     "b",
+     79,
+     "Surf vs Blastoise",
+     "Surf vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     79,
+     "Mega Drain vs Blastoise",
+     "Mega Drain vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     80,
+     "Surf",
+     "Earthquake"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     80,
+     "Surf",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     80,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     80,
+     "Surf vs Venusaur",
+     "Surf vs Charizard"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     80,
+     "Earthquake vs Venusaur",
+     "Earthquake vs Charizard"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     80,
+     "Strength vs Venusaur",
+     "Strength vs Charizard"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     81,
+     "Thunderbolt vs Machamp",
+     "Thunderbolt vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     81,
+     "Psychic vs Machamp",
+     "Psychic vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     82,
+     "Surf",
+     "Thunderbolt"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     82,
+     "Surf vs Machamp",
+     "Surf vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     82,
+     "Thunderbolt vs Machamp",
+     "Thunderbolt vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     83,
+     "Earthquake",
+     "Rock Slide"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     83,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     83,
+     "Rock Slide",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     83,
+     "Earthquake vs Nidoking",
+     "Earthquake vs Kangaskhan"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     83,
+     "Rock Slide vs Nidoking",
+     "Rock Slide vs Kangaskhan"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     83,
+     "Strength vs Nidoking",
+     "Strength vs Kangaskhan"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     84,
+     "Thunderbolt",
+     "Psychic"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     84,
+     "Thunderbolt vs Slowbro",
+     "Thunderbolt vs Venusaur"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     84,
+     "Psychic vs Slowbro",
+     "Psychic vs Venusaur"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     85,
+     "Psychic vs Poliwrath",
+     "Psychic vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     85,
+     "Tri Attack vs Poliwrath",
+     "Tri Attack vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     86,
+     "Surf",
+     "Psychic"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     86,
+     "Surf",
+     "Thunderbolt"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     86,
+     "Psychic",
+     "Thunderbolt"
+    ],
+    "reason": "in_set"
+   },
+   {
+    "key": [
+     "b",
+     86,
+     "Surf vs Machamp",
+     "Surf vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     86,
+     "Psychic vs Machamp",
+     "Psychic vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     86,
+     "Thunderbolt vs Machamp",
+     "Thunderbolt vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     87,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     87,
+     "Earthquake vs Slowbro",
+     "Earthquake vs Venusaur"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     87,
+     "Strength vs Slowbro",
+     "Strength vs Venusaur"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     88,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     88,
+     "Earthquake vs Charizard",
+     "Earthquake vs Nidoking"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     88,
+     "Strength vs Charizard",
+     "Strength vs Nidoking"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     89,
+     "Earthquake",
+     "Thunderbolt"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     89,
+     "Earthquake",
+     "Surf"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     89,
+     "Thunderbolt",
+     "Surf"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     89,
+     "Earthquake vs Kangaskhan",
+     "Earthquake vs Hypno"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     89,
+     "Thunderbolt vs Kangaskhan",
+     "Thunderbolt vs Hypno"
+    ],
+    "reason": "in_set"
+   },
+   {
+    "key": [
+     "b",
+     89,
+     "Surf vs Kangaskhan",
+     "Surf vs Hypno"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     90,
+     "Psychic vs Blastoise",
+     "Psychic vs Snorlax"
+    ],
+    "reason": "in_set"
+   },
+   {
+    "key": [
+     "b",
+     90,
+     "Mega Drain vs Blastoise",
+     "Mega Drain vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     91,
+     "Earthquake",
+     "Rock Slide"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     91,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     91,
+     "Rock Slide",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     91,
+     "Earthquake vs Hypno",
+     "Earthquake vs Dragonite"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     91,
+     "Rock Slide vs Hypno",
+     "Rock Slide vs Dragonite"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     91,
+     "Strength vs Hypno",
+     "Strength vs Dragonite"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     92,
+     "Cut vs Tentacruel",
+     "Cut vs Snorlax"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     93,
+     "Surf",
+     "Earthquake"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     93,
+     "Surf",
+     "Psychic"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     93,
+     "Surf vs Exeggutor",
+     "Surf vs Chansey"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     93,
+     "Earthquake vs Exeggutor",
+     "Earthquake vs Chansey"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     93,
+     "Psychic vs Exeggutor",
+     "Psychic vs Chansey"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     94,
+     "Earthquake",
+     "Surf"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     94,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     94,
+     "Surf",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     94,
+     "Earthquake vs Machamp",
+     "Earthquake vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     94,
+     "Surf vs Machamp",
+     "Surf vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     94,
+     "Strength vs Machamp",
+     "Strength vs Tentacruel"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     96,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     96,
+     "Earthquake vs Exeggutor",
+     "Earthquake vs Chansey"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     96,
+     "Strength vs Exeggutor",
+     "Strength vs Chansey"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     97,
+     "Surf",
+     "Thunderbolt"
+    ],
+    "reason": "in_set"
+   },
+   {
+    "key": [
+     "b",
+     97,
+     "Surf vs Rhydon",
+     "Surf vs Slowbro"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     97,
+     "Thunderbolt vs Rhydon",
+     "Thunderbolt vs Slowbro"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     98,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     98,
+     "Earthquake vs Dragonite",
+     "Earthquake vs Machamp"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     98,
+     "Strength vs Dragonite",
+     "Strength vs Machamp"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     99,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     99,
+     "Earthquake vs Exeggutor",
+     "Earthquake vs Chansey"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     99,
+     "Strength vs Exeggutor",
+     "Strength vs Chansey"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     100,
+     "Earthquake",
+     "Rock Slide"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     100,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     100,
+     "Rock Slide",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     100,
+     "Earthquake vs Slowbro",
+     "Earthquake vs Venusaur"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     100,
+     "Rock Slide vs Slowbro",
+     "Rock Slide vs Venusaur"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     100,
+     "Strength vs Slowbro",
+     "Strength vs Venusaur"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     101,
+     "Surf vs Lapras",
+     "Surf vs Venusaur"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     101,
+     "Mega Drain vs Lapras",
+     "Mega Drain vs Venusaur"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     102,
+     "Surf",
+     "Earthquake"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     102,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     102,
+     "Surf vs Hypno",
+     "Surf vs Dragonite"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     102,
+     "Earthquake vs Hypno",
+     "Earthquake vs Dragonite"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     102,
+     "Strength vs Hypno",
+     "Strength vs Dragonite"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "a",
+     103,
+     "Earthquake",
+     "Strength"
+    ],
+    "reason": "used"
+   },
+   {
+    "key": [
+     "b",
+     103,
+     "Earthquake vs Blastoise",
+     "Earthquake vs Snorlax"
+    ],
+    "reason": "after_21st"
+   },
+   {
+    "key": [
+     "b",
+     103,
+     "Strength vs Blastoise",
+     "Strength vs Snorlax"
+    ],
+    "reason": "after_21st"
+   }
+  ],
+  "skipped_counts": {
+   "after_21st": 2,
+   "in_set": 7,
+   "used": 130
+  },
+  "smoke": false,
+  "stage": "set",
+  "status": "OK",
+  "written_at": "2026-10-01T14:00:09.420618+00:00"
+ }
+}
