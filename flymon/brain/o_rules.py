@@ -36,6 +36,7 @@ INCONCLUSIVE = "INCONCLUSIVE"
 SEPARABLE = "SEPARABLE"
 NOT_SEPARABLE = "NOT_SEPARABLE"
 FLIP_SUFFIX = "_STATE_FLIP_SENSITIVE"
+DA_DEPENDENT_BY_CONSTRUCTION = "DA_DEPENDENT_BY_CONSTRUCTION"   # O.7.8: a record, never a judged label
 PATH_LABELS = {(False, True): READOUT_PATH, (True, False): KC_NETWORK_PATH, (True, True): BOTH_PATHS,
                (False, False): NEITHER_PATH}                  # (APL->KC block removes, APL->non-KC block removes)
 
@@ -285,3 +286,170 @@ def o1_judge(rows: list, spec) -> dict:
         return dict(outcome=STOP_NO_SILENT_STATE, nature=None, pathway=None, drive=None, **rec)
     return dict(outcome=JUDGED, nature=view_on["nature"], pathway=pathway(S, view_on["mixed"], W, spec),
                 drive=view_on["drive"], **rec)
+
+
+# ================================================================ O2 (O.7.4 as amended by O.7.8)
+def o2_key(r) -> tuple:
+    return (r["x"], r["arm"], int(r["seed"]))
+
+
+def o2_declared(spec) -> set:
+    return {(x, a[0], int(s)) for x, _, _ in spec.o2_pairs for a in spec.o2_arms for s in spec.o2_seeds}
+
+
+def o2_edit_of(spec):
+    """row -> the edit O2 declares for it: every O2 arm runs the on rig (O.3: 켬 조건, 편집 없음)."""
+    return lambda r: spec.on_edit
+
+
+def _diff(rows, side: str, field: str) -> np.ndarray:
+    return np.array([r["post"][side][field] - r["pre"][side][field] for r in rows], float)
+
+
+def _inside(ci, b: float) -> bool:
+    return bool(-b <= ci[0] and ci[1] <= b)
+
+
+def o2_stats(by: dict, z: dict, o: float, spec, keep=None) -> dict | None:
+    """by {arm: rows in seed order}, arms named as spec.o2_arms (1 plastic, 2 frozen, 3 punish, 4 da_zero). On the seeds
+    in `keep` (all when None); None with fewer than 2. One seed resample (boot_weights) for every statistic.
+    Judged labels: depression (O.7.4-1) and separable (O.7.4-3). m4 (O.7.4-2) is computed and recorded only: O.7.8 made
+    dopamine dependence a consequence of the rule (plasticity opens only on phasic dopamine), not a judgement."""
+    one, two, three, four = (a[0] for a in spec.o2_arms)
+    if keep is not None:
+        by = {a: [r for r in rows if int(r["seed"]) in keep] for a, rows in by.items()}
+    n = len(by[one])
+    if n < 2:
+        return None
+    W = boot_weights(n, spec.boot_draws, spec.boot_seed)
+
+    def stat(v):
+        return float(np.mean(v)), _ci(W @ v, spec.ci_level)
+
+    dA = {a: _diff(rows, "x", "A") for a, rows in by.items()}
+    b = spec.depression_frac * float(np.mean([r["pre"]["x"]["A"] for r in by[one]]))
+    m, m_ci = stat(dA[one] - dA[two])
+    if m_ci[1] < 0 and m <= -b:
+        dep = DEPRESSION_PRESENT
+    elif _inside(m_ci, b):
+        dep = NO_DEPRESSION
+    else:
+        dep = INCONCLUSIVE
+    m4, m4_ci = stat(dA[four] - dA[two])                                   # record (O.7.8)
+    ddv = {a: np.array([delta(r, z) for r in rows]) for a, rows in by.items()}
+    e = spec.sep_frac * abs(float(o))
+    D, D_ci = stat(ddv[three] - ddv[one])
+    if (D_ci[0] > 0 or D_ci[1] < 0) and abs(D) >= e:
+        sep = SEPARABLE
+    elif _inside(D_ci, e):
+        sep = NOT_SEPARABLE
+    else:
+        sep = INCONCLUSIVE
+    same = {f"{side}_{f}": stat(_diff(by[one], side, f) - _diff(by[two], side, f))
+            for side, f in (("x", "P"), ("y", "A"), ("y", "P"))}
+    return dict(n=n, seeds=[int(r["seed"]) for r in by[one]], b=b, e=e, m=m, m_ci=m_ci, m4=m4, m4_ci=m4_ci, D=D,
+                D_ci=D_ci, D_sign=int(np.sign(D)), labels=dict(depression=dep, separable=sep),
+                mean_dA={a: float(v.mean()) for a, v in dA.items()},
+                same_differences={k: dict(mean=v[0], ci=v[1]) for k, v in same.items()})
+
+
+def plumbing(by: dict, spec) -> list:
+    """O.7.4-5 + O.7.8: arm 2 (plasticity off) and arm 4 (rule dopamine held at 0) must end with the plastic weights
+    bit-identical to w0 (sha256), every seed. The reasons, [] when clean."""
+    _, two, _, four = (a[0] for a in spec.o2_arms)
+    return [f"plumbing: arm {a} seed {r['seed']} moved its weights (sha256 {r['w_post_sha256'][:12]} != w0 "
+            f"{r['w0_sha256'][:12]})" for a in (two, four) for r in by[a] if r["w_post_sha256"] != r["w0_sha256"]]
+
+
+def o2_x(by: dict, z: dict, o: float, spec) -> dict:
+    """One X: the plumbing check (arms 2 and 4, else INVALID), the judgements, the state-flip guard (O.7.4-4: judged
+    labels only; the dopamine record is not compared) and the records."""
+    one, two, three, four = (a[0] for a in spec.o2_arms)
+    bad = plumbing(by, spec)
+    if bad:
+        return dict(outcome=INVALID, reasons=bad, labels=None)
+    st = o2_stats(by, z, o, spec)
+    if st is None:
+        return dict(outcome=INVALID, reasons=[f"O2 needs at least 2 seeds per arm, got {len(by[one])}"], labels=None)
+    flips = {a: [int(r["seed"]) for r in rows if state(r["pre"]["x"]["P"], spec.n) != state(r["post"]["x"]["P"],
+                                                                                              spec.n)]
+             for a, rows in by.items()}
+    limit = spec.flip_max_frac * st["n"]
+    labels, guard = dict(st["labels"]), None
+    if any(len(v) > limit for v in flips.values()):
+        drop = sorted(set().union(*(set(v) for v in flips.values())))
+        alt = o2_stats(by, z, o, spec, keep=set(st["seeds"]) - set(drop))
+        alt_labels = alt["labels"] if alt else {k: None for k in labels}
+        for k, v in labels.items():
+            if v is not None and alt_labels[k] != v:
+                labels[k] = v + FLIP_SUFFIX
+        guard = dict(dropped=drop, alt=alt)
+    firing = set(st["seeds"])
+    for rows in by.values():
+        for r in rows:
+            if any(state(r[ph][k]["P"], spec.n) != "firing" for ph in ("pre", "post") for k in ("x", "y")):
+                firing.discard(int(r["seed"]))
+    record = dict(
+        da=dict(label=DA_DEPENDENT_BY_CONSTRUCTION if st["labels"]["depression"] == DEPRESSION_PRESENT else None,
+                m4=st["m4"], m4_ci=st["m4_ci"],
+                note="O.7.8: 가소성은 위상 도파민으로만 열린다 — ④는 구조상 ②와 같다. 판정이 아니라 규칙의 귀결(기록)"),
+        frozen_dA_all_zero=bool(all(r["post"]["x"]["A"] == r["pre"]["x"]["A"] for r in by[two])),
+        frozen_probes_identical=bool(all(r["pre"][k][f] == r["post"][k][f] for r in by[two] for k in ("x", "y")
+                                         for f in ("A", "P", "kc_spikes"))),
+        da_zero_weights_unmoved=bool(all(r["w_post_sha256"] == r["w0_sha256"] for r in by[four])),
+        state_conditional=dict(n=len(firing), stats=o2_stats(by, z, o, spec, keep=firing)),
+        da_integral={a: {k: float(np.mean([r["da_integral"][k] for r in rows])) for k in rows[0]["da_integral"]}
+                     for a, rows in by.items()},
+        weights_frac={a: {k: float(np.mean([r[f] for r in rows]))
+                          for k, f in (("all", "weights_frac"), ("A_punish_core", "weights_frac_A"),
+                                       ("P_reward_core", "weights_frac_P"))}
+                      for a, rows in by.items()},
+        weights_frac_note="A·P = 처벌·보상 구획(가르친 구획)의 core 가중치 비율 — 판독 세포(MBON13·MBON05)가 아니다",
+        a_x_course=None, a_x_course_note="훈련 중 프로브가 rig에 없다(N2 훈련 루프) — 제시 횟수에 따른 A_X 경과는 기록하지 않는다")
+    return dict(outcome=JUDGED, reasons=[], labels=labels, stats=st, flips=flips, flip_limit=limit, guard=guard,
+                record=record)
+
+
+def o2_judge(rows: list, z: dict, o_by_pair: dict, spec) -> dict:
+    """The gate (the stage INVALID; O2's edit mapping included, and every pair's oracle o present and finite), then
+    every X of spec.o2_pairs with its pair's o (reading 15)."""
+    bad = validity(rows, o2_declared(spec), o2_key, spec.o2_seeds, o2_edit_of(spec))
+    for _, _, pair in spec.o2_pairs:
+        if pair not in o_by_pair or not finite(o_by_pair[pair]):
+            bad.append(f"oracle o for pair {pair!r} missing or non-finite: {o_by_pair.get(pair)}")
+    if bad:
+        return dict(outcome=INVALID, reasons=bad, x=None)
+    by = defaultdict(lambda: defaultdict(list))
+    for r in rows:
+        by[r["x"]][r["arm"]].append(r)
+    xs = {}
+    for x, y, pair in spec.o2_pairs:
+        arms = {a[0]: sorted(by[x][a[0]], key=lambda r: int(r["seed"])) for a in spec.o2_arms}
+        xs[x] = dict(y=y, pair=pair, o=float(o_by_pair[pair]), **o2_x(arms, z, o_by_pair[pair], spec))
+    return dict(outcome=JUDGED, reasons=[], x=xs)
+
+
+# ================================================================ sentences
+def sentence(name: str, res: dict) -> str:
+    o = res.get("outcome")
+    if name not in ("o1", "o2"):
+        raise ValueError(f"unknown stage {name!r}")
+    if o == INVALID:
+        return f"{name.upper()} INVALID: {'; '.join(res['reasons'])}"
+    if name == "o1":
+        n = len(res["mixed_cells"])
+        if o == STOP_NO_SILENT_STATE:
+            return (f"O1: 켬 조건의 혼합 칸 {n}개 — STOP_NO_SILENT_STATE. 실제 냄새 rig에서는 특성화할 두 상태가 없다. "
+                    "사용자에게 보고한다.")
+        drive_txt = ", ".join(f"{s} {v['label']}" for s, v in res["drive"].items())
+        return (f"O1: 혼합 칸 {n}개 — 상태 {res['nature']['label']}, 경로 {res['pathway']['label']}, "
+                f"구동 의존성 {drive_txt}. 이 커넥톰 모델(C3)의 성질이다.")
+    parts = []
+    for x, v in res["x"].items():
+        if v["outcome"] == INVALID:
+            parts.append(f"X = {x}: INVALID ({'; '.join(v['reasons'][:2])})")
+            continue
+        lab, da = v["labels"], v["record"]["da"]["label"]
+        parts.append(f"X = {x}: {lab['depression']}, {lab['separable']}"
+                     + (f" (기록: {da} — O.7.8, 판정 아님)" if da else ""))
+    return "O2: " + " / ".join(parts) + ". 학습 주장이 아니다."
