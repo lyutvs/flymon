@@ -22,7 +22,8 @@ MODULES = {"flymon/brain/b_spec.py": "flymon.brain.b_spec", "flymon/brain/h3_spe
            "flymon/brain/h4_spec.py": "flymon.brain.h4_spec", "flymon/brain/j_spec.py": "flymon.brain.j_spec",
            "flymon/brain/k_spec.py": "flymon.brain.k_spec", "flymon/brain/l_spec.py": "flymon.brain.l_spec",
            "flymon/brain/m_spec.py": "flymon.brain.m_spec", "flymon/brain/n_spec.py": "flymon.brain.n_spec",
-           "flymon/brain/o_spec.py": "flymon.brain.o_spec", "flymon/rescope/spec.py": "flymon.rescope.spec"}
+           "flymon/brain/o_spec.py": "flymon.brain.o_spec", "flymon/rescope/spec.py": "flymon.rescope.spec",
+           "flymon/agent/e_spec.py": "flymon.agent.e_spec"}
 
 
 def _spec_files() -> set:

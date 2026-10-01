@@ -2,7 +2,7 @@
 
 MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
 M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
-M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). 판독 확장(가르치는 구획 재선택) — 닫힘(부록 M.11). 실제 냄새(Lin 2014 패턴) — N1에서 닫힘(부록 N.9). 주장 재범위(기계 대조 + 승률) — 두 층 모두 시험하지 않고 닫힘(재범위 스펙 11.3·11.4). C3 두 상태·제시 유발 억압 특성화(학습 주장 아님) — 기록(부록 O.8·O.9). 실제 냄새 다른 쌍의 처벌 학습 — **학습함(확인 시험, 부록 P.7)**. M3 인프라만 완료(판정 없음), M4는 보류.
+M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). 판독 확장(가르치는 구획 재선택) — 닫힘(부록 M.11). 실제 냄새(Lin 2014 패턴) — N1에서 닫힘(부록 N.9). 주장 재범위(기계 대조 + 승률) — 두 층 모두 시험하지 않고 닫힘(재범위 스펙 11.3·11.4). C3 두 상태·제시 유발 억압 특성화(학습 주장 아님) — 기록(부록 O.8·O.9). 실제 냄새 다른 쌍의 처벌 학습 — **학습함(확인 시험, 부록 P.7)**. 포켓몬 인코더 재설계(사구체 서로소 결합 부호 E-grid) — 닫힘(`STOP_EVEN_LOW`: KC 겹침은 사라졌으나 보상 판독이 막아 testable_b 7/21, 인코더 스펙 13절). M3 인프라만 완료(판정 없음), M4는 보류.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
 
@@ -177,6 +177,12 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
 - **된 것(첫 학습 판정, 2026-10-01, 스펙 부록 P.7)**: 실제 냄새 다른 쌍(IA:EB 4:1 대 δ-DL)의 처벌 쪽 절대 조건화를 두 방향(각 냄새를 번갈아 처벌)·새 시드 32개로 판정했다.
   처벌이 처벌 없는 같은 제시보다 판독을 더 낮춘 양 ℓ이 4:1 처벌 **1.79 [1.60, 1.97]**, δ-DL 처벌 **2.16 [1.92, 2.38]**로 사전 기준량 c₁ 0.61을 두 방향 모두 넘었고, 변화는 짝 냄새보다 처벌받은 냄새에 몰렸다 →
   **`LEARNS_CONFIRMATORY`**. O2를 본 뒤 선언한 확인 시험이라 발견이 아니라 재현이며, 범위는 C3·이 쌍·처벌 쪽까지다(포켓몬 배틀·비슷한 쌍·보상 쪽 주장이 아니다). 다음은 포켓몬 인코더 재설계 트랙과의 합류다.
+- **안 된 것(인코더 재설계, 2026-10-02, 인코더 스펙 `2026-10-01-encoder-redesign-design.md` 13절)**: 포켓몬 상황을 (기술 타입 × 상대 타입) 결합마다 고유한 사구체 패턴으로 바꾸고,
+  같은 기술·같은 상대 타입을 공유하는 결합끼리는 사구체를 하나도 공유하지 않게 했다(E-grid, 4설정). 판정 규칙과 새 판정 세트(L 생성기 턴 64–103, 결합 키 중복 제외)는 실행 전에 고정했다.
+  KC 활성만으로 강도를 맞추는 단계에서 자격을 얻은 설정은 k2-norm(s 1.0) 하나였고(나머지는 ORN 발화율 상한 아래에서 꼬리·대역 조건에 근소하게 미달), 짝수 턴 오라클에서
+  시험 가능 (b) **7/21**·F_a 0으로 M2 기준(11·2)에 못 미쳐 사전 선언대로 멈췄다(`STOP_EVEN_LOW`). 판정 세트는 측정하지 않았다.
+  기록(판정 아님): X·Y의 KC Jaccard는 약 0.04로 겹침이 거의 사라졌고 처벌 쪽 통과는 늘었지만((b) 11 → 15), 보상 쪽(MBON05)이 늘지 않아 시험 가능 수가 E0와 같다 —
+  이 인코더에서 병목은 KC 겹침에서 보상 판독으로 옮겨 갔다(원인은 재지 않았다). 이 트랙을 이 결과로 닫는다(사용자 결정). 다음은 사용자 결정이며, 보상 쪽 새 선언은 P 트랙 결과 뒤에 검토한다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -269,6 +275,17 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   concentrated on the punished odour rather than its partner: `LEARNS_CONFIRMATORY`. It was declared after O2, so it is
   a replication, not a discovery; the scope is C3, this pair and the punishment side only (not Pokémon battles, the
   similar pair, or reward). Next: join the Pokémon encoder-redesign track.
+- **Encoder redesign: stopped at the even-turn selection (2026-10-02, encoder spec 2026-10-01-encoder-redesign-design.md
+  section 13).** Each (move type × opponent type) conjunction got its own glomerulus pattern, and conjunctions sharing a
+  move type or an opponent type share no glomerulus (E-grid, 4 configurations); the rules and a fresh judgement set (L
+  generator turns 64-103, deduplicated by conjunction key) were fixed before any run. Strength calibration on KC activity
+  alone left one eligible configuration, k2-norm at s 1.0 (the others narrowly missed a tail or band condition under the
+  ORN rate cap), and its even-turn oracle gave 7 of 21 testable (b) pairs and F_a 0, below the M2 bar (11 and 2), so the
+  run stopped as declared (`STOP_EVEN_LOW`); the judgement set was not measured. Recorded, not judged: the X/Y KC Jaccard
+  fell to about 0.04 and punishment passes rose ((b) 11 to 15), but reward passes (MBON05) did not, so testable pairs equal
+  E0's: with this encoder the bottleneck moved from KC overlap to the reward readout (the cause was not measured).
+  The track is closed on this result (user decision); next is the user's call, and a reward-side declaration will be
+  considered after track P's result.
 
 ## 실행
 
