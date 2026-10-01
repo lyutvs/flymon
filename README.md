@@ -2,7 +2,7 @@
 
 MaleCNS v1.0 초파리 뇌 커넥톰의 LIF 시뮬레이션이 포켓몬 1세대 OU **규칙** 위의 제한 과제(16종·제약 기술 풀)에서 공격기 선택을 배우게 한다.
 M0: 엔진과 flybrain 측정값 재현. M1: Showdown 배틀 환경과 뇌 없는 파일럿.
-M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). 판독 확장(가르치는 구획 재선택) — 닫힘(부록 M.11). 실제 냄새(Lin 2014 패턴) — N1에서 닫힘(부록 N.9). 주장 재범위(기계 대조 + 승률) — 두 층 모두 시험하지 않고 닫힘(재범위 스펙 11.3·11.4). C3 두 상태·제시 유발 억압 특성화(학습 주장 아님) — 기록(부록 O.8·O.9). M3 인프라만 완료(판정 없음), M4는 보류.
+M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지렛대 — 닫힘(부록 J.13). 빠른 KC→KC 억제 — 닫힘(부록 K.9). 순진 판독 선별 — 닫힘(부록 L.12). 판독 확장(가르치는 구획 재선택) — 닫힘(부록 M.11). 실제 냄새(Lin 2014 패턴) — N1에서 닫힘(부록 N.9). 주장 재범위(기계 대조 + 승률) — 두 층 모두 시험하지 않고 닫힘(재범위 스펙 11.3·11.4). C3 두 상태·제시 유발 억압 특성화(학습 주장 아님) — 기록(부록 O.8·O.9). 실제 냄새 다른 쌍의 처벌 학습 — **학습함(확인 시험, 부록 P.7)**. M3 인프라만 완료(판정 없음), M4는 보류.
 
 **M0 결과: 부분 통과 (희소성·기저 발화·채널별 냄새 특이 억제 통과, 합성 지수 반전 미달)**
 
@@ -174,6 +174,9 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   O1(제시 7 680회): 정지 상태는 낮은 구동(g 0.125–0.25)에만 있고(혼합 칸 6개) 판독이 두 봉우리로 갈리지 않았다(`GRADED`, 중간대 조건 0/6). APL→비KC 출력 차단이 정지를 61% 줄였지만
   사전 기준(75%)에 못 미쳐 경로는 `NEITHER_PATH`, 구동이 클수록 정지가 준다(4자극 `DECREASING`). O2(256팔): 처벌 없는 제시만으로 MBON13이 약 5스파이크(14%) 줄었으나 기준량 안(`NO_DEPRESSION`),
   처벌 효과는 그 위에서 크게 갈라졌다(`SEPARABLE`, dV −2.1·−2.4). 포켓몬 냄새에서 본 "망 쌍안정"과 "처벌을 억압과 가를 수 없음"은 실제 냄새의 이 절차에서는 나타나지 않았다.
+- **된 것(첫 학습 판정, 2026-10-01, 스펙 부록 P.7)**: 실제 냄새 다른 쌍(IA:EB 4:1 대 δ-DL)의 처벌 쪽 절대 조건화를 두 방향(각 냄새를 번갈아 처벌)·새 시드 32개로 판정했다.
+  처벌이 처벌 없는 같은 제시보다 판독을 더 낮춘 양 ℓ이 4:1 처벌 **1.79 [1.60, 1.97]**, δ-DL 처벌 **2.16 [1.92, 2.38]**로 사전 기준량 c₁ 0.61을 두 방향 모두 넘었고, 변화는 짝 냄새보다 처벌받은 냄새에 몰렸다 →
+  **`LEARNS_CONFIRMATORY`**. O2를 본 뒤 선언한 확인 시험이라 발견이 아니라 재현이며, 범위는 C3·이 쌍·처벌 쪽까지다(포켓몬 배틀·비슷한 쌍·보상 쪽 주장이 아니다). 다음은 포켓몬 인코더 재설계 트랙과의 합류다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -259,6 +262,13 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   spikes (14%), inside the pre-set band (`NO_DEPRESSION`), and punishment separated clearly on top of it (`SEPARABLE`,
   dV -2.1 / -2.4). The "network bistability" and "punishment inseparable from depression" seen with Pokémon odours did
   not appear with real odours under this protocol.
+- **First learning judgement: learns, confirmatory (2026-10-01, spec P.7).** Punishment-side absolute conditioning on
+  one real-odour dissimilar pair (IA:EB 4:1 vs δ-DL) was judged in both directions (each odour punished in turn) on 32
+  new seeds. The extra drop in the readout caused by punishment over the same unpunished presentations was 1.79 [1.60,
+  1.97] with 4:1 punished and 2.16 [1.92, 2.38] with δ-DL punished, both above the pre-set c1 = 0.61, and the change
+  concentrated on the punished odour rather than its partner: `LEARNS_CONFIRMATORY`. It was declared after O2, so it is
+  a replication, not a discovery; the scope is C3, this pair and the punishment side only (not Pokémon battles, the
+  similar pair, or reward). Next: join the Pokémon encoder-redesign track.
 
 ## 실행
 
