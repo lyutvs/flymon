@@ -10,8 +10,9 @@
   final: no rerun. A rerun with changed rule/CLI code reuses cached raw rows on purpose: the cache is keyed by the
   measurement code (p_measure.MEASURE_FILES), so only a measurement-code change refreshes entries (reading 11).
 - Cache roots: a --smoke run under results/p/smoke/, a declared run under results/p/run/ (default); an --out or
-  --summary crossing between the two is refused both ways. The cache key covers MEASURE_FILES, the manifest
-  HASHED_FILES; a missing hashed file is a refusal.
+  --summary crossing between the two is refused both ways; a declared run's summary is results/summary/p_learning.json
+  only, and when it holds block <name> or <name>_invalid it must be committed and clean (check_committed) first.
+  The cache key covers MEASURE_FILES, the manifest HASHED_FILES; a missing hashed file is a refusal.
 - O2's per-seed source (P.6.4): block o2's run only; both O2 X rows (4:1, δ-DL) must carry identical seeds in the
   same order before the OC runs. The OC's null (p_rules.null_shift) is stated as OC_NULL in the record.
 - The hooks a script imports and passes as `hooks(its own module)`, so its tests patch them on the script.
@@ -60,6 +61,12 @@ def hooks(module) -> dict:
 def in_dir(path, d: str) -> bool:
     rel = os.path.relpath(os.path.abspath(str(path)), os.getcwd()).replace(os.sep, "/")
     return (rel + "/").startswith(d.rstrip("/") + "/")
+
+
+def real_summary(path) -> bool:
+    """A declared run reads and writes only P's one summary (fix round 1: another --summary would hold no block, so
+    "final" and "one rerun only" would never fire)."""
+    return Path(path).resolve() == ROOT / p_measure.SUMMARY
 
 
 def out_allowed(out) -> bool:
@@ -236,6 +243,8 @@ def main_stage(name: str, argv, body, hooks: dict, *, spec=None, require_root: b
                       f"{summary}")
     if not a.smoke and (in_dir(out, SMOKE_OUT) or in_dir(summary, SMOKE_OUT)):
         return refuse(f"a declared run never reads or writes under the smoke root {SMOKE_OUT}/ ({out} / {summary})")
+    if not a.smoke and not real_summary(summary):
+        return refuse(f"a declared run reads and writes only the summary {p_measure.SUMMARY}, not {summary}")
     git = hooks["git_state"](HASHED_FILES)
     if git["dirty_hashed"] and not a.allow_dirty:
         return refuse(f"hashed files are dirty {git['dirty_hashed']} (commit them, or --allow-dirty)")
@@ -243,6 +252,11 @@ def main_stage(name: str, argv, body, hooks: dict, *, spec=None, require_root: b
         doc = json.loads(summary.read_text()) if summary.exists() else {}
     except (OSError, ValueError) as e:
         return refuse(f"no usable summary at {summary}: {e}")
+    held = [b for b in (name, f"{name}_invalid") if isinstance(doc, dict) and b in doc]
+    if not a.smoke and held:                      # the reruns are counted on the committed summary, not a working copy
+        why = hooks["check_committed"](summary, held)
+        if why:
+            return refuse(why)
     prior = None
     if not a.smoke and name in doc:
         blk = doc[name]

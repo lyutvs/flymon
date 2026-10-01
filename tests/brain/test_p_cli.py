@@ -187,6 +187,7 @@ def _stage(argv, body=None, rerun_once=True, **over):
 def at_tmp(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(p_cli, "out_allowed", lambda out: True)
+    monkeypatch.setattr(p_cli, "real_summary", lambda p: Path(p).resolve() == (tmp_path / p_cli.p_measure.SUMMARY))
     return tmp_path
 
 
@@ -277,3 +278,25 @@ def test_the_one_rerun_keeps_the_invalid_block_and_is_final(at_tmp, capsys):
 def test_the_rerun_flag_without_an_invalid_block_is_refused(at_tmp, capsys):
     assert _stage(["--rerun-after-invalid"]) == 2 and "needs an INVALID block" in capsys.readouterr().err
     assert not (at_tmp / "results").exists()
+
+
+# ---- fix round 1: another --summary never bypasses "final" / "one rerun only"; reruns count on the committed copy
+def test_a_declared_run_refuses_any_other_summary(tmp_path, monkeypatch, capsys):
+    root = Path(__file__).resolve().parents[2]
+    monkeypatch.chdir(root)
+    hooks = _hooks(git_state=lambda files: pytest.fail("refused before anything else"))
+    for alt in ("results/p/run/alt.json", "results/p/alt.json", str(tmp_path / "p_learning.json")):
+        assert p_cli.main_stage("p", ["--summary", alt], _body(), hooks, rerun_once=True) == 2
+        assert "only the summary results/summary/p_learning.json" in capsys.readouterr().err
+    assert not (root / "results/p/run/alt.json").exists() and not (root / "results/p/alt.json").exists()
+
+
+@pytest.mark.parametrize("doc", [{"p": {"outcome": "INVALID", "run_id": "r0", "code": {"key": "q" * 64}}},
+                                 {"p_invalid": {"outcome": "INVALID", "run_id": "r0"}}])
+def test_a_summary_holding_a_p_block_must_be_committed_first(at_tmp, capsys, doc):
+    p = _real(doc)
+    asked = []
+    committed = lambda path, blocks: asked.append((Path(path), list(blocks))) or "has uncommitted changes"  # noqa
+    assert _stage(["--rerun-after-invalid"], check_committed=committed) == 2
+    assert "uncommitted" in capsys.readouterr().err and json.loads(p.read_text()) == doc
+    assert asked == [(Path("results/summary/p_learning.json"), list(doc))]
