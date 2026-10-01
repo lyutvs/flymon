@@ -130,3 +130,8 @@ def test_incremental_anneal_matches_full_reference(k):
     sp = dataclasses.replace(SPEC, anneal_iters=400, anneal_restarts=2)
     start, alpha = _start(k)
     assert cb.anneal(start, ADJ, alpha, DRIVE, k, sp) == _anneal_full_reference(start, ADJ, alpha, DRIVE, k, sp)
+
+
+def test_alphabet_rejects_other_k():
+    with pytest.raises(ValueError):
+        cb.alphabet(DRIVE, 4, SPEC)

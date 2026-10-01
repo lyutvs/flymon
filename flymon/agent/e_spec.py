@@ -15,7 +15,7 @@ class ESpec:
     # codebook (3.3)
     dsatur_tie_seeds: int = 1000
     exact_node_budget: int = 10_000_000
-    anneal_iters: int = 200_000
+    anneal_iters: int = 10_000_000
     anneal_restarts: int = 8
     anneal_seed0: int = 20261001
     t_start: float = 2.0

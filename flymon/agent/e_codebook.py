@@ -83,6 +83,8 @@ def _lg(x) -> float:
 
 
 def alphabet(drive: dict, k: int, spec) -> list:
+    if k not in (2, 3):
+        raise ValueError(f"spec 3.1 defines the alphabet only for k in (2, 3), got k={k}")
     gl = [g for g in drive if g not in spec.exclude]
 
     def order(gs):
@@ -270,7 +272,9 @@ def build(drive: dict, k: int, spec, unique_check=None) -> dict:
             return dict(out, status="UNDECIDED", codebook=None, anneal=None, digest=None)
     an = anneal(start, adj, alpha, drive, k, spec)
     book = an["codebook"]
-    assert hard_violations(book, adj) == 0
+    hv = hard_violations(book, adj)
+    if hv:
+        raise RuntimeError(f"anneal produced {hv} hard violations (k={k}); hard moves must be rejected")
     uniq = (unique_check or (lambda b: dup_pairs(b) == 0))(book)
     status = "OK" if (dup_pairs(book) == 0 and uniq) else "NOT_UNIQUE"
     return dict(out, status=status, codebook=[list(w) for w in book],
