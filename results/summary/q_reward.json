@@ -64,5 +64,154 @@
   "stage": "repro",
   "wall_s": 440.7823847089894,
   "written_at": "2026-10-02T07:41:16.898810+00:00"
+ },
+ "smoke": {
+  "code_key": "63c47a880d77e85db375115f2bc2e6703c3ef7a31d5439e7b38ed7e1d98efec0",
+  "conditions": {
+   "apl_mbon05": {
+    "csc_sha256": "860cba4f9eead9d7a85b632f2c93c51790c5082fe80460975cb1300239c73e46",
+    "edit_edges": [
+     2
+    ],
+    "jobs": 2,
+    "kc_median": 0.04675196850393701,
+    "mv_scale": 1.0,
+    "reasons": [],
+    "status": "OK",
+    "strength": 1.0,
+    "wall_s": 128.18373887508642
+   },
+   "apl_nonkc": {
+    "csc_sha256": "8afcd1a398229fb181570e01d7002a18f0bbab5acb19c823d9027cf5c3e65bcc",
+    "edit_edges": [
+     394
+    ],
+    "jobs": 2,
+    "kc_median": 0.04896653543307086,
+    "mv_scale": 1.0,
+    "reasons": [],
+    "status": "OK",
+    "strength": 1.0,
+    "wall_s": 135.02619991695974
+   },
+   "base": {
+    "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+    "edit_edges": [
+     0
+    ],
+    "jobs": 2,
+    "kc_median": 0.0499507874015748,
+    "mv_scale": 1.0,
+    "reasons": [],
+    "status": "OK",
+    "strength": 1.0,
+    "wall_s": 127.57758229202591
+   },
+   "mv_hi": {
+    "csc_sha256": "5b5503eb00469de22308d0f2ce02aea75400439bf4f156f68b7f26d4c8d8b997",
+    "edit_edges": [
+     0
+    ],
+    "jobs": 2,
+    "kc_median": 0.07209645669291338,
+    "mv_scale": 1.25,
+    "reasons": [],
+    "status": "OK",
+    "strength": 1.0,
+    "wall_s": 205.7799056660151
+   },
+   "mv_lo": {
+    "csc_sha256": "9c123ecf59ef06b81bbfce474f7d0a7ec0e7c196383f848d2ad85345534c7f84",
+    "edit_edges": [
+     0
+    ],
+    "jobs": 2,
+    "kc_median": 0.03186515748031496,
+    "mv_scale": 0.9,
+    "reasons": [],
+    "status": "OK",
+    "strength": 1.0,
+    "wall_s": 161.8071056669578
+   },
+   "s_up": {
+    "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+    "edit_edges": [
+     0
+    ],
+    "jobs": 2,
+    "kc_median": 0.045890748031496065,
+    "mv_scale": 1.0,
+    "note": "s_up = (c) s \ud558\ud5a5 \uc870\uc791 (Q.6.9: s 0.7, \ub300\uc5ed \ubc16\uc774\uba74 0.8)",
+    "reasons": [],
+    "status": "OK",
+    "strength": 0.7,
+    "wall_s": 133.47362616704777
+   }
+  },
+  "detail": "results/q/smoke.json",
+  "edit_edges": {
+   "apl_mbon05": [
+    2
+   ],
+   "apl_nonkc": [
+    394
+   ],
+   "base": [
+    0
+   ],
+   "mv_hi": [
+    0
+   ],
+   "mv_lo": [
+    0
+   ],
+   "s_up": [
+    0
+   ]
+  },
+  "git": {
+   "commit": "02650a33f0ecd7b3ec8fcd1b6a7e9dca02e1d8f5",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "kc_probe_median": {
+   "0.8": 0.019192913385826772,
+   "1.25": 0.06938976377952756
+  },
+  "mv": [
+   0.9,
+   1.25
+  ],
+  "mv_fallback_used": [
+   true,
+   false
+  ],
+  "s_cap_record": {
+   "cap_hz": 333.3333333333333,
+   "max_rate_hz": 200.0,
+   "n_odours": 42,
+   "s": 1.0,
+   "step": 0.05,
+   "strength": 1.0,
+   "vmax": 1.6153846153846154,
+   "weak": true
+  },
+  "s_choice": {
+   "candidates": [
+    0.7,
+    0.8
+   ],
+   "direction": "lowered",
+   "kc_probe_median": {
+    "0.7": 0.043061023622047244
+   },
+   "note": "s_up = (c) s \ud558\ud5a5 \uc870\uc791 (Q.6.9: s 0.7, \ub300\uc5ed \ubc16\uc774\uba74 0.8)",
+   "reason": null,
+   "s": 0.7,
+   "unmanipulable": false
+  },
+  "s_up_note": "s_up = (c) s \ud558\ud5a5 \uc870\uc791 (Q.6.9: s 0.7, \ub300\uc5ed \ubc16\uc774\uba74 0.8)",
+  "stage": "smoke",
+  "written_at": "2026-10-02T08:03:15.036677+00:00"
  }
 }
