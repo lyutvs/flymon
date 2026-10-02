@@ -1,0 +1,68 @@
+{
+ "repro": {
+  "code_key": "63c47a880d77e85db375115f2bc2e6703c3ef7a31d5439e7b38ed7e1d98efec0",
+  "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+  "encoder_key_checked": true,
+  "git": {
+   "commit": "070c034c9abe8e267cee1e6b9848d3852a3da6b3",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "pairs": [
+   {
+    "encoder_key_match": true,
+    "equal": true,
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon",
+    "q0_sha_ok": true
+   },
+   {
+    "encoder_key_match": true,
+    "equal": true,
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor",
+    "q0_sha_ok": true
+   },
+   {
+    "encoder_key_match": true,
+    "equal": true,
+    "key": "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan",
+    "q0_sha_ok": true
+   }
+  ],
+  "passed": true,
+  "seeds": {
+   "act": [
+    500,
+    501,
+    502,
+    503,
+    504,
+    505,
+    506,
+    507
+   ],
+   "report": [
+    608,
+    609,
+    610,
+    611,
+    612,
+    613,
+    614,
+    615
+   ],
+   "select": [
+    600,
+    601,
+    602,
+    603,
+    604,
+    605,
+    606,
+    607
+   ]
+  },
+  "stage": "repro",
+  "wall_s": 440.7823847089894,
+  "written_at": "2026-10-02T07:41:16.898810+00:00"
+ }
+}
