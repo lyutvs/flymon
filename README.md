@@ -187,6 +187,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   ④ 작동점 **일치**(전역 이득 ×1.25에서 F의 r_P 중앙값 +3.1, 순진 P_X와 무관; mv_scale은 입력 구동도 바꾸므로 ①과 완전히 갈린 것은 아니다), ③ 편집 도달·⑤ 변동 **불일치**,
   ① 바닥 **판단 불가**(순진 P_X는 F에서 낮지만(AUC 0.87) s 하향의 차등 악화가 반대 방향, ρ −0.60), ② APL 억제 **판단 불가**(APL→MBON05 2간선 차단이 F의 r_P를 +18 올렸으나 순진 P_X도 함께 올라 편집 비율은 줄었다).
   보상 편집은 F에서 P_X를 거의 움직이지 못한다(ΔP_X 중앙값 −3 대 S −26). 지렛대 선택(부록 R)은 사용자 결정이다.
+- **판정(지렛대 APL→MBON05 제거, 2026-10-03, 부록 R.10 — B_처벌가드)**: Q.7의 ②를 지렛대로 선언하고, 쓰지 않은 판정 세트(L 생성기 턴 64–103, (b) 21·(a) 32)에서 M2 기준으로 한 번 판정했다.
+  무편집 재현 관문과 관문 ①(KC 0.0457, 대역 안)·②(P 재현 `LEARNS_CONFIRMATORY`)·③(짝수 testable_b 16/21, 지렛대 없음 7/21)을 통과했다.
+  판정 세트에서 지렛대 **12/21** 대 지렛대 없음 **6/21**(기준 11·여유 2 통과), F_a 2/32였으나, (a)에서 처벌 통과 3쌍이 바뀌어(17 대 17, pass→fail 3) 처벌 가드가 켜졌다 — **B_처벌가드**.
+  지렛대는 보상 통과를 거의 전부 열었다((b) 21/21). 이 결과로 지렛대를 닫지도 선택하지도 않으며, 다음은 사용자 결정이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -298,6 +302,13 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   but lowering s hurt high-P_X pairs more, rho -0.60); APL inhibition is **undecided** (zeroing the 2 APL->MBON05 edges
   raised F's r_P by +18 but also naive P_X, so the edit ratio fell). The reward edit barely moves P_X in F (median -3 vs
   -26 in S). Choosing the lever (appendix R) is the user's decision.
+- **Lever APL->MBON05 removal: judged B_처벌가드 (punishment guard) (2026-10-03, appendix R.10).** Q.7's candidate 2 was
+  declared the lever and judged once, on M2's bar, on the unused judgement set (L generator turns 64-103, (b) 21, (a) 32).
+  The no-edit reproduction gate and gates 1 (KC 0.0457, in band), 2 (P replication LEARNS_CONFIRMATORY) and 3 (even
+  testable_b 16/21, no lever 7/21) passed. On the judgement set the lever reached **12/21** against **6/21** without it
+  (bar 11 and margin 2 met), F_a 2/32, but on the (a) side 3 punishment passes swapped (17 vs 17, pass->fail 3), which
+  trips the punishment guard. The lever opened nearly every reward pass ((b) 21/21). The lever is neither closed nor
+  selected; next is the user's decision.
 
 ## 실행
 
