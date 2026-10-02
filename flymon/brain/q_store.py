@@ -13,6 +13,7 @@ from pathlib import Path
 from ..agent.e_store import ECache
 from .h3_store import canonical, canonical_pretty
 from .pool_bench import refuse_modified_engine_output, refuse_old_engine_output
+from .q_spec import SPEC as Q_SPEC
 
 ALLOWED_DIR = "results/q/"
 READ_ONLY_DIR = "results/q/q0_cache/"
@@ -55,7 +56,7 @@ def write_summary_block(path, block: str, obj, params_list) -> Path:
     return write_json(path, doc, params_list)
 
 
-SMOKE_SEEDS = range(24_008_000, 24_008_100)       # q_spec.SPEC.smoke_seeds (Q.6.8); the block is not restated as a number set
+SMOKE_SEEDS = frozenset(Q_SPEC.smoke_seeds)       # q_spec.SPEC.smoke_seeds (Q.6.8), read from q_spec, never restated
 
 
 def _seeds(inputs) -> list:
