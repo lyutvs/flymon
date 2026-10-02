@@ -4292,6 +4292,377 @@
   "testable_b": 16,
   "written_at": "2026-10-02T21:44:08.045343+00:00"
  },
+ "jm:C": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "condition": "C",
+  "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+  "edit_edges": [
+   0
+  ],
+  "git": {
+   "commit": "33b74d35ad7ad3ee6bdd84b10c4b4f1db56f0b2d",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "jobs": 53,
+  "manifest": [
+   {
+    "cache_file": "results/r/cache/r_oracle/b089e883edc126368c0fa717.json",
+    "cache_key": "b089e883edc126368c0fa7175378f3b60a89a95653aee548fee8e09ab60a85f5",
+    "key": "b|65|Psychic vs Blastoise|Psychic vs Snorlax",
+    "sha256": "8783924cc23d682e9cdf679fbf14f4d37732896569ce2da24f922ffa4f5bab65"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/0b167de3824be6615a15626e.json",
+    "cache_key": "0b167de3824be6615a15626eedad6954bca2d015125d6929383583ee43ab5ad5",
+    "key": "b|66|Psychic vs Kangaskhan|Psychic vs Hypno",
+    "sha256": "93b6cb1917ae5740a8322db29a4c228fd6ca4c5765b0d0112178f3ec5eaa5243"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/b5f9fadd668cfb648370c070.json",
+    "cache_key": "b5f9fadd668cfb648370c070c591733839df3b3d9671558309b2d08498f12c14",
+    "key": "b|67|Psychic vs Charizard|Psychic vs Nidoking",
+    "sha256": "9565efa1372d6f1e1ac914b5b9f4f89728e2d60e7f5d3d6f029350125a89b77c"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/7414d1e6262a0fbaadebbff5.json",
+    "cache_key": "7414d1e6262a0fbaadebbff58bc0b0b0e6c18df8456df589ea019dc7066d1aaf",
+    "key": "b|68|Flamethrower vs Kangaskhan|Flamethrower vs Hypno",
+    "sha256": "2bca502e01600787f583c7c9defc5ea9d668df95de33e450163cfdca7fafbf38"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/cab09bc86195cb3daaa541a0.json",
+    "cache_key": "cab09bc86195cb3daaa541a0a2a3717785079cb5110467249ad9f8502ebc2e21",
+    "key": "b|70|Thunderbolt vs Charizard|Thunderbolt vs Nidoking",
+    "sha256": "93956ef782a7b86b3ada649e6cdb536200c1f1fb65f3777815966632885508a7"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/d9445a8acde44dd465ea3f05.json",
+    "cache_key": "d9445a8acde44dd465ea3f05709aeb505ce8ff20f4f8a2a2dc12b1db33562e1a",
+    "key": "b|73|Earthquake vs Poliwrath|Earthquake vs Exeggutor",
+    "sha256": "e08401383e457ec2b815d782954e97aba7e19b8294295b26e045784b31cf12d1"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/602064bcac5a9f65acea58b4.json",
+    "cache_key": "602064bcac5a9f65acea58b4cad5c2a7910cf9c24434afc61f1892d431e994dd",
+    "key": "b|73|Surf vs Poliwrath|Surf vs Exeggutor",
+    "sha256": "cb8cab2f7170f3590109d3c4f1146d44b2fae777cbfe015067881ede986d7d20"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/0e581be07a112306b8b1bb36.json",
+    "cache_key": "0e581be07a112306b8b1bb362da7bb203eb94404ff91b0d93e5c7fa69e0278b3",
+    "key": "b|73|Strength vs Poliwrath|Strength vs Exeggutor",
+    "sha256": "6c4af642771f771ffe9672957893e57fe81e0162e97094c75238651ab48f8dc7"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/36a60761d3613453816b1001.json",
+    "cache_key": "36a60761d3613453816b1001aef8de7076e6a1924523ab03fdac5189b04d7692",
+    "key": "b|77|Earthquake vs Tentacruel|Earthquake vs Exeggutor",
+    "sha256": "8632637347db832a6568e15b7660e8389eb51be110bcae902c1dd347e26d0fd2"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/097fccfbe777280445824116.json",
+    "cache_key": "097fccfbe77728044582411605129d41902ffa653f1d43c84789ab24348c8106",
+    "key": "b|77|Surf vs Tentacruel|Surf vs Exeggutor",
+    "sha256": "e4adff95c28783eb241e375747514c4462096fe728526b1197ca634d51a65d94"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/69791f2fe96bea4780707c8e.json",
+    "cache_key": "69791f2fe96bea4780707c8e806baa32bab7adc6dc8461c8b777bf4449ea5f79",
+    "key": "b|77|Strength vs Tentacruel|Strength vs Exeggutor",
+    "sha256": "2d54b6fae3d9318ebb8188d480ff5a6318fe16ff275ac7c89f9d73f9f4617ef6"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/071857fa38f11c1d323cf89f.json",
+    "cache_key": "071857fa38f11c1d323cf89fe8289a9d97c03b1773f60d0f3a893ddbc6750f90",
+    "key": "b|78|Thunderbolt vs Kangaskhan|Thunderbolt vs Hypno",
+    "sha256": "d7d22d0d8f5be8a3c6cdf1ba8c1a6c5fbc78ffd4b49b5bca5a0d8280c7b5c3a6"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/423451d489fbf109f7b22c8f.json",
+    "cache_key": "423451d489fbf109f7b22c8f7423fb558e1c0164fe4fb86a4b9a6f5db757223d",
+    "key": "b|87|Flamethrower vs Slowbro|Flamethrower vs Venusaur",
+    "sha256": "69f8bacd5a1d82877fb7bf65325bc8e7cb2b033fdacecf51573202e06170456b"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/5cded8b9c3b59e251edf3e02.json",
+    "cache_key": "5cded8b9c3b59e251edf3e023667d1d1cac34e2aa6c101d5f14ac7a7af59835f",
+    "key": "b|88|Rock Slide vs Charizard|Rock Slide vs Nidoking",
+    "sha256": "805bc984eeea89feb63eba970def7f2935a4315b2e8631a0d2bd82fc4d349cd4"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/918be13558a8c4539d1b8e16.json",
+    "cache_key": "918be13558a8c4539d1b8e16b2c5286b57d4adb41804cc725d281e5c5ef1a759",
+    "key": "b|92|Mega Drain vs Tentacruel|Mega Drain vs Snorlax",
+    "sha256": "fc38628538fb302aa4dbfb15fd3954cfb0b81df32a32190d4117dc89e94605b3"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/476180e25674bfb42b8f317a.json",
+    "cache_key": "476180e25674bfb42b8f317aee8aa48c4212194c8ebe3a1888b325e310477db9",
+    "key": "b|95|Thunderbolt vs Nidoking|Thunderbolt vs Kangaskhan",
+    "sha256": "65057775bdd4c86c4bf1bfb8907e3def67f5f8d8372d3285b91751f474b6d578"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/3eba7fc259b40c1ceaef1657.json",
+    "cache_key": "3eba7fc259b40c1ceaef1657c2036e11f6502a3314b694e502b59e36aab30fd2",
+    "key": "b|95|Psychic vs Nidoking|Psychic vs Kangaskhan",
+    "sha256": "6cb6984ffbc4af909f4a673246c36701a98f3dfc40b2d9a8d054952dddedd401"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/697045bc3c35160b3f82ae27.json",
+    "cache_key": "697045bc3c35160b3f82ae27b50f9142cd0d6b154cfb66961e7eeeb1c2ed3b96",
+    "key": "b|96|Flamethrower vs Exeggutor|Flamethrower vs Chansey",
+    "sha256": "3959121e0110a69538904d55a78edaaa25941b9c0ef2474fb647d70f563b31b4"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/1d944f4c3b82a04a6a666371.json",
+    "cache_key": "1d944f4c3b82a04a6a66637196ef87081bfcd08627ee3cb6ef9ceeb1a08d9756",
+    "key": "b|98|Rock Slide vs Dragonite|Rock Slide vs Machamp",
+    "sha256": "0a2c3acad6dce03864472d4cb843fe7e84178efe9ba54018d62b0d581c0961d5"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/1b3f877717edc74b429487be.json",
+    "cache_key": "1b3f877717edc74b429487be35f23593643220eb491b7a7e30246ae16579438c",
+    "key": "b|99|Rock Slide vs Exeggutor|Rock Slide vs Chansey",
+    "sha256": "40d7e200e62b663f133740a4dd5b384a48813719f419aa5fb6da68db4853f3ab"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/0f6f005aa60e34325099d18e.json",
+    "cache_key": "0f6f005aa60e34325099d18e72cef31088da49528b3c591149dfdc1550ac30a7",
+    "key": "b|103|Flamethrower vs Blastoise|Flamethrower vs Snorlax",
+    "sha256": "73728cc2fcb45cf8367fb871f4b274b670fd9a43abdd5d15253032fa33f6e003"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/0b24b3a3d43602cd5e7bc1ae.json",
+    "cache_key": "0b24b3a3d43602cd5e7bc1ae4e7a964a2a4aae060ad27d349bb92b8aee7d20a2",
+    "key": "a|64|Surf|Thunderbolt",
+    "sha256": "3591896b0ed5c395918946afd02164c39b30ad436ae14a8fd177e40584e2c8be"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/3a750d7867ed6fdddd7a8636.json",
+    "cache_key": "3a750d7867ed6fdddd7a86368f600c3d8a061145e95e864af4655deb3162309e",
+    "key": "a|65|Surf|Psychic",
+    "sha256": "0b52f2f05a310f96bbb5f8cce8d55bba054df8be099fecd0191dcd5442c36bbe"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/19993cec2bae280bc96ff192.json",
+    "cache_key": "19993cec2bae280bc96ff192cb8404762583fba46c78f893b5af2757aa5ce3c8",
+    "key": "a|65|Psychic|Thunderbolt",
+    "sha256": "823d7a2212594a0a14a07ef25d3b90ec20bb456de49e1a0c41be4586588ecd1f"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/8c7245f4f4ccc0bf56f4ba8a.json",
+    "cache_key": "8c7245f4f4ccc0bf56f4ba8a93053642c32242b4b42ec83004883766b7ab7bb6",
+    "key": "a|66|Psychic|Mega Drain",
+    "sha256": "b14da21df9864959e8ae388a456ba7afd8b542bbea3938c9617b981f67e99849"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/9b50c89bb553c2b118d47640.json",
+    "cache_key": "9b50c89bb553c2b118d476405d6452575411029a05e8805cb1552054ba680998",
+    "key": "a|67|Surf|Psychic",
+    "sha256": "8f149115e6a4bc553b8556b04093ca552d5ef05f2c6c2255effb531f8923d098"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/a988ae2054f8997e6921da63.json",
+    "cache_key": "a988ae2054f8997e6921da6343faf90f203e870a729e07f528b67fe173f14cc1",
+    "key": "a|67|Earthquake|Psychic",
+    "sha256": "3acdd9be5b813b27643e75507c38034e952d41299484c8b73e78eee376f0fcf3"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/2062d912f79e8abd33f2b0a0.json",
+    "cache_key": "2062d912f79e8abd33f2b0a0c02719325d270b95acd0cb54918569317af16944",
+    "key": "a|70|Thunderbolt|Psychic",
+    "sha256": "789ccb1b544b07e71f6760fc6514b2c68a450481f5eb4f847e821278f47222e0"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/d277a6890fea82507bbd0dd3.json",
+    "cache_key": "d277a6890fea82507bbd0dd351775b07f5ed3b0c7de241296c1da740ad01aad0",
+    "key": "a|71|Thunderbolt|Psychic",
+    "sha256": "cd7371d78a8c2f452c1c0cbf8b62c979d1526d8e3339510346307537485d79f6"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/90077759eeded5332fb64a39.json",
+    "cache_key": "90077759eeded5332fb64a39766464614d97733b056b3e6c120d25d738e77194",
+    "key": "a|75|Psychic|Tri Attack",
+    "sha256": "028f3fe0f5db0af5a9d156bd79574995da2f238564db630e92a065e464685db1"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/25ae14075fea88f433fd2375.json",
+    "cache_key": "25ae14075fea88f433fd23758d8790b938385933ae4fc6d87c66fd48b4b87424",
+    "key": "a|77|Earthquake|Strength",
+    "sha256": "778def581b92ca6c5be0cd3e2c596037652f7b3496d62b76c7f1d73706573ff5"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/671845c3875fdd600eb8c97c.json",
+    "cache_key": "671845c3875fdd600eb8c97cd9501fe9db51aa09193d28f2ce6f761f2a84f988",
+    "key": "a|77|Surf|Strength",
+    "sha256": "cb347afac95310f428146b9233fac4c7878a3e93691769d4974305a1474bdfbf"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/3afe46c4d5d359a6068a3f96.json",
+    "cache_key": "3afe46c4d5d359a6068a3f96daf2aed46209cccd023cdeb60f1e8159cd0884d2",
+    "key": "a|79|Surf|Mega Drain",
+    "sha256": "48a0d000a399f2445515cf19f6a0e9bc9e5c25e2663cec041f41f07f6990d22c"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/d0540ccaa199881f36f4be1a.json",
+    "cache_key": "d0540ccaa199881f36f4be1a676153746dfda72f0bb2de7ef072800d25eeb999",
+    "key": "a|81|Thunderbolt|Psychic",
+    "sha256": "1b6ee7691cb5ed005740995e7827147b8995f06b579be9cd7d75f17b03562a97"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/19c1c8a1e06654d6f238739e.json",
+    "cache_key": "19c1c8a1e06654d6f238739e80fda8333d6a189f05b4de8ad16ba93639572aa7",
+    "key": "a|85|Psychic|Tri Attack",
+    "sha256": "0ccbc89d9763b89d9e31ba91a3903de9090ba1f2993dff29ffe7d16c4608785e"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/27133309fdd9241afa8ed9ff.json",
+    "cache_key": "27133309fdd9241afa8ed9ff42411f61ea0cb494e5ba27d27378bff09da9f695",
+    "key": "a|87|Flamethrower|Earthquake",
+    "sha256": "fb0fe16a60198be0e7898951d91576ae579f08cdd18b2eea20edc3a99f089360"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/2331ff3b064e79e2d4bc59d0.json",
+    "cache_key": "2331ff3b064e79e2d4bc59d09927743bb577ed1798b82cf88711b5dfc20d5bdb",
+    "key": "a|87|Flamethrower|Strength",
+    "sha256": "2cb38a49c279e435f0baa59f0d48891adef8240587eac36b714230a9ecf73750"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/812a378eb9c83e9b16820700.json",
+    "cache_key": "812a378eb9c83e9b16820700184064c410bf0ca2bddb72f04c9a47aca8f08484",
+    "key": "a|88|Earthquake|Rock Slide",
+    "sha256": "17bef5f803c5db2ee3d2a061a0b21333ce822d10338f1a2da9baa1447adfc0d3"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/1b04fe27b17d8efdf99730ae.json",
+    "cache_key": "1b04fe27b17d8efdf99730ae3ab09c3694a98d414385b3b01e9b1d4db420b6e6",
+    "key": "a|88|Rock Slide|Strength",
+    "sha256": "df29a248a511d851c172e69a8269ead99c5358d2a0d6b5af52f65c2f37d21d3b"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/ed34be2ae2cb3c3bd73bc659.json",
+    "cache_key": "ed34be2ae2cb3c3bd73bc659a82d8e70ea4978f2794d1e1ec95a6e999938461a",
+    "key": "a|90|Psychic|Mega Drain",
+    "sha256": "5988512feaf537fec7245168353ed93e725d91160ee6d8fbd97f8ea34e571b79"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/1526316736c4891281c7729f.json",
+    "cache_key": "1526316736c4891281c7729fd3af76b6b25f6a37824ced73b8c3a01fde7bfb67",
+    "key": "a|92|Mega Drain|Cut",
+    "sha256": "58cbd0e1d484b5ce43bca3e48767f5b4deac0c66b1eb825ab5cfafd73949529f"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/99b3acbe09fade8e160c80bf.json",
+    "cache_key": "99b3acbe09fade8e160c80bf24137e55a4890d76f51d3f48989b594107c6a199",
+    "key": "a|93|Earthquake|Psychic",
+    "sha256": "4d9e5aa9012fdbd913ee42f3a4c48b5be679a49917fce90ca596da7b433b3bbc"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/d2c79673f5f8ce99efcedded.json",
+    "cache_key": "d2c79673f5f8ce99efceddede650726f6ee33b80b1019506b1439f2302159887",
+    "key": "a|95|Thunderbolt|Psychic",
+    "sha256": "c17a3ff0ab9c4d209367740e03cba08a6ed9dcc3bbbbca6600b4690550272930"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/ad54419ff889809812a21a30.json",
+    "cache_key": "ad54419ff889809812a21a304c58bfdf3de2f6d54b176693819cbd63e95d354f",
+    "key": "a|96|Flamethrower|Earthquake",
+    "sha256": "501c1dc0532021e2aca22e095422ff91fbb008627d92db189920c57f307965d2"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/9d1c3b956588a136cbc36858.json",
+    "cache_key": "9d1c3b956588a136cbc36858fe4a621e1aa77d939ccaa10d97c2f65c74ed2a72",
+    "key": "a|96|Flamethrower|Strength",
+    "sha256": "01e40c13cef175076286193513b94e01d039a741f52858596458ad03e4350342"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/f32244b9a5bc47da219b9ef5.json",
+    "cache_key": "f32244b9a5bc47da219b9ef54a7d4129b7766899beb914df534e7e7414930100",
+    "key": "a|98|Earthquake|Rock Slide",
+    "sha256": "ddfb3899c8f97c78c6418ecf399c436c66039135c0a4ae4272d4a91a6915f81c"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/62d3e7bffed860872fac8cdd.json",
+    "cache_key": "62d3e7bffed860872fac8cdd6fc644b2dcfcf4fda36841a5d97dc27a95f506b7",
+    "key": "a|98|Rock Slide|Strength",
+    "sha256": "350379ef0b1fe9c34fd0b2c56a0e6ac617f437b048c8e4977613a4b7ca390f8d"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/9e0b326c582363a4dba5e8f2.json",
+    "cache_key": "9e0b326c582363a4dba5e8f2dea51570d933a6b983371e827941f6a5d300548c",
+    "key": "a|99|Earthquake|Rock Slide",
+    "sha256": "a5df133280c0ddcd11624445cff35c14e81e2d0077564f5378b9dc19773a8826"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/f3e6551249ea82af8282e1db.json",
+    "cache_key": "f3e6551249ea82af8282e1dbcd59742fb9b10aaee6e0675a78f064ffe929397b",
+    "key": "a|99|Rock Slide|Strength",
+    "sha256": "f627d8ca7b74257b7dedd4b6116c155128f010f0971a88ed7db6fb13c3eda506"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/725d17070963ff9f5dd4e11f.json",
+    "cache_key": "725d17070963ff9f5dd4e11fe69f95505763e02adfac96e2f27421760799aef9",
+    "key": "a|101|Surf|Mega Drain",
+    "sha256": "d0c67766c39e051630d6c66dd645030e01a66c43f9743f3fa7250ceb57d36319"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/9db88bae3468d86df905735b.json",
+    "cache_key": "9db88bae3468d86df905735be12e0e0732654b355fa7e41d40c71ab3987c5a0e",
+    "key": "a|102|Surf|Strength",
+    "sha256": "4fe27ac42176decd5b23df422fc24c3df5272d95999efc22e01c3130ff456bf5"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/4f2a001bcbe26ad9f5efcdc2.json",
+    "cache_key": "4f2a001bcbe26ad9f5efcdc20af901ef7c9363c85e9d08533cf0e3203b4a93f5",
+    "key": "a|103|Flamethrower|Earthquake",
+    "sha256": "8a57c6e123e96ed7e5c75c868f531a643241c3b0da3d7acaa588b67f136c5c5a"
+   },
+   {
+    "cache_file": "results/r/cache/r_oracle/d79a382651047bccb5660877.json",
+    "cache_key": "d79a382651047bccb56608770e78b5ee0399a9dbdf9f1bc20248ef1b6773e605",
+    "key": "a|103|Flamethrower|Strength",
+    "sha256": "7d7ae9fac9d707dd511a2f482fa0045607b887fe391c46c6915b90381350fd76"
+   }
+  ],
+  "n_pairs": 53,
+  "reasons": [],
+  "seeds": {
+   "act": [
+    24100000,
+    24100001,
+    24100002,
+    24100003,
+    24100004,
+    24100005,
+    24100006,
+    24100007
+   ],
+   "report": [
+    24100200,
+    24100201,
+    24100202,
+    24100203,
+    24100204,
+    24100205,
+    24100206,
+    24100207
+   ],
+   "select": [
+    24100100,
+    24100101,
+    24100102,
+    24100103,
+    24100104,
+    24100105,
+    24100106,
+    24100107
+   ]
+  },
+  "stage": "jm:C",
+  "wall_s": 2521.0295962500386,
+  "written_at": "2026-10-02T23:09:28.643101+00:00"
+ },
  "jm:L": {
   "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
   "condition": "L",
