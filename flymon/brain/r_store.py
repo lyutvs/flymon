@@ -64,13 +64,6 @@ def write_summary_block(path, block: str, obj, params_list) -> Path:
     return write_json(path, doc, params_list)
 
 
-def move_block(path, src: str, dst: str, params_list) -> Path:
-    """Gate ②'s one rerun (R.5): block src is kept as dst."""
-    doc = read_summary(path)
-    doc[dst] = doc.pop(src)
-    return write_json(path, doc, params_list)
-
-
 def _seeds(inputs) -> list:
     out = []
     for k, v in dict(inputs).items():

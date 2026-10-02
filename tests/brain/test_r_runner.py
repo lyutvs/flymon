@@ -161,7 +161,6 @@ def test_gate3_stops(w, even_l, even_c, outcome):
     assert w.judgement_calls == 0
 
 
-
 class JobPool:
     """A pool returning r_jobs-shaped outputs, so a real RMeasurer (and RCache) produces gate ① / ③'s inputs. The pair
     key travels in the odour name ("G|<key>" E-grid, "E|<key>" E0); plan[(block, cond)][key] = fake_oracle flags."""
@@ -212,6 +211,7 @@ def test_gate1_and_gate3_pass_on_what_the_real_measurer_produces(w):
     g3 = real.stage_gate3()
     assert (g3["outcome"], g3["testable_b"], g3["c_even"]) == ("PASS", 12, 7)
     assert r_rules.gate3(ev["L"], ev["C"], SPEC, doc()["repro"]["csc_sha256_none"])["outcome"] == "PASS"
+
 
 def test_p_items_are_run_p_items_with_the_edit():
     spec = importlib.util.spec_from_file_location("run_p_for_test", ROOT / "scripts/run_p.py")

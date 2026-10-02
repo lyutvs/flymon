@@ -7,7 +7,10 @@ its own block exists (a failed repro and gate ②'s one INVALID rerun excepted),
 a hashed R file is dirty; a later stage after a failed repro refuses with SystemExit 4 (Reading 4). A smoke with
 problems or a gate whose outcome is not PASS blocks every later stage, so the judgement set stays unused (R.2). The
 judgement set is reached only through ctx["judgement_rows"] (r_pairs.judgement_rows) from the judgement stages; jm
-blocks carry no pair statistic (Reading 10)."""
+blocks carry no pair statistic (Reading 10). The digest-check split: the set's digests, n_a and last turn are checked
+inside r_pairs.judgement_rows (check_set) on every call — jm, seal, judge and recompute each call it afresh — and the
+runner only turns its ValueError into a refusal (_judgement_rows); the runner itself never re-derives a digest. The raw
+files' sha256 is checked against the jm manifests at the seal and again at every read (_raws / load_manifest)."""
 from __future__ import annotations
 
 import datetime as _dt
@@ -22,7 +25,7 @@ import numpy as np
 from ..agent.e_measure import MAX_ITEMS
 from ..agent.e_runner import summary_git
 from . import p_measure, r_records, r_rules, r_store
-from .h3_store import canonical
+from .h3_store import canonical, sha256_file
 from .h3_store import git_state as _h3_git_state
 from .n_rules import INVALID as P_INVALID
 from .p_rules import p_judge
@@ -366,8 +369,7 @@ class Runner:
         body = dict(dec, p_judgement=res, c1_source=c1, edit_edges=edges, seeds=list(sp.p.seeds),
                     rerun_of=(prior or {}).get("written_at"), wall_s=self.m.last_wall_s, jobs=self.m.last_jobs)
         if prior is None:
-            self._write("gate2", body)
-            return body
+            return self._write("gate2", body)               # the stamped block, as the rerun path returns
         return self._write_rerun(prior, body)
 
     def _write_rerun(self, prior: dict, body: dict) -> dict:
@@ -402,4 +404,164 @@ class Runner:
         body = dict(r_rules.gate3(L, C, sp, doc["repro"]["csc_sha256_none"]),
                     records=r_records.compare(L, C, E0, sp))
         self._write("gate3", body)
+        return body
+
+    # ---- the judgement (R.3, R.5, R.9.7; Readings 10, 15) --------------------------------------------------------
+    def _judge_chain(self, doc: dict, stage: str) -> None:
+        """Reading 15: the judgement runs once, from clean trees, on the code every earlier block ran on (the blocks
+        before gate2 may carry the INVALID gate2 run's key when gate ② was rerun after a fix)."""
+        if self.spec.smoke:
+            refuse("smoke never measures the judgement set (R.8)")
+        if not self.code_key:
+            refuse("no code key given; the judgement must run on the code the gates ran on")
+        if summary_git(self.summary_path)["judge_commits"]:
+            refuse(f"git history of {self.summary_path} already holds a judge block; the judgement set is used once "
+                   f"(R.5)")
+        old = (doc.get("gate2_invalid") or {}).get("code_key")
+        pre = set(ORDER[:ORDER.index("gate2")])
+        for b in ORDER[:ORDER.index(stage)]:
+            keys = {self.code_key} | ({old} if old and b in pre else set())
+            if doc[b].get("code_key") not in keys:
+                refuse(f"block {b}'s code key {doc[b].get('code_key')} is not the current {self.code_key}")
+            d = (doc[b].get("git") or {}).get("dirty_hashed")
+            if d is None or d:
+                refuse(f"block {b} was written with dirty hashed files (or no git record): {d}")
+
+    def _judgement_rows(self) -> list:
+        try:
+            return self.ctx["judgement_rows"]()
+        except ValueError as e:
+            refuse(f"the judgement set does not reproduce its declaration: {e}")
+
+    def stage_jm(self, name: str) -> dict:
+        """One judgement condition on the 53 pairs (resumable); the block holds raw_check only (Reading 10)."""
+        sp = self.spec
+        if name not in sp.cond_names:
+            refuse(f"unknown condition {name}; R has {sp.cond_names}")
+        stage = f"jm:{name}"
+        doc = self._require(stage)
+        self._judge_chain(doc, stage)
+        rows = self._judgement_rows()
+        seeds, cond = sp.judge_seeds(), sp.cond(name)
+        got = self.m.oracle(rows, cond, r_records.JUDGE_BLOCK, seeds)
+        rc = r_records.raw_check(got, cond, [row_key(r) for r in rows], seeds)
+        man = [dict(m, sha256=sha256_file(m["cache_file"])) for m in rc["manifest"]]
+        body = dict(rc, manifest=man, seeds=seeds, condition=name, wall_s=self.m.last_wall_s, jobs=self.m.last_jobs)
+        self._write(stage, body)
+        return body
+
+    def _raws(self, doc: dict) -> tuple:
+        raws, bad = {}, []
+        for n in self.spec.cond_names:
+            got, b = r_store.load_manifest(doc[f"jm:{n}"]["manifest"])
+            raws[n] = got
+            bad += [f"{n}: {x}" for x in b]
+        return raws, bad
+
+    def stage_seal(self) -> dict:
+        """R.9.7: pre-read validity; SEALED -> the archive copy. The block (manifest included) is committed before the
+        judge reads anything."""
+        doc = self._require("seal")
+        self._judge_chain(doc, "seal")
+        sp = self.spec
+        rows = self._judgement_rows()
+        keys = [row_key(r) for r in rows]
+        raws, bad = self._raws(doc)
+        v = r_records.preread_validity({n: doc[f"jm:{n}"] for n in sp.cond_names}, raws, sp, self.ctx["z"], keys,
+                                       self.code_key, doc["repro"]["csc_sha256_none"],
+                                       r_records.judge_inputs(self.m, rows, sp))
+        reasons = bad + v["reasons"]
+        status = r_rules.INVALID if v["invalid"] else (r_rules.NOT_READ if reasons else r_rules.SEALED)
+        manifest = [dict(m, condition=n) for n in sp.cond_names for m in doc[f"jm:{n}"]["manifest"]]
+        body = dict(status=status, reasons=reasons, invalid=v["invalid"], checks=v["checks"], manifest=manifest,
+                    n_files=len(manifest), archive=None,
+                    set=dict(digest_e0_b=sp.digest_e0_b, digest_e0_a=sp.digest_e0_a, digest_keys=sp.digest_keys,
+                             last_turn=sp.last_turn, n_b=sp.n_b, n_a=sp.n_a))
+        if status == r_rules.SEALED:
+            stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            dest = self.archive_root / f"{stamp}-{(git_state().get('commit') or 'nocommit')[:12]}"
+            body["archive"] = dict(dir=str(dest), files=r_store.archive_copy([m["cache_file"] for m in manifest], dest,
+                                                                              self.archive_root))
+        self._write("seal", body)
+        return body
+
+    def _read(self, doc: dict) -> dict:
+        """The bands and records from the sealed raw files (sha re-checked): R.3's order with R.9.5's G_fail, R.7's
+        sentence, R.6's records. g_fail counts only pairs present in both L and C, which is safe only because the seal
+        (R.9.7 completeness over condition × pair) ran first and the sha re-check here pins the sealed files."""
+        sp = self.spec
+        keys = [row_key(r) for r in self._judgement_rows()]
+        raws, bad = self._raws(doc)
+        if bad:
+            refuse(f"raw files changed since the seal: {bad[:3]}")
+        seeds = sp.judge_seeds()
+        s = {n: r_records.cond_summary(raws[n], sp.cond(n), sp, self.ctx["z"], keys, seeds) for n in sp.cond_names}
+        L, C, E0 = (s[n] for n in sp.cond_names)
+        if L["aggregate"] is None or C["aggregate"] is None:
+            refuse("no (b) pair to aggregate")
+        aL, aC = L["aggregate"], C["aggregate"]
+        gf = r_rules.g_fail(L["pairs"], C["pairs"], sp)
+        rb = r_rules.read_band(aL["testable_b"], aC["testable_b"], aL["F_a"], gf["g_fail"], aL["n_b"], aL["n_a"],
+                               aL["naive_a"], sp)
+        out = dict(band=rb["band"], reason=rb["reason"], n=aL["testable_b"], c=aC["testable_b"], F_a=aL["F_a"],
+                   naive_a=aL["naive_a"], n_b=aL["n_b"], n_a=aL["n_a"], g_fail=gf)
+        if rb["band"] == r_rules.NOT_READ:
+            return dict(out, status=r_rules.NOT_READ, sentence=None)
+        ax = gf["axes"]
+        fields = dict(n=aL["testable_b"], c=aC["testable_b"], f_a=aL["F_a"], naive_a=aL["naive_a"], T=sp.last_turn,
+                      k_even=doc["gate3"]["testable_b"], pb_L=ax["b"]["pun_L"], pb_C=ax["b"]["pun_C"],
+                      pa_L=ax["a"]["pun_L"], pa_C=ax["a"]["pun_C"], k_b=ax["b"]["pass_to_fail"],
+                      k_a=ax["a"]["pass_to_fail"], reason=rb["reason"])
+        if rb["band"] == r_rules.B_FA:
+            out["f_a_possible"] = rb["f_a_possible"]
+        return dict(out, status=r_rules.READ, sentence=r_rules.sentence(rb["band"], fields),
+                    records=r_records.compare(L, C, E0, sp), pairs={n: s[n]["pairs"] for n in sp.cond_names},
+                    oc_sha256=doc["oc"]["sha256"], p_label=doc["gate2"]["label"], k_even=doc["gate3"]["testable_b"])
+
+    def stage_judge(self) -> dict:
+        doc = self._require("judge")
+        self._judge_chain(doc, "judge")
+        if doc["seal"].get("status") != r_rules.SEALED:
+            refuse(f"block seal's status is {doc['seal'].get('status')}: R reads only a sealed set (R.9.7)")
+        out = self._read(doc)
+        if out["status"] != r_rules.READ:
+            return out                                   # NOT_READ: nothing written (R.5's first row)
+        self._write("judge", out)
+        return out
+
+    # ---- recovery after reading (R.5, Reading 17) ------------------------------------------------------------------
+    def _require_after_judge(self, stage: str) -> dict:
+        self._clean(stage)
+        doc = self._doc()
+        if "judge" not in doc:
+            refuse(f"stage {stage} needs block judge (R.5: only after the judgement was read)")
+        if "invalid_run" in doc:
+            refuse("block invalid_run exists: this set is closed (R.5)")
+        return doc
+
+    def stage_recompute(self, note: str) -> dict:
+        """R.5 row 2: an analysis or summary defect after reading — the same sealed raw data recomputed, no
+        measurement; appended to block recompute with the note."""
+        if not note:
+            refuse("--note is required (R.5: the correction is recorded)")
+        doc = self._require_after_judge("recompute")
+        out = self._read(doc)
+        entry = dict(note=note, status=out["status"], band=out["band"], reason=out["reason"], n=out["n"], c=out["c"],
+                     F_a=out["F_a"], naive_a=out["naive_a"], g_fail=out["g_fail"], sentence=out.get("sentence"),
+                     differs_from_judge=bool(out["band"] != doc["judge"]["band"]
+                                             or out.get("sentence") != doc["judge"].get("sentence")),
+                     code_key=self.code_key, git=git_state(),
+                     written_at=_dt.datetime.now(_dt.timezone.utc).isoformat())
+        r_store.write_summary_block(self.summary_path, "recompute", list(doc.get("recompute", [])) + [entry],
+                                    self.plist)
+        return entry
+
+    def stage_invalid_run(self, note: str) -> dict:
+        """R.5 row 3: a measurement defect after reading — INVALID_RUN, the same set never runs again."""
+        if not note:
+            refuse("--note is required (R.5)")
+        doc = self._require_after_judge("invalid_run")
+        body = dict(status=r_rules.INVALID_RUN, note=note, judge_band=doc["judge"]["band"],
+                    rule="R.5: the same set is never run again; a replacement set needs a new declaration (user)")
+        self._write("invalid_run", body)
         return body

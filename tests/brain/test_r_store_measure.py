@@ -33,8 +33,7 @@ def test_guard_and_summary_blocks(tmp_path, monkeypatch):
     assert json.loads(S.write_json("results/r/x.json", {"a": 1}, []).read_text()) == {"a": 1}
     S.write_summary_block(S.SUMMARY, "repro", {"n": 1}, [])
     S.write_summary_block(S.SUMMARY, "smoke", {"m": 2}, [])
-    S.move_block(S.SUMMARY, "smoke", "smoke_old", [])
-    assert S.read_summary() == {"repro": {"n": 1}, "smoke_old": {"m": 2}}
+    assert S.read_summary() == {"repro": {"n": 1}, "smoke": {"m": 2}}
     assert not list(Path("results/summary").glob(".*.tmp"))
 
 

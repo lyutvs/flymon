@@ -8,6 +8,8 @@ from pathlib import Path
 
 from flymon.brain import r_runner as RR
 from flymon.brain.config import Params
+from flymon.brain.h3_store import canonical
+from flymon.brain.r_measure import RMeasurer
 from flymon.brain.r_spec import SPEC
 from tests.brain.r_fixtures import READOUT, TYPES, Z, fake_oracle, fake_rows, key_of
 
@@ -35,12 +37,18 @@ def arm_result(direction, arm, seed, edit="none"):
 class Scripted:
     """RMeasurer's interface. plan[(block, cond)][pair key] = (r_ok, p_ok, bal) (default: punish passes only);
     override[(block, cond)] = dict(edges=, edit=, sha=) changes one block's condition only; fail_once makes the next
-    oracle call raise like an interrupted measurement."""
+    oracle call raise like an interrupted measurement. inputs() is a real RMeasurer's (Params()), and every oracle
+    entry stores it the way RCache.put does, so the seal's stored-inputs check (r_records.judge_inputs) sees what a
+    real run would write."""
 
     def __init__(self, plan=None, kc=0.045, override=None):
         self.plan, self.kc, self.override = plan or {}, kc, override or {}
         self.kc_override, self.fail_once = {}, False
         self.calls, self.last_wall_s, self.last_jobs = [], 2.0, 1
+        self._rm = RMeasurer(None, None, SPEC, Params(), READOUT, Z, TYPES, 100)
+
+    def inputs(self, row, cond, block, seeds):
+        return self._rm.inputs(row, cond, block, seeds)
 
     def activity(self, odours, edit, s, seeds, block):
         self.calls.append(("activity", block, len(odours)))
@@ -73,7 +81,8 @@ class Scripted:
             ck = hashlib.sha256(f"{block}|{cond.name}|{k}".encode()).hexdigest()
             f = Path("results/r/cache/r_oracle") / f"{ck[:24]}.json"
             f.parent.mkdir(parents=True, exist_ok=True)
-            f.write_text(json.dumps({"key": ck, "kind": "r_oracle", "inputs": {}, "result": res}))
+            ins = json.loads(canonical(self.inputs(r, cond, block, seeds)))
+            f.write_text(json.dumps({"key": ck, "kind": "r_oracle", "inputs": ins, "result": res}))
             out.append(dict(key=k, result=json.loads(json.dumps(res)), cache_key=ck, cache_file=str(f)))
         return out
 
