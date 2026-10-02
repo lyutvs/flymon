@@ -4,7 +4,9 @@ Readings 7-13 of the plan fix the open choices: two-sided Wilcoxon (all-zero dif
 fewer than two points or a constant input (None meets no threshold), F/S always Q0's, the F/S-disagreement rule
 downgrading only a 일치. Q.6.9: (c) is the LOWERED-s manipulation (s 0.7, fallback 0.8); ①'s 일치 needs
 rho(base naive P_X, dr_P_c) >= +rho_min over pairs with naive P_X > 0 only, the P_X = 0 pairs recorded as "already at
-floor". Part 1: helpers, F/S stability, noise floor, rules ⑤ ① ③ (② ④, sensitivity and assembly follow)."""
+floor". Part 1: helpers, F/S stability, noise floor, rules ⑤ ① ③. Part 2: ② (increase only, apl_mbon05 only;
+the floor guard of Q.6.3 kept), ④ (two-sided, direction recorded, ①-overlap rho on ①'s pair set), sensitivity
+(borderline / A·Y cancel pairs dropped from F), records and assembly (weak recomputed from the s_c block)."""
 from __future__ import annotations
 
 import math
@@ -159,3 +161,183 @@ def rule_reach(B, F, S, stab, spec) -> dict:
         lab, why = UNDECIDED, f"AUC {auc}, ρ {rho}"
     lab, why = _fs_block(lab, why, stab, spec)
     return dict(rec, label=lab, why=why)
+
+
+# ================================================================ ② APL 억제 and ④ 작동점 (Q.6.3, Q.6.5, Q.6.6, Q.6.9)
+def paired_shift(Cv, B, F, noise, spec) -> dict:
+    """Q.6.3: per-F-pair dr_P (condition - baseline), two-sided Wilcoxon, threshold max(delta_min, noise_mult x noise)."""
+    d = {k: Cv[k]["r_P"] - B[k]["r_P"] for k in F}
+    return dict(delta=d, median=med(list(d.values())), p=wilcoxon_p(list(d.values())),
+                threshold=max(spec.delta_min, spec.noise_mult * noise))
+
+
+def _cn(spec) -> dict:
+    """Condition names by role, unpacked from spec.cond_names (base, (b), (b-record), (c), (d) lo, (d) hi)."""
+    base, b, b_rec, c, lo, hi = spec.cond_names
+    return dict(base=base, b=b, b_rec=b_rec, c=c, lo=lo, hi=hi)
+
+
+def _rho_keys(B, spec) -> list:
+    """The same restriction as ①'s rho (Q.6.9): pairs with BASELINE naive P_X > 0 when rho_positive_only."""
+    keys = sorted(B)
+    return [k for k in keys if B[k]["naive_px"] > 0] if spec.rho_positive_only else keys
+
+
+def rule_apl(Cv, B, F, noise, spec, role: str = "primary") -> dict:
+    """② (Q.6.3 + Q.6.6): increase only — median dr_P >= threshold and Wilcoxon p < wilcoxon_p, and the F median of
+    the ratio |dP_X| / naive P_X rises over the baseline. Reads only the table it is given: assemble passes
+    apl_mbon05 (primary); apl_nonkc is a record built by a separate call and never gates or labels ②."""
+    if Cv is None:
+        return dict(label=UNDECIDED, why="(b) INVALID — 결과를 쓰지 않음", role=role)
+    sh = paired_shift(Cv, B, F, noise, spec)
+    rd = med([Cv[k]["ratio"] - B[k]["ratio"] for k in F if Cv[k]["ratio"] is not None and B[k]["ratio"] is not None])
+    nm = med([B[k]["naive_px"] for k in F])
+    high = [k for k in F if B[k]["naive_px"] >= nm]
+    # Q.6.3: "증가가 바닥 쌍에만 있으면 ①과 겹침" 가드는 유지한다 — the rise must reach >= floor_guard_pairs F pairs
+    # at or above the F median naive P_X.
+    guard = sum(sh["delta"][k] >= sh["threshold"] for k in high)
+    rec = dict(sh, ratio_diff_median=rd, naive_px_F_median=nm, guard_pairs=guard, role=role)
+    main = sh["p"] < spec.wilcoxon_p and sh["median"] is not None and sh["median"] >= sh["threshold"]
+    if sh["median"] is not None and sh["median"] <= 0:
+        lab, why = MISMATCH, f"중앙값 Δr_P {sh['median']:.3f} ≤ 0"
+    elif main and rd is not None and rd > 0:
+        if guard >= spec.floor_guard_pairs:
+            lab, why = MATCH, (f"중앙값 Δr_P {sh['median']:.3f} ≥ {sh['threshold']:.3f}, p {sh['p']:.4f}, "
+                               f"비율 차 {rd:.3f} > 0, 순진 P_X 중앙값 이상 F {guard}쌍")
+        else:
+            lab, why = UNDECIDED, f"증가가 순진 P_X 낮은 F 쌍에만({guard}쌍) — ①과 겹침"
+    else:
+        lab, why = UNDECIDED, f"중앙값 {sh['median']}, p {sh['p']}, 비율 차 {rd}"
+    return dict(rec, label=lab, why=why)
+
+
+def _direction(m) -> str | None:
+    return None if m is None or m == 0 else ("증가" if m > 0 else "감소")
+
+
+def rule_operating(L, H, B, F, noise, spec) -> dict:
+    """④ (Q.6.5, Q.6.9): per scale, |median dr_P| >= threshold and two-sided Wilcoxon p < wilcoxon_p (direction
+    recorded). ①-overlap rho(base naive P_X, dr_P) over ①'s pair set: mv_lo overlaps when rho >= +rho_min, mv_hi when
+    rho <= -rho_min. 불일치 needs both scales valid with |median dr_P| < noise floor."""
+    rk = _rho_keys(B, spec)
+    cn = _cn(spec)
+    per = {}
+    for name, V, lo in ((cn["lo"], L, True), (cn["hi"], H, False)):
+        if V is None:
+            per[name] = dict(valid=False)
+            continue
+        sh = paired_shift(V, B, F, noise, spec)
+        rho = spearman([B[k]["naive_px"] for k in rk], [V[k]["r_P"] - B[k]["r_P"] for k in rk])
+        overlap = rho is not None and (rho >= spec.rho_min if lo else rho <= -spec.rho_min)
+        m = sh["median"]
+        size = None if m is None else (abs(m) if spec.change_two_sided else m)
+        big = sh["p"] < spec.wilcoxon_p and size is not None and size >= sh["threshold"]
+        small = m is not None and abs(m) < noise
+        per[name] = dict(valid=True, median=m, direction=_direction(m), p=sh["p"], threshold=sh["threshold"],
+                         rho=rho, rho_n=len(rk), overlap=overlap, big=big, small=small, delta=sh["delta"])
+    valid = [n for n in per if per[n]["valid"]]
+    if not valid:
+        lab, why = UNDECIDED, "두 배율 모두 INVALID"
+    elif any(per[n]["big"] and not per[n]["overlap"] for n in valid):
+        lab, why = MATCH, ", ".join(f"{n} |중앙값 Δr_P| {abs(per[n]['median']):.3f} ({per[n]['direction']}), "
+                                    f"p {per[n]['p']:.4f}" for n in valid if per[n]["big"] and not per[n]["overlap"])
+    elif len(valid) == len(per) and all(per[n]["small"] for n in valid):
+        lab, why = MISMATCH, f"유효한 두 배율 모두 |중앙값 Δr_P| < 잡음 바닥 {noise:.3f}"
+    elif any(per[n]["big"] for n in valid):
+        lab, why = UNDECIDED, "변화가 순진 P_X 방향으로 몰림 — ①과 겹침"
+    else:
+        lab, why = UNDECIDED, "변화가 기준에 못 미침" + ("" if len(valid) == len(per) else " (한 배율 INVALID)")
+    return dict(label=lab, why=why, per=per, limitation=spec.mv_limitation)
+
+
+# ================================================================ records and assembly
+def transitions(B, Cv, spec) -> dict | None:
+    if Cv is None:
+        return None
+    out = {"pass_to_pass": 0, "pass_to_fail": 0, "fail_to_pass": 0, "fail_to_fail": 0}
+    for k in sorted(B):
+        a = "pass" if B[k]["r_P"] >= spec.split_r else "fail"
+        b = "pass" if Cv[k]["r_P"] >= spec.split_r else "fail"
+        out[f"{a}_to_{b}"] += 1
+    return out
+
+
+def candidates(V0, B, F, S, stab, noise, q1_vals: dict, s_c, spec) -> dict:
+    cn = _cn(spec)
+    return dict(variation=rule_variation(V0, B, F, S, stab, spec),
+                floor=rule_floor(V0, B, F, S, stab, q1_vals.get(cn["c"]), s_c, spec),
+                apl=rule_apl(q1_vals.get(cn["b"]), B, F, noise, spec),          # (b-record) never enters ②
+                reach=rule_reach(B, F, S, stab, spec),
+                operating=rule_operating(q1_vals.get(cn["lo"]), q1_vals.get(cn["hi"]), B, F, noise, spec))
+
+
+SYMBOL = dict(floor="① 바닥", apl="② APL 억제", reach="③ 편집 도달", operating="④ 작동점", variation="⑤ 변동")
+
+
+def sentences(cands: dict, spec) -> list:
+    out = []
+    for k in ("floor", "apl", "reach", "operating", "variation"):
+        c = cands[k]
+        s = f"{SYMBOL[k]}: {c['label']} — {c['why']}"
+        if k == "operating":
+            s += f" (한계: {spec.mv_limitation})"
+        out.append(s)
+    return out
+
+
+def _labels(cands: dict) -> dict:
+    return {k: c["label"] for k, c in cands.items()}
+
+
+def s_up_note(spec) -> str:
+    """Q.6.9: the condition still named "s_up" is (c) = the LOWERED-s manipulation."""
+    first, fallback = spec.s_down
+    return f"{_cn(spec)['c']} = (c) s 하향 조작 (Q.6.9: s {first}, 대역 밖이면 {fallback})"
+
+
+def _s_c_used(s_c: dict, spec) -> dict:
+    """weak is recomputed here (|s - base s| < s_weak, base s = spec.strength = 1.0), never trusted from the input."""
+    s = s_c.get("s")
+    weak = s is not None and abs(float(s) - spec.strength) < spec.s_weak
+    return dict(s_c, weak=bool(weak), weak_in=s_c.get("weak"), note=s_up_note(spec))
+
+
+def assemble(q0: dict, q1: dict, s_c: dict, spec) -> dict:
+    sc = _s_c_used(s_c, spec)
+    cn = _cn(spec)
+    base = q1.get(cn["base"])
+    if q0["status"] != "OK" or base is None or base["status"] != "OK":
+        why = "Q0 INVALID" if q0["status"] != "OK" else "기준선 INVALID"
+        cands = {k: dict(label=UNDECIDED, why=why) for k in SYMBOL}
+        return dict(candidates=cands, sentences=sentences(cands, spec), invalid=why, s_c=sc,
+                    s_up_note=sc["note"])
+    V0, B = q0["vals"], base["vals"]
+    F, S = q0["split"]["F"], q0["split"]["S"]
+    stab = fs_stability(F, S, {k: v["r"] for k, v in B.items()}, spec)
+    noise = noise_floor(V0, B)
+    vals = {n: (q1[n]["vals"] if q1.get(n) and q1[n]["status"] == "OK" else None) for n in spec.cond_names if n != cn["base"]}
+    cands = candidates(V0, B, F, S, stab, noise, vals, sc, spec)
+    border = [k for k in F if k in set(q0["borderline"])]
+    F_nb = [k for k in F if k not in set(border)]
+    F_nc = [k for k in F if k not in set(q0["cancel"])]
+    sens_b = candidates(V0, B, F_nb, S, stab, noise, vals, sc, spec)
+    sens_c = candidates(V0, B, F_nc, S, stab, noise, vals, sc, spec)
+    cancel_base = [k for k in F if B[k]["r_P"] >= spec.split_r and B[k]["r"] < spec.split_r]
+    decomp = {g: {ph: {f: med([V[k]["decomp"][f] for k in keys if "decomp" in V[k]])
+                       for f in ("dA_X", "dA_Y", "dP_X", "dP_Y")} for ph, V in (("q0", V0), ("base", B))}
+              for g, keys in (("F", F), ("S", S))}
+    conds = {n: {f: q1[n].get(f) for f in ("status", "reasons", "kc_median", "d6a_over_share", "apl_out_median",
+                                            "naive_px_median", "jaccard_median", "condition")}
+             for n in spec.cond_names if q1.get(n)}
+    records = dict(conditions=conds, noise_floor=noise, s_c=sc, s_up_note=sc["note"],
+                   transitions={n: transitions(B, vals.get(n), spec) for n in spec.cond_names if n != cn["base"]},
+                   decomposition=decomp,
+                   apl_nonkc=rule_apl(vals.get(cn["b_rec"]), B, F, noise, spec, role="record"),
+                   stop_share={k: dict(q0=V0[k].get("stop_naive"), base_naive=B[k].get("stop_naive"),
+                                       base_post=B[k].get("stop_post")) for k in sorted(B)})
+    return dict(candidates=cands, sentences=sentences(cands, spec), fs=stab, noise_floor=noise,
+                borderline=border, sensitivity_borderline=_labels(sens_b),
+                sensitivity_borderline_detail=sens_b, cancel=dict(q0=list(q0["cancel"]), base=cancel_base,
+                                                                  note=spec.cancel_note),
+                sensitivity_cancel=_labels(sens_c), sensitivity_cancel_detail=sens_c, records=records,
+                s_c=sc, s_up_note=sc["note"], classification_unstable=stab["unstable"])

@@ -167,3 +167,131 @@ def test_reach_drops_undefined_ratios_and_counts_them():
         B[k] = dict(B[k], ratio=None)
     rec = R.rule_reach(B, F, S, STABLE, SPEC)
     assert rec["n_ratio_undefined"] == 2 and rec["label"] == R.MATCH
+
+
+# ================================================================ part 2: ② ④, sensitivity, assembly (Task 7)
+NOISE = 0.1
+
+
+def _apl(delta_fn, ratio_up=0.1):
+    B = table(lambda i, k: V(naive_px=2.0 + i, r_P=1.0, ratio=0.3))
+    C = table(lambda i, k: V(naive_px=2.0 + i, r_P=1.0 + delta_fn(i, k), ratio=0.3 + ratio_up))
+    return C, B
+
+
+def test_apl_match_guard_and_mismatch():
+    C, B = _apl(lambda i, k: 1.0 + 0.1 * i)
+    assert R.rule_apl(C, B, F, NOISE, SPEC)["label"] == R.MATCH
+    C, B = _apl(lambda i, k: (2.0 + 0.1 * i) if i < 6 else 0.01 * (i + 1))         # rise only in low-naive F pairs
+    rec = R.rule_apl(C, B, F, NOISE, SPEC)
+    assert rec["label"] == R.UNDECIDED and rec["guard_pairs"] == 0
+    C, B = _apl(lambda i, k: -0.2 - 0.01 * i)
+    assert R.rule_apl(C, B, F, NOISE, SPEC)["label"] == R.MISMATCH                  # increase only: a fall is 불일치
+    C, B = _apl(lambda i, k: 1.0 + 0.1 * i, ratio_up=-0.1)                         # ratio must also rise
+    assert R.rule_apl(C, B, F, NOISE, SPEC)["label"] == R.UNDECIDED
+    assert R.rule_apl(None, B, F, NOISE, SPEC)["label"] == R.UNDECIDED
+
+
+def test_threshold_uses_the_noise_floor():
+    C, B = _apl(lambda i, k: 0.7)
+    assert R.paired_shift(C, B, F, 0.4, SPEC)["threshold"] == pytest.approx(0.8)
+    assert R.paired_shift(C, B, F, 0.1, SPEC)["threshold"] == pytest.approx(0.5)
+
+
+def _mv(sign):
+    B = table(lambda i, k: V(naive_px=2.0 + i, r_P=1.0))
+    return table(lambda i, k: V(naive_px=2.0 + i, r_P=1.0 + sign * (1.0 + 0.1 * i))), B
+
+
+def test_operating_directional_overlap():
+    up, B = _mv(+1)                     # Δr_P rises with naive P_X: ρ = +1
+    rec = R.rule_operating(up, None, B, F, NOISE, SPEC)
+    assert rec["label"] == R.UNDECIDED and rec["per"]["mv_lo"]["overlap"]           # lo: ρ ≥ +0.4 overlaps
+    rec = R.rule_operating(None, up, B, F, NOISE, SPEC)
+    assert rec["label"] == R.MATCH and not rec["per"]["mv_hi"]["overlap"]           # hi overlaps only for ρ ≤ −0.4
+    assert rec["per"]["mv_hi"]["direction"] == "증가"
+    down, B = _mv(-1)                   # ρ = −1, median Δ negative: magnitude counts (two-sided, Q.6.9)
+    assert R.rule_operating(None, down, B, F, NOISE, SPEC)["label"] == R.UNDECIDED
+    rec = R.rule_operating(down, None, B, F, NOISE, SPEC)
+    assert rec["label"] == R.MATCH and rec["per"]["mv_lo"]["direction"] == "감소"
+    assert SPEC.mv_limitation in rec["limitation"]
+
+
+def test_operating_rho_uses_floors_pair_set():
+    up, B = _mv(+1)
+    for k, junk in zip(F[:2], (-9.0, -7.0)):                     # two pairs already at floor with wild dr_P
+        B[k] = dict(B[k], naive_px=0.0)
+        up[k] = dict(up[k], r_P=B[k]["r_P"] + junk)
+    per = R.rule_operating(up, None, B, F, NOISE, SPEC)["per"]["mv_lo"]
+    assert per["rho_n"] == 19 and per["rho"] == pytest.approx(1.0) and per["overlap"]
+    per_all = R.rule_operating(up, None, B, F, NOISE, dataclasses.replace(SPEC, rho_positive_only=False))["per"]
+    assert per_all["mv_lo"]["rho_n"] == 21 and per_all["mv_lo"]["rho"] != pytest.approx(1.0)
+
+
+def test_operating_mismatch_needs_both_valid_and_small():
+    B = table(lambda i, k: V(r_P=1.0))
+    same = table(lambda i, k: V(r_P=1.0))
+    assert R.rule_operating(same, same, B, F, 0.2, SPEC)["label"] == R.MISMATCH
+    assert R.rule_operating(same, None, B, F, 0.2, SPEC)["label"] == R.UNDECIDED
+    assert R.rule_operating(None, None, B, F, 0.2, SPEC)["why"].startswith("두 배율 모두 INVALID")
+
+
+def _block(vals, status="OK"):
+    return dict(status=status, vals=vals, kc_median=0.05, d6a_over_share=0.0, apl_out_median=0.1,
+                naive_px_median=20.0, jaccard_median=0.04, reasons=[], condition={})
+
+
+def _q0_q1():
+    V0 = table(lambda i, k: V(r=(1.0 if k in F else 3.0), r_P=(2.5 if k == F[0] else 1.0)))
+    V0[F[1]] = dict(V0[F[1]], r=1.9)
+    q0 = dict(status="OK", vals=V0, split=dict(F=F, S=S), borderline=[F[1]], cancel=[F[0]])
+    q1 = {n: _block(table(lambda i, k: V(r=(1.0 if k in F else 3.0)))) for n in SPEC.cond_names}
+    return q0, q1
+
+
+def test_assemble_shapes_sensitivity_and_cancel():
+    q0, q1 = _q0_q1()
+    q1["mv_hi"] = _block({}, status="INVALID")
+    out = R.assemble(q0, q1, dict(s=0.7, weak=False), SPEC)
+    assert set(out["candidates"]) == {"variation", "floor", "apl", "reach", "operating"}
+    assert all(c["label"] in (R.MATCH, R.MISMATCH, R.UNDECIDED) for c in out["candidates"].values())
+    assert set(out["sensitivity_borderline"]) == set(out["candidates"]) == set(out["sensitivity_cancel"])
+    assert out["cancel"]["q0"] == [F[0]] and out["records"]["apl_nonkc"]["role"] == "record"
+    assert out["fs"]["disagree"] == 0 and len(out["sentences"]) == 5
+    assert out["candidates"]["operating"]["per"]["mv_hi"]["valid"] is False
+    assert SPEC.mv_limitation in out["sentences"][3]
+    assert "하향" in out["records"]["s_up_note"] and out["records"]["s_c"]["s"] == 0.7
+
+
+def test_assemble_recomputes_weak_from_s():
+    q0, q1 = _q0_q1()
+    out = R.assemble(q0, q1, dict(s=0.9, weak=False), SPEC)         # |0.9 - 1| < 0.15: weak whatever the flag says
+    assert out["s_c"]["weak"] is True and out["s_c"]["weak_in"] is False
+    assert out["candidates"]["floor"]["label"] == R.UNDECIDED and SPEC.weak_note in out["candidates"]["floor"]["why"]
+    out = R.assemble(q0, q1, dict(s=0.7, weak=True), SPEC)
+    assert out["s_c"]["weak"] is False and out["candidates"]["floor"]["weak"] is False
+
+
+def test_apl_nonkc_never_labels_rule_two():
+    q0, q1 = _q0_q1()
+    q1["apl_mbon05"] = _block(table(lambda i, k: V(r=(1.0 if k in F else 3.0), r_P=2.0 + 0.1 * i, ratio=0.5)))
+    ref = R.assemble(q0, q1, dict(s=0.7, weak=False), SPEC)["candidates"]["apl"]
+    assert ref["label"] == R.MATCH
+    for nonkc in (_block({}, status="INVALID"),
+                  _block(table(lambda i, k: V(r_P=-40.0 - i, ratio=0.0)))):
+        q1["apl_nonkc"] = nonkc
+        got = R.assemble(q0, q1, dict(s=0.7, weak=False), SPEC)
+        assert got["candidates"]["apl"]["label"] == ref["label"]
+        assert got["candidates"]["apl"]["median"] == ref["median"]
+    del q1["apl_nonkc"]
+    assert R.assemble(q0, q1, dict(s=0.7, weak=False), SPEC)["candidates"]["apl"]["label"] == ref["label"]
+
+
+def test_assemble_with_invalid_q0_or_base():
+    q0 = dict(status="INVALID", vals={}, split=None, borderline=[], cancel=[])
+    out = R.assemble(q0, {n: _block({}) for n in SPEC.cond_names}, dict(s=0.7, weak=False), SPEC)
+    assert all(c["label"] == R.UNDECIDED for c in out["candidates"].values())
+    q0, q1 = _q0_q1()
+    q1["base"] = _block({}, status="INVALID")
+    out = R.assemble(q0, q1, dict(s=0.7, weak=False), SPEC)
+    assert out["invalid"] == "기준선 INVALID" and all(c["label"] == R.UNDECIDED for c in out["candidates"].values())
