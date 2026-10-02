@@ -5405,6 +5405,3042 @@
   "wall_s": 2564.10141804209,
   "written_at": "2026-10-02T22:27:10.163571+00:00"
  },
+ "judge": {
+  "F_a": 2,
+  "band": "B_\ucc98\ubc8c\uac00\ub4dc",
+  "c": 6,
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "g_fail": {
+   "axes": {
+    "a": {
+     "drop": false,
+     "fail": true,
+     "fail_to_pass": 3,
+     "flips": true,
+     "n": 32,
+     "pass_to_fail": 3,
+     "pun_C": 17,
+     "pun_L": 17
+    },
+    "b": {
+     "drop": false,
+     "fail": false,
+     "fail_to_pass": 2,
+     "flips": false,
+     "n": 21,
+     "pass_to_fail": 2,
+     "pun_C": 12,
+     "pun_L": 12
+    }
+   },
+   "g_fail": true
+  },
+  "git": {
+   "commit": "024a2afb3ab8b5f1135072cfb46bce9bf92a5fea",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "k_even": 16,
+  "n": 12,
+  "n_a": 32,
+  "n_b": 21,
+  "naive_a": 3,
+  "oc_sha256": "6a81bc5f1da1e8ecadbb5724ec2da4ac84e0b3d41aca32573ba27dc04666b7b6",
+  "p_label": "LEARNS_CONFIRMATORY",
+  "pairs": {
+   "C": [
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": 1.0239471184692996,
+     "key": "b|65|Psychic vs Blastoise|Psychic vs Snorlax",
+     "m": 1.1212777094001265,
+     "naive": false,
+     "p": -1.1212777094001265,
+     "punish_pass": false,
+     "r": 2.4549433765140494,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -3.8985737712365376,
+     "key": "b|66|Psychic vs Kangaskhan|Psychic vs Hypno",
+     "m": 0.9634648541521499,
+     "naive": false,
+     "p": -0.9634648541521499,
+     "punish_pass": false,
+     "r": 2.832712792884369,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": 1.3638858217690633,
+     "key": "b|67|Psychic vs Charizard|Psychic vs Nidoking",
+     "m": 0.46542158641628584,
+     "naive": false,
+     "p": -2.2254370905691534,
+     "punish_pass": true,
+     "r": 0.46542158641628584,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": 2.9225944540362234,
+     "key": "b|68|Flamethrower vs Kangaskhan|Flamethrower vs Hypno",
+     "m": -0.5943683507605882,
+     "naive": false,
+     "p": 0.03757304638831381,
+     "punish_pass": false,
+     "r": -0.5943683507605882,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": -0.9856274559724169,
+     "key": "b|70|Thunderbolt vs Charizard|Thunderbolt vs Nidoking",
+     "m": 2.1239178926582385,
+     "naive": false,
+     "p": -2.1239178926582385,
+     "punish_pass": true,
+     "r": 3.018623193905984,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 5.230882783859932,
+     "key": "b|73|Earthquake vs Poliwrath|Earthquake vs Exeggutor",
+     "m": 2.5287572548308024,
+     "naive": false,
+     "p": -2.8020919815372625,
+     "punish_pass": true,
+     "r": 2.5287572548308024,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 2.6307617382629367,
+     "key": "b|73|Surf vs Poliwrath|Surf vs Exeggutor",
+     "m": 4.926772174044789,
+     "naive": false,
+     "p": -8.896986569967524,
+     "punish_pass": true,
+     "r": 4.926772174044789,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": 13.645500132938128,
+     "key": "b|73|Strength vs Poliwrath|Strength vs Exeggutor",
+     "m": 0.7684539695626673,
+     "naive": false,
+     "p": -2.048961023475831,
+     "punish_pass": true,
+     "r": 0.7684539695626673,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": 6.747755426435126,
+     "key": "b|77|Earthquake vs Tentacruel|Earthquake vs Exeggutor",
+     "m": 0.2919863711583584,
+     "naive": false,
+     "p": -5.230361219552396,
+     "punish_pass": true,
+     "r": 0.2919863711583584,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": -0.15204768465287957,
+     "key": "b|77|Surf vs Tentacruel|Surf vs Exeggutor",
+     "m": 1.7019157273742562,
+     "naive": true,
+     "p": -1.904471162134703,
+     "punish_pass": false,
+     "r": 1.7019157273742562,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 6.579661591031873,
+     "key": "b|77|Strength vs Tentacruel|Strength vs Exeggutor",
+     "m": 1.408642050850514,
+     "naive": false,
+     "p": -4.908491455523289,
+     "punish_pass": true,
+     "r": 1.408642050850514,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": 2.10388343892221,
+     "key": "b|78|Thunderbolt vs Kangaskhan|Thunderbolt vs Hypno",
+     "m": -0.028755820746957584,
+     "naive": false,
+     "p": -4.109773722811871,
+     "punish_pass": true,
+     "r": -0.028755820746957584,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -3.526563357750223,
+     "key": "b|87|Flamethrower vs Slowbro|Flamethrower vs Venusaur",
+     "m": 0.45164942748222253,
+     "naive": false,
+     "p": -0.45164942748222253,
+     "punish_pass": false,
+     "r": 1.6762299492109967,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": 2.0268308941801325,
+     "key": "b|88|Rock Slide vs Charizard|Rock Slide vs Nidoking",
+     "m": 0.6363871682994242,
+     "naive": false,
+     "p": -1.3174535284202535,
+     "punish_pass": false,
+     "r": 0.6363871682994242,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -0.014855579059302852,
+     "key": "b|92|Mega Drain vs Tentacruel|Mega Drain vs Snorlax",
+     "m": 2.7806847731250564,
+     "naive": true,
+     "p": -3.5856085755864857,
+     "punish_pass": true,
+     "r": 2.7806847731250564,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -4.066065999337029,
+     "key": "b|95|Thunderbolt vs Nidoking|Thunderbolt vs Kangaskhan",
+     "m": 3.4697486561453004,
+     "naive": false,
+     "p": -9.568662354524173,
+     "punish_pass": true,
+     "r": 3.4697486561453004,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": -0.0989319127658762,
+     "key": "b|95|Psychic vs Nidoking|Psychic vs Kangaskhan",
+     "m": 2.313889780264977,
+     "naive": true,
+     "p": -2.313889780264977,
+     "punish_pass": true,
+     "r": 3.5540980272380542,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": 4.8198575158793595,
+     "key": "b|96|Flamethrower vs Exeggutor|Flamethrower vs Chansey",
+     "m": 0.9717513741049273,
+     "naive": false,
+     "p": -1.6374229048122133,
+     "punish_pass": false,
+     "r": 0.9717513741049273,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": 3.237049997518832,
+     "key": "b|98|Rock Slide vs Dragonite|Rock Slide vs Machamp",
+     "m": 0.2751833538832542,
+     "naive": false,
+     "p": -0.7370217617091119,
+     "punish_pass": false,
+     "r": 0.2751833538832542,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -1.052443378073567,
+     "key": "b|99|Rock Slide vs Exeggutor|Rock Slide vs Chansey",
+     "m": -0.1639015613152388,
+     "naive": false,
+     "p": 0.1639015613152388,
+     "punish_pass": false,
+     "r": 1.2508194894925189,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 1.6775765449251236,
+     "key": "b|103|Flamethrower vs Blastoise|Flamethrower vs Snorlax",
+     "m": 0.3865894360422841,
+     "naive": false,
+     "p": -2.2766569487989816,
+     "punish_pass": true,
+     "r": 0.3865894360422841,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -1.1709349781312286,
+     "key": "a|64|Surf|Thunderbolt",
+     "m": 1.7119452762494325,
+     "naive": false,
+     "p": -1.7119452762494325,
+     "punish_pass": false,
+     "r": 1.7289805251881483,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -4.737772078041108,
+     "key": "a|65|Surf|Psychic",
+     "m": 11.045631528755404,
+     "naive": false,
+     "p": -16.2058991519416,
+     "punish_pass": true,
+     "r": 11.045631528755404,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -0.41965084498452704,
+     "key": "a|65|Psychic|Thunderbolt",
+     "m": 1.1212777094001263,
+     "naive": true,
+     "p": -1.1212777094001263,
+     "punish_pass": false,
+     "r": 3.5356643672404044,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -3.7969645175790636,
+     "key": "a|66|Psychic|Mega Drain",
+     "m": 0.4346745223129046,
+     "naive": false,
+     "p": -0.4346745223129046,
+     "punish_pass": false,
+     "r": 3.7699467019372155,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -2.5698754383285056,
+     "key": "a|67|Surf|Psychic",
+     "m": 4.350322839026672,
+     "naive": false,
+     "p": -7.602205838878156,
+     "punish_pass": true,
+     "r": 4.350322839026672,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 3.0821573930235693,
+     "key": "a|67|Earthquake|Psychic",
+     "m": 3.3584063839855736,
+     "naive": false,
+     "p": -5.838359987352229,
+     "punish_pass": true,
+     "r": 3.3584063839855736,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -3.0059914173472095,
+     "key": "a|70|Thunderbolt|Psychic",
+     "m": 2.1239178926582385,
+     "naive": false,
+     "p": -2.1239178926582385,
+     "punish_pass": true,
+     "r": 4.08182816814382,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -6.921494690675425,
+     "key": "a|71|Thunderbolt|Psychic",
+     "m": 0.8535609295375968,
+     "naive": false,
+     "p": -0.8535609295375968,
+     "punish_pass": false,
+     "r": 3.183509129017801,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 1.4020033824704186,
+     "key": "a|75|Psychic|Tri Attack",
+     "m": 1.891947425452001,
+     "naive": false,
+     "p": -2.3950179771999855,
+     "punish_pass": true,
+     "r": 1.891947425452001,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 2.634239944843188,
+     "key": "a|77|Earthquake|Strength",
+     "m": -0.24519038091444284,
+     "naive": false,
+     "p": -5.383536319155075,
+     "punish_pass": true,
+     "r": -0.24519038091444284,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -1.4328522665441195,
+     "key": "a|77|Surf|Strength",
+     "m": 0.7824197375016207,
+     "naive": false,
+     "p": -0.7824197375016207,
+     "punish_pass": false,
+     "r": 2.007952960301289,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -1.699465439159667,
+     "key": "a|79|Surf|Mega Drain",
+     "m": 4.612413323832567,
+     "naive": false,
+     "p": -16.20589915194162,
+     "punish_pass": true,
+     "r": 4.612413323832567,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": -1.6887358357302615,
+     "key": "a|81|Thunderbolt|Psychic",
+     "m": -0.7499937014733077,
+     "naive": false,
+     "p": -4.380503531423209,
+     "punish_pass": true,
+     "r": -0.7499937014733077,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -2.3683058062806293,
+     "key": "a|85|Psychic|Tri Attack",
+     "m": 2.5325798425962143,
+     "naive": false,
+     "p": -4.433329028369942,
+     "punish_pass": true,
+     "r": 2.5325798425962143,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -6.139274358494612,
+     "key": "a|87|Flamethrower|Earthquake",
+     "m": 0.3410421599085436,
+     "naive": false,
+     "p": -0.3410421599085436,
+     "punish_pass": false,
+     "r": 1.7591957629534891,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.2428529736176787,
+     "key": "a|87|Flamethrower|Strength",
+     "m": 0.5234056827908804,
+     "naive": true,
+     "p": -0.5234056827908804,
+     "punish_pass": false,
+     "r": 1.742492520888115,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": 4.693014515077399,
+     "key": "a|88|Earthquake|Rock Slide",
+     "m": 5.658746724534956,
+     "naive": false,
+     "p": -9.504024568020704,
+     "punish_pass": true,
+     "r": 5.658746724534956,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": 1.6796202715056576,
+     "key": "a|88|Rock Slide|Strength",
+     "m": 0.41996803311639624,
+     "naive": false,
+     "p": -1.3763171045916043,
+     "punish_pass": false,
+     "r": 0.41996803311639624,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.1347223032825604,
+     "key": "a|90|Psychic|Mega Drain",
+     "m": 1.4886019006700963,
+     "naive": true,
+     "p": -2.681404119609136,
+     "punish_pass": true,
+     "r": 1.4886019006700963,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -1.0399201724593512,
+     "key": "a|92|Mega Drain|Cut",
+     "m": 2.968123973718287,
+     "naive": false,
+     "p": -3.5856085755864857,
+     "punish_pass": true,
+     "r": 2.968123973718287,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -0.7123235917956874,
+     "key": "a|93|Earthquake|Psychic",
+     "m": 1.026528366194086,
+     "naive": false,
+     "p": -1.2881219274016564,
+     "punish_pass": false,
+     "r": 1.026528366194086,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 0.6195630178867829,
+     "key": "a|95|Thunderbolt|Psychic",
+     "m": 1.4973661371299876,
+     "naive": false,
+     "p": -9.568662354524173,
+     "punish_pass": true,
+     "r": 1.4973661371299876,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": 2.2928472109723637,
+     "key": "a|96|Flamethrower|Earthquake",
+     "m": 1.032536573227324,
+     "naive": false,
+     "p": -1.7698262989846731,
+     "punish_pass": false,
+     "r": 1.032536573227324,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": 11.561011033719526,
+     "key": "a|96|Flamethrower|Strength",
+     "m": 1.0628945104904672,
+     "naive": false,
+     "p": -1.6374229048122133,
+     "punish_pass": false,
+     "r": 1.0628945104904672,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 0.05795053659723238,
+     "key": "a|98|Earthquake|Rock Slide",
+     "m": 2.378718212188325,
+     "naive": true,
+     "p": -6.553905368340065,
+     "punish_pass": true,
+     "r": 2.378718212188325,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 1.6500026117542692,
+     "key": "a|98|Rock Slide|Strength",
+     "m": 0.28684348898318024,
+     "naive": false,
+     "p": -0.6191071136562483,
+     "punish_pass": false,
+     "r": 0.28684348898318024,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": 0.6351376935205765,
+     "key": "a|99|Earthquake|Rock Slide",
+     "m": 1.1579643229873595,
+     "naive": false,
+     "p": -1.3890832386844627,
+     "punish_pass": false,
+     "r": 1.1579643229873595,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 4.45415069870982,
+     "key": "a|99|Rock Slide|Strength",
+     "m": 1.2412738898265836,
+     "naive": false,
+     "p": -1.2412738898265836,
+     "punish_pass": false,
+     "r": 1.3279189184885323,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -0.3572112809505143,
+     "key": "a|101|Surf|Mega Drain",
+     "m": 0.6316965145669149,
+     "naive": true,
+     "p": -0.6316965145669149,
+     "punish_pass": false,
+     "r": 0.8041107765144369,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 6.4506612960600895,
+     "key": "a|102|Surf|Strength",
+     "m": 3.8184268646346533,
+     "naive": false,
+     "p": -8.082407872028197,
+     "punish_pass": true,
+     "r": 3.8184268646346533,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -3.910202588549125,
+     "key": "a|103|Flamethrower|Earthquake",
+     "m": 0.3673936875482497,
+     "naive": false,
+     "p": -2.228923549392378,
+     "punish_pass": true,
+     "r": 0.3673936875482497,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 2.70364952525042,
+     "key": "a|103|Flamethrower|Strength",
+     "m": 0.3664616792026445,
+     "naive": false,
+     "p": -2.2766569487989816,
+     "punish_pass": true,
+     "r": 0.3664616792026445,
+     "reward_pass": false,
+     "testable": false
+    }
+   ],
+   "E0": [
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": 2.727528169456852,
+     "key": "b|65|Psychic vs Blastoise|Psychic vs Snorlax",
+     "m": 2.1247785658550464,
+     "naive": false,
+     "p": -2.1247785658550464,
+     "punish_pass": true,
+     "r": 3.345649654442894,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": 1.8468282919692112,
+     "key": "b|66|Psychic vs Kangaskhan|Psychic vs Hypno",
+     "m": 0.33869716107670356,
+     "naive": false,
+     "p": -3.4729971005976212,
+     "punish_pass": true,
+     "r": 0.33869716107670356,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": -2.288478392486822,
+     "key": "b|67|Psychic vs Charizard|Psychic vs Nidoking",
+     "m": 0.7552925074832161,
+     "naive": false,
+     "p": -0.7552925074832161,
+     "punish_pass": false,
+     "r": 2.2766557050030376,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": 4.574816034927227,
+     "key": "b|68|Flamethrower vs Kangaskhan|Flamethrower vs Hypno",
+     "m": 0.14470702207053232,
+     "naive": false,
+     "p": -0.2746371739326586,
+     "punish_pass": false,
+     "r": 0.14470702207053232,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": 3.867036015193415,
+     "key": "b|70|Thunderbolt vs Charizard|Thunderbolt vs Nidoking",
+     "m": 1.4363501294008916,
+     "naive": false,
+     "p": -1.4363501294008916,
+     "punish_pass": false,
+     "r": 1.533584753539513,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 0.21232147550800035,
+     "key": "b|73|Earthquake vs Poliwrath|Earthquake vs Exeggutor",
+     "m": 2.7234125132995,
+     "naive": true,
+     "p": -2.7234125132995,
+     "punish_pass": true,
+     "r": 3.1050192692834204,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 0.7785546393496292,
+     "key": "b|73|Surf vs Poliwrath|Surf vs Exeggutor",
+     "m": 3.1012215462598176,
+     "naive": false,
+     "p": -3.574752333020083,
+     "punish_pass": true,
+     "r": 3.1012215462598176,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": -1.2036738154866784,
+     "key": "b|73|Strength vs Poliwrath|Strength vs Exeggutor",
+     "m": 2.4945524651658997,
+     "naive": false,
+     "p": -2.4945524651658997,
+     "punish_pass": true,
+     "r": 4.6005238863509765,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": -0.2982265012327218,
+     "key": "b|77|Earthquake vs Tentacruel|Earthquake vs Exeggutor",
+     "m": 1.6268611408797407,
+     "naive": true,
+     "p": -2.370506516724782,
+     "punish_pass": true,
+     "r": 1.6268611408797407,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": 0.5848776525795879,
+     "key": "b|77|Surf vs Tentacruel|Surf vs Exeggutor",
+     "m": 0.15054053177394222,
+     "naive": false,
+     "p": -2.011241376332881,
+     "punish_pass": true,
+     "r": 0.15054053177394222,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -0.04296455325786585,
+     "key": "b|77|Strength vs Tentacruel|Strength vs Exeggutor",
+     "m": 0.5904384856958442,
+     "naive": true,
+     "p": -1.2442060036871077,
+     "punish_pass": false,
+     "r": 0.5904384856958442,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": 0.906658421270016,
+     "key": "b|78|Thunderbolt vs Kangaskhan|Thunderbolt vs Hypno",
+     "m": 0.3659648806692174,
+     "naive": false,
+     "p": -1.33511222426079,
+     "punish_pass": false,
+     "r": 0.3659648806692174,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 0.20078329537677894,
+     "key": "b|87|Flamethrower vs Slowbro|Flamethrower vs Venusaur",
+     "m": 0.16501026122231285,
+     "naive": true,
+     "p": -0.5355303563813052,
+     "punish_pass": false,
+     "r": 0.16501026122231285,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": 4.019965804504964,
+     "key": "b|88|Rock Slide vs Charizard|Rock Slide vs Nidoking",
+     "m": 0.727871529904721,
+     "naive": false,
+     "p": -4.226945798931981,
+     "punish_pass": true,
+     "r": 0.727871529904721,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -1.194502231952258,
+     "key": "b|92|Mega Drain vs Tentacruel|Mega Drain vs Snorlax",
+     "m": 2.5481761735862474,
+     "naive": false,
+     "p": -2.5481761735862474,
+     "punish_pass": true,
+     "r": 5.977923844650389,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": -0.970630388596824,
+     "key": "b|95|Thunderbolt vs Nidoking|Thunderbolt vs Kangaskhan",
+     "m": 0.12212983307295976,
+     "naive": false,
+     "p": -0.12212983307295976,
+     "punish_pass": false,
+     "r": 1.136330791869675,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -0.4585796060806733,
+     "key": "b|95|Psychic vs Nidoking|Psychic vs Kangaskhan",
+     "m": -0.42833714096801945,
+     "naive": true,
+     "p": 0.42833714096801945,
+     "punish_pass": false,
+     "r": 0.2565469716348797,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": -1.2723773945935424,
+     "key": "b|96|Flamethrower vs Exeggutor|Flamethrower vs Chansey",
+     "m": 1.1479716572212109,
+     "naive": false,
+     "p": -1.1479716572212109,
+     "punish_pass": false,
+     "r": 1.7248716400648112,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "b",
+     "d_pre": 0.43684299913375446,
+     "key": "b|98|Rock Slide vs Dragonite|Rock Slide vs Machamp",
+     "m": 1.1909540917061139,
+     "naive": true,
+     "p": -1.1909540917061139,
+     "punish_pass": false,
+     "r": 1.6055323393920198,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": -1.239821098984371,
+     "key": "b|99|Rock Slide vs Exeggutor|Rock Slide vs Chansey",
+     "m": -0.0023015445955342686,
+     "naive": false,
+     "p": 0.0023015445955342686,
+     "punish_pass": false,
+     "r": 0.15900170509566458,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.2,
+     "axis": "b",
+     "d_pre": 0.9739048117425853,
+     "key": "b|103|Flamethrower vs Blastoise|Flamethrower vs Snorlax",
+     "m": -0.044938998059077355,
+     "naive": false,
+     "p": -1.0092022814684825,
+     "punish_pass": false,
+     "r": -0.044938998059077355,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -2.5883949716143504,
+     "key": "a|64|Surf|Thunderbolt",
+     "m": 3.3158053648233436,
+     "naive": false,
+     "p": -3.3158053648233436,
+     "punish_pass": true,
+     "r": 4.296957574958408,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -1.0131681535874026,
+     "key": "a|65|Surf|Psychic",
+     "m": 0.7358064096574946,
+     "naive": false,
+     "p": -1.3159116940090343,
+     "punish_pass": false,
+     "r": 0.7358064096574946,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": -1.1890003028077383,
+     "key": "a|65|Psychic|Thunderbolt",
+     "m": 0.8754259548543336,
+     "naive": false,
+     "p": -0.8754259548543336,
+     "punish_pass": false,
+     "r": 2.2365728398477667,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 2.7215725414694845,
+     "key": "a|66|Psychic|Mega Drain",
+     "m": -0.4080358692138671,
+     "naive": false,
+     "p": -2.6308377816075015,
+     "punish_pass": true,
+     "r": -0.4080358692138671,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -2.8168848320999764,
+     "key": "a|67|Surf|Psychic",
+     "m": 0.5017652090242778,
+     "naive": false,
+     "p": -0.5017652090242778,
+     "punish_pass": false,
+     "r": 3.972679571335784,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.147502706871722,
+     "key": "a|67|Earthquake|Psychic",
+     "m": 0.580717993777865,
+     "naive": true,
+     "p": -0.8673149446452263,
+     "punish_pass": false,
+     "r": 0.580717993777865,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": 1.5889751622790036,
+     "key": "a|70|Thunderbolt|Psychic",
+     "m": 1.2762738214346476,
+     "naive": false,
+     "p": -1.5907375830323556,
+     "punish_pass": false,
+     "r": 1.2762738214346476,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": 0.14880568259216936,
+     "key": "a|71|Thunderbolt|Psychic",
+     "m": -0.5551926454480427,
+     "naive": true,
+     "p": 0.12749544494314474,
+     "punish_pass": false,
+     "r": -0.5551926454480427,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -3.615097668224078,
+     "key": "a|75|Psychic|Tri Attack",
+     "m": 0.7167408135024951,
+     "naive": false,
+     "p": -0.7167408135024951,
+     "punish_pass": false,
+     "r": 1.4553393650224744,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": 0.781422747155693,
+     "key": "a|77|Earthquake|Strength",
+     "m": 1.1591474374675743,
+     "naive": false,
+     "p": -1.1591474374675743,
+     "punish_pass": false,
+     "r": 2.379103005667689,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 1.7931638508677077,
+     "key": "a|77|Surf|Strength",
+     "m": 0.37867007913112183,
+     "naive": false,
+     "p": -0.37867007913112183,
+     "punish_pass": false,
+     "r": 0.40892939549038204,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 0.515982968350146,
+     "key": "a|79|Surf|Mega Drain",
+     "m": 0.6531530874047272,
+     "naive": false,
+     "p": -1.6368827067609317,
+     "punish_pass": false,
+     "r": 0.6531530874047272,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -2.2528456778850594,
+     "key": "a|81|Thunderbolt|Psychic",
+     "m": 0.08438387844817859,
+     "naive": false,
+     "p": -0.08438387844817859,
+     "punish_pass": false,
+     "r": 0.5525033692092223,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 1.2424735690915736,
+     "key": "a|85|Psychic|Tri Attack",
+     "m": 0.6697505252623598,
+     "naive": false,
+     "p": -1.789846094182272,
+     "punish_pass": false,
+     "r": 0.6697505252623598,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -5.35495889016462,
+     "key": "a|87|Flamethrower|Earthquake",
+     "m": -0.4054304459761593,
+     "naive": false,
+     "p": 0.4054304459761593,
+     "punish_pass": false,
+     "r": 1.135835118237334,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -4.3348760455476825,
+     "key": "a|87|Flamethrower|Strength",
+     "m": -1.2432771503592182,
+     "naive": false,
+     "p": 1.2432771503592182,
+     "punish_pass": false,
+     "r": 2.2331944946675466,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -3.298888834144233,
+     "key": "a|88|Earthquake|Rock Slide",
+     "m": 1.0023911107969223,
+     "naive": false,
+     "p": -3.1919652287624256,
+     "punish_pass": true,
+     "r": 1.0023911107969223,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 2.3902786132349747,
+     "key": "a|88|Rock Slide|Strength",
+     "m": 0.3499477202200585,
+     "naive": false,
+     "p": -0.7629804917212286,
+     "punish_pass": false,
+     "r": 0.3499477202200585,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 5.246935655188489,
+     "key": "a|90|Psychic|Mega Drain",
+     "m": -0.5160389357516921,
+     "naive": false,
+     "p": -5.935775321992838,
+     "punish_pass": true,
+     "r": -0.5160389357516921,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -4.080447200320444,
+     "key": "a|92|Mega Drain|Cut",
+     "m": 0.6106196875783649,
+     "naive": false,
+     "p": -0.6106196875783649,
+     "punish_pass": false,
+     "r": 3.203655230980257,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 0.42519745869612563,
+     "key": "a|93|Earthquake|Psychic",
+     "m": 0.30782592974103085,
+     "naive": true,
+     "p": -0.5435618053975783,
+     "punish_pass": false,
+     "r": 0.30782592974103085,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.7551689927031829,
+     "key": "a|95|Thunderbolt|Psychic",
+     "m": -0.38435440272589283,
+     "naive": false,
+     "p": 0.38435440272589283,
+     "punish_pass": false,
+     "r": 0.3701131238286895,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -0.7108523051659796,
+     "key": "a|96|Flamethrower|Earthquake",
+     "m": -0.964242244421769,
+     "naive": false,
+     "p": 0.964242244421769,
+     "punish_pass": false,
+     "r": 0.03826097482012518,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -1.362994596926364,
+     "key": "a|96|Flamethrower|Strength",
+     "m": 0.8482898364526412,
+     "naive": false,
+     "p": -0.8482898364526412,
+     "punish_pass": false,
+     "r": 1.7143298871521098,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.3420250735860058,
+     "key": "a|98|Earthquake|Rock Slide",
+     "m": 0.8519925747279028,
+     "naive": true,
+     "p": -0.8519925747279028,
+     "punish_pass": false,
+     "r": 0.9293453880748048,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": 0.368558926674933,
+     "key": "a|98|Rock Slide|Strength",
+     "m": 1.5818936772472085,
+     "naive": true,
+     "p": -1.5818936772472085,
+     "punish_pass": false,
+     "r": 1.6072426296323694,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.5499398027994322,
+     "key": "a|99|Earthquake|Rock Slide",
+     "m": 0.8047482548336656,
+     "naive": false,
+     "p": -0.9151754249936553,
+     "punish_pass": false,
+     "r": 0.8047482548336656,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 1.4618430175401207,
+     "key": "a|99|Rock Slide|Strength",
+     "m": -0.3982506022309273,
+     "naive": false,
+     "p": -0.8005140837767296,
+     "punish_pass": false,
+     "r": -0.3982506022309273,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 1.1622525425414252,
+     "key": "a|101|Surf|Mega Drain",
+     "m": 0.9905439312407303,
+     "naive": false,
+     "p": -2.4026940531980014,
+     "punish_pass": true,
+     "r": 0.9905439312407303,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": 1.2268428167661012,
+     "key": "a|102|Surf|Strength",
+     "m": 0.34412685303297097,
+     "naive": false,
+     "p": -1.070950847457192,
+     "punish_pass": false,
+     "r": 0.34412685303297097,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": -5.750589218623249,
+     "key": "a|103|Flamethrower|Earthquake",
+     "m": -0.4699575978789523,
+     "naive": false,
+     "p": 0.16016547647985854,
+     "punish_pass": false,
+     "r": -0.4699575978789523,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.2,
+     "axis": "a",
+     "d_pre": -0.7245592687781153,
+     "key": "a|103|Flamethrower|Strength",
+     "m": 0.16572322007519702,
+     "naive": false,
+     "p": -0.20744194833732443,
+     "punish_pass": false,
+     "r": 0.16572322007519702,
+     "reward_pass": false,
+     "testable": false
+    }
+   ],
+   "L": [
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 4.376183289121796,
+     "key": "b|65|Psychic vs Blastoise|Psychic vs Snorlax",
+     "m": 1.798738299874371,
+     "naive": false,
+     "p": -1.798738299874371,
+     "punish_pass": false,
+     "r": 10.024859875542543,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 4.83790805559412,
+     "key": "b|66|Psychic vs Kangaskhan|Psychic vs Hypno",
+     "m": 1.0957049856903387,
+     "naive": false,
+     "p": -1.0957049856903387,
+     "punish_pass": false,
+     "r": 7.74287201956778,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 14.987356375266915,
+     "key": "b|67|Psychic vs Charizard|Psychic vs Nidoking",
+     "m": 1.9863314188560282,
+     "naive": false,
+     "p": -1.9863314188560282,
+     "punish_pass": false,
+     "r": 5.180292947149937,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -3.8327794542867077,
+     "key": "b|68|Flamethrower vs Kangaskhan|Flamethrower vs Hypno",
+     "m": 0.3535533905932738,
+     "naive": false,
+     "p": -0.3535533905932738,
+     "punish_pass": false,
+     "r": 10.812359264961948,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 2.2998428643900626,
+     "key": "b|70|Thunderbolt vs Charizard|Thunderbolt vs Nidoking",
+     "m": 3.3328394372356493,
+     "naive": false,
+     "p": -3.3328394372356493,
+     "punish_pass": true,
+     "r": 3.938574922486153,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -2.1521583550828223,
+     "key": "b|73|Earthquake vs Poliwrath|Earthquake vs Exeggutor",
+     "m": 2.8383113526172994,
+     "naive": false,
+     "p": -2.8383113526172994,
+     "punish_pass": true,
+     "r": 7.331652500708513,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -8.7997207115575,
+     "key": "b|73|Surf vs Poliwrath|Surf vs Exeggutor",
+     "m": 11.697557972256478,
+     "naive": false,
+     "p": -11.697557972256478,
+     "punish_pass": true,
+     "r": 31.849354469171143,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 0.9541307274367321,
+     "key": "b|73|Strength vs Poliwrath|Strength vs Exeggutor",
+     "m": 5.128466420676847,
+     "naive": false,
+     "p": -5.128466420676847,
+     "punish_pass": true,
+     "r": 12.096416795579827,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -4.034219384354394,
+     "key": "b|77|Earthquake vs Tentacruel|Earthquake vs Exeggutor",
+     "m": 11.233680777787079,
+     "naive": false,
+     "p": -11.233680777787079,
+     "punish_pass": true,
+     "r": 19.318785926214357,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 1.288119310590227,
+     "key": "b|77|Surf vs Tentacruel|Surf vs Exeggutor",
+     "m": 3.3561336505485175,
+     "naive": false,
+     "p": -3.3561336505485175,
+     "punish_pass": true,
+     "r": 10.623015132618303,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 0.44348379696630286,
+     "key": "b|77|Strength vs Tentacruel|Strength vs Exeggutor",
+     "m": 3.1476035918655345,
+     "naive": true,
+     "p": -3.5903467943282847,
+     "punish_pass": true,
+     "r": 3.1476035918655345,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -0.5260730280335342,
+     "key": "b|78|Thunderbolt vs Kangaskhan|Thunderbolt vs Hypno",
+     "m": 2.651449868076174,
+     "naive": false,
+     "p": -2.651449868076174,
+     "punish_pass": true,
+     "r": 5.555342023610682,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -2.156971850111077,
+     "key": "b|87|Flamethrower vs Slowbro|Flamethrower vs Venusaur",
+     "m": 0.9565604322011387,
+     "naive": false,
+     "p": -0.9565604322011387,
+     "punish_pass": false,
+     "r": 9.732358845709054,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 8.183127346466504,
+     "key": "b|88|Rock Slide vs Charizard|Rock Slide vs Nidoking",
+     "m": 1.4305263090888698,
+     "naive": false,
+     "p": -1.4305263090888698,
+     "punish_pass": false,
+     "r": 5.516846463717776,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 4.963826585481451,
+     "key": "b|92|Mega Drain vs Tentacruel|Mega Drain vs Snorlax",
+     "m": 2.096330932816079,
+     "naive": false,
+     "p": -2.096330932816079,
+     "punish_pass": true,
+     "r": 6.746342965623263,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 1.820709649168526,
+     "key": "b|95|Thunderbolt vs Nidoking|Thunderbolt vs Kangaskhan",
+     "m": 5.96414582737368,
+     "naive": false,
+     "p": -5.96414582737368,
+     "punish_pass": true,
+     "r": 10.104580010005455,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -8.65570814987124,
+     "key": "b|95|Psychic vs Nidoking|Psychic vs Kangaskhan",
+     "m": 1.6780691189668953,
+     "naive": false,
+     "p": -1.6780691189668953,
+     "punish_pass": false,
+     "r": 11.81815111738037,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 9.109722481162164,
+     "key": "b|96|Flamethrower vs Exeggutor|Flamethrower vs Chansey",
+     "m": 2.382400455087447,
+     "naive": false,
+     "p": -2.382400455087447,
+     "punish_pass": true,
+     "r": 9.693594928008634,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": -0.7959789860227865,
+     "key": "b|98|Rock Slide vs Dragonite|Rock Slide vs Machamp",
+     "m": 0.9765791475100176,
+     "naive": false,
+     "p": -0.9765791475100176,
+     "punish_pass": false,
+     "r": 2.5253416305547023,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 4.5989924271985485,
+     "key": "b|99|Rock Slide vs Exeggutor|Rock Slide vs Chansey",
+     "m": 0.05977958292119004,
+     "naive": false,
+     "p": -0.05977958292119004,
+     "punish_pass": false,
+     "r": 7.782851483619818,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "b",
+     "d_pre": 7.413586401608138,
+     "key": "b|103|Flamethrower vs Blastoise|Flamethrower vs Snorlax",
+     "m": 2.4263208571930113,
+     "naive": false,
+     "p": -2.4263208571930113,
+     "punish_pass": true,
+     "r": 6.726397167097549,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -3.748015456698764,
+     "key": "a|64|Surf|Thunderbolt",
+     "m": 1.803913173087844,
+     "naive": false,
+     "p": -1.803913173087844,
+     "punish_pass": false,
+     "r": 14.946925302513334,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -21.526266442829446,
+     "key": "a|65|Surf|Psychic",
+     "m": 6.926015642469144,
+     "naive": false,
+     "p": -6.926015642469144,
+     "punish_pass": true,
+     "r": 17.192488752463795,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 22.60927972326885,
+     "key": "a|65|Psychic|Thunderbolt",
+     "m": 1.7987382998743713,
+     "naive": false,
+     "p": -1.7987382998743713,
+     "punish_pass": false,
+     "r": 11.82463542733068,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 3.0457861995374422,
+     "key": "a|66|Psychic|Mega Drain",
+     "m": 0.9397731947804244,
+     "naive": false,
+     "p": -0.9397731947804244,
+     "punish_pass": false,
+     "r": 7.357394516073727,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -13.6786227376047,
+     "key": "a|67|Surf|Psychic",
+     "m": 5.834027420045738,
+     "naive": false,
+     "p": -5.834027420045738,
+     "punish_pass": true,
+     "r": 15.634193085308517,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.5,
+     "axis": "a",
+     "d_pre": -4.618232247753584,
+     "key": "a|67|Earthquake|Psychic",
+     "m": 5.5383641636659595,
+     "naive": false,
+     "p": -5.968413776167344,
+     "punish_pass": true,
+     "r": 5.5383641636659595,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 1.1157047173771242,
+     "key": "a|70|Thunderbolt|Psychic",
+     "m": 3.332839437235646,
+     "naive": false,
+     "p": -3.332839437235646,
+     "punish_pass": true,
+     "r": 3.620610862419449,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.660083806915898,
+     "key": "a|71|Thunderbolt|Psychic",
+     "m": 0.8244996213411914,
+     "naive": false,
+     "p": -0.8244996213411914,
+     "punish_pass": false,
+     "r": 2.9452506095436486,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 5.01615954146473,
+     "key": "a|75|Psychic|Tri Attack",
+     "m": 1.9863314188560277,
+     "naive": false,
+     "p": -1.9863314188560277,
+     "punish_pass": false,
+     "r": 5.223958798367691,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -1.2182416767336728,
+     "key": "a|77|Earthquake|Strength",
+     "m": 8.79500746586248,
+     "naive": false,
+     "p": -11.233680777787082,
+     "punish_pass": true,
+     "r": 8.79500746586248,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.7083220559192274,
+     "key": "a|77|Surf|Strength",
+     "m": 3.356133650548519,
+     "naive": false,
+     "p": -3.356133650548519,
+     "punish_pass": true,
+     "r": 5.234097212334254,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -4.082378993568711,
+     "key": "a|79|Surf|Mega Drain",
+     "m": 6.926015642469141,
+     "naive": false,
+     "p": -6.926015642469141,
+     "punish_pass": true,
+     "r": 7.245517336425957,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 16.913765138821535,
+     "key": "a|81|Thunderbolt|Psychic",
+     "m": 7.798972789281987,
+     "naive": false,
+     "p": -7.798972789281987,
+     "punish_pass": true,
+     "r": 11.507472702220388,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.6560961745170503,
+     "key": "a|85|Psychic|Tri Attack",
+     "m": 4.521647187031568,
+     "naive": false,
+     "p": -4.521647187031568,
+     "punish_pass": true,
+     "r": 7.599030450504019,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.2,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 1.9673038756873373,
+     "key": "a|87|Flamethrower|Earthquake",
+     "m": -0.017581146583524925,
+     "naive": false,
+     "p": 0.017581146583524925,
+     "punish_pass": false,
+     "r": 6.571129918931169,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -2.4691158738596464,
+     "key": "a|87|Flamethrower|Strength",
+     "m": 0.8476168908613475,
+     "naive": false,
+     "p": -0.8476168908613475,
+     "punish_pass": false,
+     "r": 7.017906554271795,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -7.2396881364256656,
+     "key": "a|88|Earthquake|Rock Slide",
+     "m": 5.692512669217033,
+     "naive": false,
+     "p": -5.692512669217033,
+     "punish_pass": true,
+     "r": 10.830877096242435,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 8.315483943797156,
+     "key": "a|88|Rock Slide|Strength",
+     "m": 1.43052630908887,
+     "naive": false,
+     "p": -1.43052630908887,
+     "punish_pass": false,
+     "r": 7.073369276445868,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 0.654534111674666,
+     "key": "a|90|Psychic|Mega Drain",
+     "m": 1.4028777277707756,
+     "naive": false,
+     "p": -1.7987382998743717,
+     "punish_pass": false,
+     "r": 1.4028777277707756,
+     "reward_pass": false,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.3285947225927133,
+     "key": "a|92|Mega Drain|Cut",
+     "m": 2.096330932816078,
+     "naive": true,
+     "p": -2.096330932816078,
+     "punish_pass": true,
+     "r": 6.221021610771044,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -3.863549295681206,
+     "key": "a|93|Earthquake|Psychic",
+     "m": 0.37273729936717137,
+     "naive": false,
+     "p": -0.37273729936717137,
+     "punish_pass": false,
+     "r": 5.566000237751993,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 12.272158327258042,
+     "key": "a|95|Thunderbolt|Psychic",
+     "m": 5.964145827373683,
+     "naive": false,
+     "p": -5.964145827373683,
+     "punish_pass": true,
+     "r": 19.397995900977936,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 1.2182082077479377,
+     "key": "a|96|Flamethrower|Earthquake",
+     "m": 2.3824004550874456,
+     "naive": false,
+     "p": -2.3824004550874456,
+     "punish_pass": true,
+     "r": 7.087567879270961,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 1.045468735705661,
+     "key": "a|96|Flamethrower|Strength",
+     "m": 2.382400455087446,
+     "naive": false,
+     "p": -2.382400455087446,
+     "punish_pass": true,
+     "r": 10.278059262335105,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -1.2939029557866926,
+     "key": "a|98|Earthquake|Rock Slide",
+     "m": 1.3710599070059086,
+     "naive": false,
+     "p": -1.3710599070059086,
+     "punish_pass": false,
+     "r": 4.489691901623289,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 6.718548003781947,
+     "key": "a|98|Rock Slide|Strength",
+     "m": 0.48248102723681907,
+     "naive": false,
+     "p": -0.48248102723681907,
+     "punish_pass": false,
+     "r": 7.59947686939065,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 0.7688615842290727,
+     "key": "a|99|Earthquake|Rock Slide",
+     "m": 0.25965587477138946,
+     "naive": false,
+     "p": -0.25965587477138946,
+     "punish_pass": false,
+     "r": 5.3342364338093,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.5,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.169178184227972,
+     "key": "a|99|Rock Slide|Strength",
+     "m": 1.78461686218993,
+     "naive": true,
+     "p": -1.78461686218993,
+     "punish_pass": false,
+     "r": 5.473220695949581,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -1.9250086976070193,
+     "key": "a|101|Surf|Mega Drain",
+     "m": 0.7145489727949731,
+     "naive": false,
+     "p": -0.7145489727949731,
+     "punish_pass": false,
+     "r": 3.7943555924335164,
+     "reward_pass": true,
+     "testable": false
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -15.901001304249043,
+     "key": "a|102|Surf|Strength",
+     "m": 11.746076755443974,
+     "naive": false,
+     "p": -11.746076755443974,
+     "punish_pass": true,
+     "r": 14.692543599069344,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": 4.042094206299383,
+     "key": "a|103|Flamethrower|Earthquake",
+     "m": 2.4263208571930113,
+     "naive": false,
+     "p": -2.4263208571930113,
+     "punish_pass": true,
+     "r": 7.3858377018228465,
+     "reward_pass": true,
+     "testable": true
+    },
+    {
+     "alpha_punish": 0.8,
+     "alpha_reward": 0.8,
+     "axis": "a",
+     "d_pre": -0.2025159042187818,
+     "key": "a|103|Flamethrower|Strength",
+     "m": 2.4263208571930113,
+     "naive": true,
+     "p": -2.4263208571930113,
+     "punish_pass": true,
+     "r": 6.65028341286306,
+     "reward_pass": true,
+     "testable": true
+    }
+   ]
+  },
+  "reason": "PUNISH_GUARD",
+  "records": {
+   "C_F_a": 1,
+   "C_naive_a": 5,
+   "conditions": {
+    "C": {
+     "aggregate": {
+      "F_a": 1,
+      "T_b": 0.2857142857142857,
+      "bar": false,
+      "n_a": 32,
+      "n_b": 21,
+      "naive_a": 5,
+      "naive_b": 3,
+      "testable_a": 10,
+      "testable_b": 6
+     },
+     "alpha_punish": {
+      "0.5": 14,
+      "0.8": 39
+     },
+     "alpha_reward": {
+      "0.2": 8,
+      "0.5": 20,
+      "0.8": 25
+     },
+     "apl_out_median": 0.22243818521033973,
+     "counts": {
+      "a": {
+       "n": 32,
+       "naive": 5,
+       "punish_pass": 17,
+       "reward_pass": 14,
+       "testable": 10
+      },
+      "b": {
+       "n": 21,
+       "naive": 3,
+       "punish_pass": 12,
+       "reward_pass": 8,
+       "testable": 6
+      }
+     },
+     "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+     "d6a_over_share": 0.009433962264150943,
+     "edit_edges": [
+      0
+     ],
+     "kc_median": 0.05364173228346457,
+     "naive_A_X_median": 10.0,
+     "naive_A_median": 10.0,
+     "naive_P_X_median": 23.0,
+     "reasons": [],
+     "saturation": {
+      "cap_hz": 500.0,
+      "max": 116.66666666666667,
+      "median": 13.333333333333334,
+      "n": 1696,
+      "q95": 60.0,
+      "share": {
+       "0.5": 0.0,
+       "0.8": 0.0
+      }
+     },
+     "z_renorm": {
+      "F_a": 1,
+      "abs_d_pre_median": 2.070558165060906,
+      "abs_d_pre_median_h4": 2.2928472109723637,
+      "naive_a": 5,
+      "testable_b": 5,
+      "z": {
+       "A": [
+        14.03183962264151,
+        14.03155727087971
+       ],
+       "P": [
+        24.286556603773583,
+        22.014986500015226
+       ]
+      }
+     }
+    },
+    "E0": {
+     "aggregate": {
+      "F_a": 0,
+      "T_b": 0.23809523809523808,
+      "bar": false,
+      "n_a": 32,
+      "n_b": 21,
+      "naive_a": 5,
+      "naive_b": 6,
+      "testable_a": 1,
+      "testable_b": 5
+     },
+     "alpha_punish": {
+      "0.2": 6,
+      "0.5": 10,
+      "0.8": 37
+     },
+     "alpha_reward": {
+      "0.2": 17,
+      "0.5": 21,
+      "0.8": 15
+     },
+     "apl_out_median": 0.21947311790039142,
+     "counts": {
+      "a": {
+       "n": 32,
+       "naive": 5,
+       "punish_pass": 5,
+       "reward_pass": 6,
+       "testable": 1
+      },
+      "b": {
+       "n": 21,
+       "naive": 6,
+       "punish_pass": 9,
+       "reward_pass": 6,
+       "testable": 5
+      }
+     },
+     "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+     "d6a_over_share": 0.0,
+     "edit_edges": [
+      0
+     ],
+     "kc_median": 0.05856299212598425,
+     "naive_A_X_median": 17.0,
+     "naive_A_median": 14.0,
+     "naive_P_X_median": 44.0,
+     "reasons": [],
+     "saturation": {
+      "cap_hz": 500.0,
+      "max": 135.0,
+      "median": 30.0,
+      "n": 1696,
+      "q95": 71.66666666666667,
+      "share": {
+       "0.5": 0.0,
+       "0.8": 0.0
+      }
+     },
+     "z_renorm": {
+      "F_a": 0,
+      "abs_d_pre_median": 1.2057666793362898,
+      "abs_d_pre_median_h4": 1.2036738154866784,
+      "naive_a": 5,
+      "testable_b": 5,
+      "z": {
+       "A": [
+        15.825471698113208,
+        12.7036323829406
+       ],
+       "P": [
+        37.570754716981135,
+        25.986792606946324
+       ]
+      }
+     }
+    },
+    "L": {
+     "aggregate": {
+      "F_a": 2,
+      "T_b": 0.5714285714285714,
+      "bar": true,
+      "n_a": 32,
+      "n_b": 21,
+      "naive_a": 3,
+      "naive_b": 1,
+      "testable_a": 17,
+      "testable_b": 12
+     },
+     "alpha_punish": {
+      "0.2": 4,
+      "0.5": 6,
+      "0.8": 43
+     },
+     "alpha_reward": {
+      "0.5": 1,
+      "0.8": 52
+     },
+     "apl_out_median": 0.26461355976760387,
+     "counts": {
+      "a": {
+       "n": 32,
+       "naive": 3,
+       "punish_pass": 17,
+       "reward_pass": 31,
+       "testable": 17
+      },
+      "b": {
+       "n": 21,
+       "naive": 1,
+       "punish_pass": 12,
+       "reward_pass": 21,
+       "testable": 12
+      }
+     },
+     "csc_sha256": "860cba4f9eead9d7a85b632f2c93c51790c5082fe80460975cb1300239c73e46",
+     "d6a_over_share": 0.009433962264150943,
+     "edit_edges": [
+      2
+     ],
+     "kc_median": 0.04822834645669291,
+     "naive_A_X_median": 3.0,
+     "naive_A_median": 2.0,
+     "naive_P_X_median": 90.0,
+     "reasons": [],
+     "saturation": {
+      "cap_hz": 500.0,
+      "max": 191.66666666666666,
+      "median": 73.33333333333333,
+      "n": 1696,
+      "q95": 143.75,
+      "share": {
+       "0.5": 0.0,
+       "0.8": 0.0
+      }
+     },
+     "z_renorm": {
+      "F_a": 5,
+      "abs_d_pre_median": 2.658380120054371,
+      "abs_d_pre_median_h4": 3.748015456698764,
+      "naive_a": 8,
+      "testable_b": 12,
+      "z": {
+       "A": [
+        4.257075471698113,
+        4.973035492852625
+       ],
+       "P": [
+        94.37971698113208,
+        36.89770617090739
+       ]
+      }
+     }
+    }
+   },
+   "transitions_C_to_L": {
+    "a": {
+     "minus_p": {
+      "a|101|Surf|Mega Drain": [
+       0.6316965145669149,
+       0.7145489727949731
+      ],
+      "a|102|Surf|Strength": [
+       8.082407872028197,
+       11.746076755443974
+      ],
+      "a|103|Flamethrower|Earthquake": [
+       2.228923549392378,
+       2.4263208571930113
+      ],
+      "a|103|Flamethrower|Strength": [
+       2.2766569487989816,
+       2.4263208571930113
+      ],
+      "a|64|Surf|Thunderbolt": [
+       1.7119452762494325,
+       1.803913173087844
+      ],
+      "a|65|Psychic|Thunderbolt": [
+       1.1212777094001263,
+       1.7987382998743713
+      ],
+      "a|65|Surf|Psychic": [
+       16.2058991519416,
+       6.926015642469144
+      ],
+      "a|66|Psychic|Mega Drain": [
+       0.4346745223129046,
+       0.9397731947804244
+      ],
+      "a|67|Earthquake|Psychic": [
+       5.838359987352229,
+       5.968413776167344
+      ],
+      "a|67|Surf|Psychic": [
+       7.602205838878156,
+       5.834027420045738
+      ],
+      "a|70|Thunderbolt|Psychic": [
+       2.1239178926582385,
+       3.332839437235646
+      ],
+      "a|71|Thunderbolt|Psychic": [
+       0.8535609295375968,
+       0.8244996213411914
+      ],
+      "a|75|Psychic|Tri Attack": [
+       2.3950179771999855,
+       1.9863314188560277
+      ],
+      "a|77|Earthquake|Strength": [
+       5.383536319155075,
+       11.233680777787082
+      ],
+      "a|77|Surf|Strength": [
+       0.7824197375016207,
+       3.356133650548519
+      ],
+      "a|79|Surf|Mega Drain": [
+       16.20589915194162,
+       6.926015642469141
+      ],
+      "a|81|Thunderbolt|Psychic": [
+       4.380503531423209,
+       7.798972789281987
+      ],
+      "a|85|Psychic|Tri Attack": [
+       4.433329028369942,
+       4.521647187031568
+      ],
+      "a|87|Flamethrower|Earthquake": [
+       0.3410421599085436,
+       -0.017581146583524925
+      ],
+      "a|87|Flamethrower|Strength": [
+       0.5234056827908804,
+       0.8476168908613475
+      ],
+      "a|88|Earthquake|Rock Slide": [
+       9.504024568020704,
+       5.692512669217033
+      ],
+      "a|88|Rock Slide|Strength": [
+       1.3763171045916043,
+       1.43052630908887
+      ],
+      "a|90|Psychic|Mega Drain": [
+       2.681404119609136,
+       1.7987382998743717
+      ],
+      "a|92|Mega Drain|Cut": [
+       3.5856085755864857,
+       2.096330932816078
+      ],
+      "a|93|Earthquake|Psychic": [
+       1.2881219274016564,
+       0.37273729936717137
+      ],
+      "a|95|Thunderbolt|Psychic": [
+       9.568662354524173,
+       5.964145827373683
+      ],
+      "a|96|Flamethrower|Earthquake": [
+       1.7698262989846731,
+       2.3824004550874456
+      ],
+      "a|96|Flamethrower|Strength": [
+       1.6374229048122133,
+       2.382400455087446
+      ],
+      "a|98|Earthquake|Rock Slide": [
+       6.553905368340065,
+       1.3710599070059086
+      ],
+      "a|98|Rock Slide|Strength": [
+       0.6191071136562483,
+       0.48248102723681907
+      ],
+      "a|99|Earthquake|Rock Slide": [
+       1.3890832386844627,
+       0.25965587477138946
+      ],
+      "a|99|Rock Slide|Strength": [
+       1.2412738898265836,
+       1.78461686218993
+      ]
+     },
+     "punish_pass": {
+      "ff": 12,
+      "fp": 3,
+      "pf": 3,
+      "pp": 14
+     },
+     "reward_pass": {
+      "ff": 1,
+      "fp": 17,
+      "pf": 0,
+      "pp": 14
+     },
+     "testable": {
+      "ff": 14,
+      "fp": 8,
+      "pf": 1,
+      "pp": 9
+     }
+    },
+    "b": {
+     "minus_p": {
+      "b|103|Flamethrower vs Blastoise|Flamethrower vs Snorlax": [
+       2.2766569487989816,
+       2.4263208571930113
+      ],
+      "b|65|Psychic vs Blastoise|Psychic vs Snorlax": [
+       1.1212777094001265,
+       1.798738299874371
+      ],
+      "b|66|Psychic vs Kangaskhan|Psychic vs Hypno": [
+       0.9634648541521499,
+       1.0957049856903387
+      ],
+      "b|67|Psychic vs Charizard|Psychic vs Nidoking": [
+       2.2254370905691534,
+       1.9863314188560282
+      ],
+      "b|68|Flamethrower vs Kangaskhan|Flamethrower vs Hypno": [
+       -0.03757304638831381,
+       0.3535533905932738
+      ],
+      "b|70|Thunderbolt vs Charizard|Thunderbolt vs Nidoking": [
+       2.1239178926582385,
+       3.3328394372356493
+      ],
+      "b|73|Earthquake vs Poliwrath|Earthquake vs Exeggutor": [
+       2.8020919815372625,
+       2.8383113526172994
+      ],
+      "b|73|Strength vs Poliwrath|Strength vs Exeggutor": [
+       2.048961023475831,
+       5.128466420676847
+      ],
+      "b|73|Surf vs Poliwrath|Surf vs Exeggutor": [
+       8.896986569967524,
+       11.697557972256478
+      ],
+      "b|77|Earthquake vs Tentacruel|Earthquake vs Exeggutor": [
+       5.230361219552396,
+       11.233680777787079
+      ],
+      "b|77|Strength vs Tentacruel|Strength vs Exeggutor": [
+       4.908491455523289,
+       3.5903467943282847
+      ],
+      "b|77|Surf vs Tentacruel|Surf vs Exeggutor": [
+       1.904471162134703,
+       3.3561336505485175
+      ],
+      "b|78|Thunderbolt vs Kangaskhan|Thunderbolt vs Hypno": [
+       4.109773722811871,
+       2.651449868076174
+      ],
+      "b|87|Flamethrower vs Slowbro|Flamethrower vs Venusaur": [
+       0.45164942748222253,
+       0.9565604322011387
+      ],
+      "b|88|Rock Slide vs Charizard|Rock Slide vs Nidoking": [
+       1.3174535284202535,
+       1.4305263090888698
+      ],
+      "b|92|Mega Drain vs Tentacruel|Mega Drain vs Snorlax": [
+       3.5856085755864857,
+       2.096330932816079
+      ],
+      "b|95|Psychic vs Nidoking|Psychic vs Kangaskhan": [
+       2.313889780264977,
+       1.6780691189668953
+      ],
+      "b|95|Thunderbolt vs Nidoking|Thunderbolt vs Kangaskhan": [
+       9.568662354524173,
+       5.96414582737368
+      ],
+      "b|96|Flamethrower vs Exeggutor|Flamethrower vs Chansey": [
+       1.6374229048122133,
+       2.382400455087447
+      ],
+      "b|98|Rock Slide vs Dragonite|Rock Slide vs Machamp": [
+       0.7370217617091119,
+       0.9765791475100176
+      ],
+      "b|99|Rock Slide vs Exeggutor|Rock Slide vs Chansey": [
+       -0.1639015613152388,
+       0.05977958292119004
+      ]
+     },
+     "punish_pass": {
+      "ff": 7,
+      "fp": 2,
+      "pf": 2,
+      "pp": 10
+     },
+     "reward_pass": {
+      "ff": 0,
+      "fp": 13,
+      "pf": 0,
+      "pp": 8
+     },
+     "testable": {
+      "ff": 8,
+      "fp": 7,
+      "pf": 1,
+      "pp": 5
+     }
+    }
+   },
+   "transitions_E0_to_L": {
+    "a": {
+     "minus_p": {
+      "a|101|Surf|Mega Drain": [
+       2.4026940531980014,
+       0.7145489727949731
+      ],
+      "a|102|Surf|Strength": [
+       1.070950847457192,
+       11.746076755443974
+      ],
+      "a|103|Flamethrower|Earthquake": [
+       -0.16016547647985854,
+       2.4263208571930113
+      ],
+      "a|103|Flamethrower|Strength": [
+       0.20744194833732443,
+       2.4263208571930113
+      ],
+      "a|64|Surf|Thunderbolt": [
+       3.3158053648233436,
+       1.803913173087844
+      ],
+      "a|65|Psychic|Thunderbolt": [
+       0.8754259548543336,
+       1.7987382998743713
+      ],
+      "a|65|Surf|Psychic": [
+       1.3159116940090343,
+       6.926015642469144
+      ],
+      "a|66|Psychic|Mega Drain": [
+       2.6308377816075015,
+       0.9397731947804244
+      ],
+      "a|67|Earthquake|Psychic": [
+       0.8673149446452263,
+       5.968413776167344
+      ],
+      "a|67|Surf|Psychic": [
+       0.5017652090242778,
+       5.834027420045738
+      ],
+      "a|70|Thunderbolt|Psychic": [
+       1.5907375830323556,
+       3.332839437235646
+      ],
+      "a|71|Thunderbolt|Psychic": [
+       -0.12749544494314474,
+       0.8244996213411914
+      ],
+      "a|75|Psychic|Tri Attack": [
+       0.7167408135024951,
+       1.9863314188560277
+      ],
+      "a|77|Earthquake|Strength": [
+       1.1591474374675743,
+       11.233680777787082
+      ],
+      "a|77|Surf|Strength": [
+       0.37867007913112183,
+       3.356133650548519
+      ],
+      "a|79|Surf|Mega Drain": [
+       1.6368827067609317,
+       6.926015642469141
+      ],
+      "a|81|Thunderbolt|Psychic": [
+       0.08438387844817859,
+       7.798972789281987
+      ],
+      "a|85|Psychic|Tri Attack": [
+       1.789846094182272,
+       4.521647187031568
+      ],
+      "a|87|Flamethrower|Earthquake": [
+       -0.4054304459761593,
+       -0.017581146583524925
+      ],
+      "a|87|Flamethrower|Strength": [
+       -1.2432771503592182,
+       0.8476168908613475
+      ],
+      "a|88|Earthquake|Rock Slide": [
+       3.1919652287624256,
+       5.692512669217033
+      ],
+      "a|88|Rock Slide|Strength": [
+       0.7629804917212286,
+       1.43052630908887
+      ],
+      "a|90|Psychic|Mega Drain": [
+       5.935775321992838,
+       1.7987382998743717
+      ],
+      "a|92|Mega Drain|Cut": [
+       0.6106196875783649,
+       2.096330932816078
+      ],
+      "a|93|Earthquake|Psychic": [
+       0.5435618053975783,
+       0.37273729936717137
+      ],
+      "a|95|Thunderbolt|Psychic": [
+       -0.38435440272589283,
+       5.964145827373683
+      ],
+      "a|96|Flamethrower|Earthquake": [
+       -0.964242244421769,
+       2.3824004550874456
+      ],
+      "a|96|Flamethrower|Strength": [
+       0.8482898364526412,
+       2.382400455087446
+      ],
+      "a|98|Earthquake|Rock Slide": [
+       0.8519925747279028,
+       1.3710599070059086
+      ],
+      "a|98|Rock Slide|Strength": [
+       1.5818936772472085,
+       0.48248102723681907
+      ],
+      "a|99|Earthquake|Rock Slide": [
+       0.9151754249936553,
+       0.25965587477138946
+      ],
+      "a|99|Rock Slide|Strength": [
+       0.8005140837767296,
+       1.78461686218993
+      ]
+     },
+     "punish_pass": {
+      "ff": 11,
+      "fp": 16,
+      "pf": 4,
+      "pp": 1
+     },
+     "reward_pass": {
+      "ff": 1,
+      "fp": 25,
+      "pf": 0,
+      "pp": 6
+     },
+     "testable": {
+      "ff": 14,
+      "fp": 17,
+      "pf": 1,
+      "pp": 0
+     }
+    },
+    "b": {
+     "minus_p": {
+      "b|103|Flamethrower vs Blastoise|Flamethrower vs Snorlax": [
+       1.0092022814684825,
+       2.4263208571930113
+      ],
+      "b|65|Psychic vs Blastoise|Psychic vs Snorlax": [
+       2.1247785658550464,
+       1.798738299874371
+      ],
+      "b|66|Psychic vs Kangaskhan|Psychic vs Hypno": [
+       3.4729971005976212,
+       1.0957049856903387
+      ],
+      "b|67|Psychic vs Charizard|Psychic vs Nidoking": [
+       0.7552925074832161,
+       1.9863314188560282
+      ],
+      "b|68|Flamethrower vs Kangaskhan|Flamethrower vs Hypno": [
+       0.2746371739326586,
+       0.3535533905932738
+      ],
+      "b|70|Thunderbolt vs Charizard|Thunderbolt vs Nidoking": [
+       1.4363501294008916,
+       3.3328394372356493
+      ],
+      "b|73|Earthquake vs Poliwrath|Earthquake vs Exeggutor": [
+       2.7234125132995,
+       2.8383113526172994
+      ],
+      "b|73|Strength vs Poliwrath|Strength vs Exeggutor": [
+       2.4945524651658997,
+       5.128466420676847
+      ],
+      "b|73|Surf vs Poliwrath|Surf vs Exeggutor": [
+       3.574752333020083,
+       11.697557972256478
+      ],
+      "b|77|Earthquake vs Tentacruel|Earthquake vs Exeggutor": [
+       2.370506516724782,
+       11.233680777787079
+      ],
+      "b|77|Strength vs Tentacruel|Strength vs Exeggutor": [
+       1.2442060036871077,
+       3.5903467943282847
+      ],
+      "b|77|Surf vs Tentacruel|Surf vs Exeggutor": [
+       2.011241376332881,
+       3.3561336505485175
+      ],
+      "b|78|Thunderbolt vs Kangaskhan|Thunderbolt vs Hypno": [
+       1.33511222426079,
+       2.651449868076174
+      ],
+      "b|87|Flamethrower vs Slowbro|Flamethrower vs Venusaur": [
+       0.5355303563813052,
+       0.9565604322011387
+      ],
+      "b|88|Rock Slide vs Charizard|Rock Slide vs Nidoking": [
+       4.226945798931981,
+       1.4305263090888698
+      ],
+      "b|92|Mega Drain vs Tentacruel|Mega Drain vs Snorlax": [
+       2.5481761735862474,
+       2.096330932816079
+      ],
+      "b|95|Psychic vs Nidoking|Psychic vs Kangaskhan": [
+       -0.42833714096801945,
+       1.6780691189668953
+      ],
+      "b|95|Thunderbolt vs Nidoking|Thunderbolt vs Kangaskhan": [
+       0.12212983307295976,
+       5.96414582737368
+      ],
+      "b|96|Flamethrower vs Exeggutor|Flamethrower vs Chansey": [
+       1.1479716572212109,
+       2.382400455087447
+      ],
+      "b|98|Rock Slide vs Dragonite|Rock Slide vs Machamp": [
+       1.1909540917061139,
+       0.9765791475100176
+      ],
+      "b|99|Rock Slide vs Exeggutor|Rock Slide vs Chansey": [
+       -0.0023015445955342686,
+       0.05977958292119004
+      ]
+     },
+     "punish_pass": {
+      "ff": 6,
+      "fp": 6,
+      "pf": 3,
+      "pp": 6
+     },
+     "reward_pass": {
+      "ff": 0,
+      "fp": 15,
+      "pf": 0,
+      "pp": 6
+     },
+     "testable": {
+      "ff": 8,
+      "fp": 8,
+      "pf": 1,
+      "pp": 4
+     }
+    }
+   }
+  },
+  "sentence": "M2 (b) \uae30\uc900\uacfc \uc5ec\uc720\ub294 \ub118\uc5c8\uc9c0\ub9cc \uc9c0\ub81b\ub300\uac00 \ucc98\ubc8c \ud1b5\uacfc\ub97c \uc904\uc774\uac70\ub098 \ubc14\uafe8\ub2e4(\ucc98\ubc8c \ud1b5\uacfc (b) 12 \ub300 12, (a) 17 \ub300 17; pass\u2192fail (b) 2, (a) 3).",
+  "stage": "judge",
+  "status": "READ",
+  "written_at": "2026-10-02T23:53:26.013065+00:00"
+ },
  "oc": {
   "assumption": "pairs independent; q_b = q_a; c fixed; G_fail independent of n and F_a with probability g from a per-pair discordance model per axis, OR over (b) and (a)",
   "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
