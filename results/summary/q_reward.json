@@ -15074,6 +15074,1046 @@
   "weak_note": null,
   "written_at": "2026-10-02T09:50:59.463157+00:00"
  },
+ "records": {
+  "borderline": [
+   "b|0|Earthquake vs Chansey|Earthquake vs Rhydon",
+   "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel",
+   "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite"
+  ],
+  "cancel": {
+   "base": [
+    "b|2|Psychic vs Machamp|Psychic vs Tentacruel"
+   ],
+   "note": "A\u00b7Y\ud56d \uc0c1\uc1c4",
+   "q0": [
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel",
+    "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite"
+   ]
+  },
+  "candidates": {
+   "apl": {
+    "delta": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 17.66181234046213,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 21.081928851716928,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 20.121275822888098,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 19.243180610283744,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 29.80339769491167,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 12.475607150431296,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 11.740605357446087,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 2.7906378688942293,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 3.344850086726453,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 27.849381168127735,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 20.884268304483765,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": 2.7512504286556396
+    },
+    "guard_pairs": 6,
+    "label": "\ud310\ub2e8 \ubd88\uac00",
+    "median": 18.45249647537294,
+    "naive_px_F_median": 3.25,
+    "p": 0.00048828125,
+    "ratio_diff_median": -0.150990099009901,
+    "role": "primary",
+    "threshold": 1.9774080799056364,
+    "why": "\uc911\uc559\uac12 18.45249647537294, p 0.00048828125, \ube44\uc728 \ucc28 -0.150990099009901"
+   },
+   "floor": {
+    "already_at_floor": 3,
+    "already_at_floor_keys": [
+     "b|0|Surf vs Chansey|Surf vs Rhydon",
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur",
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor"
+    ],
+    "auc": 0.8703703703703703,
+    "delta_r_P": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": -3.1669906980187323,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 5.827152627055423,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 0.35355339059327373,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 1.2041900789795124,
+     "b|10|Strength vs Slowbro|Strength vs Venusaur": -5.279455791525923,
+     "b|10|Surf vs Slowbro|Surf vs Venusaur": 3.857512898306789,
+     "b|12|Surf vs Poliwrath|Surf vs Snorlax": -5.404265297771859,
+     "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": 3.3247396605048194,
+     "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": -4.616656321198146,
+     "b|14|Surf vs Nidoking|Surf vs Kangaskhan": -1.0522007993612825,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 1.1994387811259637,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": -3.1584102892999133,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 0.3846615517498101,
+     "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": -2.1810058623387207,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 0.33270414432997597,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": -0.08496104240128188,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": -0.07238453535171603,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": -0.6547900426854402,
+     "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": -4.893057535506531,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": -1.217585317515685,
+     "b|8|Strength vs Hypno|Strength vs Dragonite": 0.2669774015376798
+    },
+    "label": "\ud310\ub2e8 \ubd88\uac00",
+    "rho": -0.6016511867905057,
+    "rho_n": 18,
+    "s": 0.7,
+    "saturation_F": 0.0,
+    "weak": false,
+    "why": "AUC 0.8703703703703703, (c) s \ud558\ud5a5 \uc870\uc791 (s 0.7)\uc758 \u03c1 -0.6016511867905057 (P_X > 0\uc778 18\uc30d)"
+   },
+   "operating": {
+    "label": "\uc77c\uce58",
+    "limitation": "mv_scale\uc740 \uc785\ub825 \uad6c\ub3d9\ub3c4 \ubc14\uafb8\ubbc0\ub85c \u2463\uc758 \uc77c\uce58\ub294 \u2460\uacfc \uc644\uc804\ud788 \uac08\ub9b0 \uac83\uc774 \uc544\ub2c8\ub2e4",
+    "per": {
+     "mv_hi": {
+      "big": true,
+      "delta": {
+       "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 3.469950002024201,
+       "b|0|Strength vs Chansey|Strength vs Rhydon": 7.958876272816547,
+       "b|0|Surf vs Chansey|Surf vs Rhydon": 0.24152294576982392,
+       "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 14.48346738856769,
+       "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 9.316728163021107,
+       "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 7.932740008211818,
+       "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 2.714574425860261,
+       "b|4|Strength vs Venusaur|Strength vs Charizard": -0.9750994229498995,
+       "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 1.056450962744967,
+       "b|6|Surf vs Snorlax|Surf vs Exeggutor": -0.3189259090919687,
+       "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 10.453806301532918,
+       "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": -0.6511567342696174
+      },
+      "direction": "\uc99d\uac00",
+      "median": 3.092262213942231,
+      "overlap": false,
+      "p": 0.01611328125,
+      "rho": -0.0608875128998968,
+      "rho_n": 18,
+      "small": false,
+      "threshold": 1.9774080799056364,
+      "valid": true
+     },
+     "mv_lo": {
+      "big": false,
+      "delta": {
+       "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": -3.0924612238776157,
+       "b|0|Strength vs Chansey|Strength vs Rhydon": 2.1710923907209,
+       "b|0|Surf vs Chansey|Surf vs Rhydon": 0.7408762256897697,
+       "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 0.35355339059327373,
+       "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": -0.877482364879762,
+       "b|2|Psychic vs Machamp|Psychic vs Tentacruel": -3.3612106812351077,
+       "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": -1.8305474894188755e-16,
+       "b|4|Strength vs Venusaur|Strength vs Charizard": -0.5544770223165753,
+       "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 1.1705069413071094,
+       "b|6|Surf vs Snorlax|Surf vs Exeggutor": 0.6684916903380527,
+       "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": -0.8542210514898061,
+       "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": -1.8014228189227768
+      },
+      "direction": "\uac10\uc18c",
+      "median": -0.27723851115828774,
+      "overlap": false,
+      "p": 0.4697265625,
+      "rho": -0.41589267285861714,
+      "rho_n": 18,
+      "small": true,
+      "threshold": 1.9774080799056364,
+      "valid": true
+     }
+    },
+    "why": "mv_hi |\uc911\uc559\uac12 \u0394r_P| 3.092 (\uc99d\uac00), p 0.0161"
+   },
+   "reach": {
+    "W_X": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 199.76235949993134,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 434.37461444735527,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 198.79863572120667,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 392.7894474864006,
+     "b|10|Strength vs Slowbro|Strength vs Venusaur": 523.885863929987,
+     "b|10|Surf vs Slowbro|Surf vs Venusaur": 556.0055370926857,
+     "b|12|Surf vs Poliwrath|Surf vs Snorlax": 809.4050651192665,
+     "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": 606.7776197493076,
+     "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": 356.79887303709984,
+     "b|14|Surf vs Nidoking|Surf vs Kangaskhan": 362.62753933668137,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 415.83140902221203,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 456.1610288619995,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 247.92662097513676,
+     "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": 555.1158763468266,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 207.62488222122192,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 347.374858379364,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 198.79863572120667,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 407.7705309391022,
+     "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": 305.96800999343395,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": 281.0911639928818,
+     "b|8|Strength vs Hypno|Strength vs Dragonite": 406.14476534724236
+    },
+    "auc": 0.30864197530864196,
+    "f_X": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 0.24444444444444444,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 0.16228070175438597,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 0.16753926701570682,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 0.25,
+     "b|10|Strength vs Slowbro|Strength vs Venusaur": 0.4971751412429379,
+     "b|10|Surf vs Slowbro|Surf vs Venusaur": 0.3764705882352941,
+     "b|12|Surf vs Poliwrath|Surf vs Snorlax": 0.3856749311294766,
+     "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": 0.2106299212598425,
+     "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": 0.3485714285714286,
+     "b|14|Surf vs Nidoking|Surf vs Kangaskhan": 0.22992700729927007,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 0.3697916666666667,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 0.29454545454545455,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 0.28205128205128205,
+     "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": 0.5105263157894737,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 0.14285714285714285,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 0.2589641434262948,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 0.16753926701570682,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 0.37362637362637363,
+     "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": 0.26153846153846155,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": 0.22535211267605634,
+     "b|8|Strength vs Hypno|Strength vs Dragonite": 0.42073170731707316
+    },
+    "label": "\ubd88\uc77c\uce58",
+    "n_ratio_undefined": 3,
+    "px_after_F_median": 0.0,
+    "rho": 0.442276633246911,
+    "why": "\ube44\uc728 AUC 0.309 \u2264 0.6"
+   },
+   "variation": {
+    "base": {
+     "F_abs_mean": 0.25730834267194175,
+     "F_sd": 0.45760478278298045,
+     "S_abs_mean": 2.320360813522906,
+     "S_sd": 0.743347203493828,
+     "label": "\ubd88\uc77c\uce58"
+    },
+    "label": "\ubd88\uc77c\uce58",
+    "q0": {
+     "F_abs_mean": 0.20185156247319191,
+     "F_sd": 0.5388588284539683,
+     "S_abs_mean": 1.8166912553188448,
+     "S_sd": 0.47272432477843235,
+     "label": "\ubd88\uc77c\uce58"
+    },
+    "why": "Q0\u00b7\uae30\uc900\uc120 \ubaa8\ub450 \ubd88\uc77c\uce58"
+   }
+  },
+  "classification_unstable": false,
+  "code_key": "63c47a880d77e85db375115f2bc2e6703c3ef7a31d5439e7b38ed7e1d98efec0",
+  "fs": {
+   "F_base": [
+    "b|0|Strength vs Chansey|Strength vs Rhydon",
+    "b|0|Surf vs Chansey|Surf vs Rhydon",
+    "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur",
+    "b|10|Surf vs Slowbro|Surf vs Venusaur",
+    "b|14|Surf vs Nidoking|Surf vs Kangaskhan",
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel",
+    "b|2|Psychic vs Machamp|Psychic vs Tentacruel",
+    "b|4|Earthquake vs Venusaur|Earthquake vs Charizard",
+    "b|4|Strength vs Venusaur|Strength vs Charizard",
+    "b|6|Surf vs Snorlax|Surf vs Exeggutor",
+    "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor",
+    "b|8|Earthquake vs Hypno|Earthquake vs Dragonite"
+   ],
+   "S_base": [
+    "b|0|Earthquake vs Chansey|Earthquake vs Rhydon",
+    "b|10|Strength vs Slowbro|Strength vs Venusaur",
+    "b|12|Surf vs Poliwrath|Surf vs Snorlax",
+    "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax",
+    "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan",
+    "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard",
+    "b|6|Psychic vs Snorlax|Psychic vs Exeggutor",
+    "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite",
+    "b|8|Strength vs Hypno|Strength vs Dragonite"
+   ],
+   "agree_rate": 0.7142857142857143,
+   "auc_blocked": true,
+   "disagree": 6,
+   "unstable": false
+  },
+  "git": {
+   "commit": "d4fe363cb5affad5f4bb4b05002317da2b2d1740",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "noise_floor": 0.9887040399528182,
+  "records": {
+   "apl_nonkc": {
+    "delta": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 1.676758185572372,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 3.079025622698941,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 5.373191027516316,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 4.903651856190197,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 1.1119154632282573,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 0.0006864684457679182,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 6.0304393586396525,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 3.4620107551519346,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 5.403410777815454,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 5.300806492164598,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 2.822763393794311,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": 2.7589195596668867
+    },
+    "guard_pairs": 3,
+    "label": "\ud310\ub2e8 \ubd88\uac00",
+    "median": 3.270518188925438,
+    "naive_px_F_median": 3.25,
+    "p": 0.00048828125,
+    "ratio_diff_median": -0.15123456790123457,
+    "role": "record",
+    "threshold": 1.9774080799056364,
+    "why": "\uc911\uc559\uac12 3.270518188925438, p 0.00048828125, \ube44\uc728 \ucc28 -0.15123456790123457"
+   },
+   "conditions": {
+    "apl_mbon05": {
+     "apl_out_median": 0.28121839532007775,
+     "condition": {
+      "edit": "apl_to_mbon05_zero",
+      "kc_gate": true,
+      "mv_scale": 1.0,
+      "name": "apl_mbon05",
+      "role": "primary",
+      "strength": 1.0
+     },
+     "d6a_over_share": 0.0,
+     "jaccard_median": 0.0423728813559322,
+     "kc_median": 0.04392224409448819,
+     "naive_px_median": 87.75,
+     "reasons": [],
+     "status": "OK"
+    },
+    "apl_nonkc": {
+     "apl_out_median": 0.27755152551146844,
+     "condition": {
+      "edit": "apl_to_nonkc_zero",
+      "kc_gate": true,
+      "mv_scale": 1.0,
+      "name": "apl_nonkc",
+      "role": "record",
+      "strength": 1.0
+     },
+     "d6a_over_share": 0.0,
+     "jaccard_median": 0.04121863799283154,
+     "kc_median": 0.04552165354330709,
+     "naive_px_median": 66.875,
+     "reasons": [],
+     "status": "OK"
+    },
+    "base": {
+     "apl_out_median": 0.24204503939176597,
+     "condition": {
+      "edit": "none",
+      "kc_gate": false,
+      "mv_scale": 1.0,
+      "name": "base",
+      "role": "baseline",
+      "strength": 1.0
+     },
+     "d6a_over_share": 0.0,
+     "jaccard_median": 0.04140969162995595,
+     "kc_median": 0.04773622047244094,
+     "naive_px_median": 19.5,
+     "reasons": [],
+     "status": "OK"
+    },
+    "mv_hi": {
+     "apl_out_median": 0.33281781181693076,
+     "condition": {
+      "edit": "none",
+      "kc_gate": true,
+      "mv_scale": 1.25,
+      "name": "mv_hi",
+      "role": "primary",
+      "strength": 1.0
+     },
+     "d6a_over_share": 0.0,
+     "jaccard_median": 0.06957928802588997,
+     "kc_median": 0.06988188976377953,
+     "naive_px_median": 54.75,
+     "reasons": [],
+     "status": "OK"
+    },
+    "mv_lo": {
+     "apl_out_median": 0.2073124470375478,
+     "condition": {
+      "edit": "none",
+      "kc_gate": true,
+      "mv_scale": 0.9,
+      "name": "mv_lo",
+      "role": "primary",
+      "strength": 1.0
+     },
+     "d6a_over_share": 0.0,
+     "jaccard_median": 0.028052805280528052,
+     "kc_median": 0.0344488188976378,
+     "naive_px_median": 6.75,
+     "reasons": [],
+     "status": "OK"
+    },
+    "s_up": {
+     "apl_out_median": 0.15776710231012353,
+     "condition": {
+      "edit": "none",
+      "kc_gate": true,
+      "mv_scale": 1.0,
+      "name": "s_up",
+      "role": "primary",
+      "strength": 0.7
+     },
+     "d6a_over_share": 0.0,
+     "jaccard_median": 0.045346062052505964,
+     "kc_median": 0.04330708661417323,
+     "naive_px_median": 18.0,
+     "reasons": [],
+     "status": "OK"
+    }
+   },
+   "decomposition": {
+    "F": {
+     "base": {
+      "dA_X": 0.875,
+      "dA_Y": 0.0,
+      "dP_X": -3.0625,
+      "dP_Y": 0.0
+     },
+     "q0": {
+      "dA_X": 1.75,
+      "dA_Y": 0.0625,
+      "dP_X": -2.5625,
+      "dP_Y": -0.125
+     }
+    },
+    "S": {
+     "base": {
+      "dA_X": 4.25,
+      "dA_Y": 0.0,
+      "dP_X": -26.0,
+      "dP_Y": 0.0
+     },
+     "q0": {
+      "dA_X": 7.625,
+      "dA_Y": 0.0,
+      "dP_X": -26.625,
+      "dP_Y": -0.5
+     }
+    }
+   },
+   "noise_floor": 0.9887040399528182,
+   "s_c": {
+    "candidates": [
+     0.7,
+     0.8
+    ],
+    "code_key": "63c47a880d77e85db375115f2bc2e6703c3ef7a31d5439e7b38ed7e1d98efec0",
+    "direction": "lowered",
+    "git": {
+     "commit": "fc39c5abadff106d83d2a8415e31e3bd7c3d0fe5",
+     "dirty_hashed": [],
+     "dirty_other": []
+    },
+    "kc_band": [
+     0.03,
+     0.15
+    ],
+    "kc_probe_median": {
+     "0.7": 0.043061023622047244
+    },
+    "note": "s_up = (c) s \ud558\ud5a5 \uc870\uc791 (Q.6.9: s 0.7, \ub300\uc5ed \ubc16\uc774\uba74 0.8)",
+    "s": 0.7,
+    "s_cap_record": {
+     "cap_hz": 333.3333333333333,
+     "max_rate_hz": 200.0,
+     "n_odours": 42,
+     "s": 1.0,
+     "step": 0.05,
+     "strength": 1.0,
+     "vmax": 1.6153846153846154,
+     "weak": true
+    },
+    "s_weak": 0.15,
+    "stage": "s_c",
+    "strength": 1.0,
+    "unmanip_note": null,
+    "unmanipulable": false,
+    "weak": false,
+    "weak_in": false,
+    "weak_note": null,
+    "written_at": "2026-10-02T08:03:34.239577+00:00"
+   },
+   "s_up_note": "s_up = (c) s \ud558\ud5a5 \uc870\uc791 (Q.6.9: s 0.7, \ub300\uc5ed \ubc16\uc774\uba74 0.8)",
+   "stop_share": {
+    "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": {
+     "base_naive": 0.0,
+     "base_post": 1.0,
+     "q0": 0.25
+    },
+    "b|0|Strength vs Chansey|Strength vs Rhydon": {
+     "base_naive": 0.875,
+     "base_post": 1.0,
+     "q0": 1.0
+    },
+    "b|0|Surf vs Chansey|Surf vs Rhydon": {
+     "base_naive": 1.0,
+     "base_post": 1.0,
+     "q0": 0.625
+    },
+    "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": {
+     "base_naive": 1.0,
+     "base_post": 1.0,
+     "q0": 1.0
+    },
+    "b|10|Strength vs Slowbro|Strength vs Venusaur": {
+     "base_naive": 0.0,
+     "base_post": 0.25,
+     "q0": 0.0
+    },
+    "b|10|Surf vs Slowbro|Surf vs Venusaur": {
+     "base_naive": 0.125,
+     "base_post": 1.0,
+     "q0": 0.0
+    },
+    "b|12|Surf vs Poliwrath|Surf vs Snorlax": {
+     "base_naive": 0.0,
+     "base_post": 1.0,
+     "q0": 0.0
+    },
+    "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": {
+     "base_naive": 0.0,
+     "base_post": 0.125,
+     "q0": 0.0
+    },
+    "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": {
+     "base_naive": 0.0,
+     "base_post": 1.0,
+     "q0": 0.125
+    },
+    "b|14|Surf vs Nidoking|Surf vs Kangaskhan": {
+     "base_naive": 0.125,
+     "base_post": 0.875,
+     "q0": 0.25
+    },
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": {
+     "base_naive": 0.125,
+     "base_post": 0.5,
+     "q0": 0.0
+    },
+    "b|2|Psychic vs Machamp|Psychic vs Tentacruel": {
+     "base_naive": 0.0,
+     "base_post": 1.0,
+     "q0": 0.0
+    },
+    "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": {
+     "base_naive": 0.875,
+     "base_post": 1.0,
+     "q0": 1.0
+    },
+    "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": {
+     "base_naive": 0.0,
+     "base_post": 0.5,
+     "q0": 0.0
+    },
+    "b|4|Strength vs Venusaur|Strength vs Charizard": {
+     "base_naive": 0.5,
+     "base_post": 1.0,
+     "q0": 0.75
+    },
+    "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": {
+     "base_naive": 0.125,
+     "base_post": 1.0,
+     "q0": 0.25
+    },
+    "b|6|Surf vs Snorlax|Surf vs Exeggutor": {
+     "base_naive": 1.0,
+     "base_post": 1.0,
+     "q0": 0.625
+    },
+    "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": {
+     "base_naive": 0.875,
+     "base_post": 1.0,
+     "q0": 0.875
+    },
+    "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": {
+     "base_naive": 0.0,
+     "base_post": 1.0,
+     "q0": 0.125
+    },
+    "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": {
+     "base_naive": 0.25,
+     "base_post": 1.0,
+     "q0": 0.125
+    },
+    "b|8|Strength vs Hypno|Strength vs Dragonite": {
+     "base_naive": 0.0,
+     "base_post": 1.0,
+     "q0": 0.0
+    }
+   },
+   "transitions": {
+    "apl_mbon05": {
+     "fail_to_fail": 0,
+     "fail_to_pass": 10,
+     "pass_to_fail": 0,
+     "pass_to_pass": 11
+    },
+    "apl_nonkc": {
+     "fail_to_fail": 0,
+     "fail_to_pass": 10,
+     "pass_to_fail": 2,
+     "pass_to_pass": 9
+    },
+    "mv_hi": {
+     "fail_to_fail": 3,
+     "fail_to_pass": 7,
+     "pass_to_fail": 1,
+     "pass_to_pass": 10
+    },
+    "mv_lo": {
+     "fail_to_fail": 8,
+     "fail_to_pass": 2,
+     "pass_to_fail": 9,
+     "pass_to_pass": 2
+    },
+    "s_up": {
+     "fail_to_fail": 7,
+     "fail_to_pass": 3,
+     "pass_to_fail": 6,
+     "pass_to_pass": 5
+    }
+   }
+  },
+  "s_c": {
+   "candidates": [
+    0.7,
+    0.8
+   ],
+   "code_key": "63c47a880d77e85db375115f2bc2e6703c3ef7a31d5439e7b38ed7e1d98efec0",
+   "direction": "lowered",
+   "git": {
+    "commit": "fc39c5abadff106d83d2a8415e31e3bd7c3d0fe5",
+    "dirty_hashed": [],
+    "dirty_other": []
+   },
+   "kc_band": [
+    0.03,
+    0.15
+   ],
+   "kc_probe_median": {
+    "0.7": 0.043061023622047244
+   },
+   "note": "s_up = (c) s \ud558\ud5a5 \uc870\uc791 (Q.6.9: s 0.7, \ub300\uc5ed \ubc16\uc774\uba74 0.8)",
+   "s": 0.7,
+   "s_cap_record": {
+    "cap_hz": 333.3333333333333,
+    "max_rate_hz": 200.0,
+    "n_odours": 42,
+    "s": 1.0,
+    "step": 0.05,
+    "strength": 1.0,
+    "vmax": 1.6153846153846154,
+    "weak": true
+   },
+   "s_weak": 0.15,
+   "stage": "s_c",
+   "strength": 1.0,
+   "unmanip_note": null,
+   "unmanipulable": false,
+   "weak": false,
+   "weak_in": false,
+   "weak_note": null,
+   "written_at": "2026-10-02T08:03:34.239577+00:00"
+  },
+  "s_up_note": "s_up = (c) s \ud558\ud5a5 \uc870\uc791 (Q.6.9: s 0.7, \ub300\uc5ed \ubc16\uc774\uba74 0.8)",
+  "sensitivity_borderline": {
+   "apl": "\ud310\ub2e8 \ubd88\uac00",
+   "floor": "\ud310\ub2e8 \ubd88\uac00",
+   "operating": "\uc77c\uce58",
+   "reach": "\ubd88\uc77c\uce58",
+   "variation": "\ubd88\uc77c\uce58"
+  },
+  "sensitivity_borderline_detail": {
+   "apl": {
+    "delta": {
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 21.081928851716928,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 20.121275822888098,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 19.243180610283744,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 12.475607150431296,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 11.740605357446087,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 2.7906378688942293,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 3.344850086726453,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 27.849381168127735,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 20.884268304483765
+    },
+    "guard_pairs": 5,
+    "label": "\ud310\ub2e8 \ubd88\uac00",
+    "median": 19.243180610283744,
+    "naive_px_F_median": 1.875,
+    "p": 0.00390625,
+    "ratio_diff_median": -0.1426950495049505,
+    "role": "primary",
+    "threshold": 1.9774080799056364,
+    "why": "\uc911\uc559\uac12 19.243180610283744, p 0.00390625, \ube44\uc728 \ucc28 -0.1426950495049505"
+   },
+   "floor": {
+    "already_at_floor": 3,
+    "already_at_floor_keys": [
+     "b|0|Surf vs Chansey|Surf vs Rhydon",
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur",
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor"
+    ],
+    "auc": 0.9629629629629629,
+    "delta_r_P": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": -3.1669906980187323,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 5.827152627055423,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 0.35355339059327373,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 1.2041900789795124,
+     "b|10|Strength vs Slowbro|Strength vs Venusaur": -5.279455791525923,
+     "b|10|Surf vs Slowbro|Surf vs Venusaur": 3.857512898306789,
+     "b|12|Surf vs Poliwrath|Surf vs Snorlax": -5.404265297771859,
+     "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": 3.3247396605048194,
+     "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": -4.616656321198146,
+     "b|14|Surf vs Nidoking|Surf vs Kangaskhan": -1.0522007993612825,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 1.1994387811259637,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": -3.1584102892999133,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 0.3846615517498101,
+     "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": -2.1810058623387207,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 0.33270414432997597,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": -0.08496104240128188,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": -0.07238453535171603,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": -0.6547900426854402,
+     "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": -4.893057535506531,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": -1.217585317515685,
+     "b|8|Strength vs Hypno|Strength vs Dragonite": 0.2669774015376798
+    },
+    "label": "\ud310\ub2e8 \ubd88\uac00",
+    "rho": -0.6016511867905057,
+    "rho_n": 18,
+    "s": 0.7,
+    "saturation_F": 0.0,
+    "weak": false,
+    "why": "AUC 0.9629629629629629, (c) s \ud558\ud5a5 \uc870\uc791 (s 0.7)\uc758 \u03c1 -0.6016511867905057 (P_X > 0\uc778 18\uc30d)"
+   },
+   "operating": {
+    "label": "\uc77c\uce58",
+    "limitation": "mv_scale\uc740 \uc785\ub825 \uad6c\ub3d9\ub3c4 \ubc14\uafb8\ubbc0\ub85c \u2463\uc758 \uc77c\uce58\ub294 \u2460\uacfc \uc644\uc804\ud788 \uac08\ub9b0 \uac83\uc774 \uc544\ub2c8\ub2e4",
+    "per": {
+     "mv_hi": {
+      "big": true,
+      "delta": {
+       "b|0|Strength vs Chansey|Strength vs Rhydon": 7.958876272816547,
+       "b|0|Surf vs Chansey|Surf vs Rhydon": 0.24152294576982392,
+       "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 14.48346738856769,
+       "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 7.932740008211818,
+       "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 2.714574425860261,
+       "b|4|Strength vs Venusaur|Strength vs Charizard": -0.9750994229498995,
+       "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 1.056450962744967,
+       "b|6|Surf vs Snorlax|Surf vs Exeggutor": -0.3189259090919687,
+       "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 10.453806301532918
+      },
+      "direction": "\uc99d\uac00",
+      "median": 2.714574425860261,
+      "overlap": false,
+      "p": 0.0390625,
+      "rho": -0.0608875128998968,
+      "rho_n": 18,
+      "small": false,
+      "threshold": 1.9774080799056364,
+      "valid": true
+     },
+     "mv_lo": {
+      "big": false,
+      "delta": {
+       "b|0|Strength vs Chansey|Strength vs Rhydon": 2.1710923907209,
+       "b|0|Surf vs Chansey|Surf vs Rhydon": 0.7408762256897697,
+       "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 0.35355339059327373,
+       "b|2|Psychic vs Machamp|Psychic vs Tentacruel": -3.3612106812351077,
+       "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": -1.8305474894188755e-16,
+       "b|4|Strength vs Venusaur|Strength vs Charizard": -0.5544770223165753,
+       "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 1.1705069413071094,
+       "b|6|Surf vs Snorlax|Surf vs Exeggutor": 0.6684916903380527,
+       "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": -0.8542210514898061
+      },
+      "direction": "\uc99d\uac00",
+      "median": 0.35355339059327373,
+      "overlap": false,
+      "p": 0.734375,
+      "rho": -0.41589267285861714,
+      "rho_n": 18,
+      "small": true,
+      "threshold": 1.9774080799056364,
+      "valid": true
+     }
+    },
+    "why": "mv_hi |\uc911\uc559\uac12 \u0394r_P| 2.715 (\uc99d\uac00), p 0.0391"
+   },
+   "reach": {
+    "W_X": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 199.76235949993134,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 434.37461444735527,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 198.79863572120667,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 392.7894474864006,
+     "b|10|Strength vs Slowbro|Strength vs Venusaur": 523.885863929987,
+     "b|10|Surf vs Slowbro|Surf vs Venusaur": 556.0055370926857,
+     "b|12|Surf vs Poliwrath|Surf vs Snorlax": 809.4050651192665,
+     "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": 606.7776197493076,
+     "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": 356.79887303709984,
+     "b|14|Surf vs Nidoking|Surf vs Kangaskhan": 362.62753933668137,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 415.83140902221203,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 456.1610288619995,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 247.92662097513676,
+     "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": 555.1158763468266,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 207.62488222122192,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 347.374858379364,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 198.79863572120667,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 407.7705309391022,
+     "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": 305.96800999343395,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": 281.0911639928818,
+     "b|8|Strength vs Hypno|Strength vs Dragonite": 406.14476534724236
+    },
+    "auc": 0.2777777777777778,
+    "f_X": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 0.24444444444444444,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 0.16228070175438597,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 0.16753926701570682,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 0.25,
+     "b|10|Strength vs Slowbro|Strength vs Venusaur": 0.4971751412429379,
+     "b|10|Surf vs Slowbro|Surf vs Venusaur": 0.3764705882352941,
+     "b|12|Surf vs Poliwrath|Surf vs Snorlax": 0.3856749311294766,
+     "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": 0.2106299212598425,
+     "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": 0.3485714285714286,
+     "b|14|Surf vs Nidoking|Surf vs Kangaskhan": 0.22992700729927007,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 0.3697916666666667,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 0.29454545454545455,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 0.28205128205128205,
+     "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": 0.5105263157894737,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 0.14285714285714285,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 0.2589641434262948,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 0.16753926701570682,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 0.37362637362637363,
+     "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": 0.26153846153846155,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": 0.22535211267605634,
+     "b|8|Strength vs Hypno|Strength vs Dragonite": 0.42073170731707316
+    },
+    "label": "\ubd88\uc77c\uce58",
+    "n_ratio_undefined": 3,
+    "px_after_F_median": 0.0,
+    "rho": 0.442276633246911,
+    "why": "\ube44\uc728 AUC 0.278 \u2264 0.6"
+   },
+   "variation": {
+    "base": {
+     "F_abs_mean": 0.2211059762953661,
+     "F_sd": 0.2965197508815533,
+     "S_abs_mean": 2.320360813522906,
+     "S_sd": 0.743347203493828,
+     "label": "\ubd88\uc77c\uce58"
+    },
+    "label": "\ubd88\uc77c\uce58",
+    "q0": {
+     "F_abs_mean": 0.11372009044982181,
+     "F_sd": 0.32537330050898766,
+     "S_abs_mean": 1.8166912553188448,
+     "S_sd": 0.47272432477843235,
+     "label": "\ubd88\uc77c\uce58"
+    },
+    "why": "Q0\u00b7\uae30\uc900\uc120 \ubaa8\ub450 \ubd88\uc77c\uce58"
+   }
+  },
+  "sensitivity_cancel": {
+   "apl": "\ud310\ub2e8 \ubd88\uac00",
+   "floor": "\ud310\ub2e8 \ubd88\uac00",
+   "operating": "\uc77c\uce58",
+   "reach": "\ubd88\uc77c\uce58",
+   "variation": "\ubd88\uc77c\uce58"
+  },
+  "sensitivity_cancel_detail": {
+   "apl": {
+    "delta": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 17.66181234046213,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 21.081928851716928,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 20.121275822888098,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 19.243180610283744,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 12.475607150431296,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 11.740605357446087,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 2.7906378688942293,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 3.344850086726453,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 27.849381168127735,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 20.884268304483765
+    },
+    "guard_pairs": 5,
+    "label": "\ud310\ub2e8 \ubd88\uac00",
+    "median": 18.45249647537294,
+    "naive_px_F_median": 2.4375,
+    "p": 0.001953125,
+    "ratio_diff_median": -0.13439999999999996,
+    "role": "primary",
+    "threshold": 1.9774080799056364,
+    "why": "\uc911\uc559\uac12 18.45249647537294, p 0.001953125, \ube44\uc728 \ucc28 -0.13439999999999996"
+   },
+   "floor": {
+    "already_at_floor": 3,
+    "already_at_floor_keys": [
+     "b|0|Surf vs Chansey|Surf vs Rhydon",
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur",
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor"
+    ],
+    "auc": 0.9333333333333333,
+    "delta_r_P": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": -3.1669906980187323,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 5.827152627055423,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 0.35355339059327373,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 1.2041900789795124,
+     "b|10|Strength vs Slowbro|Strength vs Venusaur": -5.279455791525923,
+     "b|10|Surf vs Slowbro|Surf vs Venusaur": 3.857512898306789,
+     "b|12|Surf vs Poliwrath|Surf vs Snorlax": -5.404265297771859,
+     "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": 3.3247396605048194,
+     "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": -4.616656321198146,
+     "b|14|Surf vs Nidoking|Surf vs Kangaskhan": -1.0522007993612825,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 1.1994387811259637,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": -3.1584102892999133,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 0.3846615517498101,
+     "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": -2.1810058623387207,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 0.33270414432997597,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": -0.08496104240128188,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": -0.07238453535171603,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": -0.6547900426854402,
+     "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": -4.893057535506531,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": -1.217585317515685,
+     "b|8|Strength vs Hypno|Strength vs Dragonite": 0.2669774015376798
+    },
+    "label": "\ud310\ub2e8 \ubd88\uac00",
+    "rho": -0.6016511867905057,
+    "rho_n": 18,
+    "s": 0.7,
+    "saturation_F": 0.0,
+    "weak": false,
+    "why": "AUC 0.9333333333333333, (c) s \ud558\ud5a5 \uc870\uc791 (s 0.7)\uc758 \u03c1 -0.6016511867905057 (P_X > 0\uc778 18\uc30d)"
+   },
+   "operating": {
+    "label": "\uc77c\uce58",
+    "limitation": "mv_scale\uc740 \uc785\ub825 \uad6c\ub3d9\ub3c4 \ubc14\uafb8\ubbc0\ub85c \u2463\uc758 \uc77c\uce58\ub294 \u2460\uacfc \uc644\uc804\ud788 \uac08\ub9b0 \uac83\uc774 \uc544\ub2c8\ub2e4",
+    "per": {
+     "mv_hi": {
+      "big": true,
+      "delta": {
+       "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 3.469950002024201,
+       "b|0|Strength vs Chansey|Strength vs Rhydon": 7.958876272816547,
+       "b|0|Surf vs Chansey|Surf vs Rhydon": 0.24152294576982392,
+       "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 14.48346738856769,
+       "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 7.932740008211818,
+       "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 2.714574425860261,
+       "b|4|Strength vs Venusaur|Strength vs Charizard": -0.9750994229498995,
+       "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 1.056450962744967,
+       "b|6|Surf vs Snorlax|Surf vs Exeggutor": -0.3189259090919687,
+       "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 10.453806301532918
+      },
+      "direction": "\uc99d\uac00",
+      "median": 3.092262213942231,
+      "overlap": false,
+      "p": 0.01953125,
+      "rho": -0.0608875128998968,
+      "rho_n": 18,
+      "small": false,
+      "threshold": 1.9774080799056364,
+      "valid": true
+     },
+     "mv_lo": {
+      "big": false,
+      "delta": {
+       "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": -3.0924612238776157,
+       "b|0|Strength vs Chansey|Strength vs Rhydon": 2.1710923907209,
+       "b|0|Surf vs Chansey|Surf vs Rhydon": 0.7408762256897697,
+       "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 0.35355339059327373,
+       "b|2|Psychic vs Machamp|Psychic vs Tentacruel": -3.3612106812351077,
+       "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": -1.8305474894188755e-16,
+       "b|4|Strength vs Venusaur|Strength vs Charizard": -0.5544770223165753,
+       "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 1.1705069413071094,
+       "b|6|Surf vs Snorlax|Surf vs Exeggutor": 0.6684916903380527,
+       "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": -0.8542210514898061
+      },
+      "direction": "\uc99d\uac00",
+      "median": 0.17677669529663678,
+      "overlap": false,
+      "p": 0.921875,
+      "rho": -0.41589267285861714,
+      "rho_n": 18,
+      "small": true,
+      "threshold": 1.9774080799056364,
+      "valid": true
+     }
+    },
+    "why": "mv_hi |\uc911\uc559\uac12 \u0394r_P| 3.092 (\uc99d\uac00), p 0.0195"
+   },
+   "reach": {
+    "W_X": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 199.76235949993134,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 434.37461444735527,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 198.79863572120667,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 392.7894474864006,
+     "b|10|Strength vs Slowbro|Strength vs Venusaur": 523.885863929987,
+     "b|10|Surf vs Slowbro|Surf vs Venusaur": 556.0055370926857,
+     "b|12|Surf vs Poliwrath|Surf vs Snorlax": 809.4050651192665,
+     "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": 606.7776197493076,
+     "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": 356.79887303709984,
+     "b|14|Surf vs Nidoking|Surf vs Kangaskhan": 362.62753933668137,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 415.83140902221203,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 456.1610288619995,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 247.92662097513676,
+     "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": 555.1158763468266,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 207.62488222122192,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 347.374858379364,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 198.79863572120667,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 407.7705309391022,
+     "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": 305.96800999343395,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": 281.0911639928818,
+     "b|8|Strength vs Hypno|Strength vs Dragonite": 406.14476534724236
+    },
+    "auc": 0.2777777777777778,
+    "f_X": {
+     "b|0|Earthquake vs Chansey|Earthquake vs Rhydon": 0.24444444444444444,
+     "b|0|Strength vs Chansey|Strength vs Rhydon": 0.16228070175438597,
+     "b|0|Surf vs Chansey|Surf vs Rhydon": 0.16753926701570682,
+     "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": 0.25,
+     "b|10|Strength vs Slowbro|Strength vs Venusaur": 0.4971751412429379,
+     "b|10|Surf vs Slowbro|Surf vs Venusaur": 0.3764705882352941,
+     "b|12|Surf vs Poliwrath|Surf vs Snorlax": 0.3856749311294766,
+     "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": 0.2106299212598425,
+     "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan": 0.3485714285714286,
+     "b|14|Surf vs Nidoking|Surf vs Kangaskhan": 0.22992700729927007,
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": 0.3697916666666667,
+     "b|2|Psychic vs Machamp|Psychic vs Tentacruel": 0.29454545454545455,
+     "b|4|Earthquake vs Venusaur|Earthquake vs Charizard": 0.28205128205128205,
+     "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": 0.5105263157894737,
+     "b|4|Strength vs Venusaur|Strength vs Charizard": 0.14285714285714285,
+     "b|6|Psychic vs Snorlax|Psychic vs Exeggutor": 0.2589641434262948,
+     "b|6|Surf vs Snorlax|Surf vs Exeggutor": 0.16753926701570682,
+     "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": 0.37362637362637363,
+     "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": 0.26153846153846155,
+     "b|8|Flamethrower vs Hypno|Flamethrower vs Dragonite": 0.22535211267605634,
+     "b|8|Strength vs Hypno|Strength vs Dragonite": 0.42073170731707316
+    },
+    "label": "\ubd88\uc77c\uce58",
+    "n_ratio_undefined": 3,
+    "px_after_F_median": 0.0,
+    "rho": 0.442276633246911,
+    "why": "\ube44\uc728 AUC 0.278 \u2264 0.6"
+   },
+   "variation": {
+    "base": {
+     "F_abs_mean": 0.2318166655729742,
+     "F_sd": 0.3744561005935926,
+     "S_abs_mean": 2.320360813522906,
+     "S_sd": 0.743347203493828,
+     "label": "\ubd88\uc77c\uce58"
+    },
+    "label": "\ubd88\uc77c\uce58",
+    "q0": {
+     "F_abs_mean": 0.1517288493096224,
+     "F_sd": 0.42724616709366103,
+     "S_abs_mean": 1.8166912553188448,
+     "S_sd": 0.47272432477843235,
+     "label": "\ubd88\uc77c\uce58"
+    },
+    "why": "Q0\u00b7\uae30\uc900\uc120 \ubaa8\ub450 \ubd88\uc77c\uce58"
+   }
+  },
+  "sentences": [
+   "\u2460 \ubc14\ub2e5: \ud310\ub2e8 \ubd88\uac00 \u2014 AUC 0.8703703703703703, (c) s \ud558\ud5a5 \uc870\uc791 (s 0.7)\uc758 \u03c1 -0.6016511867905057 (P_X > 0\uc778 18\uc30d)",
+   "\u2461 APL \uc5b5\uc81c: \ud310\ub2e8 \ubd88\uac00 \u2014 \uc911\uc559\uac12 18.45249647537294, p 0.00048828125, \ube44\uc728 \ucc28 -0.150990099009901",
+   "\u2462 \ud3b8\uc9d1 \ub3c4\ub2ec: \ubd88\uc77c\uce58 \u2014 \ube44\uc728 AUC 0.309 \u2264 0.6",
+   "\u2463 \uc791\ub3d9\uc810: \uc77c\uce58 \u2014 mv_hi |\uc911\uc559\uac12 \u0394r_P| 3.092 (\uc99d\uac00), p 0.0161 (\ud55c\uacc4: mv_scale\uc740 \uc785\ub825 \uad6c\ub3d9\ub3c4 \ubc14\uafb8\ubbc0\ub85c \u2463\uc758 \uc77c\uce58\ub294 \u2460\uacfc \uc644\uc804\ud788 \uac08\ub9b0 \uac83\uc774 \uc544\ub2c8\ub2e4)",
+   "\u2464 \ubcc0\ub3d9: \ubd88\uc77c\uce58 \u2014 Q0\u00b7\uae30\uc900\uc120 \ubaa8\ub450 \ubd88\uc77c\uce58"
+  ],
+  "stage": "records",
+  "written_at": "2026-10-02T12:45:02.042078+00:00"
+ },
  "repro": {
   "code_key": "63c47a880d77e85db375115f2bc2e6703c3ef7a31d5439e7b38ed7e1d98efec0",
   "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
