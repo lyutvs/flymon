@@ -183,6 +183,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   시험 가능 (b) **7/21**·F_a 0으로 M2 기준(11·2)에 못 미쳐 사전 선언대로 멈췄다(`STOP_EVEN_LOW`). 판정 세트는 측정하지 않았다.
   기록(판정 아님): X·Y의 KC Jaccard는 약 0.04로 겹침이 거의 사라졌고 처벌 쪽 통과는 늘었지만((b) 11 → 15), 보상 쪽(MBON05)이 늘지 않아 시험 가능 수가 E0와 같다 —
   이 인코더에서 병목은 KC 겹침에서 보상 판독으로 옮겨 갔다(원인은 재지 않았다). 이 트랙을 이 결과로 닫는다(사용자 결정). 다음은 사용자 결정이며, 보상 쪽 새 선언은 P 트랙 결과 뒤에 검토한다.
+- **기록(보상 판독 병목 진단, 2026-10-02, 부록 Q.7 — 특성화, 판정 아님)**: E-grid k2-norm 짝수 (b) 21쌍을 실패 F 12 / 통과 S 9로 고정하고, 다섯 후보를 결과 전 고정 규칙으로 MBON05 단독 r_P에서 봤다.
+  ④ 작동점 **일치**(전역 이득 ×1.25에서 F의 r_P 중앙값 +3.1, 순진 P_X와 무관; mv_scale은 입력 구동도 바꾸므로 ①과 완전히 갈린 것은 아니다), ③ 편집 도달·⑤ 변동 **불일치**,
+  ① 바닥 **판단 불가**(순진 P_X는 F에서 낮지만(AUC 0.87) s 하향의 차등 악화가 반대 방향, ρ −0.60), ② APL 억제 **판단 불가**(APL→MBON05 2간선 차단이 F의 r_P를 +18 올렸으나 순진 P_X도 함께 올라 편집 비율은 줄었다).
+  보상 편집은 F에서 P_X를 거의 움직이지 못한다(ΔP_X 중앙값 −3 대 S −26). 지렛대 선택(부록 R)은 사용자 결정이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -286,6 +290,14 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   E0's: with this encoder the bottleneck moved from KC overlap to the reward readout (the cause was not measured).
   The track is closed on this result (user decision); next is the user's call, and a reward-side declaration will be
   considered after track P's result.
+- **Reward-readout bottleneck diagnosis: recorded (2026-10-02, appendix Q.7; a characterisation, not a verdict).** The 21
+  even (b) pairs of E-grid k2-norm were fixed as 12 failing (F) / 9 passing (S), and five candidates were read on the
+  MBON05-only r_P with rules fixed before any run. Operating point **matches** (global gain x1.25 raises F's median r_P by
+  3.1, not concentrated on low naive P_X; mv_scale also changes input drive, so this is not fully separate from the floor
+  candidate); edit reach and seed variation **do not match**; floor is **undecided** (naive P_X is lower in F, AUC 0.87,
+  but lowering s hurt high-P_X pairs more, rho -0.60); APL inhibition is **undecided** (zeroing the 2 APL->MBON05 edges
+  raised F's r_P by +18 but also naive P_X, so the edit ratio fell). The reward edit barely moves P_X in F (median -3 vs
+  -26 in S). Choosing the lever (appendix R) is the user's decision.
 
 ## 실행
 
