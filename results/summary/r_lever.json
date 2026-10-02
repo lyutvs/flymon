@@ -1,0 +1,277 @@
+{
+ "repro": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "csc_sha256_none": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+  "git": {
+   "commit": "909c1938a42a6bf16329d1cd44781a91806e7bdc",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "kc": {
+   "odours": [
+    {
+     "edit_edges": [
+      0
+     ],
+     "equal": true,
+     "file": "ac6e4804abf955d474c5f634.json",
+     "median_matches_block": true,
+     "odour": "ELECTRIC|FIGHTING"
+    },
+    {
+     "edit_edges": [
+      0
+     ],
+     "equal": true,
+     "file": "ef2ce96b47583c4dd0da2f4e.json",
+     "median_matches_block": true,
+     "odour": "GRASS|FIRE+FLYING"
+    },
+    {
+     "edit_edges": [
+      0
+     ],
+     "equal": true,
+     "file": "5d806e23e2649a7d989d4510.json",
+     "median_matches_block": true,
+     "odour": "WATER|PSYCHIC+WATER"
+    }
+   ],
+   "passed": true,
+   "seeds": [
+    24002000,
+    24002001,
+    24002002,
+    24002003,
+    24002004,
+    24002005,
+    24002006,
+    24002007
+   ],
+   "wall_s": 49.7301197090419
+  },
+  "oracle": {
+   "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+   "pairs": [
+    {
+     "cell_sums_ok": true,
+     "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+     "edit_edges": 0,
+     "equal": true,
+     "key": "b|0|Surf vs Chansey|Surf vs Rhydon",
+     "q0_sha_ok": true
+    }
+   ],
+   "passed": true,
+   "seeds": {
+    "act": [
+     500,
+     501,
+     502,
+     503,
+     504,
+     505,
+     506,
+     507
+    ],
+    "report": [
+     608,
+     609,
+     610,
+     611,
+     612,
+     613,
+     614,
+     615
+    ],
+    "select": [
+     600,
+     601,
+     602,
+     603,
+     604,
+     605,
+     606,
+     607
+    ]
+   },
+   "wall_s": 377.54161716694944
+  },
+  "p": {
+   "passed": true,
+   "rows": [
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r1",
+      "plastic",
+      23000000
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r1",
+      "plastic",
+      23000015
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r1",
+      "plastic",
+      23000031
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r1",
+      "frozen",
+      23000000
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r1",
+      "frozen",
+      23000015
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r1",
+      "frozen",
+      23000031
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r1",
+      "punish",
+      23000000
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r1",
+      "punish",
+      23000015
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r1",
+      "punish",
+      23000031
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r2",
+      "plastic",
+      23000000
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r2",
+      "plastic",
+      23000015
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r2",
+      "plastic",
+      23000031
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r2",
+      "frozen",
+      23000000
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r2",
+      "frozen",
+      23000015
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r2",
+      "frozen",
+      23000031
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r2",
+      "punish",
+      23000000
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r2",
+      "punish",
+      23000015
+     ]
+    },
+    {
+     "edit_edges": 0,
+     "equal": true,
+     "key": [
+      "r2",
+      "punish",
+      23000031
+     ]
+    }
+   ],
+   "seeds": [
+    23000000,
+    23000015,
+    23000031
+   ],
+   "wall_s": 113.08311812498141
+  },
+  "passed": true,
+  "stage": "repro",
+  "written_at": "2026-10-02T19:38:27.888300+00:00"
+ }
+}
