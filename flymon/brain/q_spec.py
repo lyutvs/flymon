@@ -87,12 +87,14 @@ class QSpec:
     fs_disagree_max: int = 5
     mv_limitation: str = "mv_scale은 입력 구동도 바꾸므로 ④의 일치는 ①과 완전히 갈린 것이 아니다"
     weak_note: str = "조작 약함"
+    unmanip_note: str = "조작 불가"               # Q.6.9: s 0.7 and 0.8 both outside the KC band -> (c) 조작 불가, ① 판단 불가
     cancel_note: str = "A·Y항 상쇄"
     # ---- paths and the pool -------------------------------------------------------------------------------------
     encoder_summary: str = "results/summary/encoder_grid.json"
     m0d_summary: str = E.m0d_summary
     q0_cache_dir: str = "results/q/q0_cache"
     cache_dir: str = "results/q/cache"
+    smoke_cache_dir: str = "results/q/smoke/cache"   # q_store.QCache: smoke seeds only under a root with a "smoke" part
     smoke_detail: str = "results/q/smoke.json"
     summary: str = "results/summary/q_reward.json"
     smoke: bool = False

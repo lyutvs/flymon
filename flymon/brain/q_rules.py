@@ -102,7 +102,7 @@ def rule_variation(V0, B, F, S, stab, spec) -> dict:
 
 # ================================================================ ① 바닥 (Q.4, Q.6.1, Q.6.4, Q.6.9)
 def rule_floor(V0, B, F, S, stab, C, s_c, spec) -> dict:
-    """Q.6.9 ordering: (c) weak -> 판단 불가 (fixed); Q0 naive-P_X AUC <= auc_mismatch -> 불일치 (Q0 only, survives an
+    """Q.6.9 ordering: (c) 조작 불가 (s None) -> 판단 불가 (fixed); (c) weak -> 판단 불가 (fixed); Q0 naive-P_X AUC <= auc_mismatch -> 불일치 (Q0 only, survives an
     INVALID (c)); (c) INVALID (C None) -> 판단 불가; AUC >= auc_match and rho(base naive P_X, dr_P_c) >= +rho_min over
     the pairs with base naive P_X > 0 -> 일치; else 판단 불가. (c) is the lowered-s manipulation (s_c block's s)."""
     a0, a1 = (str(float(a)) for a in spec.fixed_alphas)
@@ -121,6 +121,9 @@ def rule_floor(V0, B, F, S, stab, C, s_c, spec) -> dict:
     rec = dict(auc=auc, rho=rho, rho_n=len(rho_keys), delta_r_P=delta, saturation_F=sat, s=s, weak=weak,
                already_at_floor=len(at_floor), already_at_floor_keys=at_floor)
     cname = f"(c) s 하향 조작 (s {s})"
+    if s is None:                               # Q.6.9: both lowered s outside the KC band -> 조작 불가, ① 판단 불가
+        return dict(rec, label=UNDECIDED, why=f"(c) s 하향 조작 {spec.unmanip_note} (s {list(spec.s_down)} 모두 KC 대역 "
+                                              f"밖) — ①은 판단 불가로 고정 (Q.6.9)")
     if weak:
         return dict(rec, label=UNDECIDED, why=f"{cname} {spec.weak_note} — ①은 판단 불가로 고정")
     if auc is not None and auc <= spec.auc_mismatch:
