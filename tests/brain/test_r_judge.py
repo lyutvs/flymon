@@ -228,8 +228,8 @@ def test_real_cache_round_trip_seals_and_reads(w):
     assert (out["status"], out["band"], out["n"], out["c"], out["F_a"]) == ("READ", "SELECTED", 14, 8, 3)
 
 
-WATCH = {"judgement_set", "judgement_rows", "judge_seeds", "judge_act_seeds", "judge_select_seeds",
-         "judge_report_seeds"}
+WATCH = {"judgement_set", "judgement_rows", "_judgement_rows", "judge_seeds", "judge_act_seeds",
+         "judge_select_seeds", "judge_report_seeds"}
 ALLOWED = {"r_spec.py": {"judge_seeds"}, "r_pairs.py": {"judgement_rows"},
            "r_records.py": {"preread_validity", "judge_inputs"},
            "r_runner.py": {"build_ctx", "_judgement_rows", "stage_jm", "stage_seal", "_read"}}
@@ -278,3 +278,61 @@ def test_cli_argument_refusals_and_exit_codes(tmp_path, monkeypatch):
     assert cli.exit_code("seal", {"status": "SEALED"}) == 0 and cli.exit_code("seal", {"status": "NOT_READ"}) == 6
     assert cli.exit_code("judge", {"status": "READ"}) == 0 and cli.exit_code("judge", {"status": "NOT_READ"}) == 6
     assert "if __name__ == \"__main__\":" in (ROOT / "scripts/run_r.py").read_text()
+
+
+# ---- final-review fixes: the judgement read once (I1), NOT_READ prints nothing (M1) ------------------------------
+def _sealed(w):
+    r = _to_seal(w, Scripted(plan=w.pass_plan(n=14, c=8, f_a=3)))
+    assert r.stage_seal()["status"] == "SEALED"
+    return r
+
+
+def test_seal_pins_the_decision_files():
+    from flymon.brain.r_measure import R_MEASURE_FILES
+    assert set(RR.DECISION_FILES) == set(RR.R_HASHED_FILES) - set(R_MEASURE_FILES)
+    assert "flymon/brain/r_rules.py" in RR.DECISION_FILES and "flymon/brain/r_records.py" in RR.DECISION_FILES
+    assert not set(RR.DECISION_FILES) & set(R_MEASURE_FILES)
+
+
+def test_judge_twice_with_the_first_block_discarded_refuses(w):
+    r = _sealed(w)
+    seal = doc()["seal"]
+    assert seal["decision"]["key"] == RR.decision_key()["key"]
+    assert r.stage_judge()["status"] == "READ"
+    marker = json.loads(Path(RR.JUDGE_MARKER).read_text())
+    assert marker["seal_written_at"] == seal["written_at"] and marker["read_at"]
+    d = doc()
+    del d["judge"]                                  # the uncommitted judge block discarded (git checkout)
+    Path(SPEC.summary).write_text(json.dumps(d))
+    with pytest.raises(SystemExit) as e:
+        r.stage_judge()
+    assert e.value.code == 2 and "judge" not in doc()
+
+
+def test_judge_refuses_a_decision_file_changed_after_the_seal(w, monkeypatch):
+    r = _sealed(w)
+    monkeypatch.setattr(RR, "decision_key", lambda: dict(key="d" * 64, files={}))
+    with pytest.raises(SystemExit) as e:
+        r.stage_judge()
+    assert e.value.code == 2 and "judge" not in doc() and not Path(RR.JUDGE_MARKER).exists()
+
+
+def test_recompute_and_invalid_run_work_after_a_committed_judge_and_its_marker(w):
+    r = _sealed(w)
+    r.stage_judge()
+    assert Path(RR.JUDGE_MARKER).exists()
+    e = r.stage_recompute("records code fix (test)")
+    assert e["band"] == "SELECTED" and e["decision_key"] == RR.decision_key()["key"]
+    assert e["decision_changed_since_seal"] is False
+    assert r.stage_invalid_run("measurement defect (test)")["status"] == "INVALID_RUN"
+
+
+def test_not_read_judge_returns_no_numbers_and_marks_the_read(w, monkeypatch):
+    r = _sealed(w)
+    monkeypatch.setattr(RR.r_rules, "read_band", lambda *a, **k: dict(band=RR.r_rules.NOT_READ, reason="COUNTS"))
+    out = r.stage_judge()
+    assert out["status"] == RR.r_rules.NOT_READ and set(out) == {"status", "band", "reason", "reasons"}
+    assert "judge" not in doc() and Path(RR.JUDGE_MARKER).exists()
+    with pytest.raises(SystemExit) as e:
+        r.stage_judge()
+    assert e.value.code == 2

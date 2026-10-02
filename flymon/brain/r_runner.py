@@ -14,6 +14,7 @@ files' sha256 is checked against the jm manifests at the seal and again at every
 from __future__ import annotations
 
 import datetime as _dt
+import hashlib
 import json
 import os
 import sys
@@ -25,6 +26,7 @@ import numpy as np
 from ..agent.e_measure import MAX_ITEMS
 from ..agent.e_runner import summary_git
 from . import p_measure, r_records, r_rules, r_store
+from .h3_store import ROOT as _ROOT
 from .h3_store import canonical, sha256_file
 from .h3_store import git_state as _h3_git_state
 from .n_rules import INVALID as P_INVALID
@@ -46,9 +48,22 @@ R_HASHED_FILES = tuple(dict.fromkeys(R_MEASURE_FILES + tuple(p_measure.HASHED_FI
     "flymon/brain/l_pairs.py", "flymon/brain/d6a.py", "flymon/brain/odor_real.py", "flymon/brain/q_pairs.py",
     "flymon/brain/q_spec.py", "results/summary/m0d.json")))
 
+# The decision code (I1): every hashed R file outside the measurement code key — r_spec, r_pairs, r_records, r_rules,
+# r_runner, run_r and the spec / pair / rule files of the tracks R reads. The seal pins their hash; the judge reads
+# only under the sealed decision code.
+DECISION_FILES = tuple(f for f in R_HASHED_FILES if f not in R_MEASURE_FILES)
+# Written before the band is computed (judge, READ or NOT_READ): the judgement set was read once, whatever happens to
+# the judge block afterwards (results/r/ is git-ignored).
+JUDGE_MARKER = "results/r/judge_read.json"
+
 
 def git_state() -> dict:
     return _h3_git_state(files=R_HASHED_FILES)
+
+
+def decision_key() -> dict:
+    files = {f: sha256_file(_ROOT / f) for f in DECISION_FILES}
+    return dict(key=hashlib.sha256(canonical(files).encode()).hexdigest(), files=files)
 
 
 def refuse(msg: str, code: int = EXIT_REFUSE):
@@ -474,7 +489,7 @@ class Runner:
         status = r_rules.INVALID if v["invalid"] else (r_rules.NOT_READ if reasons else r_rules.SEALED)
         manifest = [dict(m, condition=n) for n in sp.cond_names for m in doc[f"jm:{n}"]["manifest"]]
         body = dict(status=status, reasons=reasons, invalid=v["invalid"], checks=v["checks"], manifest=manifest,
-                    n_files=len(manifest), archive=None,
+                    n_files=len(manifest), archive=None, decision=decision_key(),
                     set=dict(digest_e0_b=sp.digest_e0_b, digest_e0_a=sp.digest_e0_a, digest_keys=sp.digest_keys,
                              last_turn=sp.last_turn, n_b=sp.n_b, n_a=sp.n_a))
         if status == r_rules.SEALED:
@@ -485,7 +500,7 @@ class Runner:
         self._write("seal", body)
         return body
 
-    def _read(self, doc: dict) -> dict:
+    def _read(self, doc: dict, mark=None) -> dict:
         """The bands and records from the sealed raw files (sha re-checked): R.3's order with R.9.5's G_fail, R.7's
         sentence, R.6's records. g_fail counts only pairs present in both L and C, which is safe only because the seal
         (R.9.7 completeness over condition × pair) ran first and the sha re-check here pins the sealed files."""
@@ -494,6 +509,8 @@ class Runner:
         raws, bad = self._raws(doc)
         if bad:
             refuse(f"raw files changed since the seal: {bad[:3]}")
+        if mark is not None:
+            mark()                                       # the read starts here (judge's marker, I1)
         seeds = sp.judge_seeds()
         s = {n: r_records.cond_summary(raws[n], sp.cond(n), sp, self.ctx["z"], keys, seeds) for n in sp.cond_names}
         L, C, E0 = (s[n] for n in sp.cond_names)
@@ -505,8 +522,9 @@ class Runner:
                                aL["naive_a"], sp)
         out = dict(band=rb["band"], reason=rb["reason"], n=aL["testable_b"], c=aC["testable_b"], F_a=aL["F_a"],
                    naive_a=aL["naive_a"], n_b=aL["n_b"], n_a=aL["n_a"], g_fail=gf)
-        if rb["band"] == r_rules.NOT_READ:
-            return dict(out, status=r_rules.NOT_READ, sentence=None)
+        if rb["band"] == r_rules.NOT_READ:                # M1: no number of the set leaves a NOT_READ read
+            return dict(status=r_rules.NOT_READ, band=rb["band"], reason=rb["reason"],
+                        reasons=["the (b) / (a) pair counts differ from the declared counts (R.3 line 1)"])
         ax = gf["axes"]
         fields = dict(n=aL["testable_b"], c=aC["testable_b"], f_a=aL["F_a"], naive_a=aL["naive_a"], T=sp.last_turn,
                       k_even=doc["gate3"]["testable_b"], pb_L=ax["b"]["pun_L"], pb_C=ax["b"]["pun_C"],
@@ -523,9 +541,23 @@ class Runner:
         self._judge_chain(doc, "judge")
         if doc["seal"].get("status") != r_rules.SEALED:
             refuse(f"block seal's status is {doc['seal'].get('status')}: R reads only a sealed set (R.9.7)")
-        out = self._read(doc)
+        sealed = (doc["seal"].get("decision") or {}).get("key")
+        now = decision_key()["key"]
+        if sealed != now:
+            refuse(f"the decision code (r_rules, r_records, r_runner, ...) hash {now[:12]} is not the sealed "
+                   f"{str(sealed)[:12]}: the judgement reads only under the code it was sealed with (R.5)")
+        if Path(JUDGE_MARKER).exists():
+            refuse(f"{JUDGE_MARKER} exists: the judgement set was read once already (R.5); a discarded or "
+                   f"uncommitted judge block does not reopen it")
+
+        def mark():
+            r_store.write_json(JUDGE_MARKER, dict(seal_written_at=doc["seal"].get("written_at"),
+                                                  seal_archive=(doc["seal"].get("archive") or {}).get("dir"),
+                                                  decision_key=now, code_key=self.code_key,
+                                                  read_at=_dt.datetime.now(_dt.timezone.utc).isoformat()), self.plist)
+        out = self._read(doc, mark)
         if out["status"] != r_rules.READ:
-            return out                                   # NOT_READ: nothing written (R.5's first row)
+            return out                                   # NOT_READ: no block (R.5's first row), the marker stays
         self._write("judge", out)
         return out
 
@@ -546,8 +578,11 @@ class Runner:
             refuse("--note is required (R.5: the correction is recorded)")
         doc = self._require_after_judge("recompute")
         out = self._read(doc)
-        entry = dict(note=note, status=out["status"], band=out["band"], reason=out["reason"], n=out["n"], c=out["c"],
-                     F_a=out["F_a"], naive_a=out["naive_a"], g_fail=out["g_fail"], sentence=out.get("sentence"),
+        dk = decision_key()["key"]
+        entry = dict(note=note, status=out["status"], band=out["band"], reason=out["reason"], n=out.get("n"),
+                     c=out.get("c"), F_a=out.get("F_a"), naive_a=out.get("naive_a"), g_fail=out.get("g_fail"),
+                     sentence=out.get("sentence"), decision_key=dk,
+                     decision_changed_since_seal=bool(dk != (doc["seal"].get("decision") or {}).get("key")),
                      differs_from_judge=bool(out["band"] != doc["judge"]["band"]
                                              or out.get("sentence") != doc["judge"].get("sentence")),
                      code_key=self.code_key, git=git_state(),
