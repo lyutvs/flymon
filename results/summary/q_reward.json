@@ -65,6 +65,46 @@
   "wall_s": 440.7823847089894,
   "written_at": "2026-10-02T07:41:16.898810+00:00"
  },
+ "s_c": {
+  "candidates": [
+   0.7,
+   0.8
+  ],
+  "code_key": "63c47a880d77e85db375115f2bc2e6703c3ef7a31d5439e7b38ed7e1d98efec0",
+  "direction": "lowered",
+  "git": {
+   "commit": "fc39c5abadff106d83d2a8415e31e3bd7c3d0fe5",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "kc_band": [
+   0.03,
+   0.15
+  ],
+  "kc_probe_median": {
+   "0.7": 0.043061023622047244
+  },
+  "note": "s_up = (c) s \ud558\ud5a5 \uc870\uc791 (Q.6.9: s 0.7, \ub300\uc5ed \ubc16\uc774\uba74 0.8)",
+  "s": 0.7,
+  "s_cap_record": {
+   "cap_hz": 333.3333333333333,
+   "max_rate_hz": 200.0,
+   "n_odours": 42,
+   "s": 1.0,
+   "step": 0.05,
+   "strength": 1.0,
+   "vmax": 1.6153846153846154,
+   "weak": true
+  },
+  "s_weak": 0.15,
+  "stage": "s_c",
+  "strength": 1.0,
+  "unmanip_note": null,
+  "unmanipulable": false,
+  "weak": false,
+  "weak_note": null,
+  "written_at": "2026-10-02T08:03:34.239577+00:00"
+ },
  "smoke": {
   "code_key": "63c47a880d77e85db375115f2bc2e6703c3ef7a31d5439e7b38ed7e1d98efec0",
   "conditions": {
