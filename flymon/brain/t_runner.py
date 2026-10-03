@@ -122,6 +122,15 @@ def r_even_reader(r_cache, r_m, spec):
     return r_even
 
 
+def check_z_matches_spec(spec, z: dict) -> None:
+    """C and E0 run on the z placed in ctx; STOP_Z_REPRO reproduces the declared SPEC.z_h4 — so the two must be the
+    same numbers (exact float equality on A and P means and SDs), else the seal could not see the drift."""
+    want = spec.z_h4_dict()
+    got = _ztuple(z)
+    if got != want:
+        refuse(f"block h4's z in the m0d summary {got} is not the declared z_h4 {want}; C and E0 would run on another z")
+
+
 def build_ctx(spec, npz: str) -> dict:
     """C3 (Params, readout, block h4's z), the H.4 pools as types, the encoder summary, the even rows, the H.3
     reference set and its probe seeds, lazy callables for T's set (list only), its odours (gate ①'s supplement), its
@@ -140,6 +149,7 @@ def build_ctx(spec, npz: str) -> dict:
     cfg = load_c3_config(spec.m0d_summary)
     if (cfg.readout["A"], cfg.readout["P"]) != (spec.a_type, spec.p_type):
         refuse(f"C3's readout is {cfg.readout}, not A {spec.a_type} / P {spec.p_type}")
+    check_z_matches_spec(spec, cfg.z)
     m0d = json.loads(Path(spec.m0d_summary).read_text())
     types = m0d["h4"]["pools"]["A"] + m0d["h4"]["pools"]["P"]
     enc = json.loads(Path(spec.encoder_summary).read_text())

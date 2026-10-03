@@ -301,3 +301,16 @@ def test_r_even_reader_gets_every_entry_first_and_never_computes():
     assert cache.gets == keys and rm.oracle_calls == 0
     cache.have = set(keys)
     assert rd(rows, "C") == ["got"] * 5 and rm.oracle_calls == 1
+
+
+def test_runtime_z_must_equal_the_declared_z_h4(tmp_path):
+    z = SPEC.z_h4_dict()
+    TR.check_z_matches_spec(SPEC, dict(z))
+    bad = {k: (v[0] + 1e-9, v[1]) for k, v in z.items()}
+    with pytest.raises(SystemExit) as e:
+        TR.check_z_matches_spec(SPEC, bad)
+    assert e.value.code == 2
+    bad_sd = {k: (v[0], v[1] * 1.0000001) for k, v in z.items()}
+    with pytest.raises(SystemExit) as e:
+        TR.check_z_matches_spec(SPEC, bad_sd)
+    assert e.value.code == 2
