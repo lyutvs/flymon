@@ -191,6 +191,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   무편집 재현 관문과 관문 ①(KC 0.0457, 대역 안)·②(P 재현 `LEARNS_CONFIRMATORY`)·③(짝수 testable_b 16/21, 지렛대 없음 7/21)을 통과했다.
   판정 세트에서 지렛대 **12/21** 대 지렛대 없음 **6/21**(기준 11·여유 2 통과), F_a 2/32였으나, (a)에서 처벌 통과 3쌍이 바뀌어(17 대 17, pass→fail 3) 처벌 가드가 켜졌다 — **B_처벌가드**.
   지렛대는 보상 통과를 거의 전부 열었다((b) 21/21). 이 결과로 지렛대를 닫지도 선택하지도 않으며, 다음은 사용자 결정이다.
+- **판정(같은 지렛대, 마지막 세트, 2026-10-03, 부록 S.10 — B_Fa)**: R 결과를 본 뒤 처벌 가드를 방향성 있게(축마다 처벌 통과 순감소 ≥ 3) 바꾸고, 관문 ②에 같은 시드 L/C 처벌 학습 비(≥ 0.5)를 넣어, 마지막 미사용 세트(L 생성기 턴 104–177, (b) 21·(a) 43)에서 한 번 더 판정했다.
+  R의 재현·관문 ①·③을 같은 측정 코드 키로 재사용했고, 관문 ②는 지렛대 아래 처벌 학습이 같은 시드에서 약 1/3 줄었지만(비 0.64 / 0.68) 기준을 넘었다.
+  판정 세트에서 지렛대 **13/21** 대 지렛대 없음 **6/21**, 처벌 가드 통과((b) 순감소 2, (a) −1), 그러나 F_a **1/43**(naive_a 3)으로 **B_Fa** — 다음 병목은 순진 균형 (a) 쌍이다.
+  이 지렛대의 M2 판정 세트는 더 남지 않으며, 다음은 사용자 결정이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -309,6 +313,14 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   (bar 11 and margin 2 met), F_a 2/32, but on the (a) side 3 punishment passes swapped (17 vs 17, pass->fail 3), which
   trips the punishment guard. The lever opened nearly every reward pass ((b) 21/21). The lever is neither closed nor
   selected; next is the user's decision.
+- **Same lever on the last set: judged B_Fa (2026-10-03, appendix S.10).** After R's result the punishment guard was made
+  directional (net drop in punishment passes >= 3 on either axis) and gate 2 gained a same-seed L/C punishment-learning
+  ratio (>= 0.5); the lever was then judged once more on the last unused set (L generator turns 104-177, (b) 21, (a) 43).
+  R's reproduction gate and gates 1 and 3 were reused on the same measurement code key; at gate 2 the lever cut
+  punishment learning by about a third on the same seeds (ratios 0.64 / 0.68) but passed. On the judgement set the lever
+  reached **13/21** against **6/21** without it and passed the punishment guard ((b) net drop 2, (a) -1), but F_a was
+  **1/43** (naive_a 3): **B_Fa**, the next bottleneck being naively balanced (a) pairs. No M2 judgement set remains for
+  this lever; next is the user's decision.
 
 ## 실행
 
