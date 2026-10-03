@@ -195,6 +195,9 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   R의 재현·관문 ①·③을 같은 측정 코드 키로 재사용했고, 관문 ②는 지렛대 아래 처벌 학습이 같은 시드에서 약 1/3 줄었지만(비 0.64 / 0.68) 기준을 넘었다.
   판정 세트에서 지렛대 **13/21** 대 지렛대 없음 **6/21**, 처벌 가드 통과((b) 순감소 2, (a) −1), 그러나 F_a **1/43**(naive_a 3)으로 **B_Fa** — 다음 병목은 순진 균형 (a) 쌍이다.
   이 지렛대의 M2 판정 세트는 더 남지 않으며, 다음은 사용자 결정이다.
+- **관문 STOP(엔진별 기준 집합 z, 2026-10-04, 부록 T.10 — STOP_Z_DEGENERATE, 판정 없음)**: z 정규화를 바로잡는 규칙(엔진 변형마다 H.3 기준 집합에서 자기 z)을 결과 전에 고정하고, 상대를 1세대 기본 폼으로 넓힌 새 세트에서 같은 지렛대를 판정하려 했다.
+  편집 없는 엔진의 z는 블록 h4 값을 비트 단위로 재현했지만, 지렛대 아래에서 MBON13이 기준 집합 반응성 가드를 넘지 못했다(Δ 중앙값 6.0 → **1.0**, 0 비율 0.146 → **0.302**; MBON05 평균 26.25 → 77.5, σ 비 A 0.62 · P 1.58).
+  기록(판정 아님): 이 지렛대는 MBON05를 약 3배 켜고 MBON13의 기준 집합 반응을 끈다 — R·S의 h4 z 판독은 이것을 가렸을 수 있다. T 세트는 측정하지 않아 미사용으로 남는다. 다음은 '부분 제거' 지렛대의 새 선언(부록 U, 사용자 결정)이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -321,6 +324,13 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   reached **13/21** against **6/21** without it and passed the punishment guard ((b) net drop 2, (a) -1), but F_a was
   **1/43** (naive_a 3): **B_Fa**, the next bottleneck being naively balanced (a) pairs. No M2 judgement set remains for
   this lever; next is the user's decision.
+- **Per-engine reference-set z: gate stop STOP_Z_DEGENERATE, no judgement (2026-10-04, appendix T.10).** A rule fixing
+  z per engine variant (each variant's own H.3 reference-set z) was declared before any result, to judge the same lever on
+  a new set with opponents widened to Gen-1 base forms. The unedited engine reproduced block h4's z bit for bit, but under
+  the lever MBON13 failed the reference-set readout guard (median delta 6.0 -> **1.0**, zero share 0.146 -> **0.302**;
+  MBON05 mean 26.25 -> 77.5; SD ratios A 0.62, P 1.58). Recorded, not judged: the lever turns MBON05 up about threefold
+  and switches off MBON13's reference-set response, which R's and S's h4-z readings may have hidden. T's set was not
+  measured and stays unused. Next is a 'partial removal' lever declaration (appendix U, the user's decision).
 
 ## 실행
 
