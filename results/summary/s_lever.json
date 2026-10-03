@@ -37,5 +37,32 @@
   "shared_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
   "stage": "reuse",
   "written_at": "2026-10-03T04:35:40.439635+00:00"
+ },
+ "set": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "git": {
+   "commit": "953c930e19f6f5b755b7bb88e752ba52be60f77e",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "outcome": "PASS",
+  "pipeline_key": "e41edef2127d5d84e2b4b67264582c3dacbd41ff67c5e89f41c13c4680cdd68d",
+  "set": {
+   "digest_e0_a": "7b53467569821e3c3ffdbe2eb317843b22de033041717b9ec8d48fbc40cf8cc7",
+   "digest_e0_b": "2b92f40a448fe5552598ac8ab265fb5cdc50424e8de945a8a5be587c44553456",
+   "digest_keys": "884d49cc5d7c29a9a37e17166a1220c52ccbc1675b79f14f7e5abe2e0ca91231",
+   "last_turn": 177,
+   "n_a": 43,
+   "n_b": 21,
+   "skipped": {
+    "after_21st": 2,
+    "in_set": 16,
+    "r_set": 32,
+    "used": 231
+   },
+   "status": "OK"
+  },
+  "stage": "set",
+  "written_at": "2026-10-03T04:35:53.050751+00:00"
  }
 }
