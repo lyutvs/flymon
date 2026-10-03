@@ -59,6 +59,13 @@ def test_oracle_diffs_ignore_only_the_edit_labels():
     assert UR.strip_labels(fake_oracle(edit="x", edges=5))["q"].keys() == {"csc_sha256", "fixed", "apl_out", "fx", "reach"}
 
 
+def test_strip_labels_strips_only_q_edit_labels():
+    x = dict(q=dict(edit="u_apl_mbon05_x0.0", edit_edges=2, csc_sha256="s"),
+             other=dict(edit="keep", edit_edges=3, inner=[dict(edit="keep too")]), edit="top")
+    assert UR.strip_labels(x) == dict(q=dict(csc_sha256="s"),
+                                      other=dict(edit="keep", edit_edges=3, inner=[dict(edit="keep too")]), edit="top")
+
+
 def test_even_record_reads_ss_net_drops():
     from flymon.brain import r_records
     spf = at(SPEC, 0.4)

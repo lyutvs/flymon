@@ -61,6 +61,15 @@ def test_reuse_passes_and_names_every_break():
         U.STOP_REUSE
 
 
+def test_reuse_guard_needs_exactly_both_readout_types_passing():
+    base = _t_doc()["z"]["none"]
+    for guard in ({"MBON13": G_OK}, {"MBON05": G_OK}, {"MBON13": G_OK, "MBON05": G_OK, "MBON01": G_OK},
+                  {"MBON13": G_OK, "MBON09": G_OK}):
+        td = _t_doc(none=dict(base, guard=guard))
+        assert U.reuse(_r_doc(), GIT, td, GIT, SPEC.r_shared_key, SPEC.t_measure_key_t, SPEC)["outcome"] == \
+            U.STOP_REUSE, guard
+
+
 def test_path_stop_invalid_and_pass():
     ok = [dict(f=1.0, ref="T 편집 없는 엔진 기준 집합 행", diffs=[], invalid=[]),
           dict(f=0.0, ref="R 짝수 L 원자료 3쌍", diffs=[], invalid=[])]
@@ -87,6 +96,11 @@ def test_scan_candidates_are_every_passing_f_and_the_smallest_three_are_checked(
     assert r["checked"] == [0.2, 0.5, 0.6] and r["unchecked"] == [0.9]
     two = U.scan({f: _pt(f in (0.7, 0.3)) for f in SPEC.f_grid}, SPEC)
     assert two["checked"] == [0.3, 0.7] and two["unchecked"] == []
+
+
+def test_scan_exactly_three_candidates_are_all_checked():
+    r = U.scan({f: _pt(f in (0.1, 0.4, 0.8)) for f in SPEC.f_grid}, SPEC)
+    assert r["candidates"] == [0.1, 0.4, 0.8] and r["checked"] == [0.1, 0.4, 0.8] and r["unchecked"] == []
 
 
 def test_scan_stop_and_invalid():
@@ -177,6 +191,12 @@ def test_contrast_readings_at_their_boundaries():
     assert U.contrast_entry(dict(median_delta=1.9, zero_share=0.3), 1.0, SPEC) == U.KC_SIDE
     assert U.contrast_entry(dict(median_delta=2.0, zero_share=0.3), 1.0, SPEC) == U.NO_CONCLUSION
     assert U.contrast_entry(dict(median_delta=0.1, zero_share=0.5), 1.0, SPEC) == U.KC_SIDE
+
+
+def test_contrast_block_without_a_positive_d_none_is_inconclusive():
+    for d_block in (-1.0, 0.0, 1.0):
+        assert U.contrast_block(d_block, 0.0, SPEC) == U.NO_CONCLUSION
+        assert U.contrast_block(d_block, -2.0, SPEC) == U.NO_CONCLUSION
 
 
 def test_every_sentence_fills():

@@ -61,12 +61,11 @@ def row_diffs(u_rows: list, t_rows: list, label: str, rest: bool = False) -> lis
     return [f"{label}: {len(bad)} row(s) differ: {bad[:3]}"] if bad else []
 
 
-def strip_labels(x):
-    if isinstance(x, dict):
-        return {k: strip_labels(v) for k, v in x.items() if k not in LABELS}
-    if isinstance(x, list):
-        return [strip_labels(v) for v in x]
-    return x
+def strip_labels(result: dict) -> dict:
+    """Plan Reading 3: drop only result["q"]["edit"] and result["q"]["edit_edges"]; same-named keys elsewhere stay."""
+    if not isinstance(result, dict) or not isinstance(result.get("q"), dict):
+        return result
+    return dict(result, q={k: v for k, v in result["q"].items() if k not in LABELS})
 
 
 def oracle_diffs(u_got: list, r_got: list, label: str) -> list:

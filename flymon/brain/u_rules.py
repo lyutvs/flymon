@@ -64,7 +64,7 @@ def reuse(r_doc: dict, r_git: dict, t_doc: dict, t_git: dict, shared_key: str, t
         zn = {k: (float(v[0]), float(v[1])) for k, v in (none.get("z") or {}).items()}
         guard = none.get("guard") or {}
         if (zn != spec.z_h4_dict() or none.get("csc_sha256") != [spec.sha_none] or none.get("edit_edges") != [0]
-                or not guard or not all(g.get("passes") for g in guard.values())):
+                or set(guard) != {spec.a_type, spec.p_type} or not all(g.get("passes") for g in guard.values())):
             why.append("T 블록 z의 편집 없는 엔진 재현 통과 아님")
     if why:
         return dict(outcome=STOP_REUSE, reasons=why, sentence=sentence(STOP_REUSE, dict(why="; ".join(why))))
@@ -190,7 +190,10 @@ def choose(records: dict, c_even: int, spec) -> dict:
 
 # ================================================================ the mechanism contrast readings (U.9.3, records)
 def contrast_block(d_block: float, d_none: float, spec) -> str:
-    """D_block ≤ 0.5 × D_none → 사슬 지지; D_block ≥ 0.8 × D_none → 사슬 비지지; else 결론 없음 (fixed before results)."""
+    """D_block ≤ 0.5 × D_none → 사슬 지지; D_block ≥ 0.8 × D_none → 사슬 비지지; else 결론 없음 (fixed before results).
+    D_none ≤ 0 → 결론 없음: U.9.3 leaves the reading undefined there (record only)."""
+    if d_none <= 0:
+        return NO_CONCLUSION
     if d_block <= spec.chain_support_max * d_none:
         return CHAIN_FOR
     if d_block >= spec.chain_against_min * d_none:
@@ -200,7 +203,7 @@ def contrast_block(d_block: float, d_none: float, spec) -> str:
 
 def contrast_entry(cut: dict, delta_f0: float, spec) -> str:
     """MBON13 under the chain-entry cut passes the scan's guard → 사슬 지지; |Δ(cut) − Δ(f = 0 alone)| < 1 → KC 경로 쪽;
-    else 결론 없음."""
+    else 결론 없음. No SD > 0 check here: U.9.3 lists only the Δ median and the zero share for this reading."""
     if cut["median_delta"] >= spec.z_guard_med_min and cut["zero_share"] <= spec.z_guard_zero_max:
         return CHAIN_FOR
     if abs(cut["median_delta"] - delta_f0) < spec.kc_side_delta_max:
