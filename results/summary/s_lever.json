@@ -64,5 +64,136 @@
   },
   "stage": "set",
   "written_at": "2026-10-03T04:35:53.050751+00:00"
+ },
+ "smoke": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "cost": {
+   "gate2_h": 0.2903048860878011,
+   "jm_per_condition_h": 0.46698637238082785,
+   "note": "rough: smoke wall time x worker rounds x seed ratio"
+  },
+  "detail_path": "results/s/smoke.json",
+  "git": {
+   "commit": "6e0b2c206d4945ed7311cc61c886202a4645d9b6",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "oracle": {
+   "C": {
+    "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+    "edit_edges": [
+     0
+    ],
+    "jobs": 2,
+    "kc_median": 0.051181102362204724,
+    "reasons": [],
+    "saturation": {
+     "cap_hz": 500.0,
+     "max": 40.0,
+     "median": 4.166666666666667,
+     "n": 24,
+     "q95": 38.08333333333333,
+     "share": {
+      "0.5": 0.0,
+      "0.8": 0.0
+     }
+    },
+    "wall_s": 116.43579429201782
+   },
+   "E0": {
+    "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+    "edit_edges": [
+     0
+    ],
+    "jobs": 2,
+    "kc_median": 0.06040846456692914,
+    "reasons": [],
+    "saturation": {
+     "cap_hz": 500.0,
+     "max": 76.66666666666667,
+     "median": 31.666666666666668,
+     "n": 24,
+     "q95": 70.16666666666664,
+     "share": {
+      "0.5": 0.0,
+      "0.8": 0.0
+     }
+    },
+    "wall_s": 122.58392274996731
+   },
+   "L": {
+    "csc_sha256": "860cba4f9eead9d7a85b632f2c93c51790c5082fe80460975cb1300239c73e46",
+    "edit_edges": [
+     2
+    ],
+    "jobs": 2,
+    "kc_median": 0.04515255905511811,
+    "reasons": [],
+    "saturation": {
+     "cap_hz": 500.0,
+     "max": 123.33333333333333,
+     "median": 51.66666666666667,
+     "n": 24,
+     "q95": 121.41666666666667,
+     "share": {
+      "0.5": 0.0,
+      "0.8": 0.0
+     }
+    },
+    "wall_s": 117.03853608295321
+   }
+  },
+  "p": {
+   "C": {
+    "edit_edges": [
+     0
+    ],
+    "label": "LEARNS_CONFIRMATORY",
+    "n_rows": 24,
+    "outcome": "JUDGED",
+    "reasons": []
+   },
+   "L": {
+    "edit_edges": [
+     2
+    ],
+    "label": "LEARNS_CONFIRMATORY",
+    "n_rows": 24,
+    "outcome": "JUDGED",
+    "reasons": []
+   }
+  },
+  "p_wall_s": 522.548794958042,
+  "pairs": [
+   "b|0|Surf vs Chansey|Surf vs Rhydon",
+   "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan"
+  ],
+  "pipeline_key": "e41edef2127d5d84e2b4b67264582c3dacbd41ff67c5e89f41c13c4680cdd68d",
+  "problems": [],
+  "seeds": {
+   "oracle": {
+    "act": [
+     24309002,
+     24309003
+    ],
+    "report": [
+     24309006,
+     24309007,
+     24309008
+    ],
+    "select": [
+     24309004,
+     24309005
+    ]
+   },
+   "p": [
+    25109100,
+    25109101,
+    25109102,
+    25109103
+   ]
+  },
+  "stage": "smoke",
+  "written_at": "2026-10-03T04:50:49.167616+00:00"
  }
 }
