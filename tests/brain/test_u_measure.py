@@ -216,7 +216,11 @@ def test_mutation_an_edit_that_is_not_applied_fails_the_reproduction(real, monke
     mine = UM.u_oracle_job(real.eng, None, real.pops, None, None, **_oracle_kw(real, UM.u_edit(0.0)))
     UM._RIG.clear()
     ref = r_jobs.r_oracle_job(real.eng, None, real.pops, None, None, **_oracle_kw(real, LEVER))
-    assert _strip(mine) != _strip(ref) and mine["q"]["csc_sha256"] != SHA_ZERO
+    assert mine["q"]["csc_sha256"] != SHA_ZERO
+    measured = lambda x: {k: v for k, v in _strip(x).items() if k not in ("q", "r")}
+    assert measured(mine) != measured(ref), "the skipped edit must change the measured payload, not only the label"
+    q_m = lambda x: {k: v for k, v in _strip(x)["q"].items() if k != "csc_sha256"}
+    assert q_m(mine) != q_m(ref) and mine["r"]["p_cells"] != ref["r"]["p_cells"]
 
 
 @pytest.mark.parametrize("f,r_edit", [(1.0, "none"), (0.0, LEVER)])
@@ -265,6 +269,12 @@ def test_reference_and_rest_copies_reproduce_ts_jobs(real, f, t_edit):
     r2 = TM.t_rest_job(real.eng, None, real.pops, None, None, real.params, t_edit, "MBON05", TYPES, [seed],
                        w.settle_ms, int(w.read_ms))
     assert {t: r1[0]["types"][t] for t in TYPES} == r2[0]["types"] and r1[0]["csc_sha256"] == r2[0]["csc_sha256"]
+    assert r1[0]["seed"] == r2[0]["seed"] == seed and r1[0]["edit_edges"] == 2
+    # t_rest_job does not return kc_active_frac: reproduce it with T's own engine and read, same sequence
+    e, _, sha_t, _ = TM.z_engine(real.eng.conn, real.pops, real.params, t_edit, "MBON05")
+    e.reset(int(seed)); e.clear_drive(); e.run(w.settle_ms)
+    counts = TM._read(e, int(w.read_ms))
+    assert sha_t == r1[0]["csc_sha256"] and r1[0]["kc_active_frac"] == float((counts[real.pops.kc] > 0).mean())
 
 
 def test_type_cells_equal_mbon_index_for_the_mbon_types(real):
