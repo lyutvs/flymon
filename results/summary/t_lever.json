@@ -1,0 +1,41 @@
+{
+ "reuse": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "git": {
+   "commit": "64baee3f9a084906401ae54226a776fe1647fd38",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "outcome": "PASS",
+  "pipeline_key": "1370d9bd5871119b2231479e147f9190d029254fb94fc4de471decf2113f1f8a",
+  "r_blocks": {
+   "gate1": "2026-10-02T19:53:01.921769+00:00",
+   "repro": "2026-10-02T19:38:27.888300+00:00"
+  },
+  "r_commits": {
+   "gate1": "6ad2201",
+   "gate3": "a83977f",
+   "repro": "22c934b"
+  },
+  "r_shared_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "r_summary": "results/summary/r_lever.json",
+  "reasons": [],
+  "records": {
+   "gate1_median": 0.04570620078740158,
+   "r_gate2_ell": {
+    "r1": 1.0866206777573453,
+    "r2": 1.7918704864387003
+   },
+   "r_gate3": {
+    "c_even": 7,
+    "testable_b": 16
+   },
+   "r_smoke_L_csc_sha256": "860cba4f9eead9d7a85b632f2c93c51790c5082fe80460975cb1300239c73e46",
+   "repro_csc_sha256_none": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5"
+  },
+  "shared_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "stage": "reuse",
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "written_at": "2026-10-03T15:45:56.012334+00:00"
+ }
+}
