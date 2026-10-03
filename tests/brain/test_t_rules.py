@@ -264,3 +264,17 @@ def test_t_rules_literals_are_only_0_and_1():
     src = (ROOT / "flymon/brain/t_rules.py").read_text()
     nums = {n.value for n in ast.walk(ast.parse(src)) if isinstance(n, ast.Constant) and type(n.value) in (int, float)}
     assert nums <= {0, 1}, nums
+
+
+def test_z_lever_stops_when_z_is_none_without_a_failing_guard():
+    side = _side(counts(96, 5), counts(96, 30), edges=2, sha=SHA_L)
+    out = R.z_lever(dict(side, z=None, why="readout MBON05: z undefined"), 96, READOUT, SPEC)
+    assert out["outcome"] == R.STOP_Z_DEGENERATE and out["failed"] == ["MBON05"]
+    assert out["reasons"] == ["readout MBON05: z undefined"]
+    out = R.z_lever(dict(side, z=None, why="no counts"), 96, READOUT, SPEC)
+    assert out["outcome"] == R.STOP_Z_DEGENERATE and out["failed"] == list(READOUT.values())
+
+
+def test_gate3_refuses_a_missing_l_after_c_reproduced():
+    with pytest.raises(ValueError, match="L was not measured"):
+        R.gate3(None, _summ(7, 0, SHA_NONE), SPEC, SHA_NONE, 16)

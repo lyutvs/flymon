@@ -100,9 +100,13 @@ def z_lever(lever: dict, n: int, readout: dict, spec) -> dict:
     if bad:
         return dict(outcome=INVALID, reasons=bad)
     fails = [t for t in readout.values() if not lever["guard"][t]["passes"] or t in lever["zero_sd"]]
+    why = []
+    if lever["z"] is None and not fails:                 # no z at all is the same STOP (types named in why, else all)
+        why = [str(lever.get("why"))]
+        fails = [t for t in readout.values() if t in why[0]] or list(readout.values())
     if fails:
         g = lever["guard"]
-        return dict(outcome=STOP_Z_DEGENERATE, reasons=[], failed=fails, sentence=sentence(STOP_Z_DEGENERATE, dict(
+        return dict(outcome=STOP_Z_DEGENERATE, reasons=why, failed=fails, sentence=sentence(STOP_Z_DEGENERATE, dict(
             type="·".join(fails), med="·".join(f"{g[t]['median_delta']:.1f}" for t in fails),
             zero="·".join(f"{g[t]['zero_share']:.3f}" for t in fails))))
     return dict(outcome=PASS, reasons=[])
@@ -137,6 +141,8 @@ def gate3(L, C: dict, spec, repro_sha: str, l_h4) -> dict:
     if C["reasons"] or c != spec.c_even_expected:
         return dict(outcome=STOP_EVEN_REPRO, reasons=[f"C: {m}" for m in C["reasons"]], c_even=c,
                     sentence=sentence(STOP_EVEN_REPRO, dict(l=l_h4, c=c)))
+    if L is None:
+        raise ValueError("gate ③: C reproduced but L was not measured on z_lever; nothing to judge")
     return r_rules.gate3(L, C, spec, repro_sha)
 
 
