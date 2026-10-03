@@ -319,7 +319,9 @@ class Runner:
         INVALID block and the new one are written together after the measurement."""
         prior = None
         if rerun:
-            doc = self._doc()
+            # the chain and R's reuse condition first: a fix in a shared measurement file changes the shared key and
+            # leaves the pipeline key as it was, so it must refuse with exit 7, not with "fix the code first" (S.9.5)
+            doc = self._require("gate2", allow_own=True)
             blk = doc.get("gate2")
             if GATE2_INVALID in doc:
                 refuse("gate2 was rerun once already (S.3 ④, R.5)")
@@ -327,7 +329,6 @@ class Runner:
                 refuse("--rerun-after-invalid needs an INVALID gate2 block (S.3 ④)")
             if blk.get("pipeline_key") == self.pipeline_key:
                 refuse("the pipeline key equals the INVALID run's: fix the code first (S.3 ④)")
-            self._require("gate2", allow_own=True)
             prior = blk
         else:
             doc = self._require("gate2")

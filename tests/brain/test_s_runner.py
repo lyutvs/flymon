@@ -177,3 +177,50 @@ def test_gate2_oc_refuses_without_ps_block(w):
     with pytest.raises(SystemExit):
         r.stage_gate2_oc()
     assert "gate2_oc" not in doc()
+
+
+def _smoke(w, m):
+    r = w.runner(m)
+    r.stage_reuse()
+    r.stage_set()
+    return r.stage_smoke()["problems"]
+
+
+def _p_invalid_in_smoke(m):
+    from flymon.brain.s_spec import smoke
+    orig, s0 = m.arms, smoke(SPEC).p.seeds[0]
+    m.arms = lambda items, *a: [dict(x, csc_sha256="sha-other") if x["seed"] == s0 else x for x in orig(items, *a)]
+    return m
+
+
+@pytest.mark.parametrize("make,expect", [
+    (lambda: Scripted(arm_edges={SPEC.no_edit: 1}), "P arms C: edges [1]"),
+    (lambda: _p_invalid_in_smoke(Scripted()), "P arms L: INVALID"),
+    (lambda: Scripted(override={("smoke", "L"): dict(sha="sha-C")}), "L and C ran on the same CSC weights"),
+    (lambda: Scripted(override={("smoke", "C"): dict(sha="sha-X")}), "C / E0 CSC sha-X / sha-C is not R's repro"),
+    (lambda: Scripted(override={("smoke", "E0"): dict(sha="sha-X")}), "C / E0 CSC sha-C / sha-X is not R's repro"),
+])
+def test_smoke_problem_branches(w, make, expect):
+    problems = _smoke(w, make())
+    assert any(p.startswith(expect) for p in problems), problems
+
+
+@pytest.mark.parametrize("pipeline", ["p" * 64, "q" * 64])
+def test_gate2_rerun_refuses_with_7_when_the_shared_key_changed(w, pipeline):
+    """S.9.5: a 'fix' in a shared measurement file changes the shared key (the pipeline key may stay) — exit 7."""
+    m = Scripted()
+    r = _to_gate2(w, m)
+    m.arm_edges[SPEC.lever_edit] = 1
+    assert r.stage_gate2()["outcome"] == s_rules.INVALID
+    before = doc()
+    m.arm_edges[SPEC.lever_edit] = SPEC.lever_edges
+    with pytest.raises(SystemExit) as e:
+        w.runner(m, code={"key": "f" * 64}, pipeline={"key": pipeline}).stage_gate2(rerun=True)
+    assert e.value.code == SR.EXIT_REUSE and doc() == before and "gate2_invalid" not in doc()
+
+
+def test_stop_reuse_writes_only_its_own_block(w):
+    out = w.runner(Scripted(), code={"key": "f" * 64}).stage_reuse()
+    assert out["outcome"] == s_rules.STOP_REUSE
+    assert set(doc()) == {"reuse"} and not Path(SPEC.smoke_detail).exists()
+    assert not Path(SPEC.cache_dir).exists() and w.set_calls == 0 and w.judgement_calls == 0
