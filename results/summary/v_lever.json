@@ -5769,6 +5769,75 @@
   "wall_s": 756.8806035419693,
   "written_at": "2026-10-04T11:28:55.649280+00:00"
  },
+ "measurement_started": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "decision_pins": {
+   "kc_input_sha256": "19343edbcb44330f9ee7f4ace67e04fb2bbb98efcff01e608fa8a258b7609bad",
+   "set_sha256": "763a19e309a72e369dd7e306d47fbdd7be6cba80d07b4f4046d176ba8d80e23a",
+   "z_sha256": "d15e157c8cdeffa6ab3b1424f2b3719bc9d700f3c4f3d8b500c3200e7684b47d"
+  },
+  "git": {
+   "commit": "01885dccb9970947f71aa9dc98aac326a9cada99",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "note": "V.5 / V.9.5 P2-8: \ud310\uc815 \uce21\uc815 \uccab \uc7a1 \uc804 \ud45c\uc2dd \u2014 \uc774 \ube14\ub85d \ub4a4 V \uc138\ud2b8\ub294 \uc0ac\uc6a9\ub41c \uac83\uc774\ub2e4.",
+  "pipeline_key": "f575d783e8747a09f3abc4a67667d54767cc44b7a88736073ae3ff8f56b4bd34",
+  "seeds": {
+   "act": [
+    24600000,
+    24600001,
+    24600002,
+    24600003,
+    24600004,
+    24600005,
+    24600006,
+    24600007
+   ],
+   "report": [
+    24600200,
+    24600201,
+    24600202,
+    24600203,
+    24600204,
+    24600205,
+    24600206,
+    24600207
+   ],
+   "select": [
+    24600100,
+    24600101,
+    24600102,
+    24600103,
+    24600104,
+    24600105,
+    24600106,
+    24600107
+   ]
+  },
+  "set": {
+   "digest_e0_a": "8a51867960e39636a6f839cc3a26d492c934eaf2427a6210653edf1128675702",
+   "digest_e0_b": "acaa023536468220a470377999751d25e6f1f6be6aa37deb478c9d8b762039c7",
+   "digest_keys": "755fd9d438c6eb036785a59763a1a32af463f1e08fbfa34a1aa5cb0cc63d2400",
+   "last_turn": 305,
+   "n_a": 43,
+   "n_b": 21
+  },
+  "stage": "measurement_started",
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "written_at": "2026-10-04T12:56:34.475190+00:00",
+  "z_V": {
+   "A": [
+    16.916666666666668,
+    12.483878492769072
+   ],
+   "P": [
+    80.16666666666667,
+    29.775432639827233
+   ]
+  }
+ },
  "oc": {
   "cluster": {
    "clusters_a": [
