@@ -330,6 +330,33 @@ def test_recovery_after_reading(w):
         r.stage_recompute("after invalid")
 
 
+@pytest.mark.parametrize("edit", ["f_star", "z_f_star"])
+def test_recompute_refuses_a_choose_or_scan_point_changed_after_the_seal(w, edit):
+    """U.3 10 / U.5: recompute reads the sealed f* and z_f* only; a moved choose block or scan point refuses (exit 2)."""
+    r = _sealed(w)
+    r.stage_judge()
+
+    def ch(d):
+        if edit == "f_star":
+            d["choose"]["f_star"] = 0.5
+        else:
+            d["scan"]["points"][UR.fk(0.6)]["z"]["A"][0] = 7.0
+    _edit_summary(ch)
+    with pytest.raises(SystemExit) as e:
+        r.stage_recompute("records code fix (test)")
+    assert e.value.code == 2 and "recompute" not in doc()
+
+
+def test_recompute_records_a_decision_key_change_alone(w, monkeypatch):
+    """U.5: recompute after a code fix — a changed decision key alone is recorded, not refused."""
+    r = _sealed(w)
+    r.stage_judge()
+    monkeypatch.setattr(UR, "decision_key", lambda: dict(key="d" * 64, files={}))
+    e = r.stage_recompute("decision code fix (test)")
+    assert e["decision_changed_since_seal"] is True and e["decision_key"] == "d" * 64 and e["band"] == "SELECTED"
+    assert doc()["recompute"][-1]["decision_changed_since_seal"] is True
+
+
 class OraclePool:
     """u_oracle_job-shaped outputs for real RMeasurers over UPool + UCache; the pair key travels in the odour name
     ("G|<key>" E-grid, "E|<key>" E0); the z and edit each job received are recorded."""

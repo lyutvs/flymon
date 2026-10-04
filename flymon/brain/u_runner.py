@@ -862,6 +862,15 @@ class Runner:
         return bool(rb.get("outcome") == u_rules.PASS and isinstance(nz, dict)
                     and _ztuple(nz) == _ztuple(self.ctx["z"]))
 
+    def _check_pins(self, doc: dict) -> None:
+        """U.3 10: the live z_f* scan point, choose block and f* are the ones the seal pinned; refuse otherwise."""
+        sd = doc["seal"].get("decision") or {}
+        pins = decision_pins(doc, doc["seal"].get("f_star"))
+        moved = [k for k, v in pins.items() if sd.get(k) is None or sd.get(k) != v]
+        if moved or self._f_star(doc) != float(doc["seal"].get("f_star")):
+            refuse(f"the sealed decision record ({', '.join(moved) or 'f_star'}) differs from the live scan / choose "
+                   f"blocks: the judgement reads only the f* and z_f* it was sealed with (U.3 10)")
+
     def stage_judge(self) -> dict:
         """Once (U.3 11). The marker is written before the band is computed. S.9.2 (U.5): with the marker and no judge
         block, judge is re-generated once — same sealed raw data (sha re-checked), the sealed decision code, no
@@ -876,12 +885,7 @@ class Runner:
         if sealed != now:
             refuse(f"the decision code hash {now} is not the sealed {sealed}: the judgement reads only under the code "
                    f"it was sealed with (U.5)")
-        sd = doc["seal"].get("decision") or {}
-        pins = decision_pins(doc, doc["seal"].get("f_star"))
-        moved = [k for k, v in pins.items() if sd.get(k) is None or sd.get(k) != v]
-        if moved or self._f_star(doc) != float(doc["seal"].get("f_star")):
-            refuse(f"the sealed decision record ({', '.join(moved) or 'f_star'}) differs from the live scan / choose "
-                   f"blocks: the judgement reads only the f* and z_f* it was sealed with (U.3 10)")
+        self._check_pins(doc)
         if Path(DONE_MARKER).exists():
             refuse(f"{DONE_MARKER} exists: a judge block was written once; a discarded block does not reopen the set")
         resumed = None
@@ -922,6 +926,7 @@ class Runner:
         if not note:
             refuse("--note is required (U.5: the correction is recorded)")
         doc = self._require_after_judge("recompute")
+        self._check_pins(doc)                            # a decision-key change alone is recorded below, not refused
         out = self._read(doc)
         dk = decision_key()["key"]
         entry = dict(note=note, status=out["status"], band=out["band"], reason=out["reason"], n=out.get("n"),
