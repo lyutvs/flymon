@@ -662,3 +662,260 @@ class Runner:
         doc[GATE2_INVALID], doc["gate2"] = prior, block
         v_store.write_json(self.summary_path, doc, self.plist)
         return block
+
+    # ---- the judgement (V.3 11-13, V.5, V.9.5 P2-8) ----------------------------------------------------------------
+    def _judge_chain(self, doc: dict, stage: str) -> None:
+        """The judgement runs once, from clean trees, on the shared key every earlier block ran on and on the T and V
+        measurement keys every earlier block carries (V.8: re-checked right before the judgement measurement and the
+        judge — exit 7)."""
+        if self.spec.smoke:
+            refuse("smoke never measures the judgement set (V.3 8)")
+        if not self.code_key:
+            refuse("no code key given; the judgement must run on the code the gates ran on")
+        if not self.u_measure_key or not self.t_measure_key:
+            refuse(f"the V / T measurement key cannot be verified (V {self.u_measure_key}, T {self.t_measure_key}) "
+                   f"(V.8)", EXIT_KEY)
+        if self.u_measure_key != self.spec.u_measure_key_u:
+            refuse(f"the V measurement key {self.u_measure_key} is not U's {self.spec.u_measure_key_u} (V.9.5)",
+                   EXIT_KEY)
+        for b in ORDER[:ORDER.index(stage)]:
+            if doc[b].get("u_measure_key") != self.u_measure_key or doc[b].get("t_measure_key") != self.t_measure_key:
+                refuse(f"block {b}'s V / T measurement key {doc[b].get('u_measure_key')} / {doc[b].get('t_measure_key')}"
+                       f" is not the current {self.u_measure_key} / {self.t_measure_key} (V.8)", EXIT_KEY)
+        if summary_git(self.summary_path)["judge_commits"]:
+            refuse(f"git history of {self.summary_path} already holds a judge block; the set is used once (V.5)")
+        for b in ORDER[:ORDER.index(stage)]:
+            if doc[b].get("code_key") != self.code_key:
+                refuse(f"block {b}'s code key {doc[b].get('code_key')} is not the current {self.code_key}")
+            d = (doc[b].get("git") or {}).get("dirty_hashed")
+            if d is None or d:
+                refuse(f"block {b} was written with dirty hashed files (or no git record): {d}")
+
+    def _judgement_rows(self, doc: dict) -> list:
+        return self._set_call("judgement_rows", doc)
+
+    def stage_measurement_started(self) -> dict:
+        """V.9.5 P2-8: the set-use marker, committed before the first judgement job (no pool): the set block's digests,
+        the judgement seeds and z_V. From here on the V set is used (V.5)."""
+        doc = self._require("measurement_started")
+        self._judge_chain(doc, "measurement_started")
+        sp, s = self.spec, doc["set"]["set"]
+        body = dict(set={k: s[k] for k in ("digest_e0_b", "digest_e0_a", "digest_keys", "last_turn", "n_b", "n_a")},
+                    seeds=sp.judge_seeds(), z_V=doc["z"]["z_V"], decision_pins=decision_pins(doc),
+                    note="V.5 / V.9.5 P2-8: 판정 측정 첫 잡 전 표식 — 이 블록 뒤 V 세트는 사용된 것이다.")
+        self._write("measurement_started", body)
+        return body
+
+    def stage_jm(self, name: str) -> dict:
+        """One judgement condition on the 64 pairs (resumable), L_V on z_V and C / E0 on block h4's z; the block holds
+        raw_check only."""
+        sp = self.spec
+        if name not in sp.cond_names:
+            refuse(f"unknown condition {name}; V has {sp.cond_names}")
+        stage = f"jm:{name}"
+        doc = self._require(stage)
+        self._judge_chain(doc, stage)
+        rows = self._judgement_rows(doc)
+        seeds, cond, m = sp.judge_seeds(), sp.cond(name), self._m_for(name, doc)
+        got = m.oracle(rows, cond, r_records.JUDGE_BLOCK, seeds)
+        rc = r_records.raw_check(got, cond, [row_key(r) for r in rows], seeds)
+        man = [dict(x, sha256=sha256_file(x["cache_file"])) for x in rc["manifest"]]
+        body = dict(rc, manifest=man, seeds=seeds, condition=name, edit=cond.edit,
+                    z={k: list(v) for k, v in m.z.items()}, wall_s=m.last_wall_s, jobs=m.last_jobs)
+        self._write(stage, body)
+        return body
+
+    def _raws(self, doc: dict) -> tuple:
+        raws, bad = {}, []
+        for n in self.spec.cond_names:
+            got, b = v_store.load_manifest(doc[f"jm:{n}"]["manifest"])
+            raws[n] = got
+            bad += [f"{n}: {x}" for x in b]
+        return raws, bad
+
+    def stage_seal(self) -> dict:
+        """R.9.7 as is (V.3 12): pre-read validity (every raw entry's stored inputs = its condition's measurer's, so
+        L's carry L_V and z_V, C's / E0's "none" and h4 z), the manifest (192), the archive copy, the decision code hash
+        with block z, block set and block kc_input pinned."""
+        doc = self._require("seal")
+        self._judge_chain(doc, "seal")
+        sp = self.spec
+        rows = self._judgement_rows(doc)
+        keys = [row_key(r) for r in rows]
+        raws, bad = self._raws(doc)
+        want = {n: r_records.judge_inputs(self._m_for(n, doc), rows, sp)[n] for n in sp.cond_names}
+        v = r_records.preread_validity({n: doc[f"jm:{n}"] for n in sp.cond_names}, raws, sp,
+                                       _ztuple(self.ctx["z"]), keys, self.code_key,
+                                       doc["reuse"]["records"]["repro_csc_sha256_none"], want)
+        nl = sp.cond_names[0]
+        seeds = sp.judge_seeds()
+        n_rep, n_act = len(seeds["report"]), len(seeds["act"])
+        zv = self._z_v(doc)
+        und = [g["key"] for g in raws[nl] if not r_records._short(g["result"], n_rep, n_act) and not r_records.stats_ok(
+            r_records.pair_stats(g["result"]["report"], zv, sp.testable_min))]
+        reasons = bad + v["reasons"] + ([f"{nl}: {len(und)} pair(s) with an undefined d′ on z_V"] if und else [])
+        status = v_rules.INVALID if v["invalid"] else (v_rules.NOT_READ if reasons else v_rules.SEALED)
+        manifest = [dict(x, condition=n) for n in sp.cond_names for x in doc[f"jm:{n}"]["manifest"]]
+        s = doc["set"]["set"]
+        body = dict(status=status, reasons=reasons, invalid=v["invalid"], checks=v["checks"], manifest=manifest,
+                    n_files=len(manifest), archive=None, decision=dict(decision_key(), **decision_pins(doc)),
+                    seeds=seeds, z=dict(z_V=doc["z"]["z_V"], z_h4={k: list(x) for k, x in _ztuple(self.ctx["z"]).items()}),
+                    set={k: s[k] for k in ("digest_e0_b", "digest_e0_a", "digest_keys", "last_turn", "n_b", "n_a")})
+        if status == v_rules.SEALED:
+            stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            dest = self.archive_root / f"{stamp}-{(git_state().get('commit') or 'nocommit')[:12]}"
+            body["archive"] = dict(dir=str(dest), files=v_store.archive_copy([x["cache_file"] for x in manifest], dest,
+                                                                              self.archive_root))
+        self._write("seal", body)
+        return body
+
+    def _read(self, doc: dict, mark=None) -> dict:
+        """The bands and records from the sealed raw files (sha re-checked): L_V read on z_V, C and E0 on block h4's z
+        (V.4); R.3's order with G_fail_S; V.7's sentence (V.9.4's cluster values in SELECTED); V.6's records."""
+        sp = self.spec
+        rows = self._judgement_rows(doc)
+        keys = [row_key(r) for r in rows]
+        raws, bad = self._raws(doc)
+        if bad:
+            refuse(f"raw files changed since the seal: {bad[:3]}")
+        if mark is not None:
+            mark()                                       # the read starts here
+        seeds = sp.judge_seeds()
+        s = {n: r_records.cond_summary(raws[n], sp.cond(n), sp, self._z_for(n, doc), keys, seeds)
+             for n in sp.cond_names}
+        L, C, E0 = (s[n] for n in sp.cond_names)
+        if L["aggregate"] is None or C["aggregate"] is None:
+            refuse("no (b) pair to aggregate")
+        aL, aC = L["aggregate"], C["aggregate"]
+        gf = v_rules.g_fail_s(L["pairs"], C["pairs"], sp)
+        rb = v_rules.read_band(aL["testable_b"], aC["testable_b"], aL["F_a"], gf["g_fail"], aL["n_b"], aL["n_a"],
+                               aL["naive_a"], sp)
+        if rb["band"] == v_rules.NOT_READ:
+            return dict(status=v_rules.NOT_READ, band=rb["band"], reason=rb["reason"],
+                        reasons=["the (b) / (a) pair counts differ from the declared counts (V.4 line 1)"])
+        ax, ratio, ratio_zv = gf["axes"], doc["gate2"]["ratio"], doc["gate2"]["ratio_z_V"]
+        names = list(sp.p.directions)
+        k_even = doc["even"]["record"]["testable_b"]
+        st = doc["set"]["set"]
+        fields = dict(n=aL["testable_b"], c=aC["testable_b"], f_a=aL["F_a"], naive_a=aL["naive_a"], T=st["last_turn"],
+                      k_even=k_even, k_cl=len(st["clusters_b"]), pb_L=ax["b"]["pun_L"], pb_C=ax["b"]["pun_C"],
+                      pa_L=ax["a"]["pun_L"], pa_C=ax["a"]["pun_C"], d_b=ax["b"]["net_drop"], d_a=ax["a"]["net_drop"],
+                      rho1=f"{ratio[names[0]]['ratio']:.3f}", rho2=f"{ratio[names[-1]]['ratio']:.3f}",
+                      rho1_zv=f"{ratio_zv[names[0]]['ratio']:.3f}", rho2_zv=f"{ratio_zv[names[-1]]['ratio']:.3f}",
+                      reason=rb["reason"], **doc["oc"]["cluster_values"])
+        out = dict(band=rb["band"], reason=rb["reason"], n=aL["testable_b"], c=aC["testable_b"], F_a=aL["F_a"],
+                   naive_a=aL["naive_a"], n_b=aL["n_b"], n_a=aL["n_a"], g_fail=gf)
+        if rb["band"] == v_rules.B_FA:
+            out["f_a_possible"] = rb["f_a_possible"]
+        labels = self.ctx["clusters"](rows)
+        records = dict(r_records.compare(L, C, E0, sp),
+                       clusters=t_records.clusters({n: s[n]["pairs"] for n in sp.cond_names}, labels),
+                       alpha_fixed=t_records.alpha_fixed(raws[sp.cond_names[0]], C, keys, seeds,
+                                                         _ztuple(self.ctx["z"]), sp),
+                       z=dict(z_V=doc["z"]["z_V"], record=doc["z"]["record"],
+                              z_h4_reproduced=self._z_h4_reproduced(doc)),
+                       path=dict(records=doc["path"]["records"],
+                                 mech={k: v["mech"] for k, v in doc["path"]["sides"].items()}),
+                       kc_input=dict(kc_record=doc["set"]["kc_record"], u_compare=doc["kc_input"]["u_compare"]),
+                       gate2=dict(ratio_h4={d: ratio[d]["ratio"] for d in names},
+                                  ratio_z_V={d: ratio_zv[d]["ratio"] for d in names}))
+        return dict(out, status=v_rules.READ, sentence=v_rules.sentence(rb["band"], fields), records=records,
+                    pairs={n: s[n]["pairs"] for n in sp.cond_names}, oc_sha256=doc["oc"]["independent"]["sha256"],
+                    oc_cluster_sha256=doc["oc"]["cluster"]["sha256"],
+                    p_labels=dict(L=doc["gate2"]["label_L"], C=doc["gate2"]["label_C"]),
+                    p_ratio={d: ratio[d]["ratio"] for d in names}, k_even=k_even)
+
+    def _z_h4_reproduced(self, doc: dict) -> bool:
+        """From the reuse block: it passed and T's unedited z it recorded is block h4's z."""
+        rb = doc.get("reuse") or {}
+        nz = _dig(rb, ("records", "t_z", "none_z"))
+        return bool(rb.get("outcome") == v_rules.PASS and isinstance(nz, dict)
+                    and _ztuple(nz) == _ztuple(self.ctx["z"]))
+
+    def _check_pins(self, doc: dict) -> None:
+        """V.3 12: the live z, set and kc_input blocks are the ones the seal pinned; refuse otherwise."""
+        sd = doc["seal"].get("decision") or {}
+        moved = [k for k, v in decision_pins(doc).items() if sd.get(k) is None or sd.get(k) != v]
+        if moved:
+            refuse(f"the sealed decision record ({', '.join(moved)}) differs from the live blocks: the judgement reads "
+                   f"only the z_V, set and KC input it was sealed with (V.3 12)")
+
+    def stage_judge(self) -> dict:
+        """Once (V.3 13). The marker is written before the band is computed. S.9.2 (V.5): with the marker and no judge
+        block, judge is re-generated once — same sealed raw data (sha re-checked), the sealed decision code, no
+        measurement; a second re-generation, a marker from another seal or decision code, or a judge block once written
+        (DONE marker) refuses."""
+        doc = self._require("judge")
+        self._judge_chain(doc, "judge")
+        if doc["seal"].get("status") != v_rules.SEALED:
+            refuse(f"block seal's status is {doc['seal'].get('status')}: V reads only a sealed set (R.9.7)")
+        sealed = (doc["seal"].get("decision") or {}).get("key")
+        now = decision_key()["key"]
+        if sealed != now:
+            refuse(f"the decision code hash {now} is not the sealed {sealed}: the judgement reads only under the code "
+                   f"it was sealed with (V.5)")
+        self._check_pins(doc)
+        if Path(DONE_MARKER).exists():
+            refuse(f"{DONE_MARKER} exists: a judge block was written once; a discarded block does not reopen the set")
+        resumed = None
+        if Path(JUDGE_MARKER).exists():
+            if Path(REREAD_MARKER).exists():
+                refuse(f"{REREAD_MARKER} exists: judge was re-generated once after the mark already (V.5)")
+            mk = json.loads(Path(JUDGE_MARKER).read_text())
+            if mk.get("seal_written_at") != doc["seal"].get("written_at") or mk.get("decision_key") != sealed:
+                refuse(f"{JUDGE_MARKER} belongs to another seal or decision code; no re-generation (V.5)")
+            resumed = mk
+
+        def mark():
+            v_store.write_json(REREAD_MARKER if resumed else JUDGE_MARKER, dict(
+                seal_written_at=doc["seal"].get("written_at"),
+                seal_archive=(doc["seal"].get("archive") or {}).get("dir"),
+                decision_key=now, code_key=self.code_key, t_measure_key=self.t_measure_key,
+                u_measure_key=self.u_measure_key, pipeline_key=self.pipeline_key, read_at=_now()), self.plist)
+        out = self._read(doc, mark)
+        if out["status"] != v_rules.READ:
+            return out                                   # NOT_READ: no block, the marker stays
+        out = dict(out, resumed_after_mark=resumed is not None, mark_read_at=(resumed or {}).get("read_at"))
+        block = self._write("judge", out)
+        v_store.write_json(DONE_MARKER, dict(judge_written_at=block["written_at"]), self.plist)
+        return block
+
+    # ---- after reading (V.5 = U.5) ---------------------------------------------------------------------------------
+    def _require_after_judge(self, stage: str) -> dict:
+        self._clean(stage)
+        doc = self._doc()
+        if "judge" not in doc:
+            refuse(f"stage {stage} needs block judge (V.5: only after the judgement was read)")
+        if "invalid_run" in doc:
+            refuse("block invalid_run exists: this set is closed (V.5)")
+        return doc
+
+    def stage_recompute(self, note: str) -> dict:
+        """V.5 row 2: an analysis or summary defect after reading — the same sealed raw data recomputed."""
+        if not note:
+            refuse("--note is required (V.5: the correction is recorded)")
+        doc = self._require_after_judge("recompute")
+        self._check_pins(doc)                            # a decision-key change alone is recorded below, not refused
+        out = self._read(doc)
+        dk = decision_key()["key"]
+        entry = dict(note=note, status=out["status"], band=out["band"], reason=out["reason"], n=out.get("n"),
+                     c=out.get("c"), F_a=out.get("F_a"), naive_a=out.get("naive_a"), g_fail=out.get("g_fail"),
+                     sentence=out.get("sentence"), decision_key=dk,
+                     decision_changed_since_seal=bool(dk != (doc["seal"].get("decision") or {}).get("key")),
+                     differs_from_judge=bool(out["band"] != doc["judge"]["band"]
+                                             or out.get("sentence") != doc["judge"].get("sentence")),
+                     code_key=self.code_key, t_measure_key=self.t_measure_key, u_measure_key=self.u_measure_key,
+                     pipeline_key=self.pipeline_key, git=git_state(), written_at=_now())
+        v_store.write_summary_block(self.summary_path, "recompute", list(doc.get("recompute", [])) + [entry],
+                                    self.plist)
+        return entry
+
+    def stage_invalid_run(self, note: str) -> dict:
+        """V.5 row 3: a measurement defect after reading — INVALID_RUN; a replacement set is a new declaration."""
+        if not note:
+            refuse("--note is required (V.5)")
+        doc = self._require_after_judge("invalid_run")
+        body = dict(status=v_rules.INVALID_RUN, note=note, judge_band=doc["judge"]["band"],
+                    rule="V.5: the same set is never run again; a replacement set needs a new declaration (user)")
+        self._write("invalid_run", body)
+        return body

@@ -1,0 +1,466 @@
+"""The judgement end of the V chain (V.3 11-13, V.4, V.5, V.6, V.8, V.9.4, V.9.5 P2-8) and its mutation tests: the
+measurement_started marker comes before any judgement job; jm:L runs L_V on z_V and jm:C / jm:E0 on block h4's z, every
+block carries no pair statistic and is written only when all 64 pairs are back; the reuse condition and the T / V
+measurement keys are re-checked before the marker, the judgement measurement, the seal and the judge (exit 7); the seal
+re-checks every raw file and its stored inputs, archives 192 raw files and pins the decision code with block z, set and
+kc_input; the judge reads once — with the one re-generation after an interruption between the mark and the block — and
+fills V.7's sentence with V.9.4's cluster values; the CLI's refusals and exit codes; V defines no job and loads no code
+by path; the judgement set is named only by the KC band and the judgement stages."""
+import ast
+import importlib.util
+import json
+from pathlib import Path
+
+import pytest
+
+from flymon.brain import u_measure as UM
+from flymon.brain import v_store
+from flymon.brain import v_runner as VR
+from flymon.brain.r_measure import RMeasurer
+from flymon.brain.v_spec import LEVER_V
+from flymon.brain.v_store import VCache
+from tests.brain.r_fixtures import READOUT, TYPES, Z, fake_oracle, key_of
+from tests.brain.v_world import CODE, SPEC, TCODE, UCODE, ZV, World, ZScripted, doc, through
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+@pytest.fixture
+def w(tmp_path, monkeypatch):
+    return World(tmp_path, monkeypatch)
+
+
+def _to_jm(w, m):
+    r = through(w, m, zm=ZScripted())
+    r.stage_measurement_started()
+    return r
+
+
+def _to_seal(w, m):
+    r = _to_jm(w, m)
+    for n in SPEC.cond_names:
+        r.stage_jm(n)
+    return r
+
+
+def _sealed(w, plan=None):
+    r = _to_seal(w, w.scripted(plan=plan or w.pass_plan(n=14, c=8, f_a=3)))
+    assert r.stage_seal()["status"] == "SEALED"
+    return r
+
+
+def test_full_chain_reads_selected(w):
+    m = w.scripted(plan=w.pass_plan(n=14, c=8, f_a=3))
+    r = through(w, m, zm=ZScripted())
+    assert w.judgement_calls == 0
+    ms = r.stage_measurement_started()
+    assert ms["set"]["digest_keys"] == "k" * 64 and ms["z_V"] == {"A": [6.0, 3.0], "P": [80.0, 20.0]}
+    assert ms["seeds"] == SPEC.judge_seeds() and set(ms["decision_pins"]) == {"z_sha256", "set_sha256",
+                                                                               "kc_input_sha256"}
+    assert not [c for c in m.calls if c[0] == "oracle" and c[1] == "judge"]
+    for n in SPEC.cond_names:
+        r.stage_jm(n)
+    jm = doc()["jm:L"]
+    assert jm["n_pairs"] == 64 and jm["edit_edges"] == [2] and len(jm["manifest"]) == 64 and jm["edit"] == LEVER_V
+    assert jm["z"] == {"A": [6.0, 3.0], "P": [80.0, 20.0]} and doc()["jm:C"]["z"] == {"A": [10.0, 9.0],
+                                                                                     "P": [26.0, 19.0]}
+    assert "pairs" not in jm and "aggregate" not in jm and "counts" not in jm
+    stored = json.loads(Path(jm["manifest"][0]["cache_file"]).read_text())["inputs"]
+    assert stored["z"] == {"A": [6.0, 3.0], "P": [80.0, 20.0]} and stored["edit"] == LEVER_V
+    assert stored["act_seeds"] == SPEC.judge_seeds()["act"] == list(range(24_600_000, 24_600_008))
+    seal = r.stage_seal()
+    assert seal["status"] == "SEALED" and seal["n_files"] == 192 and seal["set"]["n_a"] == 43
+    assert seal["z"]["z_V"] == {"A": [6.0, 3.0], "P": [80.0, 20.0]}
+    assert set(seal["decision"]) >= {"key", "z_sha256", "set_sha256", "kc_input_sha256"}
+    assert all(Path(f["dst"]).exists() for f in seal["archive"]["files"])
+    assert seal["archive"]["dir"].startswith(str(w.archive)) and seal["decision"]["key"] == VR.decision_key()["key"]
+    out = r.stage_judge()
+    assert (out["status"], out["band"], out["n"], out["c"], out["F_a"]) == ("READ", "SELECTED", 14, 8, 3)
+    rho, rzv, cv = doc()["gate2"]["ratio"], doc()["gate2"]["ratio_z_V"], doc()["oc"]["cluster_values"]
+    assert (f"(14/21 대 8/21, 여유 ≥ 2, F_a 3/43, 처벌 순감소 가드(축마다 ≥ 3) 통과, 같은 시드 P 비 h4 z ℓ_r1 "
+            f"{rho['r1']['ratio']:.3f}·ℓ_r2 {rho['r2']['ratio']:.3f}, z_V ℓ_r1 {rzv['r1']['ratio']:.3f}·ℓ_r2 "
+            f"{rzv['r2']['ratio']:.3f} ≥ 0.5(약화 정도 기록), 짝수 13/21, 판정 시드 24_600_xxx)") in out["sentence"]
+    assert cv == VR.v_rules.cluster_values(doc()["oc"]["cluster"]) and all(cv[k] in out["sentence"] for k in cv)
+    assert (f"V 세트 군집 상관 모형에서 G_fail_S null {cv['cl_null']}, 오선택(harm) {cv['cl_harm1']} / "
+            f"{cv['cl_harm2']}.") in out["sentence"]
+    assert "생성원 턴 0–296" in out["sentence"] and "(b) 21쌍은 1개 상대 타입 조합 쌍에" in out["sentence"]
+    rec = out["records"]
+    assert rec["clusters"]["GROUND* 대 NORMAL"]["L"] == dict(n=21, testable=14, reward_pass=14, punish_pass=21)
+    assert rec["alpha_fixed"]["n"] == 14 and rec["z"]["z_V"] == {"A": [6.0, 3.0], "P": [80.0, 20.0]}
+    assert rec["z"]["z_h4_reproduced"] is True and set(rec["path"]["mech"]) == {"none", "apl", "lever"}
+    assert set(rec["gate2"]) == {"ratio_h4", "ratio_z_V"} and "kc_record" in rec["kc_input"]
+    assert out["resumed_after_mark"] is False and out["k_even"] == 13
+    assert out["oc_cluster_sha256"] == doc()["oc"]["cluster"]["sha256"] and set(doc()) == set(VR.ORDER)
+    assert Path(VR.JUDGE_MARKER).exists() and Path(VR.DONE_MARKER).exists()
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+
+
+def test_net_drop_3_on_a_reads_the_punish_guard(w):
+    plan = w.pass_plan(n=14, c=8, f_a=3)
+    ja = w.keys(w.judge, "a")
+    plan[("judge", LEVER_V)].update({k: (False, False, False) for k in ja[30:33]})
+    out = _sealed(w, plan).stage_judge()
+    assert out["band"] == "B_처벌가드" and out["g_fail"]["axes"]["a"]["net_drop"] == 3
+    assert out["sentence"].endswith(" (조합 지렛대)")
+
+
+def test_b_tb_closes_the_combined_lever_claim_only(w):
+    out = _sealed(w, w.pass_plan(n=8, c=8, f_a=3)).stage_judge()
+    assert out["band"] == "B_Tb" and out["sentence"].endswith(
+        "→ 넓힌 풀·엔진별 z에서의 이 조합 지렛대 주장을 닫는다.") and "생성원 턴 0–296" in out["sentence"]
+
+
+def test_b_nc_names_the_combined_lever(w):
+    out = _sealed(w, w.pass_plan(n=10, c=8, f_a=3)).stage_judge()
+    assert out["band"] == "B_결론없음" and out["sentence"].endswith("(10/21 대 8/21, F_a 3/43, 조합 지렛대)")
+
+
+def test_jm_needs_the_marker_and_writes_nothing_until_complete(w):
+    m = w.scripted(plan=w.pass_plan())
+    r = through(w, m)
+    with pytest.raises(SystemExit):
+        r.stage_jm("L")                                                  # no measurement_started block
+    r.stage_measurement_started()
+    m.st["fail_once"] = True
+    with pytest.raises(RuntimeError):
+        r.stage_jm("L")
+    assert "jm:L" not in doc()
+    assert r.stage_jm("L")["n_pairs"] == 64
+
+
+@pytest.mark.parametrize("where", ["measurement_started", "jm", "seal", "judge"])
+@pytest.mark.parametrize("what", ["reuse", "tkey", "ukey", "no_ukey"])
+def test_keys_are_rechecked_before_the_marker_measurement_seal_and_judge(w, where, what):
+    m = w.scripted(plan=w.pass_plan())
+    r = through(w, m)
+    if where != "measurement_started":
+        r.stage_measurement_started()
+    if where in ("seal", "judge"):
+        for n in SPEC.cond_names:
+            r.stage_jm(n)
+    if where == "judge":
+        assert r.stage_seal()["status"] == "SEALED"
+    if what == "reuse":
+        w.u["path"]["detail_sha256"] = "x" * 64
+    elif what == "tkey":
+        r = w.runner(m, tcode={"key": "x" * 64})
+    elif what == "ukey":
+        r = w.runner(m, ucode={"key": "v" * 64})
+    else:
+        r = VR.Runner(m.at, None, w.ctx, SPEC, code=CODE, tcode=TCODE, ucode=None, pipeline={"key": "p" * 64},
+                      archive_root=w.archive)
+    before = doc()
+    with pytest.raises(SystemExit) as e:
+        {"measurement_started": r.stage_measurement_started, "jm": lambda: r.stage_jm("L"), "seal": r.stage_seal,
+         "judge": r.stage_judge}[where]()
+    assert e.value.code == VR.EXIT_KEY and doc() == before
+    assert not Path(VR.JUDGE_MARKER).exists()
+
+
+@pytest.mark.parametrize("edges", [1, 3])
+def test_mutation_l_edges_other_than_2_seal_invalid(w, edges):
+    r = _to_seal(w, w.scripted(plan=w.pass_plan(), override={("judge", "L"): dict(edges=edges)}))
+    seal = r.stage_seal()
+    assert seal["status"] == "INVALID" and seal["archive"] is None
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+
+
+def test_mutation_l_raw_on_h4_z_fails_the_preread_validity(w):
+    m = w.scripted(plan=w.pass_plan())
+    r = _to_jm(w, m)
+    real_m_for = r._m_for
+    r._m_for = lambda name, doc=None: m.at(Z) if name == "L" else real_m_for(name, doc)
+    r.stage_jm("L")
+    r._m_for = real_m_for
+    r.stage_jm("C")
+    r.stage_jm("E0")
+    seal = r.stage_seal()
+    assert seal["status"] == "NOT_READ" and any(x.startswith("L: ") and "stored inputs" in x for x in seal["reasons"])
+
+
+def test_mutation_l_raw_of_the_apl_only_edit_fails_the_preread_validity(w):
+    m = w.scripted(plan=w.pass_plan(), override={("judge", "L"): dict(edit=UM.u_edit(0.0))})
+    seal = _to_seal(w, m).stage_seal()
+    assert seal["status"] == "NOT_READ" and any("ran edit u_apl_mbon05_x0.0" in x for x in seal["reasons"])
+
+
+def test_mutation_a_changed_kc_input_block_refuses_the_judgement_measurement(w):
+    r = _to_jm(w, w.scripted(plan=w.pass_plan()))
+    d = doc()
+    d["kc_input"]["record"]["lever"]["per_odour"]["K0|T"] = 0.2           # block set no longer regenerates
+    Path(SPEC.summary).write_text(json.dumps(d))
+    with pytest.raises(SystemExit) as e:
+        r.stage_jm("L")
+    assert e.value.code == 2 and "jm:L" not in doc()
+
+
+def test_mutation_a_deleted_gate_block_refuses_the_judgement(w):
+    r = _to_jm(w, w.scripted(plan=w.pass_plan()))
+    d = doc()
+    del d["even"]
+    Path(SPEC.summary).write_text(json.dumps(d))
+    with pytest.raises(SystemExit) as e:
+        r.stage_jm("L")
+    assert e.value.code == 2 and w.judgement_calls == 0
+
+
+def test_judge_refuses_a_raw_file_changed_after_the_seal(w):
+    r = _sealed(w)
+    f = Path(doc()["jm:C"]["manifest"][0]["cache_file"])
+    f.write_text(f.read_text().replace('"sha-C"', '"sha-X"'))
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+    assert "judge" not in doc() and not Path(VR.JUDGE_MARKER).exists()
+
+
+def test_judge_refuses_a_decision_file_changed_after_the_seal(w, monkeypatch):
+    r = _sealed(w)
+    monkeypatch.setattr(VR, "decision_key", lambda: dict(key="d" * 64, files={}))
+    with pytest.raises(SystemExit) as e:
+        r.stage_judge()
+    assert e.value.code == 2 and "judge" not in doc() and not Path(VR.JUDGE_MARKER).exists()
+
+
+def _edit_summary(fn):
+    d = doc()
+    fn(d)
+    Path(SPEC.summary).write_text(json.dumps(d))
+
+
+@pytest.mark.parametrize("block", ["z", "set", "kc_input"])
+def test_judge_refuses_a_pinned_block_changed_after_the_seal(w, block):
+    """V.3 12: the seal's decision hash covers block z, set and kc_input; judge and recompute refuse on change."""
+    r = _sealed(w)
+    _edit_summary(lambda d: d[block].__setitem__("note_added_later", 1))
+    with pytest.raises(SystemExit) as e:
+        r.stage_judge()
+    assert e.value.code == 2 and "judge" not in doc() and not Path(VR.JUDGE_MARKER).exists()
+
+
+def test_not_read_judge_returns_no_numbers_and_marks_the_read(w, monkeypatch):
+    r = _sealed(w)
+    monkeypatch.setattr(VR.v_rules, "read_band", lambda *a, **k: dict(band=VR.v_rules.NOT_READ, reason="COUNTS"))
+    out = r.stage_judge()
+    assert out["status"] == VR.v_rules.NOT_READ and set(out) == {"status", "band", "reason", "reasons"}
+    assert "judge" not in doc() and Path(VR.JUDGE_MARKER).exists()
+
+
+class _Kill(Exception):
+    pass
+
+
+def _kill_judge_write(monkeypatch, seen):
+    orig = v_store.write_summary_block
+
+    def boom(path, block, obj, plist):
+        if block == "judge":
+            seen.append(obj)
+            raise _Kill()
+        return orig(path, block, obj, plist)
+    monkeypatch.setattr(VR.v_store, "write_summary_block", boom)
+    return orig
+
+
+def test_resume_after_mark_once(w, monkeypatch):
+    r = _sealed(w)
+    seen = []
+    orig = _kill_judge_write(monkeypatch, seen)
+    with pytest.raises(_Kill):
+        r.stage_judge()
+    mark = json.loads(Path(VR.JUDGE_MARKER).read_text())
+    assert "judge" not in doc() and not Path(VR.DONE_MARKER).exists() and mark["u_measure_key"] == "u" * 64
+    monkeypatch.setattr(VR.v_store, "write_summary_block", orig)
+    out = r.stage_judge()
+    assert out["status"] == "READ" and out["resumed_after_mark"] is True and out["mark_read_at"] == mark["read_at"]
+    assert (out["band"], out["sentence"]) == (seen[0]["band"], seen[0]["sentence"])
+    with pytest.raises(SystemExit):
+        r.stage_judge()
+
+
+def test_a_second_regeneration_refuses(w, monkeypatch):
+    r = _sealed(w)
+    seen = []
+    _kill_judge_write(monkeypatch, seen)
+    with pytest.raises(_Kill):
+        r.stage_judge()
+    with pytest.raises(_Kill):
+        r.stage_judge()
+    with pytest.raises(SystemExit) as e:
+        r.stage_judge()
+    assert e.value.code == 2 and len(seen) == 2 and "judge" not in doc()
+
+
+def test_recovery_after_reading(w, monkeypatch):
+    r = _sealed(w)
+    with pytest.raises(SystemExit):
+        r.stage_recompute("before judge")
+    r.stage_judge()
+    with pytest.raises(SystemExit):
+        r.stage_recompute("")
+    e = r.stage_recompute("records code fix (test)")
+    assert e["band"] == "SELECTED" and e["differs_from_judge"] is False and e["decision_changed_since_seal"] is False
+    monkeypatch.setattr(VR, "decision_key", lambda: dict(key="d" * 64, files={}))
+    assert r.stage_recompute("decision code fix (test)")["decision_changed_since_seal"] is True
+    assert r.stage_invalid_run("measurement defect (test)")["status"] == "INVALID_RUN"
+    with pytest.raises(SystemExit):
+        r.stage_invalid_run("again")
+    with pytest.raises(SystemExit):
+        r.stage_recompute("after invalid")
+
+
+class OraclePool:
+    """u_oracle_job-shaped outputs for real RMeasurers over UPool + VCache; the pair key travels in the odour name
+    ("G|<key>" E-grid, "E|<key>" E0); the z and edit each job received are recorded."""
+
+    def __init__(self, plan):
+        self.n_workers, self.plan, self.jobs, self.z, self.edits = 4, plan, 0, {}, set()
+
+    def run_jobs(self, fn, kws):
+        assert fn is UM.u_oracle_job
+        out = []
+        for kw in kws:
+            self.jobs += 1
+            lever = UM.is_u_edit(kw["edit"])
+            kind, key = next(iter(kw["odor_x"])).split("|", 1)
+            cond = "L" if lever else ("C" if kind == "G" else "E0")
+            self.z[cond] = kw["z"]
+            self.edits.add(kw["edit"])
+            flags = self.plan.get(("judge", kw["edit"]), {}).get(key, (False, True, False))
+            out.append(fake_oracle(*flags, sha="sha-V" if lever else "sha-C", edges=2 if lever else 0,
+                                   edit=kw["edit"], n_rep=len(kw["report_seeds"]), n_act=len(kw["act_seeds"])))
+        return out
+
+
+def test_real_cache_round_trip_seals_and_reads(w):
+    for r in w.judge:
+        r["odor_x"], r["odor_x_e0"] = {f"G|{key_of(r)}": 1.0}, {f"E|{key_of(r)}": 1.0}
+    plan = w.pass_plan(n=14, c=8, f_a=3)
+    through(w, w.scripted(plan=plan)).stage_measurement_started()
+    pool, cache, ms = OraclePool(plan), VCache(SPEC.cache_dir, UCODE), {}
+
+    def measure(z):
+        k = json.dumps({a: list(b) for a, b in sorted(z.items())})
+        return ms.setdefault(k, RMeasurer(UM.UPool(pool), cache, SPEC, w.ctx["params"], READOUT, z, TYPES, 100))
+    real = VR.Runner(measure, None, w.ctx, SPEC, code=CODE, tcode=TCODE, ucode=UCODE, pipeline={"key": "p" * 64},
+                     archive_root=w.archive)
+    for n in SPEC.cond_names:
+        assert real.stage_jm(n)["n_pairs"] == 64
+    assert pool.jobs == 192 and pool.edits == {LEVER_V, "none"}
+    assert pool.z["L"] == {k: list(v) for k, v in ZV.items()} and pool.z["C"] == pool.z["E0"] == {
+        k: list(v) for k, v in Z.items()}
+    seal = real.stage_seal()
+    assert seal["status"] == "SEALED" and seal["reasons"] == [], seal["reasons"][:3]
+    out = real.stage_judge()
+    assert (out["status"], out["band"], out["n"], out["c"], out["F_a"]) == ("READ", "SELECTED", 14, 8, 3)
+
+
+WATCH = {"judgement_rows", "_judgement_rows", "judge_seeds", "judge_act_seeds", "judge_select_seeds",
+         "judge_report_seeds", "v_set", "set_odours", "set_e0_odours", "_checked", "_set_call"}
+ALLOWED = {"v_spec.py": {None, "judge_seeds"},
+           "v_pairs.py": {"_checked", "judgement_rows", "set_odours", "set_e0_odours", "v_set"},
+           "v_runner.py": {"build_ctx", "_set_call", "_judgement_rows", "stage_set", "stage_kc_band",
+                           "stage_measurement_started", "stage_jm", "stage_seal", "_read", "_cost"}}
+
+
+def _owners(tree) -> set:
+    out = set()
+
+    def visit(node, fn):
+        for ch in ast.iter_child_nodes(node):
+            if ((isinstance(ch, ast.Name) and ch.id in WATCH) or (isinstance(ch, ast.Attribute) and ch.attr in WATCH)
+                    or (isinstance(ch, ast.Constant) and ch.value in WATCH)):
+                out.add(fn)
+            visit(ch, ch.name if isinstance(ch, (ast.FunctionDef, ast.AsyncFunctionDef)) else fn)
+    visit(tree, None)
+    return out
+
+
+def test_only_the_judgement_stages_name_the_judgement_set():
+    files = sorted((ROOT / "flymon/brain").glob("v_*.py")) + [ROOT / "scripts/run_v.py"]
+    for p in files:
+        owners = _owners(ast.parse(p.read_text()))
+        assert owners <= ALLOWED.get(p.name, set()), (p.name, owners)
+
+
+def test_v_defines_no_job_or_measurer_and_loads_no_code_by_path():
+    """V.9.5 P1-3: V measures only through U's measurement file (unchanged); no V file defines a job, rig, measurer or
+    cache copy (only VCache, overriding put) and none loads code by path."""
+    copies = {"u_kc_activity_job", "u_arm_job", "u_oracle_job", "u_ref_job", "u_rest_job", "u_rig", "u_engine",
+              "apply_u_edit", "UPool", "UZMeasurer", "kc_activity_job", "r_arm_job", "r_oracle_job", "RMeasurer",
+              "RCache", "ECache", "q_oracle_job", "arm_job", "q_rig", "reference_job", "rest_job", "engine_for",
+              "apply_q_edit", "apply_csc_edit", "t_ref_job", "t_rest_job", "z_engine", "ZMeasurer"}
+    for p in sorted((ROOT / "flymon/brain").glob("v_*.py")) + [ROOT / "scripts/run_v.py"]:
+        tree = ast.parse(p.read_text())
+        defs = {n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.ClassDef))}
+        assert not defs & copies, (p.name, defs & copies)
+        names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)} | {
+            a.name for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom)) for a in n.names}
+        assert not names & {"importlib", "exec", "spec_from_file_location", "runpy"}, p.name
+    assert not list((ROOT / "flymon/brain").glob("v_measure*.py"))
+
+
+def _cli():
+    spec = importlib.util.spec_from_file_location("run_v_for_test", ROOT / "scripts/run_v.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_cli_argument_refusals_and_exit_codes(tmp_path, monkeypatch):
+    cli = _cli()
+    monkeypatch.chdir(tmp_path)
+    for argv in (["--stage", "reuse", "--condition", "L"], ["--stage", "jm"], ["--stage", "recompute"],
+                 ["--stage", "smoke", "--note", "x"], ["--stage", "set", "--rerun-after-invalid"], [],
+                 ["--stage", "reuse"]):                                   # the last: wrong cwd
+        assert cli.main(argv) == 2, argv
+    for st in ("reuse", "path", "kc_input", "set", "z", "kc_band", "even", "gate2"):
+        assert cli.exit_code(st, {"outcome": "PASS"}) == 0 and cli.exit_code(st, {"outcome": "INVALID"}) == 5
+    for st, o in (("reuse", "STOP_REUSE"), ("path", "STOP_V_PATH_REPRO"), ("kc_input", "STOP_V_PATH_REPRO"),
+                  ("set", "STOP_SET_SHORT"), ("z", "STOP_Z_DEGENERATE"), ("kc_band", "STOP_STRENGTH_LEVER"),
+                  ("kc_band", "STOP_V_PATH_REPRO"), ("even", "STOP_EVEN_REPRO"), ("even", "STOP_EVEN_PUNISH"),
+                  ("even", "STOP_EVEN_LOW_LEVER"), ("gate2", "STOP_PUNISH_WEAKENED")):
+        assert cli.exit_code(st, {"outcome": o}) == 3, (st, o)
+    assert cli.exit_code("smoke", {"problems": []}) == 0 and cli.exit_code("smoke", {"problems": ["x"]}) == 6
+    for st in ("oc", "gate2_oc", "measurement_started"):
+        assert cli.exit_code(st, {}) == 0
+    assert cli.exit_code("seal", {"status": "SEALED"}) == 0 and cli.exit_code("seal", {"status": "INVALID"}) == 6
+    assert cli.exit_code("judge", {"status": "READ"}) == 0 and cli.exit_code("judge", {"status": "NOT_READ"}) == 6
+    assert set(cli.POOL_STAGES) == {"path", "kc_input", "kc_band", "even", "smoke", "gate2", "jm"}
+    assert set(cli.STAGES) == {s.split(":")[0] for s in VR.ORDER} | {"recompute", "invalid_run"}
+    assert set(cli.GATE_STAGES) == set(VR.GATES)
+    assert "if __name__ == \"__main__\":" in (ROOT / "scripts/run_v.py").read_text()
+
+
+def test_cli_measure_factory_builds_rmeasurers_over_upool_and_vcache_only(tmp_path, monkeypatch):
+    from flymon.brain.config import Params
+    from flymon.brain.v_spec import SPEC as V_SPEC
+    cli = _cli()
+    monkeypatch.chdir(tmp_path)
+    ctx = dict(params=Params(), readout=READOUT, types=TYPES, n_kc=100)
+    measure = cli.make_measure("even", UCODE, None, ctx)
+    m_h4, m_v = measure(Z), measure(ZV)
+    assert measure({k: list(v) for k, v in Z.items()}) is m_h4 and m_v is not m_h4 and m_v.cache is m_h4.cache
+    for m in (m_h4, m_v):
+        assert isinstance(m, RMeasurer) and type(m.cache) is VCache and m.spec is V_SPEC
+        assert isinstance(m.pool, UM.UPool) and m.cache.root == V_SPEC.cache_dir and m.cache.code == UCODE
+    m_v.cache.put("r_oracle", {"act_seeds": [500], "edit": LEVER_V}, {"x": 1}, [Params()])
+    written = [p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*") if p.is_file()]
+    assert written and all(p.startswith(v_store.ALLOWED_DIR + "cache/r_oracle/") for p in written), written
+    sm = cli.make_measure("smoke", UCODE, None, ctx)(Z)
+    assert sm.cache.root == V_SPEC.smoke_cache_dir and sm.cache.root.startswith(v_store.ALLOWED_DIR)
+
+
+def test_hashed_and_decision_files():
+    from flymon.brain.r_measure import R_MEASURE_FILES
+    from flymon.brain.t_measure import T_MEASURE_FILES
+    from flymon.brain.u_measure import U_MEASURE_FILES
+    from flymon.brain.u_runner import U_HASHED_FILES
+    assert set(VR.V_PIPELINE_FILES) == {f"flymon/brain/v_{n}.py" for n in
+                                        ("spec", "pairs", "store", "records", "rules", "runner")} | {"scripts/run_v.py"}
+    assert set(U_HASHED_FILES) | set(VR.V_PIPELINE_FILES) <= set(VR.V_HASHED_FILES)
+    assert "results/summary/u_lever.json" in VR.V_HASHED_FILES
+    assert set(VR.DECISION_FILES) == (set(VR.V_HASHED_FILES) - set(R_MEASURE_FILES) - set(T_MEASURE_FILES)
+                                      - set(U_MEASURE_FILES))
+    assert [f for f in VR.V_HASHED_FILES if not (ROOT / f).exists()] == []
