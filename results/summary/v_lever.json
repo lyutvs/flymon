@@ -4665,6 +4665,178 @@
   "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
   "written_at": "2026-10-04T11:29:17.123628+00:00"
  },
+ "smoke": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "cost": {
+   "gate2_h": 0.2877559484027895,
+   "jm_per_condition_h": 0.4510330765104542,
+   "note": "rough: smoke wall time x worker rounds x seed ratio"
+  },
+  "detail_path": "results/v/smoke.json",
+  "git": {
+   "commit": "28833ed32730706dd2049610bfbb257cfd98dbe9",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "oracle": {
+   "C": {
+    "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+    "edit": "none",
+    "edit_edges": [
+     0
+    ],
+    "jobs": 2,
+    "kc_median": 0.049089566929133854,
+    "reasons": [],
+    "saturation": {
+     "cap_hz": 500.0,
+     "max": 41.666666666666664,
+     "median": 4.166666666666667,
+     "n": 24,
+     "q95": 38.999999999999986,
+     "share": {
+      "0.5": 0.0,
+      "0.8": 0.0
+     }
+    },
+    "wall_s": 114.2236616659211,
+    "z": {
+     "A": [
+      10.78125,
+      9.412096743243064
+     ],
+     "P": [
+      26.25,
+      19.30889259728101
+     ]
+    }
+   },
+   "E0": {
+    "csc_sha256": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+    "edit": "none",
+    "edit_edges": [
+     0
+    ],
+    "jobs": 2,
+    "kc_median": 0.058809055118110236,
+    "reasons": [],
+    "saturation": {
+     "cap_hz": 500.0,
+     "max": 73.33333333333333,
+     "median": 34.166666666666664,
+     "n": 24,
+     "q95": 64.66666666666664,
+     "share": {
+      "0.5": 0.0,
+      "0.8": 0.0
+     }
+    },
+    "wall_s": 118.39618258399423,
+    "z": {
+     "A": [
+      10.78125,
+      9.412096743243064
+     ],
+     "P": [
+      26.25,
+      19.30889259728101
+     ]
+    }
+   },
+   "L": {
+    "csc_sha256": "2d359b8b6947d542348b658db977e1edbe0db5919e7f4b1187598cb10ef1253a",
+    "edit": "u_apl_mbon05_x0.0+chain_entry",
+    "edit_edges": [
+     2
+    ],
+    "jobs": 2,
+    "kc_median": 0.04466043307086614,
+    "reasons": [],
+    "saturation": {
+     "cap_hz": 500.0,
+     "max": 120.0,
+     "median": 68.33333333333333,
+     "n": 24,
+     "q95": 119.5,
+     "share": {
+      "0.5": 0.0,
+      "0.8": 0.0
+     }
+    },
+    "wall_s": 114.11945762508549,
+    "z": {
+     "A": [
+      16.916666666666668,
+      12.483878492769072
+     ],
+     "P": [
+      80.16666666666667,
+      29.775432639827233
+     ]
+    }
+   }
+  },
+  "p": {
+   "C": {
+    "csc_sha256": [
+     "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5"
+    ],
+    "edit_edges": [
+     0
+    ],
+    "label": "LEARNS_CONFIRMATORY",
+    "n_rows": 24,
+    "outcome": "JUDGED",
+    "reasons": []
+   },
+   "L": {
+    "csc_sha256": [
+     "2d359b8b6947d542348b658db977e1edbe0db5919e7f4b1187598cb10ef1253a"
+    ],
+    "edit_edges": [
+     2
+    ],
+    "label": "LEARNS_CONFIRMATORY",
+    "n_rows": 24,
+    "outcome": "JUDGED",
+    "reasons": []
+   }
+  },
+  "p_wall_s": 517.9607071250211,
+  "pairs": [
+   "b|0|Surf vs Chansey|Surf vs Rhydon",
+   "b|14|Mega Drain vs Nidoking|Mega Drain vs Kangaskhan"
+  ],
+  "pipeline_key": "f575d783e8747a09f3abc4a67667d54767cc44b7a88736073ae3ff8f56b4bd34",
+  "problems": [],
+  "seeds": {
+   "oracle": {
+    "act": [
+     24609002,
+     24609003
+    ],
+    "report": [
+     24609006,
+     24609007,
+     24609008
+    ],
+    "select": [
+     24609004,
+     24609005
+    ]
+   },
+   "p": [
+    25409100,
+    25409101,
+    25409102,
+    25409103
+   ]
+  },
+  "stage": "smoke",
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "written_at": "2026-10-04T12:26:01.317949+00:00"
+ },
  "z": {
   "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
   "git": {
