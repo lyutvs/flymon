@@ -202,6 +202,9 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   끝점 재현(f = 1 = T 편집 없음, f = 0 = T 지렛대, 비트 일치)은 통과했고, 가드 스캔 9점에서 f 0.6–0.9가 MBON13 가드를 경계값(Δ 5.0)으로 넘었다(f ≤ 0.5는 Δ 2–4).
   검사한 f {0.6, 0.7, 0.8} 모두 T 세트 냄새 4–5개의 KC 활성 중앙값이 0.03 아래(최소 0.019)라 KC 대역에서 떨어졌다 — **편집 없는 엔진도 같은 냄새 4개가 대역 밖**이라 f가 아니라 T 세트 냄새 입력에서 온 STOP이다.
   기록(판정 아님): 기전 대조의 고정 읽기는 출력 차단 '사슬 비지지'(D_block 6.5 대 D_none 5.0), 사슬 진입부 차단 '사슬 지지'(MBON13 Δ 16.0)로 엇갈렸다. 판정 세트의 오라클은 재지 않아 미사용으로 남는다. 다음은 사용자 결정이다.
+- **판정 SELECTED(조합 지렛대, 2026-10-05, 부록 V.10)**: APL→MBON05 2간선 제거와 MBON05→MBON09/MBON11/MBON01 11간선 제거를 함께 한 모델(커넥톰 간선 13개 제거)을, 편집 없는 엔진과 조합 엔진 둘 다에서 KC 입력으로 거른 넓힌 풀 새 세트(생성원 턴 0–305)에서 엔진별 z로 한 번 판정했다.
+  지렛대 **16/21** 대 지렛대 없음 **6/21**, F_a **2/43**(기준 경계값), 처벌 가드 통과((b) 순감소 −2, (a) 0), 관문 ② 비 h4 z 1.019 · 0.942, z_V 0.773 · 0.704, 짝수 15/21 → **SELECTED**. 오른 것은 주로 보상 통과((b) 8 → 21)이고 처벌 통과는 줄지 않았다.
+  귀결은 넓힌 풀·엔진별 z에서 M2 시험 가능성이 섰다는 것까지다 — 지렛대는 U 기전 기록을 보고 골랐고(다섯 번째 시도), 결과는 이 64쌍 조건부이며(군집 모형 null 0.374), POOL 배틀 과제의 F v4 학습 시험을 이것만으로 정당화하지 않는다. 다음은 사용자 결정이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -343,6 +346,15 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   the band**, so the stop comes from T's set odour inputs, not from f. Recorded, not judged: the fixed mechanism readings
   disagree (output block 'chain not supported', D_block 6.5 vs D_none 5.0; chain-entry cut 'chain supported', MBON13
   delta 16.0). The judgement set's oracle was not measured and stays unused. Next is the user's decision.
+- **Combined lever: judgement SELECTED (2026-10-05, appendix V.10).** A model with the two APL->MBON05 edges and the
+  eleven MBON05->MBON09/MBON11/MBON01 edges removed (13 connectome edges) was judged once, with per-engine z, on a new
+  widened-pool set filtered by KC input on both the unedited and the combined engine (generator turns 0-305). Lever
+  **16/21** vs no lever **6/21**, F_a **2/43** (at the bar), punishment guard passed ((b) net drop -2, (a) 0), gate-2
+  ratios h4 z 1.019 / 0.942 and z_V 0.773 / 0.704, even 15/21 -> **SELECTED**. The gain is mostly reward passes ((b)
+  8 -> 21); punishment passes did not fall. The consequence stops at M2 testability on the widened pool with per-engine
+  z: the lever was chosen after seeing U's mechanism records (fifth attempt), the result is conditional on these 64
+  pairs (cluster-model null 0.374), and it does not by itself justify a POOL F v4 learning test. Next is the user's
+  decision.
 
 ## 실행
 
