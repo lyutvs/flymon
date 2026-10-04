@@ -451,5 +451,125 @@
   "t_summary": "results/summary/t_lever.json",
   "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
   "written_at": "2026-10-04T01:17:51.521323+00:00"
+ },
+ "set": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "git": {
+   "commit": "3b83824c72b7c9435c8c221af3ed5278db0cb287",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "outcome": "PASS",
+  "pipeline_key": "d6048afd9fcccda1e7d2900b02fef62c30bf72fc48bae1cfb7dc459fb0d30189",
+  "set": {
+   "all_off_pool": true,
+   "cap_fails": [],
+   "clusters_a": [
+    [
+     "FIRE*",
+     7
+    ],
+    [
+     "FLYING+NORMAL*",
+     8
+    ],
+    [
+     "FLYING+POISON*",
+     2
+    ],
+    [
+     "FLYING+WATER*",
+     1
+    ],
+    [
+     "GRASS*",
+     5
+    ],
+    [
+     "GROUND*",
+     9
+    ],
+    [
+     "POISON*",
+     9
+    ],
+    [
+     "ROCK+WATER*",
+     2
+    ]
+   ],
+   "clusters_b": [
+    [
+     "FIRE*",
+     "WATER",
+     1
+    ],
+    [
+     "GRASS+POISON",
+     "FIRE*",
+     3
+    ],
+    [
+     "GRASS+POISON",
+     "GROUND*",
+     3
+    ],
+    [
+     "GROUND*",
+     "NORMAL",
+     3
+    ],
+    [
+     "GROUND*",
+     "POISON*",
+     3
+    ],
+    [
+     "NORMAL",
+     "ROCK+WATER*",
+     1
+    ],
+    [
+     "POISON*",
+     "NORMAL",
+     1
+    ],
+    [
+     "ROCK+WATER*",
+     "NORMAL",
+     2
+    ],
+    [
+     "WATER",
+     "FLYING+NORMAL*",
+     4
+    ]
+   ],
+   "digest_e0_a": "e31b552636bc237f1d9fc85034432849b8a922e0d8b5fd17b1f87274b725e989",
+   "digest_e0_b": "8c9729bfba529a7bea8d783a629c1c1f54380af79ffc8032e46f657d669a0c71",
+   "digest_keys": "37dde1ca0c9d0bf33772b42359e45257726b46d552837ffb4cde75e8beb03c97",
+   "e1_clashes": [],
+   "last_turn": 103,
+   "last_turn_a": 103,
+   "last_turn_b": 17,
+   "n_a": 43,
+   "n_b": 21,
+   "n_combos": 1986,
+   "n_odours": 55,
+   "n_opp": 127,
+   "skipped": {
+    "cap": 9,
+    "collision": 0,
+    "glom_dup": 0,
+    "in_set": 48,
+    "pool_only": 57,
+    "used": 164
+   },
+   "status": "OK"
+  },
+  "stage": "set",
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "written_at": "2026-10-04T01:32:45.472550+00:00"
  }
 }
