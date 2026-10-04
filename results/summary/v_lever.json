@@ -2748,5 +2748,271 @@
   "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
   "u_measure_key_u": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
   "written_at": "2026-10-04T11:00:46.397040+00:00"
+ },
+ "set": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "git": {
+   "commit": "7dc199dc7071235477ad07498b8b63fe951095b3",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "kc_record": {
+   "candidate_rows_dropped": 568,
+   "dropped": [
+    "ELECTRIC|FLYING+ICE",
+    "FIRE|FIGHTING",
+    "FIRE|GRASS",
+    "GRASS|GRASS",
+    "GROUND|POISON",
+    "NORMAL|FIRE",
+    "NORMAL|GROUND+ROCK",
+    "PSYCHIC|DRAGON",
+    "PSYCHIC|PSYCHIC+WATER",
+    "PSYCHIC|WATER",
+    "ROCK|GRASS",
+    "WATER|GRASS"
+   ],
+   "outside": {
+    "lever": [
+     "ELECTRIC|FLYING+ICE",
+     "GROUND|POISON",
+     "NORMAL|FIRE",
+     "NORMAL|GROUND+ROCK",
+     "PSYCHIC|DRAGON",
+     "PSYCHIC|PSYCHIC+WATER",
+     "PSYCHIC|WATER",
+     "ROCK|GRASS",
+     "WATER|GRASS"
+    ],
+    "none": [
+     "FIRE|FIGHTING",
+     "FIRE|GRASS",
+     "GRASS|GRASS",
+     "GROUND|POISON",
+     "NORMAL|FIRE",
+     "NORMAL|GROUND+ROCK",
+     "PSYCHIC|DRAGON",
+     "PSYCHIC|PSYCHIC+WATER",
+     "PSYCHIC|WATER",
+     "ROCK|GRASS",
+     "WATER|GRASS"
+    ]
+   },
+   "set_rows": {
+    "R": {
+     "n": 53,
+     "using_dropped": 4
+    },
+    "S": {
+     "n": 64,
+     "using_dropped": 4
+    },
+    "T": {
+     "n": 64,
+     "using_dropped": 13
+    }
+   }
+  },
+  "note": "V.9.5 P2-8: \ud310\uc815 \uc138\ud2b8\uc5d0 \ub300\ud55c \uc5b4\ub5a4 \uc624\ub77c\ud074 \uce21\uc815\ubcf4\ub2e4 \uba3c\uc800 \ucee4\ubc0b\ud55c\ub2e4.",
+  "odour_ids": [
+   "ELECTRIC|FLYING+NORMAL",
+   "ELECTRIC|FLYING+POISON",
+   "ELECTRIC|FLYING+ROCK",
+   "ELECTRIC|FLYING+WATER",
+   "ELECTRIC|GRASS",
+   "ELECTRIC|NORMAL",
+   "ELECTRIC|POISON",
+   "FIRE|FIRE",
+   "FIRE|FLYING+ICE",
+   "FIRE|GROUND",
+   "GRASS|FIRE",
+   "GRASS|FLYING+NORMAL",
+   "GRASS|FLYING+ROCK",
+   "GRASS|GROUND",
+   "GRASS|GROUND+ROCK",
+   "GRASS|NORMAL",
+   "GRASS|POISON",
+   "GRASS|ROCK+WATER",
+   "GROUND|DRAGON",
+   "GROUND|FIRE",
+   "GROUND|FLYING+ICE",
+   "GROUND|FLYING+NORMAL",
+   "GROUND|GROUND",
+   "GROUND|GROUND+ROCK",
+   "GROUND|NORMAL",
+   "GROUND|PSYCHIC+WATER",
+   "GROUND|ROCK+WATER",
+   "GROUND|WATER",
+   "NORMAL|DRAGON",
+   "NORMAL|FLYING+ICE",
+   "NORMAL|FLYING+NORMAL",
+   "NORMAL|FLYING+POISON",
+   "NORMAL|GROUND",
+   "NORMAL|POISON",
+   "NORMAL|PSYCHIC+WATER",
+   "NORMAL|ROCK+WATER",
+   "PSYCHIC|FIRE",
+   "PSYCHIC|FLYING+ICE",
+   "PSYCHIC|FLYING+NORMAL",
+   "PSYCHIC|FLYING+POISON",
+   "PSYCHIC|FLYING+ROCK",
+   "PSYCHIC|FLYING+WATER",
+   "PSYCHIC|GROUND",
+   "PSYCHIC|GROUND+ROCK",
+   "PSYCHIC|NORMAL",
+   "PSYCHIC|POISON",
+   "PSYCHIC|ROCK+WATER",
+   "ROCK|DRAGON",
+   "ROCK|FIRE",
+   "ROCK|POISON",
+   "ROCK|ROCK+WATER",
+   "ROCK|WATER",
+   "WATER|DRAGON",
+   "WATER|FIRE",
+   "WATER|FLYING+ICE",
+   "WATER|FLYING+NORMAL",
+   "WATER|FLYING+POISON",
+   "WATER|FLYING+ROCK",
+   "WATER|FLYING+WATER",
+   "WATER|GRASS+POISON",
+   "WATER|GROUND",
+   "WATER|GROUND+ROCK",
+   "WATER|NORMAL",
+   "WATER|POISON",
+   "WATER|PSYCHIC+WATER",
+   "WATER|ROCK+WATER"
+  ],
+  "outcome": "PASS",
+  "pipeline_key": "f575d783e8747a09f3abc4a67667d54767cc44b7a88736073ae3ff8f56b4bd34",
+  "set": {
+   "all_off_pool": true,
+   "cap_fails": [],
+   "clusters_a": [
+    [
+     "DRAGON*",
+     5
+    ],
+    [
+     "FIRE*",
+     4
+    ],
+    [
+     "FLYING+ICE*",
+     6
+    ],
+    [
+     "FLYING+NORMAL*",
+     5
+    ],
+    [
+     "FLYING+POISON*",
+     3
+    ],
+    [
+     "FLYING+ROCK*",
+     3
+    ],
+    [
+     "FLYING+WATER*",
+     3
+    ],
+    [
+     "GROUND*",
+     5
+    ],
+    [
+     "POISON*",
+     4
+    ],
+    [
+     "ROCK+WATER*",
+     5
+    ]
+   ],
+   "clusters_b": [
+    [
+     "FIRE*",
+     "NORMAL",
+     1
+    ],
+    [
+     "FIRE*",
+     "WATER",
+     2
+    ],
+    [
+     "FLYING+NORMAL*",
+     "POISON*",
+     2
+    ],
+    [
+     "GRASS*",
+     "NORMAL",
+     1
+    ],
+    [
+     "GRASS+POISON",
+     "GROUND*",
+     1
+    ],
+    [
+     "GROUND+ROCK",
+     "FIRE*",
+     3
+    ],
+    [
+     "NORMAL",
+     "FIRE*",
+     3
+    ],
+    [
+     "NORMAL",
+     "FLYING+POISON*",
+     3
+    ],
+    [
+     "POISON*",
+     "GROUND+ROCK",
+     1
+    ],
+    [
+     "POISON*",
+     "NORMAL",
+     1
+    ],
+    [
+     "PSYCHIC+WATER",
+     "FLYING+NORMAL*",
+     3
+    ]
+   ],
+   "digest_e0_a": "8a51867960e39636a6f839cc3a26d492c934eaf2427a6210653edf1128675702",
+   "digest_e0_b": "acaa023536468220a470377999751d25e6f1f6be6aa37deb478c9d8b762039c7",
+   "digest_keys": "755fd9d438c6eb036785a59763a1a32af463f1e08fbfa34a1aa5cb0cc63d2400",
+   "e1_clashes": [],
+   "last_turn": 305,
+   "last_turn_a": 305,
+   "last_turn_b": 30,
+   "n_a": 43,
+   "n_b": 21,
+   "n_combos": 1986,
+   "n_odours": 66,
+   "n_opp": 127,
+   "skipped": {
+    "cap": 19,
+    "collision": 0,
+    "e1": 0,
+    "glom_dup": 0,
+    "in_set": 92,
+    "kc_input": 84,
+    "pool_only": 171,
+    "used": 742
+   },
+   "status": "OK"
+  },
+  "stage": "set",
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "written_at": "2026-10-04T11:29:17.123628+00:00"
  }
 }
