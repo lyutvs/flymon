@@ -491,3 +491,174 @@ class Runner:
                          "않는다.")
         self._write("even", body)
         return body
+
+    # ---- smoke (V.3 8) -------------------------------------------------------------------------------------------
+    def stage_smoke(self) -> dict:
+        doc = self._require("smoke")
+        sp = self.spec
+        sm = smoke(sp)
+        m = self.m_h4
+        c1, st = self.ctx["p_inputs"](sm.p, True)
+        items = p_items(sm.p, st, sp.lever_edit) + p_items(sm.p_c, st, sp.no_edit)
+        rows = m.arms(items, self.ctx["readout"], sm.p.o.n.h3.punish_type, "smoke", sm.p.o.n)
+        p_wall = m.last_wall_s
+        p = {}
+        for n, pspec, edit in (("L", sm.p, sp.lever_edit), ("C", sm.p_c, sp.no_edit)):
+            rs = [r for r in rows if r["edit"] == edit]
+            res = p_judge(rs, self.ctx["z"], c1["c1"], pspec)
+            p[n] = dict(outcome=res["outcome"], label=res["label"], reasons=list(res.get("reasons", [])),
+                        edit_edges=sorted({int(r["r"]["edit_edges"]) for r in rs}),
+                        csc_sha256=sorted({r["csc_sha256"] for r in rs}), n_rows=len(rs))
+        b = [r for r in self.ctx["even_rows"] if r["axis"] == "b"]
+        sel = [b[i] for i in sm.smoke_pairs]
+        orc = {}
+        for cond in sm.conditions():
+            mc = self._m_for(cond.name, doc)
+            got = mc.oracle(sel, cond, "smoke", sm.even_seeds())
+            s = r_records.cond_summary(got, cond, sm, self._z_for(cond.name, doc), [row_key(r) for r in sel],
+                                       sm.even_seeds())
+            orc[cond.name] = dict(reasons=s["reasons"], edit_edges=s["edit_edges"], csc_sha256=s["csc_sha256"],
+                                  edit=cond.edit, kc_median=s["kc_median"], saturation=s["saturation"],
+                                  wall_s=mc.last_wall_s, jobs=mc.last_jobs, z={k: list(v) for k, v in mc.z.items()})
+        detail = dict(p=p, oracle=orc, pairs=[row_key(r) for r in sel], p_wall_s=p_wall,
+                      seeds=dict(p=list(sm.p.seeds), oracle=sm.even_seeds()))
+        v_store.write_json(sp.smoke_detail, detail, self.plist)
+        body = dict(detail, problems=self._smoke_problems(p, orc, doc), cost=self._cost(p_wall, orc, sm),
+                    detail_path=sp.smoke_detail)
+        self._write("smoke", body)
+        return body
+
+    def _smoke_problems(self, p, orc, doc) -> list:
+        sp = self.spec
+        nl, nc, ne = sp.cond_names
+        repro_sha = doc["reuse"]["records"]["repro_csc_sha256_none"]
+        lever_sha = doc["path"]["sides"]["lever"]["csc_sha256"]
+        bad = []
+        if lever_sha != [sp.sha_combined]:
+            bad.append(f"block path's L_V CSC {lever_sha} is not {sp.sha_combined}")
+        if p["L"]["edit_edges"] != [sp.lever_edges] or p["L"]["csc_sha256"] != lever_sha:
+            bad.append(f"P arms L: edges {p['L']['edit_edges']} on CSC {p['L']['csc_sha256']}, declared "
+                       f"{sp.lever_edges} on {lever_sha}")
+        if p["C"]["edit_edges"] != [0] or p["C"]["csc_sha256"] != [repro_sha]:
+            bad.append(f"P arms C: edges {p['C']['edit_edges']} on CSC {p['C']['csc_sha256']}, declared none on R's "
+                       f"repro")
+        for n in ("L", "C"):
+            if p[n]["outcome"] == P_INVALID:
+                bad.append(f"P arms {n}: INVALID {p[n]['reasons'][:2]}")
+        if orc[nl]["edit"] != sp.lever_edit or orc[nl]["edit_edges"] != [sp.lever_edges]:
+            bad.append(f"L: edit {orc[nl]['edit']} / edges {orc[nl]['edit_edges']}")
+        if [orc[nl]["csc_sha256"]] != lever_sha:
+            bad.append(f"L: CSC {orc[nl]['csc_sha256']} is not block path's L_V {lever_sha}")
+        for n in (nc, ne):
+            if orc[n]["edit_edges"] != [0]:
+                bad.append(f"{n}: edges {orc[n]['edit_edges']}, declared none")
+        if orc[nl]["csc_sha256"] == orc[nc]["csc_sha256"]:
+            bad.append("L and C ran on the same CSC weights")
+        if not (orc[nc]["csc_sha256"] == orc[ne]["csc_sha256"] == repro_sha):
+            bad.append(f"C / E0 CSC {orc[nc]['csc_sha256']} / {orc[ne]['csc_sha256']} is not R's repro {repro_sha}")
+        if _ztuple(orc[nl]["z"]) != self._z_v(doc):
+            bad.append(f"L's oracle ran on z {orc[nl]['z']}, not block z's z_V")
+        for n in (nc, ne):
+            if _ztuple(orc[n]["z"]) != _ztuple(self.ctx["z"]):
+                bad.append(f"{n}'s oracle ran on z {orc[n]['z']}, not block h4's")
+        for n in sp.cond_names:
+            if orc[n]["reasons"]:
+                bad.append(f"{n}: {orc[n]['reasons'][:2]}")
+        return bad
+
+    def _cost(self, p_wall, orc, sm) -> dict:
+        """A rough estimate from smoke wall times: rounds of workers × the seed ratio (recorded, never a rule)."""
+        sp = self.spec
+        per = len(sp.p.directions) * len(sp.p.arms) * 2
+        p_h = p_wall / _rounds(per * len(sm.p.seeds), sm.workers) * _rounds(per * len(sp.p.seeds), sp.workers) / 3600
+        o_round = max(v["wall_s"] for v in orc.values()) / _rounds(len(sm.smoke_pairs), sm.workers)
+        n_sm = sum(len(v) for v in sm.even_seeds().values())
+        jm = sum(len(v) for v in sp.judge_seeds().values()) / n_sm
+        return dict(gate2_h=p_h, jm_per_condition_h=o_round * jm * _rounds(sp.n_b + sp.n_a, sp.workers) / 3600,
+                    note="rough: smoke wall time x worker rounds x seed ratio")
+
+    # ---- the operating characteristics (V.6) — before gate ② ----------------------------------------------------
+    def stage_oc(self) -> dict:
+        """S.6's independent model (n_b 21 · n_a 43, V's notes) and T's cluster model on V's set clusters (block set),
+        written to results/v/oc_cluster.json; the block records its file sha and table sha (V.9.5 P2-9)."""
+        doc = self._require("oc")
+        sp, s = self.spec, doc["set"]["set"]
+        cl = v_rules.oc_cluster(s["clusters_b"], s["clusters_a"])
+        p = v_store.write_json(sp.oc_cluster_out, cl, self.plist)
+        body = dict(independent=v_rules.oc(sp), cluster={k: v for k, v in cl.items() if k != "rows"},
+                    cluster_values=v_rules.cluster_values(cl), cluster_path=sp.oc_cluster_out,
+                    cluster_file_sha256=sha256_file(p))
+        self._write("oc", body)
+        return body
+
+    def stage_gate2_oc(self) -> dict:
+        """S.9.7's gate ② OC on block h4's z (V.6), from P's committed block, before gate ②."""
+        self._require("gate2_oc")
+        pairs, point = P_SPEC.pairs(), [float(v) for v in P_SPEC.o.o2_point]
+        wanted = {(d, a, int(s)) for d in P_SPEC.directions for a in P_SPEC.arms for s in P_SPEC.seeds}
+        ref = self.ctx["p_ref"](wanted)
+        if set(ref) != wanted:
+            refuse(f"P's committed cache {self.spec.p_cache_dir} lacks {sorted(wanted - set(ref))[:3]}")
+        rows = [dict(ref[k], direction=k[0], x=pairs[k[0]][0], y=pairs[k[0]][1], point=point) for k in sorted(wanted)]
+        body = t_records.gate2_oc(rows, self.ctx["z"], P_SPEC, self.spec)
+        self._write("gate2_oc", body)
+        return body
+
+    # ---- gate ② (V.3 10, V.9.2) ----------------------------------------------------------------------------------
+    def stage_gate2(self, rerun: bool = False) -> dict:
+        """S's gate ② on 25_400_000+i with P_L(V) and P_C, both labelled on block h4's z; then V.9.2's z_V ratio.
+        rerun: only an INVALID gate2 block, only once, only with a pipeline key other than the INVALID run's."""
+        prior = None
+        if rerun:
+            doc = self._require("gate2", allow_own=True)
+            blk = doc.get("gate2")
+            if GATE2_INVALID in doc:
+                refuse("gate2 was rerun once already (V.3 10, R.5)")
+            if not blk or blk.get("outcome") != v_rules.INVALID:
+                refuse("--rerun-after-invalid needs an INVALID gate2 block (V.3 10)")
+            if blk.get("pipeline_key") == self.pipeline_key:
+                refuse("the pipeline key equals the INVALID run's: fix the code first (V.3 10)")
+            prior = blk
+        else:
+            doc = self._require("gate2")
+        sp, z = self.spec, self.ctx["z"]
+        z_v, z_h4 = self._z_v(doc), _ztuple(z)
+        m = self.m_h4
+        c1, st = self.ctx["p_inputs"](sp.p, False)
+        items = p_items(sp.p, st, sp.lever_edit) + p_items(sp.p_c, st, sp.no_edit)
+        rows = m.arms(items, self.ctx["readout"], sp.p.o.n.h3.punish_type, "gate2", sp.p.o.n)
+        rows_l = [r for r in rows if r["edit"] == sp.lever_edit]
+        rows_c = [r for r in rows if r["edit"] == sp.no_edit]
+        res_l = p_judge(rows_l, z, c1["c1"], sp.p)
+        res_c = p_judge(rows_c, z, c1["c1"], sp.p_c)
+        ratio, ratio_zv, why = None, None, []
+        if res_l.get("outcome") != P_INVALID and res_c.get("outcome") != P_INVALID:
+            try:
+                ratio = t_records.ratio(rows_l, rows_c, z, sp)
+                ratio_zv = v_records.ratio_two_z(rows_l, rows_c, z_v, z_h4, sp)
+            except ValueError as e:
+                why.append(str(e))
+        dec = v_rules.gate2(res_l, res_c, ratio, ratio_zv, sp) if not why else dict(outcome=v_rules.INVALID,
+                                                                                    reasons=why)
+        edges_l = sorted({int(r["r"]["edit_edges"]) for r in rows_l})
+        edges_c = sorted({int(r["r"]["edit_edges"]) for r in rows_c})
+        if (edges_l != [sp.lever_edges] or edges_c != [0]) and dec["outcome"] != v_rules.INVALID:
+            dec = dict(outcome=v_rules.INVALID, reasons=[f"edges L {edges_l} / C {edges_c}, declared "
+                                                         f"{sp.lever_edges} / 0"])
+        zl = (None if dec["outcome"] == v_rules.INVALID
+              else t_records.p_zlever(rows_l, z_v, c1["c1"], res_c, sp))
+        body = dict(dec, ratio=ratio, ratio_z_V=ratio_zv, p_judgement_L=res_l, p_judgement_C=res_c, p_L_on_z_V=zl,
+                    c1_source=c1, edit_edges_L=edges_l, edit_edges_C=edges_c, seeds=list(sp.p.seeds),
+                    rerun_of=(prior or {}).get("written_at"), wall_s=m.last_wall_s, jobs=m.last_jobs)
+        if prior is None:
+            return self._write("gate2", body)
+        return self._write_rerun(prior, body)
+
+    def _write_rerun(self, prior: dict, body: dict) -> dict:
+        doc = self._doc()
+        if GATE2_INVALID in doc or doc.get("gate2") != prior:
+            refuse("the summary changed during gate ②'s rerun; nothing written")
+        block = self._stamp("gate2", body)
+        doc[GATE2_INVALID], doc["gate2"] = prior, block
+        v_store.write_json(self.summary_path, doc, self.plist)
+        return block
