@@ -80,6 +80,16 @@ def decision_key() -> dict:
     return _files_key(DECISION_FILES)
 
 
+def _sha(obj) -> str | None:
+    return None if obj is None else hashlib.sha256(canonical(obj).encode()).hexdigest()
+
+
+def decision_pins(doc: dict, f_star) -> dict:
+    """U.3 10: the z_f* scan point and the choose block, hashed into the seal's decision record (canonical JSON)."""
+    return dict(scan_f_star_sha256=_sha(_dig(doc, ("scan", "points", fk(f_star)))),
+                choose_sha256=_sha(doc.get("choose")))
+
+
 def refuse(msg: str, code: int = EXIT_REFUSE):
     print(f"refusing: {msg}", file=sys.stderr)
     raise SystemExit(code)
@@ -780,7 +790,7 @@ class Runner:
         status = u_rules.INVALID if v["invalid"] else (u_rules.NOT_READ if reasons else u_rules.SEALED)
         manifest = [dict(x, condition=n) for n in spf.cond_names for x in doc[f"jm:{n}"]["manifest"]]
         body = dict(status=status, reasons=reasons, invalid=v["invalid"], checks=v["checks"], manifest=manifest,
-                    n_files=len(manifest), archive=None, decision=decision_key(), seeds=seeds, f_star=spf.f,
+                    n_files=len(manifest), archive=None, decision=dict(decision_key(), **decision_pins(doc, spf.f)), seeds=seeds, f_star=spf.f,
                     z=dict(z_f_star=doc["scan"]["points"][fk(spf.f)]["z"],
                            z_h4={k: list(x) for k, x in _ztuple(self.ctx["z"]).items()}),
                     set=dict(digest_e0_b=spf.digest_e0_b, digest_e0_a=spf.digest_e0_a, digest_keys=spf.digest_keys,
@@ -835,7 +845,8 @@ class Runner:
                        alpha_fixed=t_records.alpha_fixed(raws[spf.cond_names[0]], C, keys, seeds,
                                                          _ztuple(self.ctx["z"]), spf),
                        z=dict(z_f_star=doc["scan"]["points"][fk(spf.f)]["z"],
-                              f_record=doc["scan"]["points"][fk(spf.f)]["record"], z_h4_reproduced=True),
+                              f_record=doc["scan"]["points"][fk(spf.f)]["record"],
+                              z_h4_reproduced=self._z_h4_reproduced(doc)),
                        choose=dict(kept=doc["choose"]["kept"], checked=doc["choose"]["checked"]),
                        contrast=doc["scan"]["contrast"]["readings"])
         return dict(out, status=u_rules.READ, sentence=u_rules.sentence(rb["band"], fields), records=records,
@@ -843,6 +854,13 @@ class Runner:
                     oc_cluster_sha256=doc["oc"]["cluster"]["sha256"],
                     p_labels=dict(L=doc["gate2"]["label_L"], C=doc["gate2"]["label_C"]),
                     p_ratio={d: ratio[d]["ratio"] for d in names}, k_even=k_even)
+
+    def _z_h4_reproduced(self, doc: dict) -> bool:
+        """From the reuse block: it passed and T's unedited z it recorded is block h4's z."""
+        rb = doc.get("reuse") or {}
+        nz = _dig(rb, ("records", "t_z", "none_z"))
+        return bool(rb.get("outcome") == u_rules.PASS and isinstance(nz, dict)
+                    and _ztuple(nz) == _ztuple(self.ctx["z"]))
 
     def stage_judge(self) -> dict:
         """Once (U.3 11). The marker is written before the band is computed. S.9.2 (U.5): with the marker and no judge
@@ -858,6 +876,12 @@ class Runner:
         if sealed != now:
             refuse(f"the decision code hash {now} is not the sealed {sealed}: the judgement reads only under the code "
                    f"it was sealed with (U.5)")
+        sd = doc["seal"].get("decision") or {}
+        pins = decision_pins(doc, doc["seal"].get("f_star"))
+        moved = [k for k, v in pins.items() if sd.get(k) is None or sd.get(k) != v]
+        if moved or self._f_star(doc) != float(doc["seal"].get("f_star")):
+            refuse(f"the sealed decision record ({', '.join(moved) or 'f_star'}) differs from the live scan / choose "
+                   f"blocks: the judgement reads only the f* and z_f* it was sealed with (U.3 10)")
         if Path(DONE_MARKER).exists():
             refuse(f"{DONE_MARKER} exists: a judge block was written once; a discarded block does not reopen the set")
         resumed = None

@@ -214,6 +214,53 @@ def test_judge_refuses_a_decision_file_changed_after_the_seal(w, monkeypatch):
     assert e.value.code == 2 and "judge" not in doc() and not Path(UR.JUDGE_MARKER).exists()
 
 
+def _edit_summary(fn):
+    d = doc()
+    fn(d)
+    Path(SPEC.summary).write_text(json.dumps(d))
+
+
+@pytest.mark.parametrize("edit", ["f_star", "z_f_star"])
+def test_judge_refuses_a_choose_or_scan_point_changed_after_the_seal(w, edit):
+    """U.3 10: the seal's decision hash covers the z_f* scan point and the choose block; judge refuses on change."""
+    r = _sealed(w)
+    seal = doc()["seal"]
+    assert seal["decision"]["choose_sha256"] and seal["decision"]["scan_f_star_sha256"]
+
+    def ch(d):
+        if edit == "f_star":
+            d["choose"]["f_star"] = 0.5
+        else:
+            d["scan"]["points"][UR.fk(0.6)]["z"]["A"][0] = 7.0
+    _edit_summary(ch)
+    with pytest.raises(SystemExit) as e:
+        r.stage_judge()
+    assert e.value.code == 2 and "judge" not in doc() and not Path(UR.JUDGE_MARKER).exists()
+
+
+def test_regeneration_refuses_a_scan_point_changed_after_the_mark(w, monkeypatch):
+    r = _sealed(w)
+    seen = []
+    orig = _kill_judge_write(monkeypatch, seen)
+    with pytest.raises(_Kill):
+        r.stage_judge()
+    monkeypatch.setattr(UR.u_store, "write_summary_block", orig)
+    _edit_summary(lambda d: d["scan"]["points"][UR.fk(0.6)]["z"]["P"].__setitem__(0, 81.0))
+    with pytest.raises(SystemExit) as e:
+        r.stage_judge()
+    assert e.value.code == 2 and "judge" not in doc() and not Path(UR.REREAD_MARKER).exists()
+
+
+@pytest.mark.parametrize("broken", [False, True])
+def test_z_h4_reproduced_reads_the_reuse_block(w, broken):
+    """records.z.z_h4_reproduced is read from the reuse block (T's unedited z = block h4's z), not a literal."""
+    r = _sealed(w)
+    if broken:
+        _edit_summary(lambda d: d["reuse"]["records"]["t_z"]["none_z"]["A"].__setitem__(0, 99.0))
+    out = r.stage_judge()
+    assert out["records"]["z"]["z_h4_reproduced"] is (not broken)
+
+
 def test_not_read_judge_returns_no_numbers_and_marks_the_read(w, monkeypatch):
     r = _sealed(w)
     monkeypatch.setattr(UR.u_rules, "read_band", lambda *a, **k: dict(band=UR.u_rules.NOT_READ, reason="COUNTS"))
