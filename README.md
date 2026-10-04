@@ -198,6 +198,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
 - **관문 STOP(엔진별 기준 집합 z, 2026-10-04, 부록 T.10 — STOP_Z_DEGENERATE, 판정 없음)**: z 정규화를 바로잡는 규칙(엔진 변형마다 H.3 기준 집합에서 자기 z)을 결과 전에 고정하고, 상대를 1세대 기본 폼으로 넓힌 새 세트에서 같은 지렛대를 판정하려 했다.
   편집 없는 엔진의 z는 블록 h4 값을 비트 단위로 재현했지만, 지렛대 아래에서 MBON13이 기준 집합 반응성 가드를 넘지 못했다(Δ 중앙값 6.0 → **1.0**, 0 비율 0.146 → **0.302**; MBON05 평균 26.25 → 77.5, σ 비 A 0.62 · P 1.58).
   기록(판정 아님): 이 지렛대는 MBON05를 약 3배 켜고 MBON13의 기준 집합 반응을 끈다 — R·S의 h4 z 판독은 이것을 가렸을 수 있다. T 세트는 측정하지 않아 미사용으로 남는다. 다음은 '부분 제거' 지렛대의 새 선언(부록 U, 사용자 결정)이다.
+- **관문 STOP(APL→MBON05 부분 제거 f, 2026-10-04, 부록 U.10 — STOP_NO_QUALIFIED_F, 판정 없음)**: APL→MBON05 2간선 가중치를 f배로 줄이는 지렛대를 엔진별 z로 T 세트에서 판정하려 했다.
+  끝점 재현(f = 1 = T 편집 없음, f = 0 = T 지렛대, 비트 일치)은 통과했고, 가드 스캔 9점에서 f 0.6–0.9가 MBON13 가드를 경계값(Δ 5.0)으로 넘었다(f ≤ 0.5는 Δ 2–4).
+  검사한 f {0.6, 0.7, 0.8} 모두 T 세트 냄새 4–5개의 KC 활성 중앙값이 0.03 아래(최소 0.019)라 KC 대역에서 떨어졌다 — **편집 없는 엔진도 같은 냄새 4개가 대역 밖**이라 f가 아니라 T 세트 냄새 입력에서 온 STOP이다.
+  기록(판정 아님): 기전 대조의 고정 읽기는 출력 차단 '사슬 비지지'(D_block 6.5 대 D_none 5.0), 사슬 진입부 차단 '사슬 지지'(MBON13 Δ 16.0)로 엇갈렸다. 판정 세트의 오라클은 재지 않아 미사용으로 남는다. 다음은 사용자 결정이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -331,6 +335,14 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   MBON05 mean 26.25 -> 77.5; SD ratios A 0.62, P 1.58). Recorded, not judged: the lever turns MBON05 up about threefold
   and switches off MBON13's reference-set response, which R's and S's h4-z readings may have hidden. T's set was not
   measured and stays unused. Next is a 'partial removal' lever declaration (appendix U, the user's decision).
+- **Partial APL->MBON05 removal f: gate stop STOP_NO_QUALIFIED_F, no judgement (2026-10-04, appendix U.10).** A lever
+  scaling the two APL->MBON05 edges by f was to be judged on T's set with per-engine z. The endpoint gate passed (f=1 =
+  T's unedited rows, f=0 = T's lever rows, bit for bit); in the 9-point guard scan f 0.6-0.9 passed the MBON13 guard at
+  the boundary (median delta 5.0; f <= 0.5 gave 2-4). All checked f {0.6, 0.7, 0.8} failed the KC band: 4-5 of T's set
+  odours had median KC activity below 0.03 (minimum 0.019) - and **the unedited engine has the same 4 odours outside
+  the band**, so the stop comes from T's set odour inputs, not from f. Recorded, not judged: the fixed mechanism readings
+  disagree (output block 'chain not supported', D_block 6.5 vs D_none 5.0; chain-entry cut 'chain supported', MBON13
+  delta 16.0). The judgement set's oracle was not measured and stays unused. Next is the user's decision.
 
 ## 실행
 
