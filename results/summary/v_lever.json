@@ -3014,5 +3014,69 @@
   "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
   "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
   "written_at": "2026-10-04T11:29:17.123628+00:00"
+ },
+ "z": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "git": {
+   "commit": "cf0b3b210d1961764573ee5bcc48eaf8e21a8761",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "guard": {
+   "MBON05": {
+    "mean_stim": 80.16666666666667,
+    "median_delta": 77.0,
+    "median_rest": 2.0,
+    "median_stim": 79.0,
+    "n_pres": 96,
+    "passes": true,
+    "zero_share": 0.0
+   },
+   "MBON13": {
+    "mean_stim": 16.916666666666668,
+    "median_delta": 16.0,
+    "median_rest": 2.0,
+    "median_stim": 17.5,
+    "n_pres": 96,
+    "passes": true,
+    "zero_share": 0.09375
+   }
+  },
+  "outcome": "PASS",
+  "pipeline_key": "f575d783e8747a09f3abc4a67667d54767cc44b7a88736073ae3ff8f56b4bd34",
+  "reasons": [],
+  "record": {
+   "p_mean_ratio": 3.053968253968254,
+   "sd_ratio": {
+    "A": 1.3263652970557531,
+    "P": 1.5420580175592296
+   }
+  },
+  "stage": "z",
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "written_at": "2026-10-04T11:29:34.545072+00:00",
+  "z_V": {
+   "A": [
+    16.916666666666668,
+    12.483878492769072
+   ],
+   "P": [
+    80.16666666666667,
+    29.775432639827233
+   ]
+  },
+  "z_h4": {
+   "A": [
+    10.78125,
+    9.412096743243064
+   ],
+   "P": [
+    26.25,
+    19.30889259728101
+   ]
+  },
+  "z_none_reused": true,
+  "zero_sd": []
  }
 }
