@@ -147,6 +147,8 @@ def kc_band(rec112: dict, cap_ok: bool, set_rec: dict, recheck: list, spec) -> d
     sentence)."""
     g1 = r_rules.gate1(rec112, cap_ok, spec)
     bad = list(g1.get("reasons") or []) if g1["outcome"] == INVALID else []
+    if rec112["csc_sha256"] != [spec.sha_combined]:                  # V.1: L_V's CSC, not r_rules' "one CSC"
+        bad.append(f"112 calibration odours on CSC {rec112['csc_sha256']}, declared {spec.sha_combined}")
     if set_rec["edit_edges"] != [spec.lever_edges] or set_rec["csc_sha256"] != [spec.sha_combined]:
         bad.append(f"V set odours: edges {set_rec['edit_edges']} on {set_rec['csc_sha256']}")
     if bad:
@@ -181,7 +183,12 @@ def gate2(res_l: dict, res_c: dict, ratio_h4: dict | None, ratio_zv: dict | None
     p_ratio_min → STOP_PUNISH_WEAKENED); then the z_V ratio ℓ_L(z_V) / ℓ_C(h4 z) < p_ratio_min in either direction →
     STOP_PUNISH_WEAKENED; else PASS. On STOP_PUNISH_WEAKENED the sentence is V.9.7 1's V-only sentence: both scales'
     ratios always, and every failing scale·direction named (`failed_scales`, h4 first). `scale` names the first
-    failing scale in the order (h4, then z_V); `low` its failing directions."""
+    failing scale in the order (h4, then z_V); `low` its failing directions. Reaching the ratio step without both
+    ratios raises ValueError."""
+    reaches = all(r.get("outcome") != s_rules.P_INVALID and r.get("label") == s_rules.LEARNS_CONFIRMATORY
+                  for r in (res_l, res_c))
+    if reaches and (ratio_h4 is None or ratio_zv is None):        # a caller error, not a record defect: no INVALID
+        raise ValueError("gate2 needs both ratio scales")
     d = s_rules.gate2(res_l, res_c, ratio_h4, spec)
     if d["outcome"] not in (PASS, STOP_PUNISH_WEAKENED):
         return dict(d, scale=None)

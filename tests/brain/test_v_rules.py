@@ -136,6 +136,27 @@ def test_kc_band_order():
     assert out["outcome"] == "STOP_STRENGTH_LEVER" and "V 세트 냄새 A|B 0.0299 ∉ [0.03, 0.15]" in out["sentence"]
 
 
+def test_kc_band_calibration_csc_must_be_the_combined_edit():
+    """V.1 / V.3 6: the 112-odour calibration record on any CSC other than the combined edit's (e.g. the APL-only one)
+    is INVALID, not a band reading."""
+    import dataclasses
+    sp = dataclasses.replace(SPEC, sha_combined="sha-V")
+    srec = dict(per_odour={o: 0.05 for o in CANDS[:5]}, edit_edges=[2], csc_sha256=["sha-V"])
+    out = v_rules.kc_band(dict(_g1(), csc_sha256=["sha-APL"]), True, srec, [], sp)
+    assert out["outcome"] == "INVALID" and any("sha-APL" in r for r in out["reasons"])
+
+
+def test_kc_band_closed_interval_boundaries():
+    import dataclasses
+    sp = dataclasses.replace(SPEC, sha_combined="sha-V")
+    assert sp.valid_band == (0.03, 0.15)
+    srec = dict(per_odour={o: 0.05 for o in CANDS[:5]}, edit_edges=[2], csc_sha256=["sha-V"])
+    for m in (0.03, 0.15):
+        assert v_rules.kc_band(_g1(median=m), True, srec, [], sp)["outcome"] == "PASS"
+    for v in (0.03, 0.15):
+        assert v_rules.kc_band(_g1(), True, dict(srec, per_odour={"A|B": v}), [], sp)["outcome"] == "PASS"
+
+
 def _even(db, da, tb, fa=0):
     return dict(drops={"b": dict(net_drop=db), "a": dict(net_drop=da)}, testable_b=tb, F_a=fa)
 
@@ -187,6 +208,14 @@ def test_gate2_both_scales_in_order():
     assert v_rules.gate2(_res("NOT_LEARNING"), _res(), None, None, SPEC)["outcome"] == "STOP_PUNISH_BROKEN"
     assert v_rules.gate2(_res(), _res("NOT_LEARNING"), None, None, SPEC)["outcome"] == "STOP_P_REFERENCE"
     assert v_rules.gate2(dict(outcome="INVALID", reasons=["x"]), _res(), None, None, SPEC)["outcome"] == "INVALID"
+
+
+def test_gate2_refuses_a_missing_z_v_ratio():
+    """A missing z_V ratio is a caller error once the h4 path reaches the ratio step: ValueError, not a reading."""
+    import pytest
+    for h4 in (_ratio(0.6, 0.7), _ratio(0.49, 0.7)):
+        with pytest.raises(ValueError, match="gate2 needs both ratio scales"):
+            v_rules.gate2(_res(), _res(), h4, None, SPEC)
 
 
 F = dict(n=14, c=8, f_a=3, naive_a=4, T=296, k_even=13, k_cl=11, pb_L=20, pb_C=21, pa_L=40, pa_C=41, d_b=1, d_a=1,
