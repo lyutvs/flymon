@@ -274,6 +274,17 @@ def test_oc_notes_and_cluster_values():
     assert v_rules.cluster_values(table) == dict(cl_null="0.401", cl_harm1="0.685", cl_harm2="0.571")
 
 
+def test_independent_oc_pins_t6_values():
+    """V.6: the independent model (T.6) on n_b 21 · n_a 43 — G_fail_S null 0.034/0.145/0.281/0.362, harm
+    0.752/0.949/0.961/0.549 — as recorded by stage_oc (v_rules.oc, field g_fail[*].p)."""
+    assert (SPEC.n_b, SPEC.n_a) == (21, 43)
+    g = v_rules.oc(SPEC)["g_fail"]
+    null = [f"{r['p']:.3f}" for r in g if r["kind"] == "null"]
+    harm = [f"{r['p']:.3f}" for r in g if r["kind"] == "harm"]
+    assert null == ["0.034", "0.145", "0.281", "0.362"]
+    assert harm == ["0.752", "0.949", "0.961", "0.549"]
+
+
 def test_cluster_model_on_ts_clusters_reproduces_ts_fixture():
     """V.6: T's method — on T's own clusters V's oc_cluster reproduces T's committed fixture's g rows and n_dist (only
     the notes and therefore the sha differ)."""
