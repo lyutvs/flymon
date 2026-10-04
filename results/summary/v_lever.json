@@ -1,0 +1,71 @@
+{
+ "reuse": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "git": {
+   "commit": "79781b406ff38c5b11d80b70b0531480125b8e27",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "outcome": "PASS",
+  "pipeline_key": "f575d783e8747a09f3abc4a67667d54767cc44b7a88736073ae3ff8f56b4bd34",
+  "r_commits": {
+   "gate3": "a83977f",
+   "repro": "22c934b"
+  },
+  "r_shared_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "reasons": [],
+  "records": {
+   "r_gate3": {
+    "c_even": 7,
+    "testable_b": 16
+   },
+   "repro_csc_sha256_none": "1aee839811b8aa662588fbfab3050cee00962ddc8ecd4d2fd1361fd0c72692d5",
+   "t_z": {
+    "none_z": {
+     "A": [
+      10.78125,
+      9.412096743243064
+     ],
+     "P": [
+      26.25,
+      19.30889259728101
+     ]
+    },
+    "outcome": "STOP_Z_DEGENERATE",
+    "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374"
+   },
+   "u": {
+    "entry_f0_z": {
+     "A": [
+      16.916666666666668,
+      12.483878492769072
+     ],
+     "P": [
+      80.16666666666667,
+      29.775432639827233
+     ]
+    },
+    "entry_reading": "\uc0ac\uc2ac \uc9c0\uc9c0",
+    "kc": "STOP_NO_QUALIFIED_F",
+    "path": "PASS",
+    "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523"
+   }
+  },
+  "shared_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "stage": "reuse",
+  "t_commits": {
+   "z": "0eb642e"
+  },
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "t_measure_key_t": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "u_commits": {
+   "kc": "c0d09a7",
+   "path": "3b83824",
+   "reuse": "d00fdf2",
+   "scan": "d732b20"
+  },
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "u_measure_key_u": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "written_at": "2026-10-04T11:00:46.397040+00:00"
+ }
+}
