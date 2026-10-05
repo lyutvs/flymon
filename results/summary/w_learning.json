@@ -4,8 +4,47 @@
    "at": "2026-10-05T07:07:34.152186+00:00",
    "stage": "stage0",
    "wall_s": 320.85039312497247
+  },
+  {
+   "at": "2026-10-05T07:08:00.316122+00:00",
+   "stage": "reuse",
+   "wall_s": 0.0
   }
  ],
+ "reuse": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "git": {
+   "commit": "fad152461992e59ecfe1c4427bfd35fc76941cc8",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "outcome": "PASS",
+  "pipeline_key": "9636cf4c7f868338f512cd7cf1a722027bd842c37528188859c14bebb04a2853",
+  "reasons": [],
+  "stage": "reuse",
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "u_measure_key_u": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "v_commits": {
+   "judge": "a279a56",
+   "kc_input": "7dc199d",
+   "set": "cf0b3b2",
+   "z": "928eaad"
+  },
+  "v_judge_band": "SELECTED",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-05T07:08:00.316122+00:00",
+  "z_V": {
+   "A": [
+    16.916666666666668,
+    12.483878492769072
+   ],
+   "P": [
+    80.16666666666667,
+    29.775432639827233
+   ]
+  }
+ },
  "stage0": {
   "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
   "decision_files": {
