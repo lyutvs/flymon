@@ -15,6 +15,11 @@
     "at": "2026-10-05T21:16:37.327335+00:00",
     "stage": "stage0",
     "wall_s": 541.5917549158912
+   },
+   {
+    "at": "2026-10-05T21:17:09.951360+00:00",
+    "stage": "reuse",
+    "wall_s": 2.4278471659636125
    }
   ]
  },
@@ -739,6 +744,27 @@
     29.775
    ]
   }
+ },
+ "reuse": {
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/reuse/y/oracle.json",
+    "sha256": "fa4750ac80883bcdc571e8e5b6ba7cc3d25f320549988dc0c3ab8823f75768bb",
+    "src": "results/y/oracle.json"
+   }
+  ],
+  "git": {
+   "commit": "b1279d21a5094913551904bbd1be1bc862e1f94f",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "note": "Y.7 1: X.5 1 \uc870\uac74(X\uc758 _reuse: W \ube14\ub85d \u00b7 W \uce21\uc815 \ud0a4 \u00b7 w_* \ubd88\ubcc0 \u00b7 \ub9e4\ub2c8\ud398\uc2a4\ud2b8 \u00b7 oc.json \u00b7 \u03b8\u0302) + X \ube14\ub85d 868771a \u00b7 4b81035, precheck_diag.json 33f83895\u2026, x_* \ubd88\ubcc0.",
+  "outcome": "PASS",
+  "reasons": [],
+  "stage": "reuse",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-05T21:17:09.951360+00:00"
  },
  "stage0": {
   "archive": [
