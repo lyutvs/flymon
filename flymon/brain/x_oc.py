@@ -343,16 +343,25 @@ def variant_thetas(theta, abs_d, xs) -> dict:
 
 
 # ================================================================ the point-θ precheck (X.9.1.1)
-def point_grid(theta, cal, root, n_rep, z, xs) -> dict:
+def point_grid(theta, cal, root, n_rep, z, xs, cell=run_cell, log=None) -> dict:
     """{(g, mode): P(PASS) [p, q, K, F, k]} at θ̂ on w_oc.simulate; tag (TAG_POINT, g index, target); a failed
-    calibration fills (X.9.1.2)."""
+    calibration fills (X.9.1.2). Each (g, mode) is one cell (x_runner resumes finished cells after a kill)."""
     out = {}
+    key0 = dict(theta=w_oc.summary(theta), root=int(root), n_rep=int(n_rep))
     for gi, g in enumerate(xs.cluster_grid):
         for m, _f in MODES:
             c = cal[m]
-            out[(g, m)] = (evaluate(theta, rng(root, TAG_POINT, gi, int(m == "max")), n_rep,
-                                    *w_oc._uniform(xs, c["a"]["value"], c["b"]["value"]), g, z, xs)
-                           if c["ok"] else np.full(grid_shape(xs), c["fill"]))
+            if not c["ok"]:
+                out[(g, m)] = np.full(grid_shape(xs), c["fill"])
+                continue
+
+            def run(gi=gi, g=g, m=m, c=c):
+                return evaluate(theta, rng(root, TAG_POINT, gi, int(m == "max")), n_rep,
+                                *w_oc._uniform(xs, c["a"]["value"], c["b"]["value"]), g, z, xs).tolist()
+            out[(g, m)] = np.asarray(cell(f"point_g{g}_{m}", dict(key0, g=g, mode=m, a=c["a"]["value"],
+                                                                  b=c["b"]["value"]), run), float)
+            if log is not None:
+                log(f"x precheck point g {g} {m} done")
     return out
 
 
@@ -396,7 +405,7 @@ def table_at_f(power, false, xs, F: int) -> list:
             for pi, p in enumerate(xs.p_set_grid) for qi, q in enumerate(xs.q_grid) for ki, K in enumerate(xs.k_grid)]
 
 
-def precheck(theta, z, xs, n_rep: int | None = None) -> dict:
+def precheck(theta, z, xs, n_rep: int | None = None, cell=run_cell, log=None) -> dict:
     """X.9.1.1 on θ̂ (V0): calibration per status, P(PASS) for every design and k at every g, point power = g min,
     point false pass = g max; passed iff some design meets both targets at every k."""
     t0 = time.perf_counter()
@@ -404,7 +413,7 @@ def precheck(theta, z, xs, n_rep: int | None = None) -> dict:
     root = xs.precheck_seed
     idx = rng(root, TAG_CAL).integers(0, len(theta["resid"]), xs.cal_reps)
     cal = {m: calibrate_x(theta, getattr(xs, f), m, idx, z, xs) for m, f in MODES}
-    point = point_grid(theta, cal, root, n_rep, z, xs)
+    point = point_grid(theta, cal, root, n_rep, z, xs, cell, log)
     power, false = worst(point, xs)
     fs = list(range(xs.f_min, xs.f_max + 1))
     ok = meets(power, false, xs).all(-1)
