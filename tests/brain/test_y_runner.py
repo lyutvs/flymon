@@ -28,9 +28,9 @@ def _st(d, testable=True):
     return dict(d_pre=d, r=3.0, p=-3.0, m=3.0, testable=testable)
 
 
-# (axis, d_pre, L_A, L_P, testable) — 5 lenient passes by default
+# (axis, d_pre, L_A, L_P, testable) — 6 lenient passes by default (Y.9.2 P1-7: [4, 8] stays, [6, 10] drops)
 PAIRS = [("b", 0.1, 25, 50, True), ("b", 0.7, 17, 35, True), ("a", 0.2, 40, 100, True), ("a", -0.9, 30, 60, True),
-         ("b", 0.0, 22, 44, True), ("a", 3.0, 50, 200, True), ("b", 0.1, 25, 50, False)]
+         ("b", 0.0, 22, 44, True), ("a", 3.0, 50, 200, True), ("b", 0.1, 25, 50, False), ("a", 0.3, 18, 40, True)]
 
 
 class FakeM:
@@ -45,10 +45,9 @@ class FakeM:
         for i, (r, (ax, d, la, lp, t)) in enumerate(zip(rows, self.pairs)):
             p = Path(f"results/y/cache/r_oracle/{i}.json")
             p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text("{}")
-            out.append(dict(key=f"{ax}|{r['turn']}|x|y", cache_file=str(p), cache_key=f"k{i}",
-                            result=dict(q=dict(self.q), report=_rep(la, lp, None if i in self.none_at
-                                                                    else _st(d, t)))))
+            res = dict(q=dict(self.q), report=_rep(la, lp, None if i in self.none_at else _st(d, t)))
+            p.write_text(json.dumps(dict(key=f"k{i}", kind="r_oracle", inputs={}, result=res)))
+            out.append(dict(key=f"{ax}|{r['turn']}|x|y", cache_file=str(p), cache_key=f"k{i}", result=res))
         return out
 
 
@@ -131,8 +130,10 @@ def test_oracle_counts_only_in_block_and_values_in_detail(w):
     assert out["outcome"] == R.PASS and out == doc()["oracle"]
     assert w.m.calls == [("L", "screen", W.oracle_seeds())]
     det = json.loads(Path(Y.oracle_detail).read_text())
-    assert out["counts"] == R.count_table(det["pairs"], Y)
-    assert out["counts"]["all"]["y_lenient"] == 5 and out["counts"]["all"]["testable"] == 6
+    assert out["derived"] == R.derive(det["pairs"], Y) and out["detail_reused"] is False
+    assert out["derived"]["counts"]["all"]["y_lenient"] == 6 and out["derived"]["counts"]["all"]["testable"] == 7
+    assert out["derived"]["yield_rule"]["kept"] == [[4, 8]] == out["k_ranges"]
+    assert out["derived"]["lenient_levels"]["n"] == 6 and len(out["derived"]["lenient_levels"]["A"]) == 5
     assert out["detail_sha256"] == sha256_file(Y.oracle_detail) and len(det["manifest"]) == len(PAIRS)
     text = json.dumps(out)
     for k in ("d_pre", "L_A", "L_P", '"pairs"', "manifest", "cache_file"):
@@ -144,25 +145,28 @@ def test_oracle_counts_only_in_block_and_values_in_detail(w):
     assert sha256_file(w.arch / "oracle/y/oracle.json") == out["detail_sha256"]
 
 
-def test_oracle_early_stop_few_pairs(tmp_path, monkeypatch):
-    w = World(tmp_path, monkeypatch, pairs=PAIRS[:3] + PAIRS[5:])     # lenient passes: 3
+@pytest.mark.parametrize("n_len,rule,text", [(3, "early", "통과한 쌍이 3개로 최소 관문 쌍 수 4에 못 미쳤다"),
+                                           (5, "yield", "통과한 쌍이 5개로, 수율 규칙(Y.9.2 P1-7, c 1.5)")])
+def test_oracle_early_stop_few_pairs(tmp_path, monkeypatch, n_len, rule, text):
+    w = World(tmp_path, monkeypatch, pairs=PAIRS[:n_len] + PAIRS[5:7])
     w.runner().stage_digest()
     out = w.runner().stage_oracle()
     assert out["outcome"] == R.STOP_FEW_PAIRS and out["stop_stage"] == "early" and out["stage"] == "oracle"
-    assert "통과한 쌍이 3개로 최소 관문 쌍 수 4에 못 미쳤다" in out["sentence"]
+    assert out["rule"] == rule and text in out["sentence"] and out["derived"]["yield_rule"]["kept"] == []
     assert (w.arch / "oracle/y/oracle.json").exists() and len(out["archive"]) == 1     # a STOP is archived
 
 
 def test_oracle_lever_mismatch_is_invalid_and_no_value_is_counted(w):
     w.runner().stage_digest()
-    w.m = FakeM(PAIRS, none_at={0})
+    w.m = FakeM(PAIRS, none_at={5})                                    # a non-lenient pair: still 6
     out = w.runner().stage_oracle()
-    assert out["counts"]["all"]["no_value"] == 1 and out["outcome"] == R.PASS
+    assert out["derived"]["counts"]["all"]["no_value"] == 1 and out["outcome"] == R.PASS
     shutil.rmtree(w.arch / "oracle")                                  # the PASS run's archive (test only)
+    Path(Y.oracle_detail).unlink()                                    # else the cached detail is re-derived
     Path(Y.summary).write_text(json.dumps({k: v for k, v in doc().items() if k != "oracle"}))
     w.m = FakeM(PAIRS, q=dict(GOOD_Q, edit_edges=-1))
     out = w.runner().stage_oracle()
-    assert out["outcome"] == R.INVALID and out["counts"]["all"]["failures"] == len(PAIRS)
+    assert out["outcome"] == R.INVALID and out["derived"]["counts"]["all"]["failures"] == len(PAIRS)
     assert "archive" not in out and not (w.arch / "oracle").exists()   # INVALID is never archived
 
 
@@ -219,3 +223,63 @@ def test_existing_different_archive_refuses_before_the_block(w):
     with pytest.raises(SystemExit) as e:
         w.runner().stage_oracle()
     assert e.value.code == 2 and "oracle" not in doc()
+
+
+def _drop_block(stage):
+    Path(Y.summary).write_text(json.dumps({k: v for k, v in doc().items() if k != stage}))
+
+
+def test_oracle_rederives_from_an_existing_oracle_json_without_measuring(w):
+    """Y.9.2 P2-11: only oracle.json is bit-bound; with oracle.json matching the cache the stage re-derives the block
+    (count table, yield rule, quantiles) and never calls the measurer; the archive repeat is idempotent."""
+    w.runner().stage_digest()
+    first = w.runner().stage_oracle()
+    sha = sha256_file(Y.oracle_detail)
+    _drop_block("oracle")
+    w.m = FakeM(PAIRS, raise_after=0)                                 # measuring would raise
+    out = w.runner().stage_oracle()
+    assert out["detail_reused"] is True and w.m.calls == [] and out["replaced_detail_sha256"] is None
+    assert out["detail_sha256"] == sha == sha256_file(Y.oracle_detail)
+    assert out["derived"] == first["derived"] and out["archive"] == first["archive"]
+
+
+@pytest.mark.parametrize("breaker", ["cache_sha", "record", "rows"])
+def test_oracle_measures_when_oracle_json_does_not_match_the_cache(w, breaker):
+    w.runner().stage_digest()
+    w.runner().stage_oracle()
+    _drop_block("oracle")
+    shutil.rmtree(w.arch / "oracle")
+    det = json.loads(Path(Y.oracle_detail).read_text())
+    if breaker == "cache_sha":
+        Path(det["manifest"][0]["cache_file"]).write_text("{}")
+    elif breaker == "record":
+        det["pairs"][0]["d_pre"] = 0.11
+        Path(Y.oracle_detail).write_text(json.dumps(det))
+    else:
+        det["pairs"], det["manifest"] = det["pairs"][:-1], det["manifest"][:-1]
+        Path(Y.oracle_detail).write_text(json.dumps(det))
+    old = sha256_file(Y.oracle_detail)
+    w.m = FakeM(PAIRS)
+    out = w.runner().stage_oracle()
+    assert out["detail_reused"] is False and len(w.m.calls) == 1 and out["outcome"] == R.PASS
+    if breaker == "cache_sha":                                        # re-measured to the same bits: nothing replaced
+        assert out["replaced_detail_sha256"] is None and out["detail_sha256"] == old
+    else:
+        assert out["replaced_detail_sha256"] == old != out["detail_sha256"]
+
+
+def test_runner_archive_repeats_after_commit_and_refuses_without_a_block(w):
+    with pytest.raises(SystemExit):
+        w.runner().archive("oracle")                                  # no block
+    w.runner().stage_digest()
+    assert w.runner().archive("digest") == []
+    out = w.runner().stage_oracle()
+    assert w.runner().archive("oracle") == out["archive"] == w.runner().archive("oracle")
+    _drop_block("oracle")
+    Path(Y.oracle_detail).unlink()
+    w.m = FakeM(PAIRS, q=dict(GOOD_Q, edit_edges=-1))
+    shutil.rmtree(w.arch / "oracle")
+    assert w.runner().stage_oracle()["outcome"] == R.INVALID
+    with pytest.raises(SystemExit) as e:
+        w.runner().archive("oracle")                                  # INVALID is never archived
+    assert e.value.code == 2 and not (w.arch / "oracle").exists()

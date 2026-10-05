@@ -2,10 +2,11 @@
 rename), nothing else (SystemExit 2). The running ledger lives in the summary's `budget` block (Y.7 예산). YCache =
 r_store.RCache keyed by the W measurement key (w_measure.py unchanged, Y.2) with `put` through this writer. Phase A
 adds here and changes none of these.
-- archive_stage (Y red-team P3-13, adopted): one copy of results/y/oracle.json (when present) and the stage's detail
-  files under <ys.archive_root>/<stage>/ via r_store.archive_copy (sha-checked). Call it at each block commit and before
-  any STOP. An archive is never overwritten: a second call for the same stage is a no-op when every file is
-  byte-identical to the copy already there, and refuses (SystemExit 2) otherwise."""
+- archive_stage (Y red-team P3-13 as amended by Y.9.2: at every block commit and before any STOP sentence): one copy of
+  the stage's fixed file set (stage_files: results/y/oracle.json from the oracle stage on + the stage's detail files)
+  under <ys.archive_root>/<stage>/ via r_store.archive_copy (sha-checked). An archive is never overwritten: a repeat for
+  the same stage is a no-op when the archive holds exactly that set byte-identically (so the controller may call it
+  again after committing), and refuses (SystemExit 2) otherwise."""
 from __future__ import annotations
 
 import dataclasses
@@ -97,19 +98,41 @@ class YCache(RCache):
                                               "inputs": json.loads(canonical(inputs)), "result": result}, params_list)
 
 
-def archive_stage(stage: str, files: list, ys) -> list:
-    """Copy oracle.json (if it exists) + `files` to <ys.archive_root>/<stage>/<parent>/<name>; returns the manifest."""
-    src = ([ys.oracle_detail] if Path(ys.oracle_detail).exists() else []) + [str(f) for f in files if
-                                                                            str(f) != ys.oracle_detail]
+ARCHIVE_ORDER = ("digest", "oracle")          # phase A appends its stages (and their detail files) here
+
+
+def stage_files(stage: str, ys) -> list:
+    """The fixed file set archived for a stage (Task 1 review M2): oracle.json from the oracle stage on (it exists
+    exactly then), plus the stage's own detail files (none in 0p besides oracle.json)."""
+    if stage not in ARCHIVE_ORDER:
+        _refuse(f"no archive file set for stage {stage!r}")
+    own = {"digest": [], "oracle": []}.get(stage, [])
+    return ([ys.oracle_detail] if ARCHIVE_ORDER.index(stage) >= ARCHIVE_ORDER.index("oracle") else []) + own
+
+
+def archive_stage(stage: str, ys) -> list:
+    """Copy stage_files(stage) to <ys.archive_root>/<stage>/<parent>/<name>; returns the manifest (src, dst, sha256).
+    Never overwrites: a repeat is a no-op returning the same manifest when the archive holds exactly that file set,
+    byte-identical to the sources; anything else (a file missing, extra, or differing) refuses. A missing source
+    refuses. An empty set archives nothing."""
+    src = stage_files(stage, ys)
+    missing = [f for f in src if not Path(f).exists()]
+    if missing:
+        _refuse(f"stage {stage}: archive source(s) missing: {missing}")
+    if not src:
+        return []
     root = Path(os.path.expanduser(ys.archive_root))
     dest = root / stage
     if not dest.exists():
         return archive_copy(src, dest, root)
+    want = {dest / Path(f).parent.name / Path(f).name: f for f in src}
+    have = {p for p in dest.rglob("*") if p.is_file()}
+    if have != set(want):
+        _refuse(f"archive {dest} holds {sorted(map(str, have))}, not stage {stage}'s fixed set; never overwritten")
     out = []
-    for f in src:
-        dst = dest / Path(f).parent.name / Path(f).name
+    for dst, f in want.items():
         sha = sha256_file(f)
-        if not dst.exists() or sha256_file(dst) != sha:
+        if sha256_file(dst) != sha:
             _refuse(f"archive {dest} exists and differs at {f}; an archive is never overwritten")
         out.append(dict(src=str(f), dst=str(dst), sha256=sha))
     return out

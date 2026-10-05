@@ -15,9 +15,16 @@ ORDER after oracle and never edits these two.
   pair; a killed run writes no block, and the wall time accumulates in results/y/progress (Reading 6).
 - Failures (Reading 4): a lever mismatch counts in failures and makes the block INVALID (exit 5, not committed); an
   undefined d′ (pair_stats None) counts in no_value only.
-- Archive (Y red-team P3-13, y_store.archive_stage): called just before a block that will be committed is written —
-  PASS or a STOP — never for INVALID (a machine defect the controller discards; archiving it would block the fixed
-  rerun, since an archive is never overwritten). A refused archive therefore leaves no block.
+- Archive (Y red-team P3-13 as amended by Y.9.2, y_store.archive_stage): the stage's fixed file set is copied just
+  before every block that will be committed is written — PASS or a STOP, digest included (empty set in 0p) — so the
+  copy precedes any STOP sentence; never for INVALID (a machine defect the controller discards). A refused archive
+  leaves no block. Runner.archive(stage) (run_y.py --stage archive --name <stage>) repeats it after the commit;
+  the repeat is idempotent.
+- Y.9.2 P2-11: only oracle.json is bit-bound. When results/y/oracle.json exists for exactly the main rows, seeds and
+  z_V and every record rebuilds bit-identically from its cache file, the oracle stage re-derives the block from it
+  without measuring (detail_reused); otherwise it measures (cache-resumed) and records any replaced file's sha256.
+- The block's derived section (y_rules.derive): count table, P1-7 yield rule (k ranges kept), P1-4 lenient-level
+  quantiles; the early STOP_FEW_PAIRS now also fires when the yield rule drops both k ranges.
 Every stage refuses (SystemExit 2, nothing written) when an earlier block is missing, a later block or its own block
 exists, an earlier gate did not PASS, the summary has uncommitted changes, or a hashed Y / W / V file is dirty."""
 from __future__ import annotations
@@ -128,17 +135,28 @@ class Runner:
             refuse(f"stage {stage}: {stopped[0]} outcome {doc[stopped[0]].get('outcome')} — Y stops there")
         return doc
 
-    def _write(self, stage: str, body: dict, wall_s: float, files=()) -> dict:
-        """Archive (PASS / STOP only, before the block so a refused archive leaves no block), then the block."""
+    def _write(self, stage: str, body: dict, wall_s: float) -> dict:
+        """Archive the stage's fixed file set (PASS / STOP only; before the block, so the copy precedes any STOP
+        sentence and a refused archive leaves no block), then the block."""
         k = self.ctx["keys"]()
         extra = {}
         if body.get("outcome") != y_rules.INVALID:
-            extra["archive"] = y_store.archive_stage(stage, list(files), self.ys)
+            extra["archive"] = y_store.archive_stage(stage, self.ys)
         block = y_store.to_json(dict(body, **extra, stage=stage, w_measure_key=k.get("w_measure_key"),
                                      u_measure_key=k.get("u_measure_key"), git=git_state(), written_at=_now()))
         y_store.write_summary_block(self.summary_path, stage, block, self.plist,
                                     dict(stage=stage, wall_s=float(wall_s), at=block["written_at"]))
         return block
+
+    def archive(self, stage: str) -> list:
+        """The controller's post-commit archive call (scripts/run_y.py --stage archive --name <stage>): the stage's
+        block must exist and not be INVALID; idempotent (y_store.archive_stage)."""
+        blk = self._doc().get(stage)
+        if blk is None:
+            refuse(f"archive {stage}: no block {stage} in {self.summary_path}")
+        if blk.get("outcome") == y_rules.INVALID:
+            refuse(f"archive {stage}: block {stage} is INVALID; INVALID is never archived")
+        return y_store.archive_stage(stage, self.ys)
 
     def _prog_path(self, stage: str) -> str:
         return f"{self.ys.progress_dir}/{stage}.json"
@@ -188,34 +206,74 @@ class Runner:
             refuse(f"the main set does not reproduce block digest: {e}")
         z = W_SPEC.z_v()
         seeds = W_SPEC.oracle_seeds()
-        m = self.measure()
         t0 = time.perf_counter()
-        try:
-            got = m.oracle(rows, V_SPEC.cond("L"), "screen", seeds)
-        finally:
+        prev = Path(ys.oracle_detail)
+        prev_sha = sha256_file(prev) if prev.exists() else None
+        per = self._detail_from_cache(rows, seeds, z)
+        reused = per is not None
+        if reused:                  # Y.9.2 P2-11: oracle.json matches the cache -> derive only, no measuring
             wall = self._prog_add("oracle", time.perf_counter() - t0)
-        want_q = (V_SPEC.lever_edit, V_SPEC.sha_combined, V_SPEC.lever_edges)
-        per, man = [], []
-        for r, g in zip(rows, got, strict=True):
-            res = g["result"]
-            q = res.get("q", {})
-            st = pair_stats(res["report"], z, V_SPEC.testable_min)
-            la, lp = y_rules.levels(res["report"])
-            per.append(dict(key=g["key"], c=r["c"], axis=r["axis"], turn=r["turn"], value=st is not None,
-                            failure=(q.get("edit"), q.get("csc_sha256"), q.get("edit_edges")) != want_q,
-                            testable=bool(st and st["testable"]), d_pre=st and st["d_pre"], r=st and st["r"],
-                            p=st and st["p"], L_A=la, L_P=lp))
-            man.append(dict(key=g["key"], cache_file=g["cache_file"], cache_key=g["cache_key"],
-                            sha256=sha256_file(g["cache_file"])))
-        p = y_store.write_json(ys.oracle_detail, dict(pairs=per, manifest=man, seeds=seeds,
-                                                      z_V={k: list(v) for k, v in z.items()}), self.plist)
-        # the count table from the records as written (Y red-team P2-11: recomputable from oracle.json alone)
-        table = y_rules.count_table(json.loads(Path(p).read_text())["pairs"], ys)
-        dec = y_rules.oracle_decision(table, ys)
+            p = prev
+        else:
+            m = self.measure()
+            try:
+                got = m.oracle(rows, V_SPEC.cond("L"), "screen", seeds)
+            finally:
+                wall = self._prog_add("oracle", time.perf_counter() - t0)
+            per = [self._record(r, g["key"], g["result"], z) for r, g in zip(rows, got, strict=True)]
+            man = [dict(key=g["key"], cache_file=g["cache_file"], cache_key=g["cache_key"],
+                        sha256=sha256_file(g["cache_file"])) for g in got]
+            p = y_store.write_json(ys.oracle_detail, dict(pairs=per, manifest=man, seeds=seeds,
+                                                          z_V={k: list(v) for k, v in z.items()}), self.plist)
+        # the derived section from the records as written (Y red-team P2-11: recomputable from oracle.json alone)
+        derived = y_rules.derive(json.loads(Path(p).read_text())["pairs"], ys)
+        dec = y_rules.oracle_decision(derived["counts"], ys)
         if "stage" in dec:                   # the STOP's stage ("early") would collide with the block's stage name
             dec["stop_stage"] = dec.pop("stage")
-        body = dict(dec, counts=table, n=len(per), detail_path=ys.oracle_detail, detail_sha256=sha256_file(p),
+        sha = sha256_file(p)
+        body = dict(dec, derived=derived, n=len(per), detail_path=ys.oracle_detail, detail_sha256=sha,
+                    detail_reused=reused,
+                    replaced_detail_sha256=prev_sha if prev_sha not in (None, sha) else None,
                     seeds=seeds, z_V={k: list(v) for k, v in z.items()}, condition="L", block="screen",
-                    note="Y.7 0p-c: 개수 표만(쌍별 값은 git 제외 상세 파일, 글쓴이 해석 6). 오라클 · 순진 pre만으로는 "
-                         "주 세트를 사용한 것이 아니다(Y.0).")
+                    note="Y.7 0p-c: 개수 표만(쌍별 값은 git 제외 상세 파일, 글쓴이 해석 6) + Y.9.2 P1-7 수율 규칙 · "
+                         "P1-4 관대 통과 수준 요약 분위수(derived; oracle.json에서 다시 계산, P2-11). 오라클 · 순진 "
+                         "pre만으로는 주 세트를 사용한 것이 아니다(Y.0).")
         return self._write("oracle", body, wall)
+
+    @staticmethod
+    def _record(r: dict, key: str, res: dict, z) -> dict:
+        """One pair's oracle.json record (the shape y_rules.count_table reads)."""
+        q = res.get("q", {})
+        want_q = (V_SPEC.lever_edit, V_SPEC.sha_combined, V_SPEC.lever_edges)
+        st = pair_stats(res["report"], z, V_SPEC.testable_min)
+        la, lp = y_rules.levels(res["report"])
+        return dict(key=key, c=r["c"], axis=r["axis"], turn=r["turn"], value=st is not None,
+                    failure=(q.get("edit"), q.get("csc_sha256"), q.get("edit_edges")) != want_q,
+                    testable=bool(st and st["testable"]), d_pre=st and st["d_pre"], r=st and st["r"],
+                    p=st and st["p"], L_A=la, L_P=lp)
+
+    def _detail_from_cache(self, rows: list, seeds, z):
+        """Y.9.2 P2-11: oracle.json's records when the file exists for exactly these rows, seeds and z_V and every
+        record is rebuilt bit-identically from its cache file (sha256 as in the manifest); else None (measure)."""
+        p = Path(self.ys.oracle_detail)
+        if not p.exists():
+            return None
+        try:
+            det = json.loads(p.read_text())
+            man, pairs = det["manifest"], det["pairs"]
+            if (det.get("seeds") != y_store.to_json(seeds)
+                    or det.get("z_V") != y_store.to_json({k: list(v) for k, v in z.items()})
+                    or len(man) != len(rows) or len(pairs) != len(rows)):
+                return None
+            rebuilt = []
+            for r, e in zip(rows, man):
+                f = Path(e["cache_file"])
+                if not f.exists() or sha256_file(f) != e["sha256"]:
+                    return None
+                c = json.loads(f.read_text())
+                if c.get("key") != e["cache_key"]:
+                    return None
+                rebuilt.append(self._record(r, e["key"], c["result"], z))
+        except (KeyError, TypeError, ValueError):
+            return None
+        return pairs if y_store.to_json(rebuilt) == pairs else None

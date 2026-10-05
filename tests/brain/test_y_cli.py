@@ -37,3 +37,11 @@ def test_digest_prints_sentence_and_quiet_block():
     lines = run_y.report_lines("digest", out, 2000)
     assert lines[0] == "stage digest: outcome STOP_REUSE (exit 3)" and lines[1] == "Y 재사용 조건"
     assert '"set"' not in lines[2] and '"git"' not in lines[2] and '"reasons"' in lines[2]
+
+
+def test_archive_stage_arguments(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    assert run_y.ARCHIVE == "archive"
+    assert run_y.main(["--stage", "archive"]) == 2                      # needs --name
+    assert run_y.main(["--stage", "oracle", "--name", "oracle"]) == 2    # --name only with archive
+    assert run_y.main(["--stage", "archive", "--name", "oracle"]) == 2   # outside the root

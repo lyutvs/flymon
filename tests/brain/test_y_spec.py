@@ -6,8 +6,6 @@ import importlib
 import json
 from pathlib import Path
 
-import pytest
-
 from flymon.brain import d6a
 from flymon.brain.v_spec import SPEC as V
 from flymon.brain.w_spec import SPEC as W
@@ -32,10 +30,22 @@ def test_thresholds():
     assert SPEC.budget_h == 24.0
 
 
+def test_y92_yield_and_sentence_facts():
+    """Y.9.2 P1-7: c = 1 / (2/3) from W pilot 16 -> 3 oracle-lenient -> 2 pilot-strict; P1-4 quantiles; Y.8 facts."""
+    assert SPEC.yield_c == 1.5 and SPEC.yield_basis_n == 16 and len(SPEC.yield_basis_pairs) == 3
+    assert SPEC.yield_c == len(SPEC.yield_basis_pairs) / sum(ok for _, ok in SPEC.yield_basis_pairs)
+    assert SPEC.level_quantiles == (0.0, 0.25, 0.5, 0.75, 1.0)
+    assert (SPEC.pilot_w, SPEC.pilot_v, SPEC.pilot_min_sigma) == (3, 4, 5)
+    assert SPEC.pool_turns == (W.first_turn, W.last_turn) == (306, 1985)
+
+
 def test_f2_values_are_xs_precheck_diag():
-    p = ROOT / "results/x/precheck_diag.json"
-    if not p.exists():
-        pytest.skip("X detail not present in this checkout")
+    """Task 1 review M3: the F2 columns come from X's precheck_diag.json sha256 33f83895…; missing fails."""
+    from flymon.brain.h3_store import sha256_file
+    p = ROOT / SPEC.x_precheck_diag
+    assert p.exists(), f"{SPEC.x_precheck_diag} (X detail, git-ignored) is required"
+    assert sha256_file(p) == SPEC.x_precheck_diag_sha256
+    assert SPEC.x_precheck_diag_sha256.startswith("33f83895")
     f = json.loads(p.read_text())["filters"]
     assert SPEC.f2_0 == (f["F2(0)"]["pass_counts"]["c_A"], f["F2(0)"]["pass_counts"]["c_P"])
     assert SPEC.f2_25 == (f["F2(25)"]["pass_counts"]["c_A"], f["F2(25)"]["pass_counts"]["c_P"])

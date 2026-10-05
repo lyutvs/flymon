@@ -35,26 +35,35 @@ def test_ycache_round_trip_and_refuses_outside(tmp_path, monkeypatch):
         YS.YCache("results/w/cache", {"key": "k" * 64}).put("r_oracle", ins, {"v": 1}, [Params()])
 
 
-def test_archive_stage_copies_oracle_and_detail_and_never_overwrites(tmp_path, monkeypatch):
-    """Y red-team P3-13: oracle.json + the stage's detail files go to <archive_root>/<stage>/ at each block commit and
-    before any STOP; a repeat call with identical files is a no-op, a differing one refuses."""
+def test_archive_stage_fixed_set_idempotent_and_never_overwrites(tmp_path, monkeypatch):
+    """Y red-team P3-13 (as amended by Y.9.2) + Task 1 review M2: each stage archives a fixed file set (digest: none;
+    oracle: oracle.json) at every block commit; a repeat with the identical set is a no-op returning the same manifest,
+    anything else refuses; a missing source refuses."""
     import dataclasses
 
     from flymon.brain.h3_store import sha256_file
     from flymon.brain.y_spec import SPEC as Y
     monkeypatch.chdir(tmp_path)
     ys = dataclasses.replace(Y, archive_root=str(tmp_path / "archive/y"))
-    det = YS.write_json("results/y/digest.json", {"d": 1}, [Params()])
-    m = YS.archive_stage("digest", [det], ys)                       # no oracle.json yet: the detail file only
-    assert [e["dst"] for e in m] == [str(tmp_path / "archive/y/digest/y/digest.json")]
+    assert YS.stage_files("digest", ys) == [] and YS.stage_files("oracle", ys) == [Y.oracle_detail]
+    assert YS.archive_stage("digest", ys) == [] and not (tmp_path / "archive/y/digest").exists()
+    with pytest.raises(SystemExit) as e:
+        YS.archive_stage("oracle", ys)                                 # oracle.json missing
+    assert e.value.code == 2 and not (tmp_path / "archive/y/oracle").exists()
     orc = YS.write_json(Y.oracle_detail, {"pairs": []}, [Params()])
-    m = YS.archive_stage("oracle", [], ys)
+    m = YS.archive_stage("oracle", ys)
     assert [Path(e["dst"]).relative_to(tmp_path) for e in m] == [Path("archive/y/oracle/y/oracle.json")]
     assert m[0]["sha256"] == sha256_file(orc) == sha256_file(m[0]["dst"])
-    assert YS.archive_stage("oracle", [orc], ys) == m                # identical repeat (oracle.json listed once)
-    YS.write_json(Y.oracle_detail, {"pairs": [1]}, [Params()])
-    with pytest.raises(SystemExit) as e:
-        YS.archive_stage("oracle", [], ys)
-    assert e.value.code == 2
+    assert YS.archive_stage("oracle", ys) == m == YS.archive_stage("oracle", ys)    # idempotent
+    assert YS.archive_stage("digest", ys) == []
+    (tmp_path / "archive/y/oracle/y/extra.json").write_text("{}")      # not the fixed set -> refuse
     with pytest.raises(SystemExit):
-        YS.archive_stage("../outside", [], ys)
+        YS.archive_stage("oracle", ys)
+    (tmp_path / "archive/y/oracle/y/extra.json").unlink()
+    YS.write_json(Y.oracle_detail, {"pairs": [1]}, [Params()])         # differing source -> refuse
+    with pytest.raises(SystemExit) as e:
+        YS.archive_stage("oracle", ys)
+    assert e.value.code == 2 and sha256_file(m[0]["dst"]) == m[0]["sha256"]
+    for bad in ("../outside", "pilot"):
+        with pytest.raises(SystemExit):
+            YS.archive_stage(bad, ys)
