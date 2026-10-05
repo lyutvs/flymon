@@ -4,6 +4,7 @@ them measured; unbalanced pairs skipped), STOP_FEW_PAIRS, every RN unit carrying
 learning / band / record manifests holding no statistic, the seal and one judgement (PASS and FAIL)."""
 import dataclasses
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -124,3 +125,45 @@ def test_judge_fail_and_once(w):
     w.judge_commits.append("x")
     with pytest.raises(SystemExit):
         w.runner().stage_judge()
+
+
+# W.9.8 H3: "배치마다 원장 갱신, 추정이 상한을 넘으면 그 시점에 STOP_BUDGET" — naive / learn / band / records alike
+H_STOP = re.compile(r"^남은 추정 비용 누적 (\d+\.\d\d) h \+ 남은 (\d+\.\d\d) h = (\d+\.\d\d) h가 W 상한 24 h를 넘는다\.$")
+IN_STAGE = {"naive": (("naive",), ("learn", "band", "c", "noplast"), "gates"),
+            "learn": (("learn",), ("band", "c", "noplast"), "band"),
+            "band": (("band",), ("c", "noplast"), "records"),
+            "records": (("c", "noplast"), (), "seal")}
+
+
+@pytest.mark.parametrize("stage", list(IN_STAGE))
+def test_in_stage_budget_stop(w, monkeypatch, stage):
+    """Each pool round costs one scripted hour; the budget admits the stage's estimate + the later stages' + 0.5 h, so
+    the first round passes and the ledger stops the stage at the next one: a STOP_BUDGET block with the same 〈h〉
+    format as w_rules.budget, the stage's progress kept, and W stopped there."""
+    parts, after, nxt = IN_STAGE[stage]
+    through(w, WR.ORDER[WR.ORDER.index(stage) - 1])
+    r0 = w.runner()
+    base = WR.w_records.elapsed_h(doc()["ledger"])
+    need = r0._later_h(doc(), parts) + r0._later_h(doc(), after)
+    tight = dataclasses.replace(SPEC, budget_h=base + need + 0.5)
+    clock, real = [0.0], WR.time.perf_counter
+    monkeypatch.setattr(WR.time, "perf_counter", lambda: real() + clock[0])
+    run_jobs = w.pool.run_jobs
+
+    def hour(fn, kws):
+        clock[0] += 3600.0
+        return run_jobs(fn, kws)
+    monkeypatch.setattr(w.pool, "run_jobs", hour)
+    jobs0 = w.pool.jobs
+    out = getattr(w.runner(spec=tight), f"stage_{stage}")()
+    assert out["outcome"] == w_rules.STOP_BUDGET and stage in WR.GATES
+    m = H_STOP.match(out["sentence"])
+    assert m, out["sentence"]
+    x, y, z = map(float, m.groups())
+    assert x >= round(base, 2) + 1.0 and abs(x + y - z) <= 0.011 and z > tight.budget_h
+    assert out["reasons"] == [f"누적 {m.group(1)} h + 남은 {m.group(2)} h = {m.group(3)} h"]
+    assert 0 < w.pool.jobs - jobs0 < {"naive": 8 * 11}.get(stage, 10 ** 6)
+    assert doc()[stage]["outcome"] == w_rules.STOP_BUDGET and "manifest" not in doc()[stage]
+    assert w.runner()._prog(stage) >= 3600.0
+    with pytest.raises(SystemExit):
+        getattr(w.runner(), f"stage_{nxt}")()

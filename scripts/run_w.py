@@ -42,7 +42,7 @@ STAGES = ("stage0", "reuse", "path", "pilot", "oc", "smoke", "budget", "set", "o
           "learn", "band", "records", "seal", "judge", "recompute", "invalid_run")
 POOL_STAGES = ("path", "pilot", "smoke", "oracle", "naive", "learn", "band", "records")
 GATE_STAGES = ("stage0", "reuse", "path", "pilot", "oc", "budget", "set", "oracle", "estimate", "naive", "gates",
-               "learn", "band")
+               "learn", "band", "records")
 QUIET = ("manifest", "checks", "record", "records", "screened", "pairs", "judgement", "ranking", "calibration", "theta",
          "synthetic", "tables", "set", "archive", "oc_timing", "decision_files", "costs", "cost", "exploratory")
 

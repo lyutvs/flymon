@@ -41,7 +41,7 @@ from .w_spec import BRAINS
 ORDER = ("stage0", "reuse", "path", "pilot", "oc", "smoke", "budget", "set", "oracle", "estimate", "naive", "gates",
          "learn", "band", "records", "seal", "judge")
 GATES = ("stage0", "reuse", "path", "pilot", "oc", "budget", "set", "oracle", "estimate", "naive", "gates", "learn",
-         "band")
+         "band", "records")
 EXIT_REFUSE, EXIT_KEY = 2, 7
 W_PIPELINE_FILES = ("flymon/brain/w_spec.py", "flymon/brain/w_pairs.py", "flymon/brain/w_store.py",
                     "flymon/brain/w_verdict.py", "flymon/brain/w_oc.py", "flymon/brain/w_records.py",
@@ -660,9 +660,10 @@ class Runner:
                                             note="W.9.8 H3: 실제 시험 가능 쌍 수로 추정 갱신(C 제외 먼저)."))
 
     # ---- the in-stage ledger (W.9.8 H3: "배치마다 원장 갱신") ------------------------------------------------------
-    def _checker(self, doc: dict, stage: str, part: str, remaining_after: float):
-        """check(done, todo): stop when elapsed + this stage's remaining share + the later stages' estimate > 24 h."""
-        est = doc["estimate"]["plan"]["parts_h"]
+    def _checker(self, doc: dict, stage: str, parts: tuple, remaining_after: float):
+        """check(done, todo): stop when elapsed + this stage's remaining share (its parts of the estimate) + the later
+        stages' estimate > 24 h."""
+        share = self._later_h(doc, parts)
         base = self._elapsed_h(doc)
         t_start = time.perf_counter()
         prev = self._prog(stage)
@@ -672,9 +673,9 @@ class Runner:
             self._prog_add(stage, now - check.t)
             check.t = now
             spent = (prev + now - t_start) / 3600
-            left = est[part] * (1 - done / max(todo, 1)) if done else est[part]
+            left = share * (1 - done / max(todo, 1)) if done else share
             if base + spent + left + remaining_after > self.spec.budget_h:
-                raise BudgetStop(f"누적 {base + spent:.2f} h + 남은 {left + remaining_after:.2f} h")
+                raise BudgetStop(w_rules.budget_h_text(base + spent, left + remaining_after))
         check.t = time.perf_counter()
         return check
 
@@ -699,7 +700,7 @@ class Runner:
         z_v = self._z_v(doc)
         t0 = time.perf_counter()
         prev = self._prog("naive")
-        check = self._checker(doc, "naive", "naive", self._later_h(doc, ("learn", "band", "c", "noplast")))
+        check = self._checker(doc, "naive", ("naive",), self._later_h(doc, ("learn", "band", "c", "noplast")))
         wm = self._wm()
         screened, gates, man = [], [], []
         i = 0
@@ -750,7 +751,7 @@ class Runner:
         self._keys_chain(doc, stage)
         t0 = time.perf_counter()
         prev = self._prog(stage)
-        check = self._checker(doc, stage, part, self._later_h(doc, after))
+        check = self._checker(doc, stage, (part,), self._later_h(doc, after))
         try:
             got = self._wm().learn(units, stage, check=check)
         except BudgetStop as e:
@@ -790,11 +791,16 @@ class Runner:
         doc = self._require("records")
         self._keys_chain(doc, "records")
         t0 = time.perf_counter()
+        prev = self._prog("records")
+        check = self._checker(doc, "records", ("c", "noplast"), 0.0)     # _later_h drops c when the plan has no C
         units = self.record_units(doc)
-        got = self._wm().learn(units, "records")
-        body = dict(manifest=self._manifest(got), n_units=len(units), with_c=self._plan(doc)["with_c"],
-                    note="기록 측정(C·가소성 끈 대조) — 판정 아님.")
-        return self._write("records", body, wall_s=time.perf_counter() - t0)
+        try:
+            got = self._wm().learn(units, "records", check=check)
+        except BudgetStop as e:
+            return self._stop_budget("records", str(e), prev + time.perf_counter() - t0)
+        body = dict(outcome=w_rules.PASS, reasons=[], manifest=self._manifest(got), n_units=len(units),
+                    with_c=self._plan(doc)["with_c"], note="기록 측정(C·가소성 끈 대조) — 판정 아님.")
+        return self._write("records", body, wall_s=prev + time.perf_counter() - t0)
 
     # ================================================================ 13: seal (W.3 10)
     def _raw(self, doc: dict, stage: str) -> tuple:

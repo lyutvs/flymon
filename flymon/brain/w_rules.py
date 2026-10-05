@@ -151,6 +151,11 @@ def oc_unreachable_text(doc: dict, spec) -> str:
 BUDGET_STAGES = ("5a", "8")
 
 
+def budget_h_text(elapsed_h: float, remaining_h: float) -> str:
+    """STOP_BUDGET's 〈h〉: "누적 X h + 남은 Y h = Z h" (block budget / estimate and the in-stage ledger alike)."""
+    return f"누적 {elapsed_h:.2f} h + 남은 {remaining_h:.2f} h = {elapsed_h + remaining_h:.2f} h"
+
+
 def budget(elapsed_h: float, options: list, spec, stage: str) -> dict:
     """options = [dict(design, with_c, total_h)] in the order to try. Stage "5a" (before the screen): selected with
     C, selected without C, then the alternative designs without C. Stage "8" (after the screen, W.9.9 P1-5): only
@@ -169,7 +174,7 @@ def budget(elapsed_h: float, options: list, spec, stage: str) -> dict:
         if elapsed_h + o["total_h"] <= spec.budget_h:
             return dict(outcome=PASS, reasons=[], plan=o, elapsed_h=elapsed_h, stage=stage)
     best = min(options, key=lambda o: o["total_h"])
-    h = f"누적 {elapsed_h:.2f} h + 남은 {best['total_h']:.2f} h = {elapsed_h + best['total_h']:.2f} h"
+    h = budget_h_text(elapsed_h, best["total_h"])
     return dict(outcome=STOP_BUDGET, reasons=[h], plan=None, elapsed_h=elapsed_h, stage=stage,
                 sentence=sentence(STOP_BUDGET, dict(h=h)))
 
