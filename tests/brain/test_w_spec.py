@@ -115,7 +115,7 @@ def test_numbers():
     assert (SPEC.trials, SPEC.pulse_ms, SPEC.train_settle_ms, SPEC.gap_ms, SPEC.strength) == (20, 400.0, 800.0,
                                                                                               200.0, 1.0)
     assert (SPEC.first_turn, SPEC.last_turn, SPEC.n_b_expected, SPEC.n_a_expected) == (306, 1985, 167, 82)
-    assert SPEC.budget_h == 24.0 and SPEC.min_gate_pairs == 4 and SPEC.cal_floor_rule == "unreachable"
+    assert SPEC.budget_h == 24.0 and SPEC.min_gate_pairs == 4 and SPEC.cal_floor_rule == "zero"
     assert SPEC.z_v() == {"A": (16.917, 12.484), "P": (80.167, 29.775)}
     assert dict(SPEC.v_commits) == {"z": "928eaad", "kc_input": "7dc199d", "set": "cf0b3b2", "judge": "a279a56"}
     assert (SPEC.summary, SPEC.cache_dir, SPEC.archive_root) == (

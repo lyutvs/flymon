@@ -1,5 +1,5 @@
-"""Every number of spec appendix W as amended by W.9 (W.9.9 > W.9.8 > W.9.1-W.9.7 > W.0-W.8): the F v4 learning test
-(spec 5's M2 learning unit, F.2's sequential R / N brains plus G.5's state-matched RN) on V's combined lever L_V,
+"""Every number of spec appendix W as amended by W.9 (W.9.10 > W.9.9 > W.9.8 > W.9.1-W.9.7 > W.0-W.8): the F v4 learning
+test (spec 5's M2 learning unit, F.2's sequential R / N brains plus G.5's state-matched RN) on V's combined lever L_V,
 read with V's z_V, judged by per-fly joint satisfaction with a design (q, K, F; k cap 8) chosen by W's own operating
 characteristic (w_oc) from a POOL even pilot.
 - WSpec is a plain frozen dataclass, not a VSpec: every field whose name holds "seed" carries a W block only, so the
@@ -70,7 +70,7 @@ class WSpec:
     cluster_grid: tuple = (0.0, 0.5, 1.0)
     record_dprimes: tuple = (0.5, 1.0, 1.5, 2.0)
     oc_chunk: int = 50
-    cal_floor_rule: str = "unreachable"            # OPEN 2: "unreachable" (literal) or "zero"
+    cal_floor_rule: str = "zero"                   # W.9.10 2: "zero" (null = zero DAN injection); "unreachable" = literal
     # ---- the pilot (W.3 3, W.9.4, W.9.8 H6) --------------------------------------------------------------------------
     pilot_flies: int = 8
     pilot_probes: int = 8
