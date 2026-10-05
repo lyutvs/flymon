@@ -1118,6 +1118,101 @@ class Runner:
         return self._measure_b("records", lambda wr, v: wr.record_units(v), ("c", "noplast"), (),
                                self.ys.records_detail)
 
+    # ---- phase B: the plain write (a NOT_SEALED seal) ------------------------------------------------------------
+    def _write_plain(self, stage: str, body: dict, wall_s: float = 0.0) -> dict:
+        """_write without the archive copy (a NOT_SEALED seal only)."""
+        k = self.ctx["keys"]()
+        block = y_store.to_json(dict(body, stage=stage, w_measure_key=k.get("w_measure_key"),
+                                     u_measure_key=k.get("u_measure_key"), git=git_state(), written_at=_now()))
+        y_store.write_summary_block(self.summary_path, stage, block, self.plist,
+                                    dict(stage=stage, wall_s=float(wall_s), at=block["written_at"]))
+        return block
+
+    # ================================================================ order 11: seal
+    def stage_seal(self) -> dict:
+        doc = self._require("seal")
+        self._keys_ok("seal")
+        ys = self.ys
+        wr, _wm = self.ctx["w_runner"](self.pool, False)
+        view = self._view(doc)
+        want = wr._want(view)
+        reasons, invalid, n_files = [], [], 0
+        for stage, blk in (("naive", "gates"), ("learn", "learn"), ("band", "band"), ("records", "records")):
+            got, bad = w_store_load(doc[blk]["manifest"])
+            reasons += [f"{blk}: {b}" for b in bad]
+            for g in got:
+                n_files += 1
+                have = json.loads(Path(g["cache_file"]).read_text()).get("inputs")
+                exp = want.get((stage, g["key"]))
+                if exp is None or have is None or canonical(have) != canonical(exp):
+                    invalid.append(f"{blk}: {g['key']} 저장 입력이 선언과 다름")
+        if n_files != len(want):
+            reasons.append(f"원자료 {n_files}개 ≠ 선언 {len(want)}개")
+        env = env_hashes()
+        env_bad = _env_check(doc["precheck"].get("env") or {}, doc["oc"].get("env") or {}, env)
+        dec = dict(decision_key(), **decision_pins(doc))
+        why = reasons + invalid + env_bad
+        body = dict(outcome=y_rules.PASS if not why else y_rules.NOT_SEALED, reasons=why, invalid=invalid,
+                    env_mismatch=env_bad, n_files=n_files, n_declared=len(want), decision=dec, env=env,
+                    note="Y.7 11: 판독 전 유효성 · 매니페스트 · 결정 코드 해시(y_* + import한 x_* · w_* + oc · gates "
+                         "블록 + z_V) · 순서 5(그리고 6)의 환경 해시 대조 · 사본. 봉인되지 않으면 사용자 몫.")
+        if why:
+            return self._write_plain("seal", body)          # nothing archived when not sealed (a source may be missing)
+        return self._write("seal", body, 0.0)
+
+    # ================================================================ order 12: judge once
+    def stage_judge(self) -> dict:
+        doc = self._require("judge")
+        self._keys_ok("judge")
+        ys = self.ys
+        if summary_git(self.summary_path)["judge_commits"]:
+            refuse(f"git history of {self.summary_path} already holds a judge block; the set is judged once")
+        sealed = doc["seal"]["decision"]
+        now = dict(decision_key(), **decision_pins(doc))
+        moved = [k for k in now if now[k] != sealed.get(k)]
+        if moved:
+            refuse(f"the decision record moved since the seal: {moved}")
+        if Path(ys.done_marker).exists():
+            refuse(f"{ys.done_marker} exists: a judge block was written once")
+        resumed = None
+        if Path(ys.judge_marker).exists():
+            if Path(ys.reread_marker).exists():
+                refuse(f"{ys.reread_marker} exists: judge was re-generated once after the mark already")
+            mk = json.loads(Path(ys.judge_marker).read_text())
+            if mk.get("seal_written_at") != doc["seal"].get("written_at") or mk.get("decision_key") != now["key"]:
+                refuse(f"{ys.judge_marker} belongs to another seal or decision code; no re-generation")
+            resumed = mk
+
+        def mark():
+            y_store.write_json(ys.reread_marker if resumed else ys.judge_marker,
+                               dict(seal_written_at=doc["seal"].get("written_at"), decision_key=now["key"],
+                                    read_at=_now()), self.plist)
+        wr, _wm = self.ctx["w_runner"](self.pool, False)
+        view = self._view(doc)
+        out = wr._read(view, mark)
+        v = out["judgement"]
+        d = doc["gates"]["design"]
+        sv = y_rules.set_verdict(v, d, len(doc["gates"]["gates"]), ys)
+        if sv["b"]:
+            refuse(f"BAND left b = {sv['b']} (X.9.1.3 P1-4: b = 0 before the verdict — resume band from the cache)")
+        y_store.write_json(ys.judge_detail, dict(judgement=v, records=out["records"], set=sv), self.plist)
+        body = dict(outcome=sv["verdict"], verdict=sv["verdict"], sentence=sv["sentence"],
+                    consequence=sv["consequence"], n=sv["n"], m=sv["m"], b=sv["b"], p_set=sv["p_set"],
+                    ratio_m_n=sv["ratio_m_n"], pairs={k: dict(status=p["status"], reasons=p.get("reasons"),
+                                                                failing_gates=p.get("failing_gates"),
+                                                                q_sat=p.get("q_sat"), q_sat_2k=p.get("q_sat_2k"),
+                                                                code_k=p.get("code_k"))
+                                                       for k, p in v["pairs"].items()},
+                    machine=v["machine"], design=d, records=dict(C=out["records"]["C"],
+                                                                 noplast=out["records"]["noplast"]),
+                    oc_records=dict(target=doc["oc"].get("records_target"), records=doc["oc"].get("records")),
+                    main_set="사용됨(순서 9부터, Y.0)",
+                    resumed_after_mark=resumed is not None, detail_path=ys.judge_detail,
+                    detail_sha256=sha256_file(ys.judge_detail))
+        block = self._write("judge", body, 0.0)
+        y_store.write_json(ys.done_marker, dict(judge_written_at=block["written_at"]), self.plist)
+        return block
+
 
 # ================================================================ phase B module level (Y.7 orders 6–12) — appended
 EXIT_KEY = 7
@@ -1225,3 +1320,31 @@ def smoke_problems(wr, learn, band, naive, orc, m, flies, K, ys) -> list:
 WHERE = dict(learn="순서 9 학습 측정", band="순서 9 BAND 2K 재측정", records="순서 10 기록")
 
 from . import w_rules  # noqa: E402 — phase B (the budget text of the batch ledger)
+
+
+def w_store_load(manifest: list) -> tuple:
+    from . import w_store
+    return w_store.load_manifest(manifest)
+
+
+def _env_check(pre: dict, oc: dict, now: dict) -> list:
+    """X.9.1.3 P2-11 for Y (plan Reading 9): uv.lock, Python, numpy and the imported x_* / w_* files equal the order-5
+    (precheck) record; every field, the y_* files included, equals the order-6 (oc) record — phase B's appends to
+    y_* happened between 5 and 6 and are bound by the precheck reproduction (stage oc)."""
+    strip = {k: v for k, v in pre.items() if k != "y_files"}
+    a = [f"순서 5 대비 {x}" for x in _env_diff(strip, {k: v for k, v in now.items() if k != "y_files"})]
+    return a + [f"순서 6 대비 {x}" for x in _env_diff(oc, now)]
+
+
+def decision_key() -> dict:
+    """Y.7 11: the decision code — y_* and the imported x_* / w_* files."""
+    files = x_runner.files_sha(Y_FILES + X_FILES + W_FILES)
+    return dict(key=hashlib.sha256(canonical(files).encode()).hexdigest(), files=files)
+
+
+def decision_pins(doc: dict) -> dict:
+    """Y.7 11: blocks oc and gates and z_V."""
+    def sha(o):
+        return None if o is None else hashlib.sha256(canonical(o).encode()).hexdigest()
+    return dict(oc_sha256=sha(doc.get("oc")), gates_sha256=sha(doc.get("gates")),
+                z_V=(doc.get("pilot") or {}).get("z_V"))
