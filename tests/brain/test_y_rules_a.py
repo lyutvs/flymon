@@ -49,6 +49,14 @@ def test_filter_bounds_and_rounding(d, la, lp, want):
     assert bool(R.filter_passes(d, la, lp, Y)) is want
 
 
+@pytest.mark.parametrize("d,la,lp,want", [
+    (0.4999999999, 20.0, 43.0, False),     # |d′| rounds to 0.5 → strict bound fails (removing d′'s rounding passes it)
+    (0.0, 20.0, 42.9999999999, True)])     # L_P rounds to 43 → bound included (removing L_P's rounding fails it)
+def test_filter_rounding_is_load_bearing(d, la, lp, want):
+    assert bool(R.filter_passes(d, la, lp, Y)) is want
+    assert Y.round_digits == 9
+
+
 def test_merge_groups_on_the_seven_candidates():
     g = R.merge_groups(KEYS7)
     assert len(g) == 6 and [KEYS7[i] for i in g[4]] == ["a|218|Earthquake|Strength", "a|305|Earthquake|Rock Slide"]
@@ -83,6 +91,13 @@ def test_pilot_gates_order_invalid_then_few_then_h6_then_pass():
     assert out["outcome"] == R.STOP_PILOT_NO_EFFECT and out["n_sigma"] == 6
     assert out["sentence"].startswith("Y 파일럿(거름 통과 7쌍)에서 조합 지렛대의 F.2 학습 효과가 (i)")
     assert R.pilot_gates(adm, _rec([GOOD] * 7), [], Y, W)["outcome"] == R.PASS
+
+
+def test_pilot_gates_machine_reason_wins_over_few():
+    adm = _adm({KEYS7[3]: False, KEYS7[6]: False})        # n_Σ 4 < 5 and a machine reason at once
+    out = R.pilot_gates(adm, None, ["fly 0: N pre ≠ R pre"], Y, W)
+    assert out["outcome"] == R.INVALID and out["reasons"] == ["fly 0: N pre ≠ R pre"]
+    assert out["n_sigma"] == 4 and "sentence" not in out and "records_unavailable" not in out
 
 
 def test_sentences_a_numbers_from_spec():
