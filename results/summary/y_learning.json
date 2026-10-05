@@ -5,6 +5,11 @@
     "at": "2026-10-05T18:01:29.288637+00:00",
     "stage": "digest",
     "wall_s": 3.875643166946247
+   },
+   {
+    "at": "2026-10-05T21:05:44.087504+00:00",
+    "stage": "oracle",
+    "wall_s": 11038.613522957894
    }
   ]
  },
@@ -537,5 +542,197 @@
   },
   "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
   "written_at": "2026-10-05T18:01:29.288637+00:00"
+ },
+ "oracle": {
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/oracle/y/oracle.json",
+    "sha256": "fa4750ac80883bcdc571e8e5b6ba7cc3d25f320549988dc0c3ab8823f75768bb",
+    "src": "results/y/oracle.json"
+   }
+  ],
+  "block": "screen",
+  "condition": "L",
+  "derived": {
+   "counts": {
+    "a": {
+     "balanced": 10,
+     "f2_0": 10,
+     "f2_25": 6,
+     "failures": 0,
+     "n": 82,
+     "no_value": 0,
+     "testable": 60,
+     "user31": 6,
+     "user_onesided31": 28,
+     "y_lenient": 20,
+     "y_strict": 8
+    },
+    "all": {
+     "balanced": 16,
+     "f2_0": 16,
+     "f2_25": 6,
+     "failures": 0,
+     "n": 249,
+     "no_value": 0,
+     "testable": 179,
+     "user31": 6,
+     "user_onesided31": 75,
+     "y_lenient": 31,
+     "y_strict": 10
+    },
+    "b": {
+     "balanced": 6,
+     "f2_0": 6,
+     "f2_25": 0,
+     "failures": 0,
+     "n": 167,
+     "no_value": 0,
+     "testable": 119,
+     "user31": 0,
+     "user_onesided31": 47,
+     "y_lenient": 11,
+     "y_strict": 2
+    }
+   },
+   "lenient_levels": {
+    "A": [
+     17.0,
+     24.25,
+     32.0,
+     41.25,
+     52.0
+    ],
+    "P": [
+     70.5,
+     89.25,
+     100.0,
+     120.75,
+     152.5
+    ],
+    "n": 31,
+    "quantiles": [
+     0.0,
+     0.25,
+     0.5,
+     0.75,
+     1.0
+    ]
+   },
+   "yield_rule": {
+    "c": 1.5,
+    "c_basis": {
+     "oracle_lenient": [
+      "a|4 Rock Slide|Strength",
+      "b|10 Surf vs Slowbro",
+      "b|4 Rock Slide vs Venusaur"
+     ],
+     "pilot_strict": [
+      "a|4 Rock Slide|Strength",
+      "b|10 Surf vs Slowbro"
+     ],
+     "rate": "2/3",
+     "w_pilot_pairs": 16
+    },
+    "dropped": [],
+    "kept": [
+     [
+      4,
+      8
+     ],
+     [
+      6,
+      10
+     ]
+    ],
+    "n_len": 31,
+    "note": "c = 1 / (2/3)\ub294 W \ud30c\uc77c\ub7ff 3\uc30d\uc5d0\uc11c \ub0b8 \uac70\uce5c \uac12\uc774\ub2e4(Y.9.2 P1-7).",
+    "required": [
+     {
+      "k_range": [
+       4,
+       8
+      ],
+      "min_n_len": 6
+     },
+     {
+      "k_range": [
+       6,
+       10
+      ],
+      "min_n_len": 9
+     }
+    ]
+   }
+  },
+  "detail_path": "results/y/oracle.json",
+  "detail_reused": false,
+  "detail_sha256": "fa4750ac80883bcdc571e8e5b6ba7cc3d25f320549988dc0c3ab8823f75768bb",
+  "git": {
+   "commit": "36df0575055aa3b993c1d1b6427ac9aa3ca6927c",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "k_ranges": [
+   [
+    4,
+    8
+   ],
+   [
+    6,
+    10
+   ]
+  ],
+  "n": 249,
+  "note": "Y.7 0p-c: \uac1c\uc218 \ud45c\ub9cc(\uc30d\ubcc4 \uac12\uc740 git \uc81c\uc678 \uc0c1\uc138 \ud30c\uc77c, \uae00\uc4f4\uc774 \ud574\uc11d 6) + Y.9.2 P1-7 \uc218\uc728 \uaddc\uce59 \u00b7 P1-4 \uad00\ub300 \ud1b5\uacfc \uc218\uc900 \uc694\uc57d \ubd84\uc704\uc218(derived; oracle.json\uc5d0\uc11c \ub2e4\uc2dc \uacc4\uc0b0, P2-11). \uc624\ub77c\ud074 \u00b7 \uc21c\uc9c4 pre\ub9cc\uc73c\ub85c\ub294 \uc8fc \uc138\ud2b8\ub97c \uc0ac\uc6a9\ud55c \uac83\uc774 \uc544\ub2c8\ub2e4(Y.0).",
+  "outcome": "PASS",
+  "reasons": [],
+  "replaced_detail_sha256": null,
+  "seeds": {
+   "act": [
+    24700000,
+    24700001,
+    24700002,
+    24700003,
+    24700004,
+    24700005,
+    24700006,
+    24700007
+   ],
+   "report": [
+    24700200,
+    24700201,
+    24700202,
+    24700203,
+    24700204,
+    24700205,
+    24700206,
+    24700207
+   ],
+   "select": [
+    24700100,
+    24700101,
+    24700102,
+    24700103,
+    24700104,
+    24700105,
+    24700106,
+    24700107
+   ]
+  },
+  "stage": "oracle",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-05T21:05:44.087504+00:00",
+  "z_V": {
+   "A": [
+    16.917,
+    12.484
+   ],
+   "P": [
+    80.167,
+    29.775
+   ]
+  }
  }
 }
