@@ -21,7 +21,10 @@ never modified; Y adds only the following.
 - Fill share per k (first k pair slots); a k whose fill > fill_max in any (g, scenario, target) cell is excluded
   (P1-5). Precheck = point values, no envelope; qualify_y / select_y (limits, envelope, ×1.3 budget) are built for
   phase B and tested now (Y.6.6 mutations).
-Every number comes from the YSpec passed in; every stream is SeedSequence([root, tag, …])."""
+Every number comes from the YSpec passed in; every stream is SeedSequence([root, tag, …]).
+Phase B (appended): the parametric bootstrap draw on the whole grid and the one-design reconfirmation (phase-B plan
+Readings 2–4), the limits (simultaneous over the range's k, worst over g · scenario; Reading 1), qualification through
+qualify_y, the records target without a design (Reading 6) and the records under root oc_seed."""
 from __future__ import annotations
 
 import dataclasses
@@ -1128,3 +1131,178 @@ def point_records_y(thetas: dict, target: dict, z: dict, ys, n_rep: int | None =
     return dict(target=target, variants=out, calibrations=cals, roots=roots, n_rep=n_rep,
                 k=list(range(ys.k_min, ys.k_cap + 1)),
                 note="사전 점검 STOP의 점 records(Y.6.5) — 변형은 기록 전용(Y.6.4, Y.9.2 P1-3 · P1-5)")
+
+
+# ================================================================ phase B (Y.6.4, Y.5, Y.9.2 P2-8, Y.6.5) — appended
+TAG_BOOT_SIM = w_oc.TAG_BOOT_SIM
+
+
+def compact_cal(c: dict) -> dict:
+    """A calibration reduced to what status_counts and the records read (status, coarse_step, widening stage per knob;
+    ok, failure, corners)."""
+    def knob(x):
+        return dict(status=x["status"], coarse_step=bool(x.get("coarse_step")), stage=x.get("stage"))
+    return dict(ok=bool(c["ok"]), failure=c["failure"], corners=c["corners"], a=knob(c["a"]),
+                b=[knob(x) for x in (c["b"] or [])])
+
+
+def _draw(theta, z: dict, yd, r, tags: tuple, bi: int, n_rep: int) -> dict:
+    """One parametric draw (Y.6.4): boot_y on the draw stream (tags…, TAG_BOOT, bi) — the same generator then gives
+    the calibration residual draws — Y's calibration on both sides, then per g × target × scenario one evaluate_y on
+    yd: main stream (tags…, TAG_BOOT_SIM, bi, g, target[, "near"]), corner stream (tags[0], "mix", tags[1:]…,
+    TAG_BOOT_SIM, bi, g, target, scenario). A failed calibration fills its side (power 0 / false 1, no simulation).
+    Returns arrays hits [g, target, scenario, *grid] (uint16 counts of PASS among n_rep) and fills [g, target,
+    scenario, k] (NaN where not simulated), and meta {cal: compact per side, n_rep}."""
+    rb = rng(*tags, TAG_BOOT, bi)
+    tb = boot_y(theta, rb, r)
+    ib = rb.integers(0, len(tb["resid"]), yd.cal_reps)
+    cal = {m: calibrate_y(tb, getattr(yd, f), m, ib, z, yd) for m, f in MODES}
+    shp = x_oc.grid_shape(yd)
+    nk = yd.k_cap - yd.k_min + 1
+    G, S = len(yd.cluster_grid), len(SCENARIOS)
+    hits = np.zeros((G, len(MODES), S) + shp, np.uint16)
+    fills = np.full((G, len(MODES), S, nk), np.nan)
+    ones = [1.0] * yd.f_max
+    for gi, g in enumerate(yd.cluster_grid):
+        for mi, (m, _f) in enumerate(MODES):
+            c = cal[m]
+            for si, sc in enumerate(SCENARIOS):
+                if not c["ok"]:
+                    hits[gi, mi, si] = int(round(c["fill"] * n_rep))
+                    continue
+                extra = (tag("near"),) if sc == "near" else ()
+                e = evaluate_y(tb, rng(*tags, TAG_BOOT_SIM, bi, gi, mi, *extra),
+                               rng(tags[0], tag("mix"), *tags[1:], TAG_BOOT_SIM, bi, gi, mi, si), n_rep,
+                               [c["corners"]] * yd.k_cap, ones, ones, g, z, yd, sc)
+                hits[gi, mi, si] = np.rint(e["p"] * n_rep).astype(np.uint16)
+                fills[gi, mi, si] = e["fill_by_k"]
+    return dict(arrays=dict(hits=hits, fills=fills), meta=dict(cal={m: compact_cal(c) for m, c in cal.items()},
+                                                                n_rep=int(n_rep)))
+
+
+def boot_draw(theta, z: dict, ys, r, bi: int, n_rep: int | None = None) -> dict:
+    """Y.6.4's draw bi on the whole design grid (root oc_seed; common random numbers across designs)."""
+    return _draw(theta, z, ys, r, (ys.oc_seed,), int(bi), ys.boot_reps if n_rep is None else int(n_rep))
+
+
+def reconfirm_spec(ys, d: dict):
+    """Y.9.2 P2-8: the one design (p_set, q, K) with its F envelope (F … F + envelope; F ≥ envelope_solo_from alone)
+    and the k axis k_min … its k_hi; simulates f_max = the envelope's last F and 2K probes."""
+    F = int(d["F"])
+    f_hi = F if F >= ys.envelope_solo_from else min(ys.f_max, F + ys.envelope)
+    return dataclasses.replace(ys, p_set_grid=(d["p_set"],), q_grid=(d["q"],), k_grid=(d["K"],), f_min=F, f_max=f_hi,
+                               k_cap=int(d["k_range"][1]))
+
+
+def reconfirm_draw(theta, z: dict, ys, r, d: dict, rank: int, bi: int, n_rep: int | None = None) -> dict:
+    """P2-8's draw bi for the design at ranking position `rank` (root reconfirm_seed, tag rank; reconfirm_reps)."""
+    return _draw(theta, z, reconfirm_spec(ys, d), r, (ys.reconfirm_seed, int(rank)), int(bi),
+                 ys.reconfirm_reps if n_rep is None else int(n_rep))
+
+
+def _worst(a, fn):
+    """Worst over the leading (g, scenario) axes."""
+    return fn(a.reshape((-1,) + a.shape[2:]), 0)
+
+
+def limits(draws: list, yd, k_ranges) -> dict:
+    """The bootstrap limits over every draw (Y.6.2 한계: filled values included), worst over g and scenarios (W's order:
+    the percentile per g · scenario, then the worst):
+    - by k: power 5th / false 95th percentile per k ([p, q, K, F, k]);
+    - simultaneous per k range (W.9.9 P1-3 "모든 k에서 동시"): the percentile of each draw's min (power) / max (false)
+      over the range's k ([p, q, K, F]);
+    - fill share per (g, target, scenario, k) over the simulated draws; fill_bad[k] if any share > fill_max (P1-5);
+    - success-only (exploratory_success_only, X.9.1.2): the by-k limits over the draws whose side calibrated;
+    - calibration status counts (status_counts)."""
+    n_rep = int(draws[0]["meta"]["n_rep"])
+    lo, hi = yd.pct_scale * (1 - yd.boot_level), yd.pct_scale * yd.boot_level
+    p = np.stack([d["arrays"]["hits"] for d in draws]).astype(float) / n_rep        # [D, g, target, scen, *grid]
+    pw, fp = p[:, :, 0], p[:, :, 1]
+    nk = pw.shape[-1]
+    out = dict(power_lo_by_k=_worst(np.percentile(pw, lo, axis=0), np.min),
+               false_hi_by_k=_worst(np.percentile(fp, hi, axis=0), np.max), sim={})
+    for kr in k_ranges:
+        ks = _range_ks(kr, yd)
+        out["sim"][tuple(int(v) for v in kr)] = dict(
+            power=_worst(np.percentile(pw[..., ks].min(-1), lo, axis=0), np.min),
+            false=_worst(np.percentile(fp[..., ks].max(-1), hi, axis=0), np.max))
+    fills = np.stack([d["arrays"]["fills"] for d in draws])                          # [D, g, target, scen, k]
+    sim = ~np.isnan(fills)
+    n_sim = sim.sum(0)
+    share = np.where(n_sim > 0, np.where(sim, fills, 0.0).sum(0) / np.maximum(n_sim, 1), np.nan)
+    bad = (np.round(np.where(np.isnan(share), 0.0, share) - yd.fill_max, yd.round_digits) > 0).reshape(-1, nk).any(0)
+    succ = {}
+    for mi, (m, _f) in enumerate(MODES):
+        ok = np.array([d["meta"]["cal"][m]["ok"] for d in draws])
+        succ[m] = (_worst(np.percentile(p[ok, :, mi], lo if m == "min" else hi, axis=0),
+                          np.min if m == "min" else np.max) if ok.any() else None)
+    return dict(out, fill_share=share, fill_bad=bad, success_only=succ, n_draws=len(draws), n_rep=n_rep,
+                counts=status_counts([d["meta"]["cal"] for d in draws]))
+
+
+def _sim_grid(lim: dict, kr, nk: int) -> tuple:
+    """The simultaneous limits of k range kr broadcast over the k axis, so qualify_y (phase A) reads them unchanged."""
+    s = lim["sim"][tuple(int(v) for v in kr)]
+    return np.repeat(s["power"][..., None], nk, -1), np.repeat(s["false"][..., None], nk, -1)
+
+
+def qualify_boot(lim: dict, yd, k_ranges) -> dict:
+    """Y.5 자격 on the bootstrap: per k range, qualify_y (envelope, fill exclusion) on that range's simultaneous
+    limits."""
+    nk = yd.k_cap - yd.k_min + 1
+    out = {}
+    for kr in k_ranges:
+        pw, fp = _sim_grid(lim, kr, nk)
+        out.update(qualify_y(pw, fp, lim["fill_bad"], yd, [tuple(int(v) for v in kr)]))
+    return out
+
+
+def at_f_boot(lim: dict, ys, k_ranges, F: int) -> list:
+    """Y.8's bootstrap table: per (p_set, q, K, k range) at F the k-wise limits (by k, worst over g and scenarios)."""
+    return table_at_f_y(lim["power_lo_by_k"], lim["false_hi_by_k"], ys, k_ranges, F)
+
+
+def reconfirm_decide(draws: list, d: dict, rank: int, ys) -> dict:
+    """P2-8: the design's limits from its own draws, its qualification (every k of its range, envelope, fill), and
+    the k-wise limits at its F for the sentence."""
+    yd = reconfirm_spec(ys, d)
+    kr = tuple(int(v) for v in d["k_range"])
+    lim = limits(draws, yd, [kr])
+    ok = bool(qualify_boot(lim, yd, [kr])[kr][0, 0, 0, 0])
+    ks = _range_ks(kr, yd)
+    return dict(design={k: d[k] for k in ("p_set", "q", "K", "F", "k_range")}, rank=int(rank), ok=ok,
+                k=list(range(kr[0], kr[1] + 1)),
+                power_by_k=lim["power_lo_by_k"][0, 0, 0, 0][ks].tolist(),
+                false_by_k=lim["false_hi_by_k"][0, 0, 0, 0][ks].tolist(),
+                power_sim=lim["sim"][kr]["power"][0, 0, 0].tolist(), false_sim=lim["sim"][kr]["false"][0, 0, 0].tolist(),
+                fill_bad=lim["fill_bad"].tolist(), counts=lim["counts"], n_draws=lim["n_draws"], n_rep=lim["n_rep"],
+                root=ys.reconfirm_seed)
+
+
+def records_target_b(lim: dict, ys, k_ranges, cost_h) -> dict:
+    """Y.6.5's target without a selected design: among designs whose own-range simultaneous false limit ≤ p_false the
+    largest power limit, none → the smallest false limit (then power); ties by Y.5's order (p_set, cost, q, K, F,
+    k_lo)."""
+    fs = list(range(ys.f_min, ys.f_max + 1))
+    d = ys.round_digits
+    rows = []
+    for kr in k_ranges:
+        s = lim["sim"][tuple(int(v) for v in kr)]
+        for i in np.ndindex(s["power"].shape):
+            dsg = dict(p_set=ys.p_set_grid[i[0]], q=ys.q_grid[i[1]], K=ys.k_grid[i[2]], F=int(fs[i[3]]),
+                       k_range=[int(kr[0]), int(kr[1])])
+            rows.append(dict(dsg, pmin=round(float(s["power"][i]), d), fmax=round(float(s["false"][i]), d),
+                             cost_h=float(cost_h(dsg))))
+
+    def tie(r):
+        return (-r["p_set"], r["cost_h"], -r["q"], r["K"], r["F"], r["k_range"][0])
+    ok = [r for r in rows if round(r["fmax"] - ys.p_false, d) <= 0]
+    if ok:
+        return dict(min(ok, key=lambda r: (-r["pmin"],) + tie(r)), rule="false_ok_max_power")
+    return dict(min(rows, key=lambda r: (r["fmax"], -r["pmin"]) + tie(r)), rule="min_false")
+
+
+def records_b(thetas: dict, target: dict, z: dict, ys, cell=run_cell, log=None) -> dict:
+    """Y.6.5 after the bootstrap: point_records_y (phase A, unchanged) on the target design under root oc_seed — "뿌리
+    77_000_000 records 태그" (a precheck STOP used precheck_seed; plan Reading 6)."""
+    return point_records_y(thetas, target, z, dataclasses.replace(ys, precheck_seed=ys.oc_seed), cell=cell, log=log)
