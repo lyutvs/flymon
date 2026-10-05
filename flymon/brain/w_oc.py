@@ -33,7 +33,14 @@ Model (probe level, fitted to the pilot; plan Readings 9-11):
   (pair means ~ N(m0, Σ_pair), per-pair drifts and spillover changes ~ their pilot normals, fly effects ~ N(0,
   Σ_fly) re-estimated, residual blocks resampled by pair) and refitted; each draw recalibrated and simulated with
   boot_reps experiments. Simultaneous one-sided limits over k: power = the 5th percentile over draws of min_k
-  P(PASS), false pass = the 95th percentile of max_k P(PASS); the worst over the cluster grid.
+  P(PASS), false pass = the 95th percentile of max_k P(PASS); the worst over the cluster grid. W.9.10 item 3: the
+  per-k limits are stored too (power_lo_by_k / false_hi_by_k, axes [q, K, F, k], k = k_values): the 5th / 95th
+  percentile over draws at each k, worst over g; P(PASS) is nested in k, so min_k (max_k) of them equals the
+  combined power_lo (false_hi). limits_at_f gives the F = 32 per-k limits per (q, K) for STOP_OC_UNREACHABLE.
+- Calibration notes (CALIBRATION_NOTES, also in the OC document): the population pair has fly variance 0 (one
+  average fly), whose true d′ equals the mean of the per-fly true d′ except where the floor truncation bends it;
+  under W.9.10's "power unchanged" wording a power handle whose drift-only gate pair min is already ≥ 1.5 + tol at
+  zero injection gets status above_at_zero → that design is unreachable (the literal reading; recorded in the doc).
 - Selection (H1, W.9.9): a design (q, K, F) qualifies when its limits meet G.6 at every k (power ≥ 0.80, false pass
   ≤ 0.05) for F, F+1, F+2, F+3 (F ≥ 29: F alone); the cheapest qualifying design by the total wall-clock estimate
   wins (ties: larger q, then smaller K, then smaller F); every qualifying design in cost order is the alternative
@@ -46,6 +53,15 @@ import time
 import numpy as np
 
 from . import w_verdict as WV
+
+CALIBRATION_NOTES = (
+    "Calibration uses the population pair with fly variance 0 (u = w = v = 0: one average fly); its true d' equals "
+    "the mean of the per-fly true d' except where the floor truncation max(0, .) bends it.",
+    "Under W.9.10's 'power calibration unchanged' wording, if presentation drift alone already gives the power gate "
+    "pair min >= 1.5 + tol at zero injection, calibration returns 'above_at_zero' and that design is unreachable "
+    "(the literal reading; the zero_floor rule applies only to the false-pass null). Recorded here when it occurs: "
+    "see calibration['min'][handle]['status'].",
+)
 
 SLOTS = ("pre", "R1", "R2", "N1", "N2", "RN2")
 SI = {s: i for i, s in enumerate(SLOTS)}
@@ -361,16 +377,23 @@ def run(pilot: list, z: dict, spec, cost, n_boot=None, n_rep=None, n_boot_rep=No
     if n_boot:
         power_lo = np.percentile(boot_p[:, :, 0].min(-1), lo_pct, axis=0).min(0)      # [q, K, F]
         false_hi = np.percentile(boot_p[:, :, 1].max(-1), hi_pct, axis=0).max(0)
+        power_lo_by_k = np.percentile(boot_p[:, :, 0], lo_pct, axis=0).min(0)          # [q, K, F, k]
+        false_hi_by_k = np.percentile(boot_p[:, :, 1], hi_pct, axis=0).max(0)
     else:
         power_lo = np.zeros(shape[:3])
         false_hi = np.ones(shape[:3])
+        power_lo_by_k = np.zeros(shape)
+        false_hi_by_k = np.ones(shape)
     reachable = cal["min"]["ok"] and cal["max"]["ok"]
     qual = qualify(power_lo, false_hi, spec) if reachable else np.zeros(shape[:3], bool)
     sel, ranking = select(qual, cost, spec)
     doc = dict(theta=summary(theta), calibration=cal, reachable=bool(reachable),
                drift_dprime=drift_dprimes(theta, idx, z), cal_floor_rule=spec.cal_floor_rule,
                point={f"g{g}|{m}": (None if p is None else p.tolist()) for (g, m), p in point.items()},
-               power_lo=power_lo.tolist(), false_hi=false_hi.tolist(), qualified=qual.tolist(),
+               power_lo=power_lo.tolist(), false_hi=false_hi.tolist(),
+               power_lo_by_k=power_lo_by_k.tolist(), false_hi_by_k=false_hi_by_k.tolist(),
+               by_k_axes=["q", "K", "F", "k"], k_values=list(range(spec.k_min, spec.k_cap + 1)),
+               calibration_notes=CALIBRATION_NOTES, qualified=qual.tolist(),
                selected=sel, ranking=ranking, boot_calibration=boot_cal,
                axes=dict(q=list(spec.q_grid), K=list(spec.k_grid), F=list(range(spec.f_min, spec.f_max + 1)),
                          k=list(range(spec.k_min, spec.k_cap + 1)), g=gs),
@@ -382,6 +405,19 @@ def run(pilot: list, z: dict, spec, cost, n_boot=None, n_rep=None, n_boot_rep=No
     doc["timing"] = dict(point_s=t_boot - t_point, boot_s=t_sel - t_boot, records_s=t_end - t_rec,
                          total_s=t_end - t0)
     return doc
+
+
+def limits_at_f(doc: dict, F: int = 32) -> list:
+    """W.9.10 item 3 (the STOP_OC_UNREACHABLE text): for every (q, K) the per-k bootstrap limits at F — power (5th
+    percentile over draws, worst over g) and false pass (95th percentile, worst over g) for each k in k_values."""
+    fi = doc["axes"]["F"].index(F)
+    pl, fh = np.asarray(doc["power_lo_by_k"]), np.asarray(doc["false_hi_by_k"])
+    rows = []
+    for qi, q in enumerate(doc["axes"]["q"]):
+        for ki, K in enumerate(doc["axes"]["K"]):
+            rows.append(dict(q=q, K=K, F=F, k=list(doc["k_values"]),
+                             power_lo=pl[qi, ki, fi].tolist(), false_hi=fh[qi, ki, fi].tolist()))
+    return rows
 
 
 def records(theta, sel, idx, z, spec, n_rep) -> dict:
@@ -460,6 +496,11 @@ def simple_normal(spec, rng, d_true=1.5, n_rep=2000, q=0.75, k_probe=8) -> dict:
     return out
 
 
+# P(PASS) must not rise across F 8 -> 16 -> 24 -> 32 (every step, P0-1); a step may rise by at most this much
+# (floating-point slack only — the draws use one seeded stream, the check is otherwise exact).
+SIMPLE_NORMAL_TOL = 1e-12
+
+
 def synthetic_validation(spec, z: dict, n_rep: int = 1000) -> dict:
     """The four known-answer fixtures and P0-1's check (W.9.9 P2-11 tolerances), evaluated by the OC machinery."""
     rng = _rng(spec, TAG_SYNTH)
@@ -487,6 +528,8 @@ def synthetic_validation(spec, z: dict, n_rep: int = 1000) -> dict:
     else:
         res["negative_correlation"] = dict(max_p=None, ok=False)
     sn = simple_normal(spec, rng)
-    res["simple_normal"] = dict(p_by_F={str(k): v for k, v in sn.items()}, ok=bool(sn[32] <= sn[8]))
+    p = np.array([sn[F] for F in (8, 16, 24, 32)])
+    res["simple_normal"] = dict(p_by_F={str(k): v for k, v in sn.items()}, diffs=np.diff(p).tolist(),
+                                tol=SIMPLE_NORMAL_TOL, ok=bool(np.all(np.diff(p) <= SIMPLE_NORMAL_TOL)))
     res["ok"] = all(v["ok"] for v in res.values() if isinstance(v, dict))
     return res

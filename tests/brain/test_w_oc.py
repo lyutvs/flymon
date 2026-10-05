@@ -169,10 +169,33 @@ def test_run_small_is_deterministic(theta):
     assert set(a["timing"]) == {"point_s", "boot_s", "records_s", "total_s"} and a["reachable"]
 
 
+def test_per_k_bootstrap_limits_w910_item3():
+    """W.9.10 item 3: per-k limits [q, K, F, k] (power 5th percentile, false pass 95th, worst over g); nested in k, so
+    min_k / max_k of them equal the combined limits; limits_at_f gives the F = 32 per-k limits per (q, K)."""
+    rng = np.random.default_rng(3)
+    pilot = w_oc.synthetic_pilot(rng, base=(40.0, 90.0), sd=4.0, corr=0.8, learn=(20.0, 10.0))
+    doc = w_oc.run(pilot, Z, SP, lambda K, F: K * F / 64, n_boot=3, n_rep=40, n_boot_rep=40)
+    nf, nk = SP.f_max - SP.f_min + 1, SP.k_cap - SP.k_min + 1
+    pk, fk = np.asarray(doc["power_lo_by_k"]), np.asarray(doc["false_hi_by_k"])
+    assert pk.shape == fk.shape == (len(SP.q_grid), len(SP.k_grid), nf, nk)
+    assert doc["by_k_axes"] == ["q", "K", "F", "k"] and doc["k_values"] == [4, 5, 6, 7, 8]
+    assert np.allclose(pk.min(-1), doc["power_lo"]) and np.allclose(fk.max(-1), doc["false_hi"])
+    rows = w_oc.limits_at_f(doc, 32)
+    assert len(rows) == len(SP.q_grid) * len(SP.k_grid)
+    r = rows[0]
+    assert r["F"] == 32 and r["k"] == [4, 5, 6, 7, 8] and len(r["power_lo"]) == len(r["false_hi"]) == nk
+    assert np.allclose(r["power_lo"], pk[0, 0, 32 - SP.f_min]) and np.allclose(r["false_hi"], fk[0, 0, 32 - SP.f_min])
+    assert len(doc["calibration_notes"]) == 2 and "above_at_zero" in doc["calibration_notes"][1]
+    empty = w_oc.run(pilot, Z, SP, lambda K, F: K * F / 64, n_boot=0, n_rep=20)
+    assert np.asarray(empty["power_lo_by_k"]).shape == pk.shape
+
+
 def test_synthetic_validation_meets_p2_11():
     r = w_oc.synthetic_validation(SP, Z, n_rep=300)
     assert r["ok"], r
     assert r["zero_effect"]["max_p"] <= 0.02 and r["big_effect"]["min_p"] >= 0.98
     assert r["one_gate"]["max_p"] <= 0.02 and r["negative_correlation"]["max_p"] <= 0.02
     sn = r["simple_normal"]["p_by_F"]
-    assert sn["32"] <= sn["8"]
+    p = np.array([sn[k] for k in ("8", "16", "24", "32")])
+    assert np.all(np.diff(p) <= w_oc.SIMPLE_NORMAL_TOL)            # never rises at any step 8 -> 16 -> 24 -> 32
+    assert r["simple_normal"]["diffs"] == np.diff(p).tolist()
