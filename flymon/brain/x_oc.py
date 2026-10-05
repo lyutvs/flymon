@@ -16,6 +16,7 @@ Every stream is SeedSequence([root, tag, …]); the roots are X's (x_spec) excep
 from __future__ import annotations
 
 import dataclasses
+import hashlib
 import math
 import time
 
@@ -37,6 +38,13 @@ def rng(root, *tags):
 def run_cell(tag, key, fn):
     """The default cell runner (no cache); x_runner passes a resumable one."""
     return fn()
+
+
+def digest(a) -> str:
+    """sha256 of an array's float64 / int64 bytes (shape included) — a cell-key stand-in for a long input array."""
+    a = np.asarray(a)
+    a = a.astype(np.int64 if np.issubdtype(a.dtype, np.integer) else np.float64)
+    return hashlib.sha256(repr(a.shape).encode() + a.tobytes()).hexdigest()
 
 
 def grid_shape(xs) -> tuple:
@@ -491,7 +499,8 @@ def point_records(theta, abs_d, target: dict, z, xs, n_rep: int | None = None, c
         if log is not None:
             log(f"x precheck records {v} done")
         return out
-    key = dict(theta=w_oc.summary(theta), target=target, n_rep=n_rep)
+    key = dict(theta=w_oc.summary(theta), target=target, n_rep=n_rep, root=int(root),
+               abs_d=digest(np.abs(np.asarray(abs_d, float))))
     res = {v: cell(f"records_{v}", dict(key, variant=v), lambda vi=vi, v=v: one(vi, v))
            for vi, v in enumerate(xs.variants)}
     cals = {f"min|{t}": dict(ok=c["ok"], failure=c["failure"], retried=c["retried"]) for t, c in cmin.items()}
@@ -687,7 +696,7 @@ def pair_diag(theta, cal, idx, root, n_rep, z, xs, cell=run_cell, log=None) -> d
         if log is not None:
             log(f"x diag (i) g {g} done")
         return dict(cells={k: _finish(v) for k, v in acc.items()}, ceiling_share=ceil_ok / ceil_n)
-    key = dict(theta=w_oc.summary(theta), a=a, b=b, n_rep=n_rep)
+    key = dict(theta=w_oc.summary(theta), a=a, b=b, n_rep=n_rep, root=int(root), idx=digest(idx))
     out = {f"g{g}": cell(f"pair_g{g}", dict(key, g=g), lambda gi=gi, g=g: one(gi, g))
            for gi, g in enumerate(xs.cluster_grid)}
     gs = [f"g{g}" for g in xs.cluster_grid]
@@ -729,7 +738,8 @@ def diagnostics(theta, abs_d, z, xs, n_rep: int | None = None, cell=run_cell, lo
     flt = filters(theta, abs_d, xs)
     fs, kk = list(range(xs.f_min, xs.diag_f_max + 1)), list(range(xs.k_min, xs.diag_k_max + 1))
     shp = (len(xs.p_set_grid), len(xs.q_grid), len(xs.k_grid), len(fs), len(kk))
-    key0 = dict(theta=w_oc.summary(theta), n_rep=n_rep,
+    key0 = dict(theta=w_oc.summary(theta), n_rep=n_rep, root=int(root),
+                abs_d=digest(np.abs(np.asarray(abs_d, float))),
                 cal={m: [(c["a"] or {}).get("value"), (c["b"] or {}).get("value")] for m, c in cal.items()})
     grid = {}
     for fi, (name, f) in enumerate(flt.items()):

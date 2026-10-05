@@ -2,12 +2,15 @@
 0.10, the filters (F1 Σ from the balanced pairs, F2(ℓ) percentile thresholds on MBON13(X) / MBON05(X)), rejection that
 cannot be met fills and is counted, the pair-level counters add up, the minimum-change ranking order, the full run's
 layout and that it never changes the gate."""
+import json
+
 import numpy as np
 import pytest
 
 from flymon.brain import w_oc
 from flymon.brain import w_verdict as WV
 from flymon.brain import x_oc
+from flymon.brain.h3_store import canonical
 from flymon.brain.x_spec import SPEC as XS
 
 Z = {"A": (16.917, 12.484), "P": (80.167, 29.775)}
@@ -103,3 +106,42 @@ def test_diagnostics_layout(theta):
     assert 0.0 <= ii["acceptance"] <= 1.0 and d["ii"]["none"]["acceptance"] is None
     s = x_oc.diag_summary(d)
     assert set(s) == {"ii", "iii", "i", "calibration", "note"}
+
+
+class _Stop(Exception):
+    pass
+
+
+def _first_key(fn):
+    """The (tag, key) of the first cell fn asks for (the cell then aborts — nothing is simulated)."""
+    seen = []
+
+    def spy(tag, key, f):
+        seen.append((tag, json.loads(canonical(key))))
+        raise _Stop
+    with pytest.raises(_Stop):
+        fn(spy)
+    return seen[0]
+
+
+def test_cell_keys_carry_abs_d_root_and_idx(theta, cal):
+    """abs_d decides F1's Σ_pair, the balanced counts and V1/V2's thetas, so a cached diag_* / records_* cell must
+    not be reused under another abs_d; pair_g* keys carry root and idx's digest."""
+    nd2 = ND.copy()
+    nd2[3] = 0.1                                                          # 1.09 → 0.1: one more balanced pair
+    t1, k1 = _first_key(lambda c: x_oc.diagnostics(theta, ND, Z, XS, n_rep=2, cell=c))
+    t2, k2 = _first_key(lambda c: x_oc.diagnostics(theta, nd2, Z, XS, n_rep=2, cell=c))
+    assert t1 == t2 and t1.startswith("diag_") and k1 != k2 and k1["abs_d"] != k2["abs_d"]
+    assert {k: v for k, v in k1.items() if k != "abs_d"} == {k: v for k, v in k2.items() if k != "abs_d"}
+    _t, k3 = _first_key(lambda c: x_oc.diagnostics(theta, -ND, Z, XS, n_rep=2, cell=c))
+    assert k3 == k1                                                       # |d′| only
+    idx, c = cal
+    _t, p1 = _first_key(lambda cc: x_oc.pair_diag(theta, c, idx, XS.diag_seed, 2, Z, XS, cell=cc))
+    _t, p2 = _first_key(lambda cc: x_oc.pair_diag(theta, c, idx[::-1].copy(), XS.diag_seed, 2, Z, XS, cell=cc))
+    _t, p3 = _first_key(lambda cc: x_oc.pair_diag(theta, c, idx, XS.diag_seed + 1, 2, Z, XS, cell=cc))
+    assert p1["idx"] != p2["idx"] and p1["root"] != p3["root"]
+    assert x_oc.digest(idx) == x_oc.digest(list(idx)) != x_oc.digest(idx[:-1])
+    tg = dict(p_set=XS.p_set_grid[0], q=XS.q_grid[0], K=XS.k_grid[0], F=XS.f_min)
+    _t, r1 = _first_key(lambda cc: x_oc.point_records(theta, ND, tg, Z, XS, n_rep=2, cell=cc))
+    _t, r2 = _first_key(lambda cc: x_oc.point_records(theta, nd2, tg, Z, XS, n_rep=2, cell=cc))
+    assert r1["abs_d"] != r2["abs_d"]                                     # V1 / V2's thetas come from abs_d

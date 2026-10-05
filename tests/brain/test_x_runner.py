@@ -1,7 +1,9 @@
 """X's phase-A chain (X.5 0 · 0a): stage0 then precheck; refusals; STOP_REUSE on every broken W fact (records
 unavailable); the W diagnosis checked draw by draw; precheck PASS / STOP blocks with their details; resumable cells."""
+import copy
 import dataclasses
 import json
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -189,3 +191,36 @@ def test_precheck_point_cells_and_a_changed_spec_or_corrupt_cell_recomputes(w, m
         w.runner(hard).stage_precheck()
     with pytest.raises(AssertionError, match="recomputed"):                # another XSpec never reuses a cell
         w.runner(dataclasses.replace(hard, precheck_reps=7)).stage_precheck()
+
+
+def _perturbed(d: dict) -> dict:
+    """Diagnostics output with every part the block reads changed."""
+    d = copy.deepcopy(d)
+    for v in d["ii"].values():
+        v["best"] = dict(v["best"], index=[0, 0, 0, 0, 0], perturbed=True)
+        v["fill_flag"] = not v["fill_flag"]
+    d["iii"].update(rank1=dict(filter="F1", k_lo=99, F=999, knobs=0), same_knobs=[], ranking=[])
+    d["i"] = None
+    d["calibration"] = {m: dict(c, ok=not c["ok"], failure="perturbed") for m, c in d["calibration"].items()}
+    d["arrays"] = {n: {k: (np.asarray(a) * 0 + 0.5).tolist() for k, a in v.items()} for n, v in d["arrays"].items()}
+    return d
+
+
+@pytest.mark.parametrize("p_power,p_false", [(1.01, None), (0.0, 1.0)])     # STOP, PASS
+def test_diagnostics_never_change_the_precheck_verdict(w, monkeypatch, p_power, p_false):
+    """X.9.1.4 record-only: the gate outcome, its sentence and the selected designs are identical with the real
+    diagnostics and with a perturbed diagnostics output (fresh cells each time, so nothing is reused)."""
+    w.runner().stage_stage0()
+    saved = Path(X0.summary).read_text()
+    xs = dataclasses.replace(XS, p_power=p_power, **({} if p_false is None else dict(p_false=p_false)))
+    first = w.runner(xs).stage_precheck()
+    real = XR.x_oc.diagnostics
+    monkeypatch.setattr(XR.x_oc, "diagnostics", lambda *a, **k: _perturbed(real(*a, **k)))
+    Path(X0.summary).write_text(saved)
+    shutil.rmtree(X0.progress_dir)
+    second = w.runner(xs).stage_precheck()
+    assert second["diag"] != first["diag"]
+    for k in ("outcome", "reasons", "sentence", "best_power", "records_target", "at_f32", "n_passing", "m_needed",
+              "calibration", "records"):
+        assert second.get(k) == first.get(k), k
+    assert first["outcome"] == ("PASS" if p_false is not None else "STOP_OC_UNREACHABLE")
