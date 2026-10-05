@@ -690,7 +690,7 @@ class Runner:
                         return None
                     meta = json.loads(str(f["__meta__"]))
                     return dict(arrays={k: f[k] for k in f.files if not k.startswith("__")}, meta=meta)
-            except (ValueError, KeyError, OSError):
+            except Exception:               # truncated / corrupt npz (BadZipFile, EOFError, …) → recompute the cell
                 return None
 
         def save(path, key, res):
@@ -731,10 +731,14 @@ class Runner:
         for v in self.ys.thread_env:
             os.environ.setdefault(v, "1")
         with ProcessPoolExecutor(max_workers=min(workers, len(todo)), mp_context=get_context("spawn")) as ex:
-            fut = {ex.submit(fn, *args): (i, p, k) for i, p, k, fn, args in todo}
-            for f in as_completed(fut):
-                i, p, k = fut[f]
-                done(i, p, k, f.result())
+            try:
+                fut = {ex.submit(fn, *args): (i, p, k) for i, p, k, fn, args in todo}
+                for f in as_completed(fut):
+                    i, p, k = fut[f]
+                    done(i, p, k, f.result())
+            except BaseException:           # an error or Ctrl-C does not run the queued draws
+                ex.shutdown(wait=False, cancel_futures=True)
+                raise
         return out
 
     def _theta_b(self, doc: dict, where: str):
@@ -798,16 +802,25 @@ class Runner:
                  (th, z, ys, r, bi)) for bi in range(ys.boot_draws)]
         lim = y_oc.limits(self._pcells("oc", jobs, _log), ys, kr)
         qual = y_oc.qualify_boot(lim, ys, kr)
-        elapsed = self._ledger_h(doc) + self._prog("oc") / ys.s_per_h
 
         def cost(dsg):
             return self._design_cost(doc, dsg, False)["total_h"]
-        sel = y_oc.select_y(qual, cost, elapsed, ys)
-        if sel["outcome"] == y_rules.STOP_BUDGET:
-            rows = [dict(p_set=ys.p_set_grid[i[0]], q=ys.q_grid[i[1]], K=ys.k_grid[i[2]], F=ys.f_min + i[3],
-                         k_range=list(k)) for k, ok in qual.items() for i in np.ndindex(ok.shape) if ok[i]]
-            best = min(cost(x) for x in rows)
-            sel = dict(sel, budget_text=y_rules.budget_text(elapsed, best, ys))
+
+        def select():
+            # elapsed is read once, at the first selection; a resumed run reuses that selection (its progress already
+            # holds spend made after it — reconfirmation, records), so ranking and rank tags stay the same
+            el = self._ledger_h(doc) + self._prog("oc") / ys.s_per_h
+            sl = y_oc.select_y(qual, cost, el, ys)
+            if sl["outcome"] == y_rules.STOP_BUDGET:
+                rows = [dict(p_set=ys.p_set_grid[i[0]], q=ys.q_grid[i[1]], K=ys.k_grid[i[2]], F=ys.f_min + i[3],
+                             k_range=list(k)) for k, ok in qual.items() for i in np.ndindex(ok.shape) if ok[i]]
+                best = min(cost(x) for x in rows)
+                sl = dict(sl, budget_text=y_rules.budget_text(el, best, ys))
+            return dict(elapsed=el, sel=sl)
+        got = cell("selection", dict(theta=w_oc.summary(th), z=z, k_ranges=kr, draws=ys.boot_draws, reps=ys.boot_reps,
+                                     ledger=(doc.get("budget") or {}).get("ledger", []), costs=doc["pilot"]["costs"],
+                                     n_len=int(doc["oracle"]["derived"]["yield_rule"]["n_len"])), select)
+        elapsed, sel = float(got["elapsed"]), got["sel"]
         at_f = y_oc.at_f_boot(lim, ys, kr, ys.f_max)
         dec = y_rules.oc_decision(sel, at_f, lim["counts"], ys)
         recs, design = [], None

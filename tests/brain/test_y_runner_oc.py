@@ -152,3 +152,105 @@ def test_oc_resumes_the_bootstrap_cells(w, monkeypatch):
     assert "oc" not in doc()
     seen.clear()
     assert w.runner().stage_oc()["outcome"] == R.PASS and seen == [2, 3]
+
+
+# ---- Task 3 review fixes: resume-stable selection, pool cancellation, corrupt cells, the cell key ------------------------
+def _boot_raises_or_marks(theta, z, ys, r, bi, n_rep=None):
+    """A pool draw: bi 0 raises at once, the others sleep and leave a marker file (module-level for spawn)."""
+    import time
+    if bi == 0:
+        raise RuntimeError("draw 0 failed")
+    time.sleep(0.4)
+    Path("marks").mkdir(exist_ok=True)
+    Path("marks", f"{bi}").write_text("x")
+    return REAL_BOOT(theta, z, ys, r, bi, n_rep)
+
+
+def _pc_world(tmp_path, monkeypatch, **kw):
+    monkeypatch.chdir(tmp_path)
+    kwd = dict(base=(40.0, 90.0), sd=4.0, corr=0.8, learn=(20.0, 10.0))
+    keys = list(Y.pilot_w_pairs) + list(Y.pilot_v_pairs)[:3]
+    r = O.r_v0(w_oc.fit(w_oc.synthetic_pilot(np.random.default_rng(4), n_pair=16, **kwd)))
+    th = O.fit_y(w_oc.synthetic_pilot(np.random.default_rng(3), n_pair=6, **kwd), keys, r)
+    ys = dataclasses.replace(Y, boot_reps=2, oc_chunk=2, **kw)
+    return YR.Runner(dict(params=lambda: Params()), ys), ys, th, r
+
+
+def test_pcells_pool_cancels_queued_draws_on_error(tmp_path, monkeypatch):
+    run, ys, th, r = _pc_world(tmp_path, monkeypatch, workers=2)
+    jobs = [(f"boot_{bi}", dict(bi=bi), _boot_raises_or_marks, (th, Z, ys, r, bi)) for bi in range(14)]
+    with pytest.raises(RuntimeError, match="draw 0 failed"):
+        run._pcells("c", jobs)
+    ran = len(list(Path("marks").glob("*"))) if Path("marks").exists() else 0
+    assert ran <= 5                         # the running and pre-queued draws only, not all 13 queued ones
+
+
+def test_pcells_corrupt_cell_recomputes_and_key_obj_matters(tmp_path, monkeypatch):
+    run, ys, th, r = _pc_world(tmp_path, monkeypatch, workers=1)
+    calls = []
+
+    def counted(*a):
+        calls.append(a[-1])
+        return REAL_BOOT(*a)
+    jobs = [(f"boot_{bi}", dict(bi=bi), counted, (th, Z, ys, r, bi)) for bi in range(3)]
+    first = run._pcells("t", jobs)
+    assert calls == [0, 1, 2]
+    calls.clear()
+    f = Path(ys.progress_dir, "t", "boot_1.npz")
+    f.write_bytes(f.read_bytes()[: f.stat().st_size // 2])          # truncated (a kill mid-write elsewhere)
+    again = run._pcells("t", jobs)
+    assert calls == [1] and np.array_equal(again[1]["arrays"]["hits"], first[1]["arrays"]["hits"])
+    f.write_bytes(b"")                                                # empty file
+    calls.clear()
+    run._pcells("t", jobs)
+    assert calls == [1]
+    calls.clear()
+    run._pcells("t", [(t, dict(k, other=1) if t == "boot_2" else k, fn, a) for t, k, fn, a in jobs])
+    assert calls == [2]                     # a different key object recomputes the cell (same tag)
+
+
+def _strip_volatile(o):
+    vol = {"elapsed_at_selection_h", "wall_s", "at", "env", "archive", "detail_sha256", "env_precheck_diff",
+           "written_at"}
+    if isinstance(o, dict):
+        return {k: _strip_volatile(v) for k, v in o.items() if k not in vol}
+    if isinstance(o, list):
+        return [_strip_volatile(v) for v in o]
+    return o
+
+
+def test_oc_selection_is_resume_stable(tmp_path, monkeypatch):
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    a = World(tmp_path / "a", monkeypatch)
+    YW.fake_reconfirm.fail = {0}
+    want = a.runner().stage_oc()
+    want_det = json.loads(Path(Y.oc_detail).read_text())
+    assert want["outcome"] == R.PASS and want["design"]["rank"] == 1
+
+    b = World(tmp_path / "b", monkeypatch)
+    YW.fake_reconfirm.fail = {0}
+    real = YR.y_oc.records_b
+
+    def killed(*a, **k):
+        raise RuntimeError("killed after selection")
+    monkeypatch.setattr(YR.y_oc, "records_b", killed)
+    with pytest.raises(RuntimeError, match="killed"):
+        b.runner().stage_oc()
+    assert "oc" not in doc()
+    run = b.runner()
+    sel_cell = json.loads(next(Path(Y.progress_dir, "oc").glob("selection*.json")).read_text())
+    run._prog_add("oc", 24 * 3600.0)        # spend after the killed run's selection (reconfirmation, records, …)
+    monkeypatch.setattr(YR.y_oc, "records_b", real)
+    got = run.stage_oc()
+    assert got["outcome"] == R.PASS and got["elapsed_at_selection_h"] == sel_cell["value"]["elapsed"]
+    assert _strip_volatile(got) == _strip_volatile(want)
+    assert _strip_volatile(json.loads(Path(Y.oc_detail).read_text())) == _strip_volatile(want_det)
+
+
+def test_oc_selection_elapsed_counts_the_stages_progress(tmp_path, monkeypatch):
+    w = World(tmp_path, monkeypatch)
+    run = w.runner()
+    run._prog_add("oc", 24 * 3600.0)        # a killed first run spent the budget before selection (boot draws)
+    out = run.stage_oc()
+    assert out["outcome"] == R.STOP_BUDGET and out["elapsed_at_selection_h"] > 24.0
