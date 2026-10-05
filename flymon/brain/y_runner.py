@@ -1021,6 +1021,77 @@ class Runner:
                          "않는다, Y.5).")
         return self._write("estimate", body, 0.0)
 
+    # ================================================================ orders 9–10: learning, BAND 2K, records
+    def _view(self, doc: dict) -> dict:
+        """Y's blocks in the shape W's Runner reads (w_runner.Runner.learn_units / band_units / record_units / _want /
+        _read): set, reuse z_V, budget / estimate plans, gates (design + pairs), naive (screened + manifest), the
+        measuring blocks' manifests, oracle counts and oc's design."""
+        d = doc["gates"]["design"]
+        e = doc.get("estimate") or {}
+        v = dict(set=dict(set=doc["digest"]["set"]), reuse=dict(z_V=doc["pilot"]["z_V"]),
+                 budget=dict(plan=doc["budget_gate"]["plan"]), estimate=dict(plan=e.get("plan")),
+                 gates=dict(design=dict(q=d["q"], K=d["K"], F=d["F"], k_cap=int(d["k_range"][1])),
+                            gates=doc["gates"]["gates"]),
+                 naive=dict(screened=doc["gates"]["screened"], manifest=doc["gates"]["manifest"]),
+                 oracle=dict(n=doc["oracle"]["n"], n_testable=doc["oracle"]["derived"]["counts"]["all"]["testable"]),
+                 oc=dict(selected=doc["oc"]["design"], records=None, drift_dprime=None))
+        for s in ("learn", "band", "records"):
+            if s in doc:
+                v[s] = dict(manifest=doc[s]["manifest"])
+        return v
+
+    def _measure_b(self, stage: str, make_units, parts: tuple, after: tuple, detail: str) -> dict:
+        """Y.7 9 · 10: the units through the W measurer behind YCache, with the batch ledger (measured spend, no
+        margin — Y.9.2 P2-9): elapsed + spent + this stage's remaining share + the later parts > budget_h →
+        STOP_BUDGET (the main set is used from learn on). Blocks hold manifests only — no statistic before the seal."""
+        doc = self._require(stage)
+        self._keys_ok(stage)
+        ys = self.ys
+        wr, wm = self.ctx["w_runner"](self.pool, False)
+        view = self._view(doc)
+        units = make_units(wr, view)
+        est = doc["estimate"]["plan"]
+        later = sum(est["parts_h"][p] for p in after if p != "c" or est["with_c"])
+        share = sum(est["parts_h"][p] for p in parts if p != "c" or est["with_c"])
+        base = self._ledger_h(doc)
+        prev = self._prog(stage)
+        t_start = time.perf_counter()
+
+        def check(done, todo):
+            now = time.perf_counter()
+            self._prog_add(stage, now - check.t)
+            check.t = now
+            spent = (prev + now - t_start) / ys.s_per_h
+            left = share * (1 - done / max(todo, 1)) if done else share
+            if round(base + spent + left + later - ys.budget_h, ys.round_digits) > 0:
+                raise w_runner.BudgetStop(w_rules.budget_h_text(base + spent, left + later))
+        check.t = time.perf_counter()
+        try:
+            got = wm.learn(units, stage, check=check)
+        except w_runner.BudgetStop as e:
+            body = dict(outcome=y_rules.STOP_BUDGET, reasons=[str(e)], main_set_used=True,
+                        sentence=y_rules.sentences_b(ys)[y_rules.STOP_BUDGET].format(h=str(e), where=WHERE[stage]))
+            y_store.write_json(detail, dict(body, manifest=[]), self.plist)
+            return self._write(stage, body, self._prog_add(stage, time.perf_counter() - check.t))
+        man = wr._manifest(got)
+        p = y_store.write_json(detail, dict(manifest=man), self.plist)
+        body = dict(outcome=y_rules.PASS, reasons=[], manifest=man, n_units=len(units), main_set_used=True,
+                    detail_path=detail, detail_sha256=sha256_file(p),
+                    note="블록은 통계를 담지 않는다 — 판정은 봉인 뒤 1회(Y.7 12).")
+        return self._write(stage, body, self._prog_add(stage, time.perf_counter() - check.t))
+
+    def stage_learn(self) -> dict:
+        return self._measure_b("learn", lambda wr, v: wr.learn_units(v), ("learn",), ("band", "c", "noplast"),
+                               self.ys.learn_detail)
+
+    def stage_band(self) -> dict:
+        return self._measure_b("band", lambda wr, v: wr.band_units(v), ("band",), ("c", "noplast"),
+                               self.ys.band_detail)
+
+    def stage_records(self) -> dict:
+        return self._measure_b("records", lambda wr, v: wr.record_units(v), ("c", "noplast"), (),
+                               self.ys.records_detail)
+
 
 # ================================================================ phase B module level (Y.7 orders 6–12) — appended
 EXIT_KEY = 7
@@ -1123,3 +1194,8 @@ def smoke_problems(wr, learn, band, naive, orc, m, flies, K, ys) -> list:
     used += [s for v in wr.spec.oracle_seeds().values() for s in v]
     out += [f"스모크 시드 {s}가 스모크 블록 밖" for s in used if not lo <= s < hi]
     return out
+
+
+WHERE = dict(learn="순서 9 학습 측정", band="순서 9 BAND 2K 재측정", records="순서 10 기록")
+
+from . import w_rules  # noqa: E402 — phase B (the budget text of the batch ledger)
