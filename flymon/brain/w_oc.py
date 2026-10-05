@@ -501,8 +501,10 @@ def simple_normal(spec, rng, d_true=1.5, n_rep=2000, q=0.75, k_probe=8) -> dict:
 SIMPLE_NORMAL_TOL = 1e-12
 
 
-def synthetic_validation(spec, z: dict, n_rep: int = 1000) -> dict:
-    """The four known-answer fixtures and P0-1's check (W.9.9 P2-11 tolerances), evaluated by the OC machinery."""
+def synthetic_validation(spec, z: dict, n_rep: int | None = None) -> dict:
+    """The four known-answer fixtures and P0-1's check (W.9.9 P2-11 tolerances), evaluated by the OC machinery;
+    n_rep defaults to spec.synth_reps (the number lives only in w_spec)."""
+    n_rep = spec.synth_reps if n_rep is None else int(n_rep)
     rng = _rng(spec, TAG_SYNTH)
     kw = dict(base=(40.0, 90.0), sd=4.0, corr=0.8, learn=(20.0, 10.0))
     th0 = fit(synthetic_pilot(rng, **kw))

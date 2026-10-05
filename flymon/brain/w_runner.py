@@ -27,7 +27,7 @@ from . import v_rules, w_oc, w_records, w_rules, w_store, w_verdict
 from .h3_store import ROOT as _ROOT
 from .h3_store import canonical, sha256_file
 from .h3_store import git_state as _h3_git_state
-from .h4_formula import pair_stats  # noqa: F401  (stage oracle, w_runner part 2)
+from .h4_formula import pair_stats
 from .r_measure import R_MEASURE_FILES
 from .r_pairs import row_key
 from .r_runner import p_items
@@ -515,7 +515,8 @@ class Runner:
         p = w_store.write_json(sp.oc_detail, oc, self.plist)
         dec = w_rules.oc(oc, sp)
         body = dict(dec, selected=oc["selected"], ranking=oc["ranking"], reachable=oc["reachable"],
-                    calibration=oc["calibration"], theta=oc["theta"], records=oc.get("records"), costs=costs,
+                    calibration=oc["calibration"], theta=oc["theta"], records=oc.get("records"),
+                    drift_dprime=oc.get("drift_dprime"), costs=costs,
                     detail_path=sp.oc_detail, detail_sha256=sha256_file(p), timing=oc["timing"],
                     note="작동 특성은 파일럿 잡음 모형 조건부이며 Q → … → W 전체 절차의 오선택률이 아니다. 관문 쌍은 "
                          "오라클 순진·시험 가능으로 고른 조건부 표본이다. 파일럿은 순진 불균형 쌍 위주다.")
@@ -588,3 +589,386 @@ class Runner:
         if e.get("plan"):
             p = dict(p, with_c=e["plan"]["with_c"])
         return p
+
+    # ================================================================ 6: the main set (W.2) — no pool
+    def stage_set(self) -> dict:
+        self._require("set")
+        sp = self.spec
+        try:
+            js = self.ctx["w_set"]()
+        except ValueError as e:
+            refuse(f"the W set cannot be generated: {e}")
+        from .w_pairs import set_summary
+        bad = [] if (js["n_b"], js["n_a"]) == (sp.n_b_expected, sp.n_a_expected) else [
+            f"(b) {js['n_b']} · (a) {js['n_a']} ≠ 선언 {sp.n_b_expected} · {sp.n_a_expected}"]
+        body = dict(outcome=w_rules.INVALID if bad else w_rules.PASS, reasons=bad, set=dict(set_summary(js),
+                                                                                          keys=js["keys"]),
+                    note="W.2: 어떤 오라클보다 먼저 커밋한다.")
+        return self._write("set", body)
+
+    def _main_rows(self, doc: dict) -> list:
+        try:
+            return self.ctx["main_rows"](doc["set"]["set"])
+        except ValueError as e:
+            refuse(f"the W set does not reproduce block set (W.2): {e}")
+
+    # ================================================================ 7: the oracle screen (W.2, W.9.8 H3)
+    def stage_oracle(self) -> dict:
+        doc = self._require("oracle")
+        self._keys_chain(doc, "oracle")
+        sp = self.spec
+        rows = self._main_rows(doc)
+        z_v = self._z_v(doc)
+        m = self._m(z_v)
+        t0 = time.perf_counter()
+        prev = self._prog("oracle")
+        got = m.oracle(rows, V_SPEC.cond("L"), "screen", sp.oracle_seeds())
+        wall = prev + time.perf_counter() - t0
+        self._prog_add("oracle", time.perf_counter() - t0)
+        per, bad = [], []
+        for r, g in zip(rows, got):
+            res = g["result"]
+            q = res.get("q", {})
+            if q.get("edit") != V_SPEC.lever_edit or q.get("csc_sha256") != V_SPEC.sha_combined or \
+                    q.get("edit_edges") != V_SPEC.lever_edges:
+                bad.append(f"{g['key']}: edit {q.get('edit')} / CSC / edges")
+            st = pair_stats(res["report"], z_v, V_SPEC.testable_min)
+            if st is None:
+                bad.append(f"{g['key']}: d′ 정의 불가")
+                continue
+            per.append(dict(key=g["key"], c=r["c"], axis=r["axis"], turn=r["turn"], d_pre=st["d_pre"], r=st["r"],
+                            p=st["p"], testable=bool(st["testable"])))
+        man = [dict(key=g["key"], cache_file=g["cache_file"], cache_key=g["cache_key"],
+                    sha256=sha256_file(g["cache_file"])) for g in got]
+        body = dict(outcome=w_rules.INVALID if bad else w_rules.PASS, reasons=bad, pairs=per,
+                    n_testable=sum(p["testable"] for p in per), n=len(per), manifest=man, seeds=sp.oracle_seeds(),
+                    z_V={k: list(v) for k, v in z_v.items()}, note="W.9.8 H3: 이 블록 뒤 주 세트는 사용된 것이다.")
+        return self._write("oracle", body, wall_s=wall)
+
+    # ================================================================ 8: the estimate after the oracle (W.9.8 H3)
+    def stage_estimate(self) -> dict:
+        doc = self._require("estimate")
+        sp = self.spec
+        n_t = int(doc["oracle"]["n_testable"])
+        d = doc["budget"]["plan"]["design"]
+        # W.9.9 P1-5 / w_rules.budget stage "8": the plan's design only, [with C, without C] — C dropped, then stop;
+        # the oracle is done (n_set 0) and the naive screen's worst case is the real testable count
+        opts = [dict(design=d, with_c=wc, **w_records.design_cost(doc["smoke"]["costs"], d["K"], d["F"], sp, 0, n_t,
+                                                                  wc)) for wc in (True, False)]
+        dec = w_rules.budget(self._elapsed_h(doc), opts, sp, stage="8")
+        return self._write("estimate", dict(dec, budget_stage=dec["stage"], n_testable=n_t,
+                                            note="W.9.8 H3: 실제 시험 가능 쌍 수로 추정 갱신(C 제외 먼저)."))
+
+    # ---- the in-stage ledger (W.9.8 H3: "배치마다 원장 갱신") ------------------------------------------------------
+    def _checker(self, doc: dict, stage: str, part: str, remaining_after: float):
+        """check(done, todo): stop when elapsed + this stage's remaining share + the later stages' estimate > 24 h."""
+        est = doc["estimate"]["plan"]["parts_h"]
+        base = self._elapsed_h(doc)
+        t_start = time.perf_counter()
+        prev = self._prog(stage)
+
+        def check(done, todo):
+            now = time.perf_counter()
+            self._prog_add(stage, now - check.t)
+            check.t = now
+            spent = (prev + now - t_start) / 3600
+            left = est[part] * (1 - done / max(todo, 1)) if done else est[part]
+            if base + spent + left + remaining_after > self.spec.budget_h:
+                raise BudgetStop(f"누적 {base + spent:.2f} h + 남은 {left + remaining_after:.2f} h")
+        check.t = time.perf_counter()
+        return check
+
+    def _stop_budget(self, stage: str, msg: str, wall: float) -> dict:
+        body = dict(outcome=w_rules.STOP_BUDGET, reasons=[msg],
+                    sentence=w_rules.sentence(w_rules.STOP_BUDGET, dict(h=msg)))
+        return self._write(stage, body, wall_s=wall)
+
+    def _later_h(self, doc: dict, after: tuple) -> float:
+        est = doc["estimate"]["plan"]["parts_h"]
+        return float(sum(est[p] for p in after if p in est and (p != "c" or self._plan(doc)["with_c"])))
+
+    # ================================================================ 9: the naive screen (W.9.5, W.9.8 H3, W.9.9 P1-4)
+    def stage_naive(self) -> dict:
+        doc = self._require("naive")
+        self._keys_chain(doc, "naive")
+        sp = self.spec
+        d = self._plan(doc)["design"]
+        K, F = int(d["K"]), int(d["F"])
+        rows = {r["c"]: r for r in self._main_rows(doc)}
+        cand = [p for p in doc["oracle"]["pairs"] if p["testable"]]
+        z_v = self._z_v(doc)
+        t0 = time.perf_counter()
+        prev = self._prog("naive")
+        check = self._checker(doc, "naive", "naive", self._later_h(doc, ("learn", "band", "c", "noplast")))
+        wm = self._wm()
+        screened, gates, man = [], [], []
+        i = 0
+        try:
+            while i < len(cand) and len(gates) < sp.k_cap:
+                need = sp.k_cap - len(gates)
+                batch = cand[i:i + max(1, min(need, sp.workers // F or 1))]
+                units = [u for p in batch for u in self.units([rows[p["c"]]], "main", K, F, V_SPEC.lever_edit,
+                                                               brains=("naive",))]
+                check(i, len(cand))
+                got = wm.learn(units, "naive")
+                by = self._by_pair(got)
+                for p in batch:
+                    g = by[p["key"]]
+                    pre = np.stack([w_records.counts(x["result"]["stages"][0]) for x in
+                                    sorted(g, key=lambda x: x["unit"]["fly"])])
+                    dn = w_verdict.naive_dprime(pre, z_v)
+                    ok = bool(abs(dn) < sp.naive_max)
+                    screened.append(dict(key=p["key"], c=p["c"], naive_d=dn, gate=ok))
+                    man += self._manifest(g)
+                    if ok and len(gates) < sp.k_cap:
+                        gates.append(dict(key=p["key"], c=p["c"]))
+                i += len(batch)
+        except BudgetStop as e:
+            return self._stop_budget("naive", str(e), prev + time.perf_counter() - t0)
+        body = dict(outcome=w_rules.PASS, reasons=[], screened=screened, gates=gates, manifest=man,
+                    n_oracle_testable=len(cand), stopped_at=i, design=d)
+        return self._write("naive", body, wall_s=prev + time.perf_counter() - t0)
+
+    # ================================================================ 10: the gate pairs (W.9.5, W.9.8 H7)
+    def stage_gates(self) -> dict:
+        doc = self._require("gates")
+        sp = self.spec
+        g = doc["naive"]["gates"]
+        dec = w_rules.gate_pairs(len(doc["set"]["set"]["keys"]), len(g), sp)
+        d = self._plan(doc)["design"]
+        body = dict(dec, gates=g, design=dict(q=d["q"], K=d["K"], F=d["F"], k_cap=sp.k_cap),
+                    note="생성원 턴 순(같은 턴 (b) 먼저), k 상한 8.")
+        return self._write("gates", body)
+
+    # ================================================================ 11-12: learning, BAND probes, records
+    def _gate_rows(self, doc: dict) -> list:
+        rows = {r["c"]: r for r in self._main_rows(doc)}
+        return [rows[g["c"]] for g in doc["gates"]["gates"]]
+
+    def _measure_stage(self, stage: str, part: str, units: list, after: tuple) -> dict:
+        doc = self._require(stage)
+        self._keys_chain(doc, stage)
+        t0 = time.perf_counter()
+        prev = self._prog(stage)
+        check = self._checker(doc, stage, part, self._later_h(doc, after))
+        try:
+            got = self._wm().learn(units, stage, check=check)
+        except BudgetStop as e:
+            return self._stop_budget(stage, str(e), prev + time.perf_counter() - t0)
+        body = dict(outcome=w_rules.PASS, reasons=[], manifest=self._manifest(got), n_units=len(units),
+                    note="블록은 통계를 담지 않는다 — 판정은 봉인 뒤 1회.")
+        return self._write(stage, body, wall_s=prev + time.perf_counter() - t0)
+
+    def learn_units(self, doc: dict) -> list:
+        d = doc["gates"]["design"]
+        return self.units(self._gate_rows(doc), "main", int(d["K"]), int(d["F"]), V_SPEC.lever_edit)
+
+    def band_units(self, doc: dict) -> list:
+        d = doc["gates"]["design"]
+        K = int(d["K"])
+        return self.units(self._gate_rows(doc), "main", 2 * K, int(d["F"]), V_SPEC.lever_edit, k0=K)
+
+    def record_units(self, doc: dict) -> list:
+        sp, d = self.spec, doc["gates"]["design"]
+        K, F = int(d["K"]), int(d["F"])
+        rows = self._gate_rows(doc)
+        out = self.units(rows, "main", K, F, V_SPEC.no_edit) if self._plan(doc)["with_c"] else []
+        out += [dict(u, brain="noplast") for u in self.units(rows[:sp.noplast_pairs], "main", K, sp.noplast_flies,
+                                                               V_SPEC.lever_edit, brains=("R",), plastic=False)]
+        return out
+
+    def stage_learn(self) -> dict:
+        doc = self._doc()
+        return self._measure_stage("learn", "learn", self.learn_units(doc) if "gates" in doc else [],
+                                   ("band", "c", "noplast"))
+
+    def stage_band(self) -> dict:
+        doc = self._doc()
+        return self._measure_stage("band", "band", self.band_units(doc) if "gates" in doc else [], ("c", "noplast"))
+
+    def stage_records(self) -> dict:
+        doc = self._require("records")
+        self._keys_chain(doc, "records")
+        t0 = time.perf_counter()
+        units = self.record_units(doc)
+        got = self._wm().learn(units, "records")
+        body = dict(manifest=self._manifest(got), n_units=len(units), with_c=self._plan(doc)["with_c"],
+                    note="기록 측정(C·가소성 끈 대조) — 판정 아님.")
+        return self._write("records", body, wall_s=time.perf_counter() - t0)
+
+    # ================================================================ 13: seal (W.3 10)
+    def _raw(self, doc: dict, stage: str) -> tuple:
+        got, bad = w_store.load_manifest(doc[stage]["manifest"])
+        return got, [f"{stage}: {b}" for b in bad]
+
+    def _want(self, doc: dict) -> dict:
+        wm = self._wm()
+        out = {}
+        for stage, units in (("learn", self.learn_units(doc)), ("band", self.band_units(doc)),
+                             ("records", self.record_units(doc))):
+            for u in units:
+                out[(stage, f"{u['pair']}|{u['fly']}|{u['brain']}")] = wm.inputs(u, stage)
+        d = doc["gates"]["design"]
+        rows = {r["c"]: r for r in self._main_rows(doc)}
+        for p in doc["naive"]["screened"]:
+            for u in self.units([rows[p["c"]]], "main", int(d["K"]), int(d["F"]), V_SPEC.lever_edit,
+                                brains=("naive",)):
+                out[("naive", f"{u['pair']}|{u['fly']}|{u['brain']}")] = wm.inputs(u, "naive")
+        return out
+
+    def stage_seal(self) -> dict:
+        doc = self._require("seal")
+        self._keys_chain(doc, "seal")
+        want = self._want(doc)
+        reasons, invalid, files = [], [], []
+        for stage in ("naive", "learn", "band", "records"):
+            got, bad = self._raw(doc, stage)
+            reasons += bad
+            for g in got:
+                files.append(g["cache_file"])
+                have = json.loads(Path(g["cache_file"]).read_text()).get("inputs")
+                exp = want.get((stage, g["key"]))
+                if exp is None or have is None or canonical(have) != canonical(exp):
+                    invalid.append(f"{stage}: {g['key']} 저장 입력이 선언과 다름")
+        n_exp = len(want)
+        if len(files) != n_exp:
+            reasons.append(f"원자료 {len(files)}개 ≠ 선언 {n_exp}개")
+        status = w_rules.INVALID if invalid else (w_rules.NOT_READ if reasons else w_rules.SEALED)
+        body = dict(status=status, reasons=reasons + invalid, invalid=invalid, n_files=len(files),
+                    decision=dict(decision_key(), **decision_pins(doc)), archive=None)
+        if status == w_rules.SEALED:
+            stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            dest = self.archive_root / f"{stamp}-{(git_state().get('commit') or 'nocommit')[:12]}"
+            body["archive"] = dict(dir=str(dest), files=w_store.archive_copy(files, dest, self.archive_root))
+        return self._write("seal", body)
+
+    # ================================================================ 14: judge once (W.3 11, W.4 / W.9, W.7)
+    def _pair_sets(self, doc: dict, stage: str) -> dict:
+        got, bad = self._raw(doc, stage)
+        if bad:
+            refuse(f"raw files changed since the seal: {bad[:3]}")
+        out = {}
+        for g in got:
+            pair, fly, brain = g["key"].rsplit("|", 2)
+            out.setdefault(pair, []).append(dict(unit=dict(pair=pair, fly=int(fly), brain=brain), result=g["result"]))
+        return out
+
+    def _read(self, doc: dict, mark=None) -> dict:
+        sp = self.spec
+        d = doc["gates"]["design"]
+        q, K, F = float(d["q"]), int(d["K"]), int(d["F"])
+        flies = list(range(F))
+        z_v, z_h4 = self._z_v(doc), _z(self.ctx["z"])
+        learn, band, naive = (self._pair_sets(doc, s) for s in ("learn", "band", "naive"))
+        recs = self._pair_sets(doc, "records")
+        if mark is not None:
+            mark()
+        pairs, machine = {}, []
+        for g in doc["gates"]["gates"]:
+            k, c = g["key"], g["c"]
+            seeds = {f: sp.probe_seeds(c, f, K) for f in flies}
+            nv = {x["unit"]["fly"]: w_records.counts(x["result"]["stages"][0]) for x in naive[k]}
+            machine += [f"{k}: {m}" for m in w_records.machine_reasons(learn[k], flies,
+                                                                     self._declared(V_SPEC.lever_edit, seeds),
+                                                                     naive=nv, band=band.get(k, []))]
+            d_k = w_records.pair_data(learn[k], flies)
+            pairs[k] = (d_k, w_records.extend(d_k, band[k], flies))
+        v = w_verdict.judge(pairs, machine, z_v, q, F, K, sp)
+        sent = w_rules.verdict_sentence(v, dict(q=q, K=K, F=F), sp)
+        c_rec, noplast = {}, []
+        for k, rows in recs.items():
+            c_rows = [r for r in rows if r["unit"]["brain"] in BRAINS]
+            if c_rows:
+                d_c = w_records.pair_data(c_rows, flies)
+                c_rec[k] = {kk: vv for kk, vv in w_verdict.judge_pair(d_c, None, z_h4, q, F, K, sp).items()
+                            if kk in ("status", "code_k", "n_sat", "q_sat", "mech_k_ok", "stats")}
+            for r in rows:
+                if r["unit"]["brain"] == "noplast":
+                    st = {s["stage"]: s for s in r["result"]["stages"]}
+                    same = all(np.array_equal(w_records.counts(st[s]), w_records.counts(st["pre"])) for s in st)
+                    w_same = all(st[s]["w_sha256"] == r["result"]["w0_sha256"] for s in st)
+                    noplast.append(dict(pair=k, fly=r["unit"]["fly"], counts_equal=bool(same),
+                                        weights_equal=bool(w_same)))
+        gate_rec = w_records.pilot_record({k: v[0] for k, v in pairs.items()}, z_v, {}, sp)
+        records = dict(C=c_rec, noplast=noplast, gate_pairs=gate_rec,
+                       naive={g["key"]: g["naive_d"] for g in doc["naive"]["screened"]},
+                       oracle=dict(n=doc["oracle"]["n"], n_testable=doc["oracle"]["n_testable"]),
+                       oc=dict(selected=doc["oc"]["selected"], mixed_flies=(doc["oc"].get("records") or {}).get(
+                           "mixed_flies"), drift_dprime=doc["oc"].get("drift_dprime")), label_C="기록 — 판정 아님")
+        return dict(status=w_rules.READ, verdict=v["verdict"], sentence=sent["sentence"],
+                    consequence=sent["consequence"], judgement=v, records=records, design=dict(q=q, K=K, F=F))
+
+    def _check_pins(self, doc: dict) -> None:
+        sd = doc["seal"].get("decision") or {}
+        moved = [k for k, v in decision_pins(doc).items() if sd.get(k) is None or sd.get(k) != v]
+        if moved:
+            refuse(f"the sealed decision record ({', '.join(moved)}) differs from the live blocks (W.3 10)")
+
+    def stage_judge(self) -> dict:
+        doc = self._require("judge")
+        self._keys_chain(doc, "judge")
+        if doc["seal"].get("status") != w_rules.SEALED:
+            refuse(f"block seal's status is {doc['seal'].get('status')}: W reads only a sealed set")
+        if summary_git(self.summary_path)["judge_commits"]:
+            refuse(f"git history of {self.summary_path} already holds a judge block; the set is used once (W.5)")
+        sealed = (doc["seal"].get("decision") or {}).get("key")
+        now = decision_key()["key"]
+        if sealed != now:
+            refuse(f"the decision code hash {now} is not the sealed {sealed} (W.5)")
+        self._check_pins(doc)
+        if Path(DONE_MARKER).exists():
+            refuse(f"{DONE_MARKER} exists: a judge block was written once")
+        resumed = None
+        if Path(JUDGE_MARKER).exists():
+            if Path(REREAD_MARKER).exists():
+                refuse(f"{REREAD_MARKER} exists: judge was re-generated once after the mark already")
+            mk = json.loads(Path(JUDGE_MARKER).read_text())
+            if mk.get("seal_written_at") != doc["seal"].get("written_at") or mk.get("decision_key") != sealed:
+                refuse(f"{JUDGE_MARKER} belongs to another seal or decision code; no re-generation")
+            resumed = mk
+
+        def mark():
+            w_store.write_json(REREAD_MARKER if resumed else JUDGE_MARKER, dict(
+                seal_written_at=doc["seal"].get("written_at"), decision_key=now, code_key=self.code_key,
+                w_measure_key=self.w_measure_key, pipeline_key=self.pipeline_key, read_at=_now()), self.plist)
+        out = self._read(doc, mark)
+        out = dict(out, resumed_after_mark=resumed is not None, mark_read_at=(resumed or {}).get("read_at"))
+        block = self._write("judge", out)
+        w_store.write_json(DONE_MARKER, dict(judge_written_at=block["written_at"]), self.plist)
+        return block
+
+    # ---- after reading (W.5, W.9.8 H8) -------------------------------------------------------------------------------
+    def _require_after_judge(self, stage: str) -> dict:
+        self._clean(stage)
+        doc = self._doc()
+        if "judge" not in doc:
+            refuse(f"stage {stage} needs block judge (W.5: only after the judgement was read)")
+        if "invalid_run" in doc:
+            refuse("block invalid_run exists: the main set is closed (W.5)")
+        return doc
+
+    def stage_recompute(self, note: str) -> dict:
+        """W.5 / H8: an analysis defect after reading — the same sealed raw data recomputed."""
+        if not note:
+            refuse("--note is required (W.5)")
+        doc = self._require_after_judge("recompute")
+        self._check_pins(doc)
+        out = self._read(doc)
+        dk = decision_key()["key"]
+        entry = dict(note=note, verdict=out["verdict"], sentence=out["sentence"], decision_key=dk,
+                     decision_changed_since_seal=bool(dk != (doc["seal"].get("decision") or {}).get("key")),
+                     differs_from_judge=bool(out["verdict"] != doc["judge"]["verdict"]
+                                             or out["sentence"] != doc["judge"]["sentence"]),
+                     pipeline_key=self.pipeline_key, git=git_state(), written_at=_now())
+        w_store.write_summary_block(self.summary_path, "recompute", list(doc.get("recompute", [])) + [entry],
+                                    self.plist)
+        return entry
+
+    def stage_invalid_run(self, note: str) -> dict:
+        """W.5 / H8: a measurement defect after reading — INVALID_RUN; the gate pairs are never run again."""
+        if not note:
+            refuse("--note is required (W.5)")
+        doc = self._require_after_judge("invalid_run")
+        body = dict(status=w_rules.INVALID_RUN, note=note, judge_verdict=doc["judge"]["verdict"],
+                    rule="W.5 / W.9.8 H8: 같은 관문 쌍으로 다시 돌리지 않는다; 대체 세트는 새 선언으로만(사용자).")
+        return self._write("invalid_run", body)

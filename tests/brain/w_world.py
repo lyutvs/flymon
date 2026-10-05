@@ -136,6 +136,7 @@ def fake_oc(pilot, z, spec, cost, n_boot=None, n_rep=None, n_boot_rep=None, log=
     alt = dict(q=0.75, K=8, F=9, cost_h=float(cost(8, 9)))
     return dict(selected=None if fake_oc.none else sel, ranking=[] if fake_oc.none else [sel, alt], reachable=True,
                 calibration={}, theta=dict(n_pairs=len(pilot)), records=dict(mixed_flies={"g0.0": [0.1] * 5}),
+                drift_dprime=dict(population={"reward_level": 0.1}, pilot_pairs=[], level_gates=["reward_level"]),
                 power_lo=[[[0.5] * 25] * 2] * 3, false_hi=[[[0.01] * 25] * 2] * 3,
                 power_lo_by_k=[[[[0.5] * 5] * 25] * 2] * 3, false_hi_by_k=[[[[0.01] * 5] * 25] * 2] * 3,
                 axes=dict(q=list(spec.q_grid), K=list(spec.k_grid), F=list(range(spec.f_min, spec.f_max + 1)),
@@ -165,8 +166,8 @@ class World:
         monkeypatch.setattr(WR.w_oc, "run", fake_oc)
         self.synth_calls = []
 
-        def synth(spec, z, n_rep=1000):
-            self.synth_calls.append(int(n_rep))
+        def synth(spec, z, n_rep=None):
+            self.synth_calls.append(int(spec.synth_reps if n_rep is None else n_rep))
             return dict(ok=True, zero_effect=dict(ok=True))
         monkeypatch.setattr(WR.w_oc, "synthetic_validation", synth)
         self.archive = tmp_path / "archive"
