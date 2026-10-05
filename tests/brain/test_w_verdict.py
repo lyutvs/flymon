@@ -157,6 +157,34 @@ def test_overall_order():
     assert j(dict(band, bad=(pair(), None)))["verdict"] == "FAIL"
 
 
+def _band_pair():
+    for seed in range(400):
+        d2 = pair(a=2.2, b=2.2, seed=seed, k=2 * K)
+        d = {s: v[:, :K] for s, v in d2.items()}
+        if jp(d)["code_k"] == "BAND":
+            return d, d2
+    pytest.fail("no BAND fixture found")
+
+
+def test_rn1_checked_on_band_2k_data():
+    """W.9.9 P1-2 on the re-measure: RN1 one bit off in a probe index ≥ K of a BAND pair's 2K data → STOP_MACHINE."""
+    d, d2 = _band_pair()
+    base = dict(_set(a=8, b=8), band=(d, d2))
+    ok = WV.judge(base, [], Z, 0.75, F, K, SPEC)
+    assert ok["verdict"] != "STOP_MACHINE" and ok["pairs"]["band"]["status"] in ("PASS", "FAIL")
+    bad = {s: v.copy() for s, v in d2.items()}
+    bad["RN1"][0, K, 1, 0] += 1
+    assert jp(d, bad)["status"] in ("PASS", "FAIL")                # first K probes still equal K's
+    r = WV.judge(dict(_set(a=8, b=8), band=(d, bad)), [], Z, 0.75, F, K, SPEC)
+    assert r["verdict"] == "STOP_MACHINE" and any("band" in m and "2K" in m for m in r["machine"])
+
+
+def test_zero_pairs_machine_wins():
+    j = lambda mach: WV.judge({}, list(mach), Z, 0.75, F, K, SPEC)   # noqa: E731
+    assert j(["fly 0: N pre ≠ R pre"])["verdict"] == "STOP_MACHINE"
+    assert j([])["verdict"] == "UNDECIDED"
+
+
 def test_naive_pooled():
     d = pair()
     assert abs(WV.naive_dprime(d["pre"], Z)) < 0.5
@@ -174,12 +202,38 @@ def test_mutation_no_rn1_check(monkeypatch):
     assert WV.judge(rn, [], Z, 0.75, F, K, SPEC)["verdict"] != "STOP_MACHINE"
 
 
+def _nan_flies(monkeypatch, flies):
+    """Fixture injection (not a mutation): the listed flies' gate statistics become NaN (an invalid fly), the path
+    F v3 judged on the valid flies only (G.7)."""
+    real = WV.gate_stats
+
+    def patched(dd, z):
+        st = np.array(real(dd, z), float)
+        st[..., flies, :] = np.nan
+        return st
+    monkeypatch.setattr(WV, "gate_stats", patched)
+
+
 def test_mutation_valid_fly_denominator(monkeypatch):
+    """W.9.1 / G.7: the denominator is the scheduled F and an invalid fly makes the pair INVALID. The mutation sits
+    in fly_tally (the seam pair_gate_code calls) and is seen through judge_pair / judge and the vectorised
+    pair_gate_code w_oc runs."""
+    d = pair(a=8, b=8)
+    assert jp(d)["status"] == "PASS" and jp(d)["n_sat"] == F
+    _nan_flies(monkeypatch, [6, 7])
+    assert jp(d)["status"] == "INVALID"
+    sets = dict(_set(a=8, b=8), nan=(d, None))
+    assert WV.judge(sets, [], Z, 0.75, F, K, SPEC)["verdict"] == "STOP_MACHINE"
     six = np.array([WV.FLY_SAT] * 6)
     assert int(WV.pair_gate_code(six, 0.75, 8)) == WV.P_INVALID
-    real = WV.pair_gate_code
-    monkeypatch.setattr(WV, "pair_gate_code", lambda cls, q, f, digits=9: real(cls, q, np.asarray(cls).shape[-1],
-                                                                               digits))
+
+    def valid_flies(cls, f_sched):                                 # F v3: drop invalid flies, divide by the rest
+        cls = np.asarray(cls)
+        ok = cls != WV.FLY_INVALID
+        return (cls == WV.FLY_SAT).sum(-1), (cls == WV.FLY_BAND).sum(-1), ok.sum(-1), np.zeros(cls.shape[:-1], bool)
+    monkeypatch.setattr(WV, "fly_tally", valid_flies)
+    assert jp(d)["status"] == "PASS"                               # 6 of 6 valid flies
+    assert WV.judge(sets, [], Z, 0.75, F, K, SPEC)["verdict"] == "PASS"
     assert int(WV.pair_gate_code(six, 0.75, 8)) == WV.P_PASS
 
 

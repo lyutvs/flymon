@@ -101,13 +101,19 @@ def mech_ok(fr, mech_min: float = 0.75, digits: int = 9):
     return (np.round(med - mech_min, digits) >= 0).all(-1)
 
 
+def fly_tally(cls, f_sched: int):
+    """(n_sat, n_band, denominator, bad) over the fly axis (-1): the denominator is the scheduled F (W.9.1 / G.7), and
+    an invalid fly or a fly count other than F makes the pair INVALID. The seam the denominator mutation patches."""
+    cls = np.asarray(cls)
+    bad = (cls == FLY_INVALID).any(-1) | (cls.shape[-1] != f_sched)
+    return (cls == FLY_SAT).sum(-1), (cls == FLY_BAND).sum(-1), f_sched, bad
+
+
 def pair_gate_code(cls, q: float, f_sched: int, digits: int = 9):
     """[...] P_PASS / P_BAND / P_FAIL / P_INVALID from fly classes [..., F] with the scheduled F as denominator."""
-    cls = np.asarray(cls)
-    n_sat, n_band = (cls == FLY_SAT).sum(-1), (cls == FLY_BAND).sum(-1)
-    bad = (cls == FLY_INVALID).any(-1) | (cls.shape[-1] != f_sched)
-    ok = np.round(n_sat / f_sched - q, digits) >= 0
-    band = np.round((n_sat + n_band) / f_sched - q, digits) >= 0
+    n_sat, n_band, den, bad = fly_tally(cls, f_sched)
+    ok = np.round(n_sat / den - q, digits) >= 0
+    band = np.round((n_sat + n_band) / den - q, digits) >= 0
     return np.where(bad, P_INVALID, np.where(ok, P_PASS, np.where(band, P_BAND, P_FAIL)))
 
 
@@ -131,6 +137,8 @@ def overall_code(final, machine, min_pairs: int = 4):
     """[...]: H7's order over the pair axis (-1): machine or INVALID → STOP_MACHINE; FAIL → FAIL; BAND → UNDECIDED;
     judgeable < min_pairs → UNDECIDED; all PASS → PASS."""
     final = np.asarray(final)
+    # n counts every pair, which equals the judgeable pairs only because an INVALID pair has already gone to
+    # STOP_MACHINE above (stop wins first in the np.where chain).
     stop = np.asarray(machine) | (final == P_INVALID).any(-1)
     n = final.shape[-1]
     return np.where(stop, V_STOP_MACHINE, np.where((final == P_FAIL).any(-1), V_FAIL,
@@ -173,7 +181,7 @@ def judge_pair(d_k: dict, d_2k: dict | None, z: dict, q: float, f_sched: int, k:
     mk = bool(mech_ok(fr, spec.mech_min, spec.round_digits))
     out = dict(stats=st.tolist(), classes=cls.tolist(), code_k=PAIR_LABEL[code], mech_k=fr.tolist(),
                mech_k_ok=mk, n_sat=int((cls == FLY_SAT).sum()), n_band=int((cls == FLY_BAND).sum()),
-               q_sat=float((cls == FLY_SAT).sum() / f_sched), K=k)
+               q_sat=float(fly_tally(cls, f_sched)[0] / fly_tally(cls, f_sched)[2]), K=k)
     c2, m2 = P_INVALID, False
     if code == P_BAND:
         if d_2k is None:
@@ -190,7 +198,7 @@ def judge_pair(d_k: dict, d_2k: dict | None, z: dict, q: float, f_sched: int, k:
         m2 = bool(mech_ok(fr2, spec.mech_min, spec.round_digits))
         n2 = int((cls2 == FLY_SAT).sum())
         out.update(stats_2k=st2.tolist(), classes_2k=cls2.tolist(), code_2k=PAIR_LABEL[c2], mech_2k=fr2.tolist(),
-                   mech_2k_ok=m2, n_sat_2k=n2, q_sat_2k=float(n2 / f_sched))
+                   mech_2k_ok=m2, n_sat_2k=n2, q_sat_2k=float(n2 / fly_tally(cls2, f_sched)[2]))
     fin = int(pair_final(code, mk, c2, m2))
     reasons = []
     if fin == P_FAIL:
@@ -217,11 +225,18 @@ def judge(pairs: dict, machine: list, z: dict, q: float, f_sched: int, k: int, s
     """pairs = {pair key: (d_k, d_2k or None)} in declared order; machine = the runner's machine reasons (pre equal
     across brains and with the screen, band-job weights equal the main job's, …). H7's order."""
     res = {key: judge_pair(dk, d2, z, q, f_sched, k, spec) for key, (dk, d2) in pairs.items()}
-    mm = [f"{key}: RN1 ≠ R1" for key, (dk, _) in pairs.items()
-          if not data_reasons(dk, f_sched, k) and bool(rn1_mismatch({s: np.asarray(dk[s])[None] for s in STAGES})[0])]
-    codes = np.array([{v: c for c, v in PAIR_LABEL.items()}[r["status"]] for r in res.values()])
+    def rn1_off(dd, kk):
+        return not data_reasons(dd, f_sched, kk) and \
+            bool(rn1_mismatch({s: np.asarray(dd[s])[None] for s in STAGES})[0])
+    mm = []
+    for key, (dk, d2) in pairs.items():
+        if rn1_off(dk, k):
+            mm.append(f"{key}: RN1 ≠ R1")
+        if res[key].get("code_k") == "BAND" and d2 is not None and rn1_off(d2, 2 * k):   # the 2K data used
+            mm.append(f"{key}: RN1 ≠ R1 (2K)")
+    codes = np.array([{v: c for c, v in PAIR_LABEL.items()}[r["status"]] for r in res.values()], dtype=int)
     mach = list(machine) + mm
-    code = int(overall_code(codes, bool(mach), spec.min_gate_pairs)) if len(codes) else V_UNDECIDED
+    code = int(overall_code(codes, bool(mach), spec.min_gate_pairs))      # zero pairs: machine still wins (H7)
     fails = [key for key, r in res.items() if r["status"] == "FAIL"]
     why = ""
     if code == V_UNDECIDED:
