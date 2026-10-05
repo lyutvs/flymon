@@ -72,11 +72,18 @@ class WSpec:
     oc_chunk: int = 50
     cal_floor_rule: str = "zero"                   # W.9.10 2: "zero" (null = zero DAN injection); "unreachable" = literal
     synth_reps: int = 1000                         # stage 0: experiments per synthetic-validation check (P2-11)
+    synth_null_max: float = 0.02                   # P2-11: zero-effect / one-gate / negative-correlation P(PASS) ≤
+    synth_big_min: float = 0.98                    # P2-11: big-effect P(PASS) ≥
+    synth_big_dprime: float = 4.0                  # P2-11: the big effect's calibrated true d′ (min gate)
+    synth_drift_dprime_min: float = 1.5            # P2-11: the one-gate fixture's drifting gate has true d′ ≥
+    simple_normal_fs: tuple = (8, 16, 24, 32)      # P0-1: the F ladder P(PASS) must not rise along
+    simple_normal_reps: int = 2000                 # P0-1: experiments per F
     # ---- the pilot (W.3 3, W.9.4, W.9.8 H6) --------------------------------------------------------------------------
     pilot_flies: int = 8
     pilot_probes: int = 8
     pilot_extra: tuple = ("a|4|Rock Slide|Strength",)    # + every L_V-testable (b) even pair (V block even)
     no_effect_d: float = 0.5
+    exploratory_q: float = 0.75                    # the pilot's exploratory (label "탐색") judge only — no gate
     no_effect_share: float = 0.5
     floor_share_max: float = 0.5
     naive_floor_spikes: int = 2                    # W.9.2's pilot pre-check record (< 2 spikes)
@@ -110,6 +117,8 @@ class WSpec:
     # ---- the plasticity-off control and C (W.3 9) --------------------------------------------------------------------
     noplast_pairs: int = 2
     noplast_flies: int = 2
+    # ---- the cost model (W.9.6 F): one learning job = 2 × trials training trials + job_stages probe stages ----------
+    job_stages: int = 3                            # pre, after the first phase, after the second
     # ---- the budget (W.9.6 F, W.9.9 P1-4 / P1-5) ---------------------------------------------------------------------
     budget_h: float = 24.0
     # ---- V's reuse (W.3 1) -------------------------------------------------------------------------------------------
@@ -123,6 +132,8 @@ class WSpec:
     smoke: bool = False
     smoke_flies: int = 1
     workers: int = 16
+    run_workers: int = 0                           # the real run's pool size for cost estimates; 0 = workers (smoke()
+                                                   # keeps the real one, so the smoke's 4 workers never enter a cost)
     pool_timeout_s: float = 3600.0
     # ---- paths -------------------------------------------------------------------------------------------------------
     summary: str = "results/summary/w_learning.json"
@@ -196,11 +207,15 @@ class WSpec:
     def z_v(self) -> dict:
         return {k: tuple(v) for k, v in self.z_v_declared}
 
+    def cost_workers(self) -> int:
+        """The worker count every cost estimate rounds by: the real run's pool, not the smoke pool (W.9.6 F)."""
+        return int(self.run_workers or self.workers)
+
 
 SPEC = WSpec()
 
 
 def smoke(spec: WSpec = SPEC) -> WSpec:
-    """Scale only: the smoke flag (oracle seeds 42_150_xxx, inside the smoke block) and 4 workers. Every threshold
-    stays."""
-    return dataclasses.replace(spec, smoke=True, workers=4)
+    """Scale only: the smoke flag (oracle seeds 42_150_xxx, inside the smoke block) and 4 workers; run_workers keeps
+    the real run's pool size for the cost ledger. Every threshold stays."""
+    return dataclasses.replace(spec, smoke=True, workers=4, run_workers=spec.cost_workers())

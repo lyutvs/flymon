@@ -126,9 +126,20 @@ def test_numbers():
 def test_smoke_changes_scale_only():
     sm = smoke(SPEC)
     for f in dataclasses.fields(WSpec):
-        if f.name not in ("smoke", "workers"):
+        if f.name not in ("smoke", "workers", "run_workers"):
             assert getattr(sm, f.name) == getattr(SPEC, f.name), f.name
     assert sm.smoke and sm.workers == 4
+    # the cost ledger rounds by the real run's pool (16), never the smoke pool's 4
+    assert SPEC.run_workers == 0 and SPEC.cost_workers() == SPEC.workers == 16
+    assert sm.run_workers == 16 and sm.cost_workers() == 16
+
+
+def test_numbers_moved_into_the_spec_keep_their_values():
+    """P2-11's tolerances, P0-1's F ladder and reps, the job model and the pilot's exploratory q (moved, unchanged)."""
+    assert (SPEC.synth_null_max, SPEC.synth_big_min, SPEC.synth_big_dprime, SPEC.synth_drift_dprime_min) == (
+        0.02, 0.98, 4.0, 1.5)
+    assert SPEC.simple_normal_fs == (8, 16, 24, 32) and SPEC.simple_normal_reps == 2000
+    assert 2 * SPEC.trials == 40 and SPEC.job_stages == 3 and SPEC.exploratory_q == 0.75
 
 
 def test_no_w_file_holds_another_tracks_block_as_a_literal():

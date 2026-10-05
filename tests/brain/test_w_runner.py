@@ -173,3 +173,31 @@ def test_every_rn_unit_runs_both_phases_from_its_own_pre(w):
             ph, rph = u["phases"], by[(pair, fly, "R")]["phases"]
             assert [p[0] for p in ph] == [SPEC.reward_dan, None] and ph[0] == rph[0]
             assert ph[1][1:] == rph[1][1:] and u["probe_seeds"] == by[(pair, fly, "R")]["probe_seeds"]
+
+
+def test_costs_use_the_real_runs_workers_not_the_smoke_pools(w):
+    """I1: the smoke runs on its own (smaller) pool, but the budget (5a) and the estimate (8) scale the real run's
+    16-worker rounds — a smoke pool's worker count in the costs would inflate every estimate (false STOP_BUDGET)."""
+    from flymon.brain import w_records
+    through(w, "oc")
+    sm = dataclasses.replace(smoke(SPEC), workers=1)            # smoke pool ≠ the main spec's SPEC.workers (4)
+    assert sm.workers != SPEC.workers and sm.cost_workers() == SPEC.workers
+    out = w.runner(sm).stage_smoke()
+    assert out["problems"] == [] and out["costs"]["workers"] == SPEC.workers
+    w.runner().stage_budget()
+    d = doc()
+    sel, c = d["oc"]["selected"], d["smoke"]["costs"]
+    want = w_records.design_cost(dict(c, workers=SPEC.workers), sel["K"], sel["F"], SPEC, 249)["total_h"]
+    slow = w_records.design_cost(dict(c, workers=sm.workers), sel["K"], sel["F"], SPEC, 249)["total_h"]
+    assert slow > want
+    assert d["budget"]["plan"]["with_c"] is True and d["budget"]["plan"]["total_h"] == pytest.approx(want)
+
+
+@pytest.mark.parametrize("stage", ["pilot", "oc", "smoke", "budget", "set", "oracle", "estimate"])
+def test_changed_w_measure_key_refuses_every_stage_after_path(w, stage):
+    """M3 (plan Runs): a committed w_measure.py change refuses every stage after path with exit 7, not only from the
+    oracle on."""
+    through(w, WR.ORDER[WR.ORDER.index(stage) - 1])
+    with pytest.raises(SystemExit) as e:
+        getattr(w.runner(smoke(SPEC) if stage == "smoke" else None, wcode={"key": "z" * 64}), f"stage_{stage}")()
+    assert e.value.code == 7

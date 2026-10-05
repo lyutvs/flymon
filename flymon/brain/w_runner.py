@@ -4,8 +4,8 @@ band -> records -> seal -> judge (and after judge only: recompute / invalid_run)
 results/summary/w_learning.json, written only through w_store, plus a running budget ledger (W.9.6 F). Every stage
 refuses (SystemExit 2, nothing written) when an earlier block is missing, a later block exists, its own block exists,
 an earlier gate did not pass, the summary has uncommitted changes or a hashed W file is dirty. Every stage after
-`reuse` re-checks the reuse condition (V's blocks, R / T / U keys) and refuses with SystemExit 7 when it broke; learn,
-seal and judge also re-check that every earlier block carries the current keys (W.8, exit 7).
+`reuse` re-checks the reuse condition (V's blocks, R / T / U keys) and refuses with SystemExit 7 when it broke; every
+stage after `path` also re-checks that every earlier block carries the current keys (W.8, exit 7).
 The main set is used from block oracle on (W.9.9: 순서 7); every stage before it runs on V's raw data, the pilot pairs
 or synthetic data only. learn / band / records hold raw manifests and no statistic; the verdict is read once at judge
 (the BAND re-measure is measured for every gate pair before the seal, plan Reading 13)."""
@@ -217,6 +217,8 @@ class Runner:
             r = self._reuse_dec()
             if r["outcome"] != w_rules.PASS:
                 refuse(f"stage {stage}: the reuse condition broke ({'; '.join(r['reasons'])})", EXIT_KEY)
+        if i > ORDER.index("path"):
+            self._keys_chain(doc, stage)     # W.8 / plan Runs: a changed measurement key refuses every later stage
         if i > ORDER.index("smoke") and doc["smoke"].get("problems"):
             refuse(f"stage {stage}: smoke found problems {doc['smoke']['problems'][:2]}")
         return doc
@@ -472,7 +474,8 @@ class Runner:
                      probe_s_median=float(np.median([g["result"]["probe_s"] for g in got])))
         rec = w_records.pilot_record(pairs, self._z_v(doc), walls, sp)
         dec = w_rules.pilot(rec, mach, sp)
-        exploratory = w_verdict.judge({k: (d, None) for k, d in pairs.items()}, mach, self._z_v(doc), 0.75, F, K, sp)
+        exploratory = w_verdict.judge({k: (d, None) for k, d in pairs.items()}, mach, self._z_v(doc),
+                                      sp.exploratory_q, F, K, sp)
         body = dict(dec, record=rec, exploratory=dict(verdict=exploratory["verdict"], label="탐색",
                                                     pairs={k: v["status"] for k, v in exploratory["pairs"].items()}),
                     pairs=[row_key(r) for r in rows], n_units=len(units), manifest=self._manifest(got))
@@ -493,7 +496,9 @@ class Runner:
         return pairs, got
 
     def _costs(self, job_results: list, oracle_round_s: float) -> dict:
-        return w_records.unit_costs(job_results, 2 * self.spec.trials, oracle_round_s, self.spec.workers)
+        """Per-job unit costs plus the real run's worker count (spec.cost_workers(): the smoke spec keeps the main
+        run's pool size, so the smoke's own 4 workers never scale an estimate)."""
+        return w_records.unit_costs(job_results, 2 * self.spec.trials, oracle_round_s, self.spec.cost_workers())
 
     def _v_oracle_round_s(self) -> float:
         """V's jm:L (the same oracle job on L_V): its wall clock per worker round."""
@@ -550,7 +555,7 @@ class Runner:
         if bool(w_verdict.rn1_mismatch({s: np.asarray(v)[None] for s, v in d_k.items()})[0]):
             problems.append("RN1 ≠ R1")
         q = orc[0]["result"].get("q", {})
-        if q.get("edit") != lv or q.get("csc_sha256") != V_SPEC.sha_combined or q.get("edit_edges") != 2:
+        if q.get("edit") != lv or q.get("csc_sha256") != V_SPEC.sha_combined or q.get("edit_edges") != V_SPEC.lever_edges:
             problems.append(f"oracle edit {q.get('edit')} / CSC {q.get('csc_sha256')} / edges {q.get('edit_edges')}")
         if list(m.z.items()) != list(z_v.items()):
             problems.append(f"oracle z {m.z} ≠ z_V {z_v}")
@@ -615,7 +620,6 @@ class Runner:
     # ================================================================ 7: the oracle screen (W.2, W.9.8 H3)
     def stage_oracle(self) -> dict:
         doc = self._require("oracle")
-        self._keys_chain(doc, "oracle")
         sp = self.spec
         rows = self._main_rows(doc)
         z_v = self._z_v(doc)
@@ -691,7 +695,6 @@ class Runner:
     # ================================================================ 9: the naive screen (W.9.5, W.9.8 H3, W.9.9 P1-4)
     def stage_naive(self) -> dict:
         doc = self._require("naive")
-        self._keys_chain(doc, "naive")
         sp = self.spec
         d = self._plan(doc)["design"]
         K, F = int(d["K"]), int(d["F"])
@@ -746,9 +749,9 @@ class Runner:
         rows = {r["c"]: r for r in self._main_rows(doc)}
         return [rows[g["c"]] for g in doc["gates"]["gates"]]
 
-    def _measure_stage(self, stage: str, part: str, units: list, after: tuple) -> dict:
+    def _measure_stage(self, stage: str, part: str, make_units, after: tuple) -> dict:
         doc = self._require(stage)
-        self._keys_chain(doc, stage)
+        units = make_units(doc)
         t0 = time.perf_counter()
         prev = self._prog(stage)
         check = self._checker(doc, stage, (part,), self._later_h(doc, after))
@@ -779,17 +782,13 @@ class Runner:
         return out
 
     def stage_learn(self) -> dict:
-        doc = self._doc()
-        return self._measure_stage("learn", "learn", self.learn_units(doc) if "gates" in doc else [],
-                                   ("band", "c", "noplast"))
+        return self._measure_stage("learn", "learn", self.learn_units, ("band", "c", "noplast"))
 
     def stage_band(self) -> dict:
-        doc = self._doc()
-        return self._measure_stage("band", "band", self.band_units(doc) if "gates" in doc else [], ("c", "noplast"))
+        return self._measure_stage("band", "band", self.band_units, ("c", "noplast"))
 
     def stage_records(self) -> dict:
         doc = self._require("records")
-        self._keys_chain(doc, "records")
         t0 = time.perf_counter()
         prev = self._prog("records")
         check = self._checker(doc, "records", ("c", "noplast"), 0.0)     # _later_h drops c when the plan has no C
@@ -824,7 +823,6 @@ class Runner:
 
     def stage_seal(self) -> dict:
         doc = self._require("seal")
-        self._keys_chain(doc, "seal")
         want = self._want(doc)
         reasons, invalid, files = [], [], []
         for stage in ("naive", "learn", "band", "records"):
@@ -912,7 +910,6 @@ class Runner:
 
     def stage_judge(self) -> dict:
         doc = self._require("judge")
-        self._keys_chain(doc, "judge")
         if doc["seal"].get("status") != w_rules.SEALED:
             refuse(f"block seal's status is {doc['seal'].get('status')}: W reads only a sealed set")
         if summary_git(self.summary_path)["judge_commits"]:

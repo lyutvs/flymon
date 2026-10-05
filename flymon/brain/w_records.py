@@ -213,22 +213,24 @@ def _rounds(n: int, w: int) -> int:
     return -(-int(n) // max(1, int(w)))
 
 
-def job_s(c: dict, k: int, trials: int = 40, stages: int = 3) -> float:
-    return trials * c["trial_s"] + stages * 2 * k * c["presentation_s"]
+def job_s(c: dict, k: int, spec) -> float:
+    """One learning job: 2 phases × spec.trials training trials + spec.job_stages probe stages of 2 odours × k."""
+    return 2 * spec.trials * c["trial_s"] + spec.job_stages * 2 * k * c["presentation_s"]
 
 
 def design_cost(c: dict, K: int, F: int, spec, n_set: int, n_naive: int | None = None, with_c: bool = True) -> dict:
-    """Hours of the remaining W work for design (K, F): the oracle screen of n_set pairs, the naive screen of
+    """Hours of the remaining W work for design (K, F) on c["workers"] workers (the real run's pool, never the smoke
+    pool's — w_spec.cost_workers): the oracle screen of n_set pairs, the naive screen of
     n_naive pairs (default n_set: the worst case), the learning measurement, the band re-measure upper bound (every
     gate pair), C (if kept) and the plasticity-off control."""
     w, kc = c["workers"], spec.k_cap
     n_naive = n_set if n_naive is None else n_naive
     parts = dict(oracle=_rounds(n_set, w) * c["oracle_round_s"],
                  naive=_rounds(n_naive * F, w) * 2 * K * c["presentation_s"],
-                 learn=_rounds(kc * F * 3, w) * job_s(c, K),
-                 band=_rounds(kc * F * 3, w) * job_s(c, K),
-                 c=(_rounds(kc * F * 3, w) * job_s(c, K)) if with_c else 0.0,
-                 noplast=_rounds(spec.noplast_pairs * spec.noplast_flies, w) * job_s(c, K))
+                 learn=_rounds(kc * F * 3, w) * job_s(c, K, spec),
+                 band=_rounds(kc * F * 3, w) * job_s(c, K, spec),
+                 c=(_rounds(kc * F * 3, w) * job_s(c, K, spec)) if with_c else 0.0,
+                 noplast=_rounds(spec.noplast_pairs * spec.noplast_flies, w) * job_s(c, K, spec))
     return dict(parts_h={k: v / 3600 for k, v in parts.items()}, total_h=sum(parts.values()) / 3600)
 
 

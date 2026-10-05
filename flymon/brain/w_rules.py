@@ -13,6 +13,8 @@ V_PASS, V_FAIL, V_UNDECIDED, V_STOP_MACHINE = "PASS", "FAIL", "UNDECIDED", "STOP
 LEVER_TXT = "C3, APL→MBON05 2간선 + MBON05→MBON09/MBON11/MBON01 11간선 제거, E-grid k2-norm s 1.0, 엔진별 z"
 
 SENTENCES = {
+    # STOP_REUSE's sentence is W's own wording: the spec names the stop but quotes no sentence (plan Reading 19);
+    # disclosed in W.10.
     STOP_REUSE: "W 재사용 조건(W.3 1)이 깨졌다({why}). W는 V의 블록을 다시 재는 경로를 갖지 않으므로 주 세트를 쓰지 "
                 "않고 멈춘다 — 사용자 몫.",
     STOP_W_PATH_REPRO: "W 학습 경로가 {ref}을 재현하지 못했다({diff}).",

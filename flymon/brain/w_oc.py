@@ -484,11 +484,12 @@ def synthetic_pilot(rng, n_pair=16, n_fly=8, n_probe=8, base=(30.0, 60.0), sd=6.
     return out
 
 
-def simple_normal(spec, rng, d_true=1.5, n_rep=2000, q=0.75, k_probe=8) -> dict:
+def simple_normal(spec, rng, d_true=1.5, n_rep=None, q=0.75, k_probe=8) -> dict:
     """W.9.9 P0-1's simple normal model: per fly, four independent gates each estimated from K normal probes with true
     d′ d_true; P(PASS) of one pair at q by F (it must not rise from F 8 to 32)."""
+    n_rep = spec.simple_normal_reps if n_rep is None else int(n_rep)
     out = {}
-    for F in (8, 16, 24, 32):
+    for F in spec.simple_normal_fs:
         x = rng.standard_normal((n_rep, F, 4, k_probe)) + d_true
         st = WV.dprime(x) * WV.SIGNS
         cls = WV.fly_class(st, spec.bar, spec.band_width, spec.round_digits)
@@ -512,25 +513,27 @@ def synthetic_validation(spec, z: dict, n_rep: int | None = None) -> dict:
     idx = rng.integers(0, len(th0["resid"]), spec.cal_reps)
     res = {}
     z0 = evaluate(th0, rng, n_rep, *_uniform(spec, 0.0, 0.0), 0.0, z, spec)
-    res["zero_effect"] = dict(max_p=float(z0.max()), limit=0.02, ok=bool(z0.max() <= 0.02))
-    big = calibrate(th0, 4.0, "min", idx, z, spec)
+    lo, hi = spec.synth_null_max, spec.synth_big_min
+    res["zero_effect"] = dict(max_p=float(z0.max()), limit=lo, ok=bool(z0.max() <= lo))
+    big = calibrate(th0, spec.synth_big_dprime, "min", idx, z, spec)
     pb = (evaluate(th0, rng, n_rep, *_uniform(spec, big["a"]["value"], big["b"]["value"]), 0.0, z, spec)
           if big["ok"] else np.zeros(1))
-    res["big_effect"] = dict(min_p=float(pb.min()), limit=0.98, ok=bool(big["ok"] and pb.min() >= 0.98),
+    res["big_effect"] = dict(min_p=float(pb.min()), limit=hi, ok=bool(big["ok"] and pb.min() >= hi),
                              true_dprime=big.get("true_dprime"))
     one = evaluate(th_drift, rng, n_rep, *_uniform(spec, 0.0, 0.0), 0.0, z, spec)
     td = true_dprimes(th_drift, 0.0, 0.0, rng.integers(0, len(th_drift["resid"]), spec.cal_reps), z)
-    res["one_gate"] = dict(max_p=float(one.max()), limit=0.02, ok=bool(one.max() <= 0.02 and td[1] >= 1.5),
+    res["one_gate"] = dict(max_p=float(one.max()), limit=lo,
+                           ok=bool(one.max() <= lo and td[1] >= spec.synth_drift_dprime_min),
                            true_dprime=dict(zip(WV.GATES, td.tolist())))
     if big["ok"]:
         alt = [1.0 if i % 2 == 0 else 0.0 for i in range(spec.f_max)]
         neg = evaluate(th0, rng, n_rep, [big["a"]["value"]] * spec.k_cap, [big["b"]["value"]] * spec.k_cap, alt,
                        [1.0 - x for x in alt], 0.0, z, spec)
-        res["negative_correlation"] = dict(max_p=float(neg.max()), limit=0.02, ok=bool(neg.max() <= 0.02))
+        res["negative_correlation"] = dict(max_p=float(neg.max()), limit=lo, ok=bool(neg.max() <= lo))
     else:
         res["negative_correlation"] = dict(max_p=None, ok=False)
     sn = simple_normal(spec, rng)
-    p = np.array([sn[F] for F in (8, 16, 24, 32)])
+    p = np.array([sn[F] for F in spec.simple_normal_fs])
     res["simple_normal"] = dict(p_by_F={str(k): v for k, v in sn.items()}, diffs=np.diff(p).tolist(),
                                 tol=SIMPLE_NORMAL_TOL, ok=bool(np.all(np.diff(p) <= SIMPLE_NORMAL_TOL)))
     res["ok"] = all(v["ok"] for v in res.values() if isinstance(v, dict))
