@@ -9,6 +9,8 @@ before the next.
     .venv/bin/python scripts/run_y.py --stage pilot --workers 16     # order 4: 96 V units + W 3 (≈ 0.55 h; resumes)
     .venv/bin/python scripts/run_y.py --stage precheck               # order 5: point-θ precheck (≈ 0.3–1 h; resumes)
     .venv/bin/python scripts/run_y.py --stage archive --name oracle  # re-archive a committed block (idempotent)
+Phase B (Y.7 6–12): --stage oc (bootstrap in a 16-process pool; resumes) · smoke · budget_gate · gates · estimate ·
+learn · band · records (the FlyPool stages take --workers) · seal · judge.
 
 Exit 0 PASS, 3 a gate STOP (STOP_REUSE, STOP_FEW_PAIRS; recorded, Y stops), 5 INVALID (a code / machine defect: do not
 commit), 2 a refusal (arguments, cwd, connectome sha256, chain, uncommitted summary, dirty hashed file).
@@ -32,6 +34,14 @@ LABEL_ONLY = ("oracle",)
 QUIET = ("set", "reuse", "v_reuse", "keys", "git", "seeds", "z_V", "detail_path", "archive", "decision_files",
          "x_files", "w_files", "tests", "env", "tables", "record", "records", "admission", "at_f32", "passing",
          "calibration", "stairs", "m_needed", "compare", "fixtures", "synthetic")
+
+
+# ---- phase B (Y.7 orders 6–12) — appended; main() reads these names at call time --------------------------------------
+STAGES = STAGES + ("oc", "smoke", "budget_gate", "gates", "estimate", "learn", "band", "records", "seal", "judge")
+POOL_STAGES = POOL_STAGES + ("smoke", "gates", "learn", "band", "records")
+QUIET = QUIET + ("screened", "manifest", "options", "ranking", "reconfirm", "pairs", "at_f32", "decision",
+                 "calibration_counts", "theta", "env_precheck_diff", "first_selected", "records_target", "costs_used",
+                 "machine", "oc_records")
 
 
 def exit_code(out: dict) -> int:

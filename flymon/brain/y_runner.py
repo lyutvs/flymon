@@ -847,6 +847,96 @@ class Runner:
                          "재확인 값이 공식 OC 값이고 처음 값은 함께 공개한다.")
         return self._write("oc", body, self._finish_wall("oc", t0))
 
+    # ================================================================ order 7: smoke (Y.7 7)
+    def stage_smoke(self) -> dict:
+        doc = self._require("smoke")
+        self._keys_ok("smoke")
+        ys, t0 = self.ys, time.perf_counter()
+        d = doc["oc"]["design"]
+        K = int(d["K"])
+        row = self.ctx["v_candidates"](ys)[ys.smoke_pair][0]
+        wr, wm = self.ctx["w_runner"](self.pool, True)
+        lv = V_SPEC.lever_edit
+        flies = list(range(ys.smoke_flies))
+        learn = wm.learn(wr.units([row], "smoke", K, ys.smoke_flies, lv), "smoke")
+        band = wm.learn(wr.units([row], "smoke", 2 * K, ys.smoke_flies, lv, k0=K), "smoke_band")
+        naive = wm.learn(wr.units([row], "smoke", K, ys.smoke_flies, lv, brains=("naive",)), "smoke_naive")
+        m = self.ctx["smoke_oracle"](self.pool)
+        t1 = time.perf_counter()
+        orc = m.oracle([row], V_SPEC.cond("L"), "smoke", wr.spec.oracle_seeds())
+        oracle_s = time.perf_counter() - t1
+        problems = smoke_problems(wr, learn, band, naive, orc, m, flies, K, ys)
+        costs = w_records.unit_costs([g["result"] for g in learn], 2 * W_SPEC.trials, oracle_s, ys.workers)
+        man = [dict(key=f"{g['unit']['pair']}|{g['unit']['fly']}|{g['unit']['brain']}|{blk}",
+                    cache_file=g["cache_file"], cache_key=g["cache_key"], sha256=sha256_file(g["cache_file"]))
+               for blk, got in (("smoke", learn), ("smoke_band", band), ("smoke_naive", naive)) for g in got]
+        man += [dict(key=f"{g['key']}|oracle", cache_file=g["cache_file"], cache_key=g["cache_key"],
+                     sha256=sha256_file(g["cache_file"])) for g in orc]
+        p = y_store.write_json(ys.smoke_detail, dict(manifest=man, problems=problems), self.plist)
+        body = dict(outcome=y_rules.INVALID if problems else y_rules.PASS, reasons=problems, design=d, costs=costs,
+                    costs_used=y_rules.costs_max(doc["pilot"]["costs"], costs, ys), oracle_wall_s=oracle_s,
+                    pair=row_key(row), seeds=dict(probe={f: wr.spec.smoke_probe_seeds(f, K) for f in flies},
+                                                  train=[wr.spec.smoke_train_base(0), wr.spec.smoke_train_base(1)],
+                                                  oracle=wr.spec.oracle_seeds()),
+                    detail_path=ys.smoke_detail, detail_sha256=sha256_file(p),
+                    note="Y.7 7: 스모크 시드(77_1xx_xxx), 파일럿 쌍 j 0, 마리 1 — 경로 · z_V · 시드 · sha 관계와 단위 비용.")
+        return self._write("smoke", body, time.perf_counter() - t0)
+
+    # ================================================================ order 7a: the worst-case budget gate
+    def stage_budget_gate(self) -> dict:
+        doc = self._require("budget_gate")
+        ys, t0 = self.ys, time.perf_counter()
+        self._cell_s = 0.0
+        costs = doc["smoke"]["costs_used"]
+        oc = doc["oc"]
+        sel = oc["design"]
+        failed = {json.dumps(r["design"], sort_keys=True) for r in oc["reconfirm"] if not r["ok"]}
+        n_rc = int(oc["n_reconfirmed"])
+        opts = [dict(design=sel, with_c=True), dict(design=sel, with_c=False)]
+        opts += [dict(design=dict(a, rank=i), with_c=False) for i, a in enumerate(oc["ranking"])
+                 if i > int(sel["rank"]) and json.dumps({k: a[k] for k in ("p_set", "q", "K", "F", "k_range")},
+                                                        sort_keys=True) not in failed]
+        th = z = r = None
+        recs, tried, plan = [], [], None
+        for o in opts:
+            elapsed = self._ledger_h(doc) + self._prog("budget_gate") / ys.s_per_h
+            c = self._design_cost(doc, o["design"], o["with_c"], costs)
+            tried.append(dict(o, **c, elapsed_h=elapsed, in_budget=y_rules.in_budget(elapsed, c["total_h"], ys)))
+            if not tried[-1]["in_budget"]:
+                continue
+            if o["design"] is not sel:
+                if n_rc >= ys.reconfirm_max:
+                    tried[-1]["skipped"] = "재확인 한도(Y.9.2 P2-8)"
+                    continue
+                if th is None:
+                    stop, th, _tw, r, _c, _k = self._theta_b(doc, "1(순서 7a에서 확인)")
+                    if stop:
+                        return self._write("budget_gate", stop, self._finish_wall("budget_gate", t0))
+                    z = self._z_b(doc)
+                rc = self._reconfirm("budget_gate", th, z, r,
+                                     {k: o["design"][k] for k in ("p_set", "q", "K", "F", "k_range")},
+                                     int(o["design"]["rank"]), _log)
+                n_rc += 1
+                recs.append(rc)
+                if not rc["ok"]:
+                    tried[-1]["reconfirm"] = False
+                    continue
+                elapsed = self._ledger_h(doc) + self._prog("budget_gate") / ys.s_per_h
+                if not y_rules.in_budget(elapsed, c["total_h"], ys):
+                    tried[-1]["after_reconfirm"] = "예산 초과"
+                    continue
+            plan = dict(design=o["design"], with_c=o["with_c"], parts_h=c["parts_h"], total_h=c["total_h"])
+            break
+        if plan is None:
+            dec = y_rules.budget_stop(self._ledger_h(doc) + self._prog("budget_gate") / ys.s_per_h,
+                                      [dict(total_h=t["total_h"]) for t in tried], "순서 7a", ys)
+        else:
+            dec = dict(outcome=y_rules.PASS, reasons=[], plan=plan)
+        body = dict(dec, options=tried, reconfirm=recs, n_reconfirmed=n_rc, costs=costs, margin=ys.cost_margin,
+                    note="Y.7 7a: 누적 실측 + ×1.3 × (순진 거름 최악 + k_hi 학습 + BAND 2K + C + 가소성 끈 대조) ≤ 24 h — "
+                         "C를 먼저 빼고, 그다음 대체 설계(재확인 통과 필요, 최대 5개), 그래도 넘으면 STOP_BUDGET.")
+        return self._write("budget_gate", body, self._finish_wall("budget_gate", t0))
+
 
 # ================================================================ phase B module level (Y.7 orders 6–12) — appended
 EXIT_KEY = 7
@@ -925,3 +1015,27 @@ def _phase_b_ctx(wctx, npz: str) -> dict:
                                                      smoke_seeds=yw.smoke_seed_set()),
                          V_SPEC, c["params"], c["readout"], W_SPEC.z_v(), c["types"], c["n_kc"])
     return dict(w_runner=w_run, smoke_oracle=smoke_oracle)
+
+
+def smoke_problems(wr, learn, band, naive, orc, m, flies, K, ys) -> list:
+    """Y.7 7's checks (W's smoke checks with Y's seeds): machine reasons (pre equal across brains and with the naive
+    job, band weights), RN1 = R1, the oracle's lever (edit / CSC / edges), the oracle's z = W_SPEC.z_v() (0p's), and
+    every probe / training / oracle seed inside the smoke block 77_100_000–77_199_999."""
+    lv = V_SPEC.lever_edit
+    seeds = {f: wr.spec.smoke_probe_seeds(f, K) for f in flies}
+    nv = {g["unit"]["fly"]: w_records.counts(g["result"]["stages"][0]) for g in naive}
+    out = list(w_records.machine_reasons(learn, flies, wr._declared(lv, seeds), naive=nv, band=band))
+    d_k = w_records.pair_data(learn, flies)
+    if bool(w_verdict.rn1_mismatch({s: np.asarray(v)[None] for s, v in d_k.items()})[0]):
+        out.append("RN1 ≠ R1")
+    q = orc[0]["result"].get("q", {})
+    if (q.get("edit"), q.get("csc_sha256"), q.get("edit_edges")) != (lv, V_SPEC.sha_combined, V_SPEC.lever_edges):
+        out.append(f"oracle edit {q.get('edit')} / CSC {q.get('csc_sha256')} / edges {q.get('edit_edges')}")
+    if {k: tuple(v) for k, v in m.z.items()} != {k: tuple(v) for k, v in W_SPEC.z_v().items()}:
+        out.append(f"oracle z {m.z} ≠ z_V {W_SPEC.z_v()}")
+    lo, hi = ys.smoke_block
+    used = [s for g in learn + band + naive for s in g["unit"]["probe_seeds"]]
+    used += [wr.spec.smoke_train_base(0), wr.spec.smoke_train_base(1)]
+    used += [s for v in wr.spec.oracle_seeds().values() for s in v]
+    out += [f"스모크 시드 {s}가 스모크 블록 밖" for s in used if not lo <= s < hi]
+    return out
