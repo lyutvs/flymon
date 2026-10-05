@@ -1,0 +1,541 @@
+{
+ "budget": {
+  "ledger": [
+   {
+    "at": "2026-10-05T18:01:29.288637+00:00",
+    "stage": "digest",
+    "wall_s": 3.875643166946247
+   }
+  ]
+ },
+ "digest": {
+  "archive": [],
+  "git": {
+   "commit": "89ce7069228563c86b377ea75c6547b96f68a663",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "keys": {
+   "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+   "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1"
+  },
+  "note": "Y.7 0p-b: U \u00b7 W \uce21\uc815 \ud0a4, V \ube14\ub85d(w_rules.reuse), \uc8fc \uc138\ud2b8 digest_keys \u00b7 (b) \u00b7 (a) \u00b7 \ub9c8\uc9c0\ub9c9 \ud134.",
+  "outcome": "PASS",
+  "reasons": [],
+  "set": {
+   "all_off_pool": true,
+   "clusters_a": [
+    [
+     "DRAGON*",
+     6
+    ],
+    [
+     "FLYING+ICE*",
+     7
+    ],
+    [
+     "FLYING+NORMAL*",
+     3
+    ],
+    [
+     "FLYING+POISON*",
+     11
+    ],
+    [
+     "FLYING+ROCK*",
+     13
+    ],
+    [
+     "FLYING+WATER*",
+     12
+    ],
+    [
+     "GRASS*",
+     3
+    ],
+    [
+     "GROUND*",
+     2
+    ],
+    [
+     "ICE+PSYCHIC*",
+     16
+    ],
+    [
+     "ROCK+WATER*",
+     9
+    ]
+   ],
+   "clusters_b": [
+    [
+     "DRAGON*",
+     "PSYCHIC",
+     7
+    ],
+    [
+     "FIGHTING",
+     "FIRE*",
+     5
+    ],
+    [
+     "FIRE*",
+     "NORMAL",
+     2
+    ],
+    [
+     "FIRE*",
+     "PSYCHIC+WATER",
+     4
+    ],
+    [
+     "FIRE*",
+     "WATER",
+     3
+    ],
+    [
+     "FIRE+FLYING",
+     "DRAGON*",
+     7
+    ],
+    [
+     "FLYING+ICE*",
+     "DRAGON*",
+     5
+    ],
+    [
+     "FLYING+NORMAL*",
+     "POISON*",
+     5
+    ],
+    [
+     "FLYING+NORMAL*",
+     "WATER",
+     1
+    ],
+    [
+     "FLYING+POISON*",
+     "GROUND*",
+     8
+    ],
+    [
+     "FLYING+ROCK*",
+     "DRAGON*",
+     3
+    ],
+    [
+     "FLYING+ROCK*",
+     "NORMAL",
+     8
+    ],
+    [
+     "FLYING+WATER*",
+     "NORMAL",
+     8
+    ],
+    [
+     "GRASS*",
+     "NORMAL",
+     1
+    ],
+    [
+     "GRASS+POISON",
+     "FIRE*",
+     4
+    ],
+    [
+     "GRASS+POISON",
+     "GROUND*",
+     4
+    ],
+    [
+     "GRASS+PSYCHIC",
+     "GROUND*",
+     8
+    ],
+    [
+     "GROUND*",
+     "FIGHTING",
+     7
+    ],
+    [
+     "GROUND*",
+     "NORMAL",
+     5
+    ],
+    [
+     "GROUND*",
+     "POISON*",
+     2
+    ],
+    [
+     "GROUND+ROCK",
+     "FIRE*",
+     3
+    ],
+    [
+     "GROUND+ROCK",
+     "GRASS*",
+     2
+    ],
+    [
+     "ICE+PSYCHIC*",
+     "FIRE*",
+     6
+    ],
+    [
+     "ICE+WATER",
+     "POISON*",
+     7
+    ],
+    [
+     "NORMAL",
+     "FLYING+ICE*",
+     7
+    ],
+    [
+     "NORMAL",
+     "FLYING+POISON*",
+     5
+    ],
+    [
+     "NORMAL",
+     "GRASS*",
+     2
+    ],
+    [
+     "NORMAL",
+     "ROCK+WATER*",
+     2
+    ],
+    [
+     "POISON*",
+     "GROUND*",
+     3
+    ],
+    [
+     "POISON*",
+     "GROUND+ROCK",
+     5
+    ],
+    [
+     "POISON*",
+     "NORMAL",
+     5
+    ],
+    [
+     "POISON*",
+     "WATER",
+     6
+    ],
+    [
+     "PSYCHIC",
+     "FIRE*",
+     5
+    ],
+    [
+     "PSYCHIC+WATER",
+     "FIRE*",
+     1
+    ],
+    [
+     "PSYCHIC+WATER",
+     "FLYING+NORMAL*",
+     3
+    ],
+    [
+     "ROCK+WATER*",
+     "FLYING+ICE*",
+     3
+    ],
+    [
+     "ROCK+WATER*",
+     "NORMAL",
+     3
+    ],
+    [
+     "WATER",
+     "FLYING+NORMAL*",
+     2
+    ]
+   ],
+   "digest_e0_a": "d599c04bb5ee3ec509de4e6be892af7ff02ffb823646504faf82544fdd8b1856",
+   "digest_e0_b": "297733238d9bd53c96beeee0fdace7d4f3cb9fc1a0ea973e0b1e5045a9ee5cd3",
+   "digest_keys": "65dbf001a61ea7f484cf4e61a212a3973fde8709c5225e15e2221b0777a5712a",
+   "first_turn": 306,
+   "keys": [
+    "b|306|Psychic vs Bulbasaur|Psychic vs Charmander",
+    "b|306|Mega Drain vs Bulbasaur|Mega Drain vs Charmander",
+    "b|308|Surf vs Primeape|Surf vs Growlithe",
+    "b|308|Psychic vs Primeape|Psychic vs Growlithe",
+    "b|310|Earthquake vs Golbat|Earthquake vs Diglett",
+    "b|310|Thunderbolt vs Golbat|Thunderbolt vs Diglett",
+    "b|310|Surf vs Golbat|Surf vs Diglett",
+    "a|310|Earthquake|Thunderbolt",
+    "a|310|Earthquake|Surf",
+    "b|315|Surf vs Arcanine|Surf vs Poliwag",
+    "b|317|Rock Slide vs Golem|Rock Slide vs Ponyta",
+    "b|318|Mega Drain vs Omanyte|Mega Drain vs Snorlax",
+    "b|319|Surf vs Sandshrew|Surf vs Nidoran-F",
+    "b|320|Thunderbolt vs Dodrio|Thunderbolt vs Seel",
+    "a|320|Psychic|Thunderbolt",
+    "b|321|Mega Drain vs Charmeleon|Mega Drain vs Squirtle",
+    "b|323|Earthquake vs Ponyta|Earthquake vs Slowpoke",
+    "b|323|Rock Slide vs Ponyta|Rock Slide vs Slowpoke",
+    "b|324|Psychic vs Chansey|Psychic vs Tangela",
+    "b|324|Tri Attack vs Chansey|Tri Attack vs Tangela",
+    "b|327|Rock Slide vs Nidoran-M|Rock Slide vs Clefairy",
+    "b|327|Strength vs Nidoran-M|Strength vs Clefairy",
+    "b|334|Mega Drain vs Rapidash|Mega Drain vs Slowpoke",
+    "b|335|Earthquake vs Jynx|Earthquake vs Magmar",
+    "b|335|Rock Slide vs Jynx|Rock Slide vs Magmar",
+    "a|335|Earthquake|Rock Slide",
+    "a|335|Earthquake|Strength",
+    "a|335|Rock Slide|Strength",
+    "b|339|Rock Slide vs Zubat|Rock Slide vs Diglett",
+    "b|339|Strength vs Zubat|Strength vs Diglett",
+    "a|339|Earthquake|Rock Slide",
+    "a|339|Earthquake|Strength",
+    "a|339|Rock Slide|Strength",
+    "b|345|Flamethrower vs Dugtrio|Flamethrower vs Meowth",
+    "b|346|Surf vs Starmie|Surf vs Magmar",
+    "b|351|Earthquake vs Snorlax|Earthquake vs Articuno",
+    "b|351|Surf vs Snorlax|Surf vs Articuno",
+    "b|353|Mega Drain vs Dragonair|Mega Drain vs Mewtwo",
+    "b|353|Cut vs Dragonair|Cut vs Mewtwo",
+    "a|353|Mega Drain|Cut",
+    "b|355|Thunderbolt vs Pidgeotto|Thunderbolt vs Ekans",
+    "b|355|Psychic vs Pidgeotto|Psychic vs Ekans",
+    "b|360|Thunderbolt vs Weezing|Thunderbolt vs Rhyhorn",
+    "b|360|Surf vs Weezing|Surf vs Rhyhorn",
+    "b|362|Surf vs Omastar|Surf vs Snorlax",
+    "a|362|Surf|Psychic",
+    "a|362|Surf|Thunderbolt",
+    "b|363|Flamethrower vs Spearow|Flamethrower vs Ekans",
+    "a|363|Flamethrower|Earthquake",
+    "a|363|Flamethrower|Strength",
+    "b|364|Tri Attack vs Jigglypuff|Tri Attack vs Zubat",
+    "b|367|Thunderbolt vs Grimer|Thunderbolt vs Shellder",
+    "b|372|Earthquake vs Moltres|Earthquake vs Dratini",
+    "b|372|Surf vs Moltres|Surf vs Dratini",
+    "b|372|Strength vs Moltres|Strength vs Dratini",
+    "b|373|Surf vs Ivysaur|Surf vs Charmander",
+    "b|374|Psychic vs Dugtrio|Psychic vs Meowth",
+    "a|374|Earthquake|Psychic",
+    "b|377|Psychic vs Nidoran-M|Psychic vs Clefairy",
+    "b|388|Psychic vs Ekans|Psychic vs Sandshrew",
+    "b|392|Mega Drain vs Nidorino|Mega Drain vs Clefairy",
+    "b|393|Earthquake vs Marowak|Earthquake vs Hitmonlee",
+    "b|393|Rock Slide vs Marowak|Rock Slide vs Hitmonlee",
+    "b|393|Strength vs Marowak|Strength vs Hitmonlee",
+    "b|395|Surf vs Dragonair|Surf vs Mewtwo",
+    "a|395|Surf|Mega Drain",
+    "b|396|Earthquake vs Tangela|Earthquake vs Kangaskhan",
+    "b|401|Surf vs Exeggutor|Surf vs Cubone",
+    "b|401|Psychic vs Exeggutor|Psychic vs Cubone",
+    "b|401|Thunderbolt vs Exeggutor|Thunderbolt vs Cubone",
+    "b|404|Earthquake vs Exeggutor|Earthquake vs Cubone",
+    "b|404|Rock Slide vs Exeggutor|Rock Slide vs Cubone",
+    "b|404|Strength vs Exeggutor|Strength vs Cubone",
+    "b|408|Mega Drain vs Golbat|Mega Drain vs Diglett",
+    "a|408|Surf|Mega Drain",
+    "b|414|Earthquake vs Dratini|Earthquake vs Mewtwo",
+    "b|415|Rock Slide vs Pidgey|Rock Slide vs Ekans",
+    "b|419|Flamethrower vs Growlithe|Flamethrower vs Poliwag",
+    "b|420|Thunderbolt vs Aerodactyl|Thunderbolt vs Snorlax",
+    "b|420|Psychic vs Aerodactyl|Psychic vs Snorlax",
+    "a|420|Thunderbolt|Psychic",
+    "b|428|Flamethrower vs Exeggcute|Flamethrower vs Cubone",
+    "b|430|Rock Slide vs Weezing|Rock Slide vs Rhyhorn",
+    "b|443|Earthquake vs Jigglypuff|Earthquake vs Zubat",
+    "b|444|Mega Drain vs Ekans|Mega Drain vs Sandshrew",
+    "b|452|Rock Slide vs Muk|Rock Slide vs Shellder",
+    "b|452|Strength vs Muk|Strength vs Shellder",
+    "b|453|Thunderbolt vs Diglett|Thunderbolt vs Meowth",
+    "b|454|Earthquake vs Mankey|Earthquake vs Growlithe",
+    "b|454|Rock Slide vs Mankey|Rock Slide vs Growlithe",
+    "b|455|Earthquake vs Porygon|Earthquake vs Omanyte",
+    "b|456|Mega Drain vs Grimer|Mega Drain vs Shellder",
+    "b|462|Thunderbolt vs Dragonair|Thunderbolt vs Mewtwo",
+    "a|462|Surf|Thunderbolt",
+    "b|468|Psychic vs Mr. Mime|Psychic vs Magmar",
+    "b|474|Rock Slide vs Porygon|Rock Slide vs Omanyte",
+    "b|480|Mega Drain vs Gloom|Mega Drain vs Diglett",
+    "b|481|Mega Drain vs Spearow|Mega Drain vs Ekans",
+    "b|489|Flamethrower vs Oddish|Flamethrower vs Diglett",
+    "b|490|Mega Drain vs Snorlax|Mega Drain vs Articuno",
+    "b|490|Cut vs Snorlax|Cut vs Articuno",
+    "b|492|Surf vs Cubone|Surf vs Hitmonlee",
+    "b|492|Mega Drain vs Cubone|Mega Drain vs Hitmonlee",
+    "b|493|Psychic vs Zubat|Psychic vs Diglett",
+    "b|497|Rock Slide vs Venusaur|Rock Slide vs Charmander",
+    "b|502|Surf vs Grimer|Surf vs Shellder",
+    "b|504|Mega Drain vs Geodude|Mega Drain vs Ponyta",
+    "b|505|Surf vs Dewgong|Surf vs Grimer",
+    "b|505|Thunderbolt vs Dewgong|Thunderbolt vs Grimer",
+    "b|506|Thunderbolt vs Rhydon|Thunderbolt vs Tangela",
+    "b|506|Psychic vs Rhydon|Psychic vs Tangela",
+    "b|511|Mega Drain vs Mr. Mime|Mega Drain vs Magmar",
+    "b|513|Thunderbolt vs Ekans|Thunderbolt vs Sandshrew",
+    "b|517|Earthquake vs Aerodactyl|Earthquake vs Snorlax",
+    "b|517|Surf vs Aerodactyl|Surf vs Snorlax",
+    "a|517|Earthquake|Thunderbolt",
+    "a|517|Earthquake|Surf",
+    "b|526|Psychic vs Marowak|Psychic vs Hitmonlee",
+    "b|527|Surf vs Mr. Mime|Surf vs Magmar",
+    "b|527|Earthquake vs Mr. Mime|Earthquake vs Magmar",
+    "b|528|Thunderbolt vs Marowak|Thunderbolt vs Hitmonlee",
+    "b|530|Earthquake vs Articuno|Earthquake vs Dratini",
+    "b|530|Surf vs Articuno|Surf vs Dratini",
+    "b|530|Strength vs Articuno|Strength vs Dratini",
+    "b|532|Psychic vs Jynx|Psychic vs Magmar",
+    "a|532|Psychic|Tri Attack",
+    "b|533|Earthquake vs Omastar|Earthquake vs Articuno",
+    "b|533|Surf vs Omastar|Surf vs Articuno",
+    "b|533|Strength vs Omastar|Strength vs Articuno",
+    "b|535|Thunderbolt vs Gyarados|Thunderbolt vs Ditto",
+    "b|535|Psychic vs Gyarados|Psychic vs Ditto",
+    "b|536|Mega Drain vs Jigglypuff|Mega Drain vs Zubat",
+    "b|537|Flamethrower vs Squirtle|Flamethrower vs Pidgey",
+    "b|539|Thunderbolt vs Slowbro|Thunderbolt vs Farfetch\u2019d",
+    "b|545|Rock Slide vs Moltres|Rock Slide vs Dratini",
+    "a|551|Mega Drain|Cut",
+    "b|559|Thunderbolt vs Moltres|Thunderbolt vs Dratini",
+    "b|566|Earthquake vs Gyarados|Earthquake vs Ditto",
+    "b|566|Surf vs Gyarados|Surf vs Ditto",
+    "b|566|Strength vs Gyarados|Strength vs Ditto",
+    "a|566|Earthquake|Surf",
+    "a|566|Earthquake|Strength",
+    "a|566|Surf|Strength",
+    "b|571|Surf vs Jynx|Surf vs Magmar",
+    "a|571|Earthquake|Surf",
+    "a|571|Surf|Strength",
+    "a|573|Psychic|Thunderbolt",
+    "a|587|Psychic|Mega Drain",
+    "a|588|Rock Slide|Strength",
+    "b|590|Rock Slide vs Wartortle|Rock Slide vs Pidgey",
+    "b|594|Mega Drain vs Articuno|Mega Drain vs Dratini",
+    "a|594|Psychic|Mega Drain",
+    "b|612|Flamethrower vs Gyarados|Flamethrower vs Ditto",
+    "a|612|Flamethrower|Earthquake",
+    "a|612|Flamethrower|Strength",
+    "b|617|Psychic vs Koffing|Psychic vs Rhyhorn",
+    "a|618|Surf|Strength",
+    "a|642|Surf|Psychic",
+    "a|642|Earthquake|Psychic",
+    "b|647|Flamethrower vs Moltres|Flamethrower vs Dratini",
+    "b|661|Rock Slide vs Dugtrio|Rock Slide vs Meowth",
+    "b|662|Flamethrower vs Omastar|Flamethrower vs Snorlax",
+    "a|662|Flamethrower|Earthquake",
+    "a|662|Flamethrower|Strength",
+    "b|681|Flamethrower vs Golem|Flamethrower vs Ponyta",
+    "b|704|Strength vs Aerodactyl|Strength vs Snorlax",
+    "a|704|Earthquake|Strength",
+    "a|704|Surf|Strength",
+    "b|714|Mega Drain vs Slowpoke|Mega Drain vs Farfetch\u2019d",
+    "b|719|Rock Slide vs Ninetales|Rock Slide vs Jigglypuff",
+    "b|731|Mega Drain vs Exeggutor|Mega Drain vs Cubone",
+    "a|734|Surf|Mega Drain",
+    "b|738|Mega Drain vs Jynx|Mega Drain vs Magmar",
+    "a|738|Psychic|Mega Drain",
+    "b|757|Mega Drain vs Moltres|Mega Drain vs Dratini",
+    "b|759|Psychic vs Gloom|Psychic vs Diglett",
+    "b|778|Mega Drain vs Diglett|Mega Drain vs Meowth",
+    "b|793|Thunderbolt vs Vileplume|Thunderbolt vs Diglett",
+    "b|826|Flamethrower vs Golbat|Flamethrower vs Diglett",
+    "a|826|Flamethrower|Earthquake",
+    "a|826|Flamethrower|Strength",
+    "b|841|Mega Drain vs Mankey|Mega Drain vs Growlithe",
+    "a|950|Earthquake|Psychic",
+    "b|956|Psychic vs Snorlax|Psychic vs Articuno",
+    "b|982|Psychic vs Dewgong|Psychic vs Grimer",
+    "b|982|Mega Drain vs Dewgong|Mega Drain vs Grimer",
+    "b|1008|Strength vs Dewgong|Strength vs Grimer",
+    "b|1023|Flamethrower vs Sandshrew|Flamethrower vs Nidoran-F",
+    "b|1054|Flamethrower vs Weezing|Flamethrower vs Rhyhorn",
+    "a|1062|Earthquake|Thunderbolt",
+    "a|1062|Thunderbolt|Surf",
+    "a|1081|Earthquake|Thunderbolt",
+    "b|1087|Flamethrower vs Nidoran-F|Flamethrower vs Clefairy",
+    "a|1099|Surf|Psychic",
+    "b|1148|Flamethrower vs Vulpix|Flamethrower vs Jigglypuff",
+    "b|1163|Mega Drain vs Aerodactyl|Mega Drain vs Snorlax",
+    "a|1163|Psychic|Mega Drain",
+    "b|1166|Earthquake vs Aerodactyl|Earthquake vs Dratini",
+    "b|1166|Surf vs Aerodactyl|Surf vs Dratini",
+    "b|1166|Strength vs Aerodactyl|Strength vs Dratini",
+    "b|1181|Flamethrower vs Snorlax|Flamethrower vs Articuno",
+    "b|1184|Flamethrower vs Muk|Flamethrower vs Shellder",
+    "b|1220|Flamethrower vs Ponyta|Flamethrower vs Slowpoke",
+    "b|1238|Rock Slide vs Aerodactyl|Rock Slide vs Snorlax",
+    "a|1238|Earthquake|Rock Slide",
+    "a|1238|Rock Slide|Strength",
+    "a|1256|Earthquake|Thunderbolt",
+    "b|1258|Mega Drain vs Gyarados|Mega Drain vs Ditto",
+    "a|1258|Surf|Mega Drain",
+    "a|1261|Thunderbolt|Psychic",
+    "a|1272|Psychic|Mega Drain",
+    "b|1278|Flamethrower vs Dratini|Flamethrower vs Mewtwo",
+    "a|1278|Flamethrower|Earthquake",
+    "a|1278|Flamethrower|Strength",
+    "b|1290|Rock Slide vs Dratini|Rock Slide vs Mewtwo",
+    "a|1294|Surf|Mega Drain",
+    "b|1296|Rock Slide vs Dewgong|Rock Slide vs Grimer",
+    "a|1308|Mega Drain|Cut",
+    "b|1363|Flamethrower vs Jigglypuff|Flamethrower vs Zubat",
+    "a|1367|Mega Drain|Cut",
+    "b|1372|Rock Slide vs Slowpoke|Rock Slide vs Farfetch\u2019d",
+    "a|1414|Psychic|Tri Attack",
+    "b|1419|Rock Slide vs Gyarados|Rock Slide vs Ditto",
+    "a|1419|Earthquake|Rock Slide",
+    "a|1419|Rock Slide|Strength",
+    "a|1467|Surf|Mega Drain",
+    "b|1498|Rock Slide vs Snorlax|Rock Slide vs Articuno",
+    "a|1505|Earthquake|Psychic",
+    "b|1568|Flamethrower vs Aerodactyl|Flamethrower vs Snorlax",
+    "a|1568|Flamethrower|Earthquake",
+    "a|1568|Flamethrower|Strength",
+    "a|1592|Psychic|Tri Attack",
+    "b|1627|Rock Slide vs Mr. Mime|Rock Slide vs Magmar",
+    "b|1643|Rock Slide vs Jigglypuff|Rock Slide vs Zubat",
+    "b|1685|Rock Slide vs Articuno|Rock Slide vs Dratini",
+    "a|1685|Earthquake|Rock Slide",
+    "a|1685|Rock Slide|Strength",
+    "a|1707|Earthquake|Psychic",
+    "b|1725|Flamethrower vs Jynx|Flamethrower vs Magmar",
+    "a|1725|Flamethrower|Earthquake",
+    "a|1725|Flamethrower|Strength",
+    "a|1767|Earthquake|Thunderbolt",
+    "a|1862|Mega Drain|Cut",
+    "a|1895|Psychic|Tri Attack",
+    "a|1916|Earthquake|Psychic",
+    "b|1937|Flamethrower vs Dewgong|Flamethrower vs Grimer",
+    "a|1941|Earthquake|Psychic",
+    "a|1960|Mega Drain|Cut",
+    "a|1967|Earthquake|Psychic"
+   ],
+   "last_turn": 1967,
+   "n": 249,
+   "n_a": 82,
+   "n_b": 167,
+   "n_odours": 155,
+   "skipped": {
+    "cap": 137,
+    "collision": 0,
+    "e1": 0,
+    "glom_dup": 0,
+    "in_set": 1405,
+    "kc_input": 484,
+    "pool_only": 1099,
+    "used": 4516
+   }
+  },
+  "stage": "digest",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "v_reuse": {
+   "outcome": "PASS",
+   "reasons": []
+  },
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-05T18:01:29.288637+00:00"
+ }
+}
