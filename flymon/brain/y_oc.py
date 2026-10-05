@@ -626,3 +626,177 @@ def generator_fixtures(ys, z: dict) -> dict:
                            m_needed=mt)
     out["ok"] = all(v["ok"] for v in out.values() if isinstance(v, dict))
     return out
+
+
+# ================================================================ thresholds (Y.0 definition; Y.6.6 repro, P2-10)
+def floor_threshold(theta, a: float, b: float, cell: str, ys, resid=None) -> float:
+    """Y.0: the smallest naive level L on the thr_step grid (from 0) with share(rint(μ(L) + r) < 0) < floor_share,
+    μ(L) = the slot mean at base level L under a, b — "A": R2 · MBON13(X) (base + drift − b), "P": R1 · MBON05(X)
+    (base + drift − a); r = the residual vectors' entry (all of θ's, or `resid`). Plan Reading 3."""
+    s, ci = (w_oc.SI["R2"], WV.A) if cell == "A" else (w_oc.SI["R1"], WV.P)
+    res = theta["resid"] if resid is None else np.asarray(resid)
+    off = float(w_oc.slot_means(theta, np.zeros((2, 2)), np.zeros((2, 2)), a, b)[s, ci, WV.X])
+    r = res[:, s, ci, WV.X]
+    n = 0
+    while round(float((np.rint(n * ys.thr_step + off + r) < 0).mean()) - ys.floor_share, ys.round_digits) >= 0:
+        n += 1
+    return n * ys.thr_step
+
+
+def thresholds(theta, a: float, b: float, ys, resid=None) -> dict:
+    """(c_A, c_P) computed, their integers (the smallest integer above, Y.0 author's reading 1), and whether they
+    match Y's declared 20 · 43 and Y.0's printed 19.25 / 42.0 — a record; the filter never changes (P0-1)."""
+    ca = floor_threshold(theta, a, b, "A", ys, resid)
+    cp = floor_threshold(theta, a, b, "P", ys, resid)
+    ia, ip = math.floor(ca) + 1, math.floor(cp) + 1
+    return dict(c_A_calc=ca, c_P_calc=cp, c_A_int=ia, c_P_int=ip, a=float(a), b=float(b),
+                n_resid=int(len(theta["resid"]) if resid is None else len(resid)),
+                matches_declared=bool((ia, ip) == (ys.c_a, ys.c_p)),
+                matches_expected=bool((ca, cp) == tuple(ys.thr_expected)),
+                note="기록 전용 — 값이 어떻든 c_A 20 · c_P 43은 바뀌지 않는다(Y.6.6, Y.9.2 P0-1)")
+
+
+# ================================================================ Y.3.4 filter-candidate comparison (record only)
+CANDIDATES = ("a", "b", "c", "d", "e", "f")
+CANDIDATE_LABELS = dict(a="균형만", b="Y 거름", c="F2(0)", d="F2(25)", e="사용자 31 단독", f="사용자 한쪽 + 31")
+
+
+def candidate(name: str, theta, z: dict, ys) -> tuple:
+    """(spec, accept, label) of Y.3.4's candidate inside the simulation (on the expected base, like W / X): (a)–(e)
+    keep the balance inside pair_bases and add floors; (f) turns the balance off (naive_max ∞) and accepts
+    d′(base) > user_onesided_d ∧ base[A, X] ≥ user_a (Reading 18)."""
+    inf = math.inf
+    floors = dict(a=(-inf, -inf), b=(ys.c_a, ys.c_p), c=tuple(ys.f2_0), d=tuple(ys.f2_25), e=(ys.user_a, -inf))
+    if name in floors:
+        return ys, accept_y(ys, *floors[name]), CANDIDATE_LABELS[name]
+    sdp, d = w_oc.sd_pre(theta, z), ys.round_digits
+
+    def onesided(base):
+        b = np.asarray(base, float)
+        return ((np.round(WV.dv(b, z) / sdp - ys.user_onesided_d, d) > 0)
+                & (np.round(b[..., WV.A, WV.X] - ys.user_a, d) >= 0))
+    return dataclasses.replace(ys, naive_max=inf), onesided, CANDIDATE_LABELS[name]
+
+
+def candidate_passes(name: str, d: float, la: float, lp: float, ys) -> bool:
+    """The same candidate on measured values (W pilot naive d′ and medians): pass counts (Y.3.4 보고)."""
+    r = lambda x: round(float(x), ys.round_digits)  # noqa: E731
+    bal = abs(r(d)) < ys.naive_max
+    if name == "a":
+        return bool(bal)
+    if name == "b":
+        return bool(y_rules.filter_passes(d, la, lp, ys))
+    if name in ("c", "d"):
+        ca, cp = ys.f2_0 if name == "c" else ys.f2_25
+        return bool(bal and r(la) >= ca and r(lp) >= cp)
+    if name == "e":
+        return bool(bal and r(la) >= ys.user_a)
+    return bool(r(d) > ys.user_onesided_d and r(la) >= ys.user_a)
+
+
+def compare_filters(theta, vals: dict, z: dict, ys, n_rep: int | None = None, cell=run_cell, log=None) -> dict:
+    """Y.3.4 on W θ̂ (V0): Y's calibration (root compare_seed), per candidate × g × target compare_reps experiments
+    (tries 2000, fill recorded), worst over g; per k range the best design (pick_y with the false target), its g 0
+    values and k-wise point power / false, fill per cell (flag only), the acceptance rate on unconditioned g 0 bases
+    and the pass counts among the W pilot pairs (vals {key: (naive d′, MBON13(X), MBON05(X))}) and the balanced three.
+    Record only — never a gate, a STOP or a selection."""
+    t0 = time.perf_counter()
+    n_rep = ys.compare_reps if n_rep is None else int(n_rep)
+    root = ys.compare_seed
+    idx = rng(root, TAG_CAL).integers(0, len(theta["resid"]), ys.cal_reps)
+    cal = {m: calibrate_y(theta, getattr(ys, f), m, idx, z, ys) for m, f in MODES}
+    shp = x_oc.grid_shape(ys)
+    ones = [1.0] * ys.f_max
+    key0 = dict(theta=w_oc.summary(theta), n_rep=n_rep, root=root, cal={m: c["corners"] for m, c in cal.items()})
+    L = np.linalg.cholesky(theta["pair_cov"] + ys.chol_jitter * np.eye(4))
+    raw = theta["m0s"] + (rng(root, TAG_ACCEPT).standard_normal((n_rep * ys.k_cap, 4)) @ L.T).reshape(-1, 2, 2)
+    sdp = w_oc.sd_pre(theta, z)
+    out = {}
+    for ci, name in enumerate(CANDIDATES):
+        spec_c, acc, label = candidate(name, theta, z, ys)
+        grid, fill = {}, {}
+        for gi, g in enumerate(ys.cluster_grid):
+            for mi, (m, _f) in enumerate(MODES):
+                c = cal[m]
+                if not c["ok"]:
+                    grid[(g, m)], fill[f"g{g}|{m}"] = np.full(shp, c["fill"]), None
+                    continue
+
+                def run(c=c, gi=gi, g=g, mi=mi, spec_c=spec_c, acc=acc, ci=ci):
+                    r = evaluate_y(theta, rng(root, TAG_POINT, ci, gi, mi), rng(root, tag("mix"), 0, gi, mi, ci),
+                                   n_rep, [c["corners"]] * ys.k_cap, ones, ones, g, z, spec_c, "base", acc)
+                    return dict(p=r["p"].tolist(), fill_by_k=r["fill_by_k"])
+                v = cell(f"cmp_{name}_g{g}_{m}", dict(key0, candidate=name, g=g, mode=m), run)
+                grid[(g, m)], fill[f"g{g}|{m}"] = np.asarray(v["p"]), v["fill_by_k"]
+                if log is not None:
+                    log(f"y compare {name} g {g} {m} done ({time.perf_counter() - t0:.0f} s)")
+        pw = np.min([grid[(g, "min")] for g in ys.cluster_grid], 0)
+        fp = np.max([grid[(g, "max")] for g in ys.cluster_grid], 0)
+        g0 = ys.cluster_grid[0]
+        by_range = {}
+        for kr in ys.k_ranges:
+            best = pick_y(pw, fp, ys, [kr], True)
+            i = tuple(best["index"])
+            ks = _range_ks(kr, ys)
+            by_range[f"[{kr[0]}, {kr[1]}]"] = dict(best=best, best_g0=dict(
+                power_by_k=grid[(g0, "min")][i][ks].tolist(), false_by_k=grid[(g0, "max")][i][ks].tolist()))
+        bal = np.abs(WV.dv(raw, z)) / sdp < spec_c.naive_max
+        keys = list(vals)
+        out[name] = dict(label=label, by_range=by_range, fill=fill,
+                         fill_flag=any(v is not None and round(max(v) - ys.fill_max, ys.round_digits) > 0
+                                       for v in fill.values()),
+                         acceptance=float((bal & acc(raw)).mean()),
+                         pass_counts=dict(pilot=sum(candidate_passes(name, *vals[k], ys) for k in keys),
+                                          balanced=sum(candidate_passes(name, *vals[k], ys) for k in keys
+                                                       if k in ys.pilot_w_pairs)),
+                         arrays=dict(power_worst=pw.tolist(), false_worst=fp.tolist()))
+    return dict(candidates=out, calibration=cal, n_rep=n_rep, seed=root, timing_s=time.perf_counter() - t0,
+                note="모형 안의 거름은 기대값 base에 적용, 실제 거름은 측정 중앙값에 적용(Y.3.4) — 기록 전용")
+
+
+def compare_summary(cmp: dict) -> dict:
+    """The block's part of Y.3.4: per candidate and k range the best design, its k-wise values (worst g and g 0), the
+    fill flag, acceptance and pass counts (arrays stay in the detail file)."""
+    return dict(candidates={n: dict(label=c["label"], fill_flag=c["fill_flag"], acceptance=c["acceptance"],
+                                    pass_counts=c["pass_counts"],
+                                    by_range={r: dict(v, fill_flag=c["fill_flag"]) for r, v in c["by_range"].items()})
+                            for n, c in cmp["candidates"].items()},
+                calibration={m: dict(ok=c["ok"], failure=c["failure"]) for m, c in cmp["calibration"].items()},
+                n_rep=cmp["n_rep"], seed=cmp["seed"], timing_s=cmp["timing_s"], note=cmp["note"])
+
+
+# ================================================================ fixture 6 and the OC compute time
+def w_failed_recal(theta_w, w_boot_cal: list, z: dict, w_spec, ys, log=None) -> dict:
+    """Y.6.6 fixture 6 (record only): W's failed bootstrap draws (either side not ok in results/w/oc.json) re-drawn
+    from W's root in W's order (w_oc._rng(w_spec, TAG_BOOT, bi) → boot → calibration draws, as
+    x_oc.w_cal_diagnosis) and calibrated on both sides with Y's rule; the status table."""
+    failed = [i for i, c in enumerate(w_boot_cal) if not (c["min"]["ok"] and c["max"]["ok"])]
+    rows = []
+    for bi in failed:
+        rb = w_oc._rng(w_spec, w_oc.TAG_BOOT, bi)
+        tb = w_oc.boot(theta_w, rb)
+        ib = rb.integers(0, len(tb["resid"]), w_spec.cal_reps)
+        row = dict(draw=bi, w=dict(min=w_boot_cal[bi]["min"]["ok"], max=w_boot_cal[bi]["max"]["ok"]))
+        for m, f in MODES:
+            row[m] = calibrate_y(tb, getattr(w_spec, f), m, ib, z, ys)
+        rows.append(row)
+        if log is not None:
+            log(f"y fixture 6 draw {bi} done")
+    return dict(rows=rows, failed=failed, n_failed=len(failed), counts=status_counts(rows),
+                note="기록 전용(Y.6.6 보정 픽스처 6) — W θ̂의 X.10 (가) 실패 회차를 Y 규칙으로 다시 보정")
+
+
+def oc_timing(theta, z: dict, ys, a: float, b: float) -> dict:
+    """Y.7 0: one Y evaluate at boot_reps experiments (fixed corner, last g), scaled to the precheck (g × targets ×
+    scenarios × (mixture + two stairs) × precheck_reps) and to phase B's bootstrap (boot_draws × g × targets ×
+    scenarios × boot_reps) and one reconfirmation (boot_draws × … × reconfirm_reps)."""
+    ones = [1.0] * ys.f_max
+    t0 = time.perf_counter()
+    evaluate_y(theta, rng(ys.oc_seed, TAG_P26, len(ys.cluster_grid)), rng(ys.oc_seed, tag("mix"), TAG_P26), ys.boot_reps,
+               [one_corner(a, b)] * ys.k_cap, ones, ones, ys.cluster_grid[-1], z, ys)
+    s = time.perf_counter() - t0
+    cells = len(ys.cluster_grid) * len(MODES) * len(SCENARIOS)
+    return dict(evaluate_s=s, reps=ys.boot_reps,
+                precheck_point_s=s * cells * (1 + 2) * ys.precheck_reps / ys.boot_reps,
+                phase_b_boot_s=s * cells * ys.boot_draws,
+                reconfirm_s=s * cells * ys.boot_draws * ys.reconfirm_reps / ys.boot_reps)
