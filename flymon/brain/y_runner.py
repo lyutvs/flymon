@@ -940,14 +940,22 @@ class Runner:
                     continue
             plan = dict(design=o["design"], with_c=o["with_c"], parts_h=c["parts_h"], total_h=c["total_h"])
             break
-        if plan is None:
-            dec = y_rules.budget_stop(self._ledger_h(doc) + self._prog("budget_gate") / ys.s_per_h,
-                                      [dict(total_h=t["total_h"]) for t in tried], "순서 7a", ys)
+        if plan is None and any(t["in_budget"] and (t.get("skipped") or t.get("reconfirm") is False) for t in tried):
+            # Y.9.2 P2-8: an in-budget alternative was blocked by its reconfirmation (failed, or the five-design
+            # limit reached with the ranking exhausted) → STOP_OC_UNREACHABLE (reconfirmation), over every
+            # reconfirmation of the run (block oc's and this gate's)
+            dec = y_rules.reconfirm_stop(list(oc["reconfirm"]) + recs, ys)
+        elif plan is None:
+            # every remaining option is over budget: 〈h〉 from the over-budget options only (never a total ≤ 24 h)
+            over = [dict(total_h=t["total_h"]) for t in tried if not t["in_budget"] or t.get("after_reconfirm")]
+            dec = y_rules.budget_stop(self._ledger_h(doc) + self._prog("budget_gate") / ys.s_per_h, over,
+                                      "순서 7a", ys)
         else:
             dec = dict(outcome=y_rules.PASS, reasons=[], plan=plan)
         body = dict(dec, options=tried, reconfirm=recs, n_reconfirmed=n_rc, costs=costs, margin=ys.cost_margin,
                     note="Y.7 7a: 누적 실측 + ×1.3 × (순진 거름 최악 + k_hi 학습 + BAND 2K + C + 가소성 끈 대조) ≤ 24 h — "
-                         "C를 먼저 빼고, 그다음 대체 설계(재확인 통과 필요, 최대 5개), 그래도 넘으면 STOP_BUDGET.")
+                         "C를 먼저 빼고, 그다음 대체 설계(재확인 통과 필요, 최대 5개). 예산 안 대체 설계가 재확인에서 "
+                         "막히면 STOP_OC_UNREACHABLE(재확인, Y.9.2 P2-8), 남은 설계가 모두 예산 초과면 STOP_BUDGET.")
         return self._write("budget_gate", body, self._finish_wall("budget_gate", t0))
 
     # ================================================================ order 8: the judged-seed naive final filter
@@ -1070,12 +1078,17 @@ class Runner:
         prev = self._prog(stage)
         t_start = time.perf_counter()
 
+        n_all = max(len(units), 1)
+
         def check(done, todo):
+            # todo counts only the uncached units (a resumed stage); prev already holds the earlier run's spend, so
+            # the remaining share is the stage share × the not-yet-measured fraction of ALL the stage's units —
+            # the same check an uninterrupted run makes at the same point
             now = time.perf_counter()
             self._prog_add(stage, now - check.t)
             check.t = now
             spent = (prev + now - t_start) / ys.s_per_h
-            left = share * (1 - done / max(todo, 1)) if done else share
+            left = share * max(todo - done, 0) / n_all
             if round(base + spent + left + later - ys.budget_h, ys.round_digits) > 0:
                 raise w_runner.BudgetStop(w_rules.budget_h_text(base + spent, left + later))
         check.t = time.perf_counter()

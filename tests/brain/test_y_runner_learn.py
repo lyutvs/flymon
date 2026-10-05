@@ -78,3 +78,42 @@ def test_learn_refuses_on_a_changed_key(w):
     with pytest.raises(SystemExit) as e:
         w.runner().stage_learn()
     assert e.value.code == YR.EXIT_KEY and "learn" not in doc()
+
+
+def _resume_world(w, share_h):
+    """Through estimate, the later parts zeroed and this stage's share set to share_h; then half of learn's units
+    measured into the cache (a stage interrupted half-way). Elapsed ≈ 1 h."""
+    through(w, "estimate")
+    d = doc()
+    d["estimate"]["plan"]["parts_h"].update(learn=share_h, band=0.0, c=0.0, noplast=0.0)
+    Path(Y.summary).write_text(json.dumps(d))
+    r = w.runner()
+    wr, wm = w.w_runner(w.pool, False)
+    units = wr.learn_units(r._view(doc()))
+    wm.learn(units[:len(units) // 2], "learn")
+    return len(units)
+
+
+def test_resumed_stage_counts_only_the_remaining_units(w):
+    """Half the units cached: the remaining share is share × 1/2 (what an uninterrupted run checks at the same point),
+    not the full share. 1 h + 30 h / 2 = 16 h ≤ 24 → PASS; the old double count (1 h + 30 h) stopped."""
+    n = _resume_world(w, 30.0)
+    jobs = w.pool.jobs
+    out = w.runner().stage_learn()
+    assert out["outcome"] == R.PASS and out["n_units"] == n and w.pool.jobs - jobs == n - n // 2
+
+
+def test_resumed_stage_still_stops_when_the_remaining_share_is_over(w):
+    """The other side: 1 h + 50 h / 2 = 26 h > 24 → STOP_BUDGET with 남은 25.00 h (the remaining half, not 0)."""
+    _resume_world(w, 50.0)
+    out = w.runner().stage_learn()
+    assert out["outcome"] == R.STOP_BUDGET and "남은 25.00 h" in out["reasons"][0]
+
+
+def test_fresh_stage_takes_the_full_share(w):
+    through(w, "estimate")
+    d = doc()
+    d["estimate"]["plan"]["parts_h"].update(learn=30.0, band=0.0, c=0.0, noplast=0.0)
+    Path(Y.summary).write_text(json.dumps(d))
+    out = w.runner().stage_learn()
+    assert out["outcome"] == R.STOP_BUDGET and "남은 30.00 h" in out["reasons"][0]

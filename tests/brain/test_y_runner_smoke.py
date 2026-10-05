@@ -1,6 +1,7 @@
 """Y.7 7 / 7a: the smoke (pilot pair j 0, one fly, the smoke seed block, lever / z / RN1 / seed checks, unit costs)
 and the worst-case budget gate (×1.3; C first, then the reconfirmed alternatives, at most five reconfirmations in all,
-then STOP_BUDGET), plus run_y's phase-B stages."""
+an in-budget alternative blocked by its reconfirmation → STOP_OC_UNREACHABLE (Y.9.2 P2-8), all over budget →
+STOP_BUDGET), plus run_y's phase-B stages."""
 import importlib.util
 import json
 from pathlib import Path
@@ -82,16 +83,58 @@ def test_budget_gate_drops_c_then_reconfirmed_alternative_then_stops(w, monkeypa
     _costs(w, monkeypatch, lambda dsg: 30.0)
     out = w.runner().stage_budget_gate()
     assert out["outcome"] == R.STOP_BUDGET and out["sentence"].endswith("(순서 7a).") and out["reconfirm"] == []
+    assert _total(out["sentence"]) > w.ys.budget_h
 
 
-def test_budget_gate_reconfirmation_limit(w, monkeypatch):
+def _total(sentence: str) -> float:
+    return float(sentence.split("= ")[1].split(" h")[0])
+
+
+def test_budget_gate_reconfirmation_limit_is_oc_unreachable(w, monkeypatch):
+    """Y.9.2 P2-8: in-budget alternatives that fail their reconfirmation up to the five-design limit (the rest
+    skipped) → STOP_OC_UNREACHABLE (reconfirmation), never STOP_BUDGET."""
     through(w, "smoke")
     YW.fake_reconfirm.fail = set(range(1, 30))
     _costs(w, monkeypatch, lambda dsg: 30.0 if dsg.get("rank", 0) == 0 else 10.0)
     out = w.runner().stage_budget_gate()
-    assert out["outcome"] == R.STOP_BUDGET and out["n_reconfirmed"] == Y.reconfirm_max
-    assert len(out["reconfirm"]) == Y.reconfirm_max - 1
+    assert out["outcome"] == R.STOP_OC_UNREACHABLE and out["stop_kind"] == "reconfirm"
+    assert out["n_reconfirmed"] == Y.reconfirm_max and len(out["reconfirm"]) == Y.reconfirm_max - 1
     assert any(o.get("skipped") for o in out["options"])
+    every = doc()["oc"]["reconfirm"] + out["reconfirm"]
+    assert len(every) == Y.reconfirm_max
+    assert out["sentence"] == R.sentences_b(w.ys)[(R.STOP_OC_UNREACHABLE, "reconfirm")].format(
+        r=Y.reconfirm_max - 1, paren=R.reconfirm_paren(every))
+    assert "plan" not in out or out["plan"] is None
+
+
+def test_budget_gate_failed_in_budget_alternative_is_oc_unreachable(w, monkeypatch):
+    """One in-budget alternative fails its reconfirmation and the rest are over budget (no limit reached): still
+    STOP_OC_UNREACHABLE (reconfirmation) — the reason no design can be taken is the reconfirmation."""
+    through(w, "smoke")
+    YW.fake_reconfirm.fail = {1}
+    _costs(w, monkeypatch, lambda dsg: 10.0 if dsg.get("rank", 0) == 1 else 30.0)
+    out = w.runner().stage_budget_gate()
+    assert out["outcome"] == R.STOP_OC_UNREACHABLE and out["stop_kind"] == "reconfirm"
+    assert out["n_reconfirmed"] == 2 and [r["ok"] for r in out["reconfirm"]] == [False]
+    assert not any(o.get("skipped") for o in out["options"])
+    assert out["sentence"].startswith("Y 파일럿 잡음에서 선택 설계와 대체 설계 1개가")
+
+
+def test_budget_gate_stop_budget_h_only_from_over_budget_options(w, monkeypatch):
+    """STOP_BUDGET only when every remaining option is over budget; its 〈h〉 comes from the over-budget options
+    (an option that passed reconfirmation but whose spend then put it over counts as over) — never a total ≤ 24 h."""
+    through(w, "smoke")
+    _costs(w, monkeypatch, lambda dsg: 10.0 if dsg.get("rank", 0) == 1 else 30.0)
+    real = YR.Runner._reconfirm
+
+    def slow(self, stage, *a, **k):                       # the reconfirmation itself costs 20 h
+        self._prog_add(stage, 20.0 * w.ys.s_per_h)
+        return real(self, stage, *a, **k)
+    monkeypatch.setattr(YR.Runner, "_reconfirm", slow)
+    out = w.runner().stage_budget_gate()
+    assert out["outcome"] == R.STOP_BUDGET and out["sentence"].endswith("(순서 7a).")
+    assert [o.get("after_reconfirm") for o in out["options"] if o["in_budget"]] == ["예산 초과"]
+    assert _total(out["sentence"]) > w.ys.budget_h and _total(out["reasons"][0]) > w.ys.budget_h
 
 
 def test_run_y_phase_b_stages():
