@@ -20,6 +20,11 @@
     "at": "2026-10-05T21:17:09.951360+00:00",
     "stage": "reuse",
     "wall_s": 2.4278471659636125
+   },
+   {
+    "at": "2026-10-05T21:49:35.464272+00:00",
+    "stage": "pilot",
+    "wall_s": 1921.758457708056
    }
   ]
  },
@@ -742,6 +747,978 @@
    "P": [
     80.167,
     29.775
+   ]
+  }
+ },
+ "pilot": {
+  "admission": {
+   "a|218|Earthquake|Strength": {
+    "L_A": 45.0,
+    "L_P": 109.0,
+    "d": -0.11038555104681672,
+    "passed": true
+   },
+   "a|223|Surf|Earthquake": {
+    "L_A": 40.0,
+    "L_P": 136.0,
+    "d": -0.90258416868582,
+    "passed": false
+   },
+   "a|305|Earthquake|Rock Slide": {
+    "L_A": 45.0,
+    "L_P": 109.0,
+    "d": 0.4740485920839358,
+    "passed": true
+   },
+   "a|4|Rock Slide|Strength": {
+    "L_A": 31.0,
+    "L_P": 107.0,
+    "d": 0.0774736247426054,
+    "passed": true
+   },
+   "b|10|Surf vs Slowbro|Surf vs Venusaur": {
+    "L_A": 34.5,
+    "L_P": 121.0,
+    "d": -0.31809323191179406,
+    "passed": true
+   },
+   "b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy": {
+    "L_A": 47.0,
+    "L_P": 128.5,
+    "d": -0.2044506479225026,
+    "passed": true
+   },
+   "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": {
+    "L_A": 38.0,
+    "L_P": 114.5,
+    "d": -0.05203918740539968,
+    "passed": true
+   }
+  },
+  "admitted": [
+   "a|4|Rock Slide|Strength",
+   "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel",
+   "b|10|Surf vs Slowbro|Surf vs Venusaur",
+   "b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy",
+   "a|218|Earthquake|Strength",
+   "a|305|Earthquake|Rock Slide"
+  ],
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/y/oracle.json",
+    "sha256": "fa4750ac80883bcdc571e8e5b6ba7cc3d25f320549988dc0c3ab8823f75768bb",
+    "src": "results/y/oracle.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/y/pilot.json",
+    "sha256": "fcc81761a5427cba966c2306828731b59dbe32d456deb3bf3c9edb5a2e856816",
+    "src": "results/y/pilot.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/5eeb842ccd7e7666af90baff.json",
+    "sha256": "e814a00b3a5ef07d6e55e35dff56a344cec7be58ceb111d68bd29c830d366522",
+    "src": "results/y/cache/w_learn/5eeb842ccd7e7666af90baff.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/867ac23ae6bb5cdb17398e54.json",
+    "sha256": "e60afd6791400a062b6d08d1c5683cb0356b5c2eaa6b0588e279615cc296895e",
+    "src": "results/y/cache/w_learn/867ac23ae6bb5cdb17398e54.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/8751a6096ad5c48150bdbbd6.json",
+    "sha256": "03ed05fdb405c611ccc8d7acb84b9ecb00033c3cf11c91ae9aaf2d1a0df4a03e",
+    "src": "results/y/cache/w_learn/8751a6096ad5c48150bdbbd6.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/cee71a3914526a1beb083b9b.json",
+    "sha256": "dcc218c333a072652ebaddc232b5828ec813a580e7fedcc9afe9f3c15418bd10",
+    "src": "results/y/cache/w_learn/cee71a3914526a1beb083b9b.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/c0c32c8c3f10969fcb0aa1de.json",
+    "sha256": "05e8e58169e1aa4ef00cc162886860d35bba70f529a4efc3a03f69fa2641e70a",
+    "src": "results/y/cache/w_learn/c0c32c8c3f10969fcb0aa1de.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/7fd70c44c281eaff9f233f49.json",
+    "sha256": "0687c1f2f7ad41d970c70fdd6029f00b2b052ba72cf8ce4f2442caec79625d3c",
+    "src": "results/y/cache/w_learn/7fd70c44c281eaff9f233f49.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/8eb1eb7dd044f7c7f04b28f0.json",
+    "sha256": "ffbc7a93fba89b9f5e999d66402bdd8dc224c65f6911ef7330898fcffb72c800",
+    "src": "results/y/cache/w_learn/8eb1eb7dd044f7c7f04b28f0.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/0a104d548c5b8b77fb2b83dc.json",
+    "sha256": "a6db96048b74dddcdd3e23d5eb7122fbcb20f06ecb9f8de21283aecdf8c1f9a6",
+    "src": "results/y/cache/w_learn/0a104d548c5b8b77fb2b83dc.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/334bc50278daeaefc61e00a1.json",
+    "sha256": "c885b868ed2bb741c06ac050131a04e18035d515f28f559b0139d30171112ab8",
+    "src": "results/y/cache/w_learn/334bc50278daeaefc61e00a1.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/66c9b6a5df14217135cef64f.json",
+    "sha256": "e2c7ad0ea098355acbf11297dec3bfddcf80af0186819fb200624cec94239eaf",
+    "src": "results/y/cache/w_learn/66c9b6a5df14217135cef64f.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/69ff10aa5c64a7116c4df720.json",
+    "sha256": "5319c8e0e16ccebf25db710b230bb0b9bf7dc18046fcbf39d94fa30a329a10c3",
+    "src": "results/y/cache/w_learn/69ff10aa5c64a7116c4df720.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/145a9425114edf84d9d44aa6.json",
+    "sha256": "b946fd4d77c9019e17a083df08dad6f85ae035c2daf0c69151ac7ea35eb1042e",
+    "src": "results/y/cache/w_learn/145a9425114edf84d9d44aa6.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/367b98e7b3a5421842d6e6e5.json",
+    "sha256": "488b59c3c16ebbbe5f6459c0927b7eb8bda24278ba4882ec1e8610bb5d98d8e7",
+    "src": "results/y/cache/w_learn/367b98e7b3a5421842d6e6e5.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/abf6e7e176481f0ba71dd7e9.json",
+    "sha256": "d69f468ea8f0cde47c695f35d40a18ef72059309fcf96e8e383c9bed40e59dfe",
+    "src": "results/y/cache/w_learn/abf6e7e176481f0ba71dd7e9.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/05abae71255855c6d290dce4.json",
+    "sha256": "d07d51ea01a3f40471d4a5fbed430c6a0048e7ac0c7c4af51e319a9f937544a5",
+    "src": "results/y/cache/w_learn/05abae71255855c6d290dce4.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fef27e112b08b3b4874d008a.json",
+    "sha256": "5eb6395ece276dceeec9eeed9bb14c5e20f42f26fcb8b22dfba7a298a837e664",
+    "src": "results/y/cache/w_learn/fef27e112b08b3b4874d008a.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/7678c6c5a84d518180aa7914.json",
+    "sha256": "05764f1aca85fb49de73bf68b60480183113500eee2862250fd20153991e819a",
+    "src": "results/y/cache/w_learn/7678c6c5a84d518180aa7914.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fc73938dae3da148b4caca35.json",
+    "sha256": "47bd5da035632d673947972cccc9d3035ce2031582f863169955c820988e7c9d",
+    "src": "results/y/cache/w_learn/fc73938dae3da148b4caca35.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/82603a53b34c5749430b0aed.json",
+    "sha256": "7a77511611fb642228780297f2a75311f1ea5b4898f7fd739479867dd7c8a792",
+    "src": "results/y/cache/w_learn/82603a53b34c5749430b0aed.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/d9f27088c111551e95708498.json",
+    "sha256": "99ecd1bbcce0ae1c1d9f8d13ad947f40ac84125cb49f07dd5c5d1b76be653c77",
+    "src": "results/y/cache/w_learn/d9f27088c111551e95708498.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/ce49474137fb5d9f7e43b40c.json",
+    "sha256": "b81d36fd8877beaaeeeaf66c198f507bcd33338834d3387d90385f19ad452260",
+    "src": "results/y/cache/w_learn/ce49474137fb5d9f7e43b40c.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/308f4ba31c6bdca4119dc03f.json",
+    "sha256": "7396ad3b4ab64dfbffe8f0d88f9323bde3a9006c3befa5320cc0e879a27e3962",
+    "src": "results/y/cache/w_learn/308f4ba31c6bdca4119dc03f.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fcfcdda83cf0f72332b025a7.json",
+    "sha256": "3fbed24f94a4e697490bf47dc71b98490ffaef94d4b2b21d0e660450f138d72b",
+    "src": "results/y/cache/w_learn/fcfcdda83cf0f72332b025a7.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/b8dbe37bfb0c263b9b8b31fb.json",
+    "sha256": "54cc0e01d96db2e6f42b1b14824b491d2a08f31f094e1e2b7b223e7c504c850c",
+    "src": "results/y/cache/w_learn/b8dbe37bfb0c263b9b8b31fb.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/a10c6454c3be4e9d4035b765.json",
+    "sha256": "fbb63a74302360550544eb21645553f96ab8f79a5a98737248ee98fcfe93f12e",
+    "src": "results/y/cache/w_learn/a10c6454c3be4e9d4035b765.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/5f57cfad19fb1270ba97d860.json",
+    "sha256": "348cfd51c1431d39a858b02fdeeb724cc2df052819df27a89295ed569814fdde",
+    "src": "results/y/cache/w_learn/5f57cfad19fb1270ba97d860.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/829032d13921ed18f5230786.json",
+    "sha256": "e41a834a842a9cf39df8396ff7ab79d138b16ce7b6353bfa8626690ad1173379",
+    "src": "results/y/cache/w_learn/829032d13921ed18f5230786.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/c7611a7646884a5f1b7185ae.json",
+    "sha256": "b4b08a2d02822243fc79d767ebcf342831e2d8d5b6296a0587578bed4459b18d",
+    "src": "results/y/cache/w_learn/c7611a7646884a5f1b7185ae.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fe995d0076960542f1eb36db.json",
+    "sha256": "c5b2d52d3ec2e58c04f9b710a0a486aa5e6632e8b9309059dc093dfedbeb7e28",
+    "src": "results/y/cache/w_learn/fe995d0076960542f1eb36db.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/632b2ea06f240216058f7011.json",
+    "sha256": "db39a276b1f812cdaf4eb1241b710c5f67230b3847bd4b65a422d188a6d24809",
+    "src": "results/y/cache/w_learn/632b2ea06f240216058f7011.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/f5928bbd10fb6594149b95d1.json",
+    "sha256": "37b726d6ebb3cc0eae807e7f85c41981c22d81f5092310fc31ed8be8fad58d4b",
+    "src": "results/y/cache/w_learn/f5928bbd10fb6594149b95d1.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fd3855ed3e8fcfccd36e7cae.json",
+    "sha256": "c1fa9994021425a9cdca92fa8cc9f74207949a9d0d0fa3c7a5062de8bbdc9aba",
+    "src": "results/y/cache/w_learn/fd3855ed3e8fcfccd36e7cae.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/4d3cf2121c18e779b075784c.json",
+    "sha256": "6ea8c821fd426d56ff86baba8e1d320682a3578069115a4b46e01ef2dd281181",
+    "src": "results/y/cache/w_learn/4d3cf2121c18e779b075784c.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/8e0863248d1401b8144ba809.json",
+    "sha256": "073816021cf3fa140c8dfc6086ef7a519b412c6e331dbd295aa53e4e93b88842",
+    "src": "results/y/cache/w_learn/8e0863248d1401b8144ba809.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/f1773cdaf599381491d1b20e.json",
+    "sha256": "2f84fde3d0f116e1b18d222c9c3331fb35dc14d3548ece0b7f98b9a25667f126",
+    "src": "results/y/cache/w_learn/f1773cdaf599381491d1b20e.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fe54d9ff56ecd72f8be00fff.json",
+    "sha256": "d13c3dba4874d245dd6ed913f8a4650d3f9afe6865763c01e42c64eefb441129",
+    "src": "results/y/cache/w_learn/fe54d9ff56ecd72f8be00fff.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/ef3123371d66b0d302e8d564.json",
+    "sha256": "b5a6f4fe88b23f42add8176c4ccfed2d1f4256a48769a9cc9c67d22ae3588530",
+    "src": "results/y/cache/w_learn/ef3123371d66b0d302e8d564.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/6c9fcc4631ab2b77f05dbd01.json",
+    "sha256": "41c60b3d21c5a78f5fa60cd30300d4265a09fd4f211fec8a6ecbb6a3c68a3d4a",
+    "src": "results/y/cache/w_learn/6c9fcc4631ab2b77f05dbd01.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/4bb8663aa411d51321972751.json",
+    "sha256": "b6921dffece3ba21e5dd6e8e12de07f8e92ff32346f9820562cfa3922719549a",
+    "src": "results/y/cache/w_learn/4bb8663aa411d51321972751.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/047b187dabacfcc43a3fea11.json",
+    "sha256": "a23724d68eb589bc20918001d0328e20cc0772721f7a78e0dfc1d8a7a037a6c2",
+    "src": "results/y/cache/w_learn/047b187dabacfcc43a3fea11.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/ccb651bac9b90a501a71c7c4.json",
+    "sha256": "959aa616f77d255e37da88be1133f9ddc8b8fa74d530e2f231943fee3f9a0112",
+    "src": "results/y/cache/w_learn/ccb651bac9b90a501a71c7c4.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/45b860962a7ae29cdf7ce154.json",
+    "sha256": "7146e9cb846a069368781c51011c2fc7285feb744fa9844743c768a4813b9c66",
+    "src": "results/y/cache/w_learn/45b860962a7ae29cdf7ce154.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/82915a13c48e6fb1c501acf6.json",
+    "sha256": "4eaef5ad8000339667f8f9d951d597cb63023bedce811437a6f4cea0485e8e58",
+    "src": "results/y/cache/w_learn/82915a13c48e6fb1c501acf6.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/e3e433780171b73cf2b2f8a8.json",
+    "sha256": "e65206e33b313062c474fcf153af3058b2a4df2ec11921ff48302437b37fd64c",
+    "src": "results/y/cache/w_learn/e3e433780171b73cf2b2f8a8.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/aa92a7a427d7f903efc5a49d.json",
+    "sha256": "6eae32547882f557f59004e24b26ffeb3989aef8a9d4a7484f7c42a41c83b5f6",
+    "src": "results/y/cache/w_learn/aa92a7a427d7f903efc5a49d.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/b909a1a3346dbfc52954a589.json",
+    "sha256": "44b9ffdaa5b33069605cffef2d2bb94796fd684c0f14ae9f7dc394ee8a78c1bb",
+    "src": "results/y/cache/w_learn/b909a1a3346dbfc52954a589.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/eb913ceb09d6dc79a73a0c43.json",
+    "sha256": "c635ede4f0056d3bdfe4d1cc82c999e8701ca2ccca8ae16a06187f0288460ade",
+    "src": "results/y/cache/w_learn/eb913ceb09d6dc79a73a0c43.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/49cccc301cc49bf337bbe8ca.json",
+    "sha256": "85271f220f40e1cb1112a7cfba00d3e194963e1849c0f3e394ae4cf1b98d60fe",
+    "src": "results/y/cache/w_learn/49cccc301cc49bf337bbe8ca.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/3142dfdfe402127a0467fee4.json",
+    "sha256": "93d76380499aecc07140db5183ad6ea2141e5d0b5e201e30d5c6ca05dfb84cb5",
+    "src": "results/y/cache/w_learn/3142dfdfe402127a0467fee4.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fbc6c9fbc662b7d13fa4e4cc.json",
+    "sha256": "a409aa73e6d7cec42ca909361eb226b5069208f13ae0b0ab9ffe5268c3b6acd5",
+    "src": "results/y/cache/w_learn/fbc6c9fbc662b7d13fa4e4cc.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fe494edf3711cc3d9ac8656c.json",
+    "sha256": "5ccf2ffe9c759c6abbdb7f0352ddecdaf017408285237461861299e9c0b80b73",
+    "src": "results/y/cache/w_learn/fe494edf3711cc3d9ac8656c.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/ae3a658aae9408db62aa32b8.json",
+    "sha256": "e0e61aaefd727c31191ce04acf5f3b87c01ee54de3f975b9416abd7f9bc319da",
+    "src": "results/y/cache/w_learn/ae3a658aae9408db62aa32b8.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/aef300e583510adbff52402c.json",
+    "sha256": "82fc006850e81642349c0b8ce4862c14a4c475300ee405bf961812967cf66207",
+    "src": "results/y/cache/w_learn/aef300e583510adbff52402c.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/3eabe280925f3ce5fe128bc2.json",
+    "sha256": "4431adb357abc5e3c7041344686634513569ac64d04c9614aff5ade93aa8a6af",
+    "src": "results/y/cache/w_learn/3eabe280925f3ce5fe128bc2.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/1c3318cf27a3feff0213da3f.json",
+    "sha256": "f45fd7c9d2931b66514e83292192b6ac5bfffebd4b489d4fb920ef98337b1745",
+    "src": "results/y/cache/w_learn/1c3318cf27a3feff0213da3f.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/27b5391ff9aa115ca45a4134.json",
+    "sha256": "835123934ae344b6d044e0a70a370969cabe3eba2d489516fe49927e5fb4b783",
+    "src": "results/y/cache/w_learn/27b5391ff9aa115ca45a4134.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/c50f394df40a54ca5c8e57e3.json",
+    "sha256": "5f8c668107bb8399a188f065af96288f7a5c0f33b1322b9ec784b1add57cb7df",
+    "src": "results/y/cache/w_learn/c50f394df40a54ca5c8e57e3.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/6a58d5e7120200cc29962bfd.json",
+    "sha256": "79ad7175b3ede33aec70a3a4f6317d0b40e3ebf277c601a07a0c7c2eb3c9e93d",
+    "src": "results/y/cache/w_learn/6a58d5e7120200cc29962bfd.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/c1cdc95d010d8a0568a4e85b.json",
+    "sha256": "0a10b32c522218f7c48cfe47feb27b6474739dcee78cbc29a81810bef87ce808",
+    "src": "results/y/cache/w_learn/c1cdc95d010d8a0568a4e85b.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/47c255794ced112f87080f52.json",
+    "sha256": "7a06c3b6d6543d971dbea26144a877a3b6797fa451c87c56861546537ab6d9a0",
+    "src": "results/y/cache/w_learn/47c255794ced112f87080f52.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fb33055110dfe6cf4c2fe800.json",
+    "sha256": "98533f8eea3bf543be066b0334bf3a9c51d521c9c5b544220aeede26604cde7d",
+    "src": "results/y/cache/w_learn/fb33055110dfe6cf4c2fe800.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/723a7839aa25109ac238b2cb.json",
+    "sha256": "1351f20f7b5888517665699f09e7652b88ea503f9385f874215e7a58d7824af9",
+    "src": "results/y/cache/w_learn/723a7839aa25109ac238b2cb.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/2fe4a48e2eea66de999c561b.json",
+    "sha256": "3fbe8f9ca571374a52dae490de2e4fe19b55fada43703d7e41ceecfc2114d610",
+    "src": "results/y/cache/w_learn/2fe4a48e2eea66de999c561b.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/f82d5c5d9372512fde041dee.json",
+    "sha256": "7c2419f75aaacf05b2ad6b2439b48fd336d08af633577e4b12273534386a58bd",
+    "src": "results/y/cache/w_learn/f82d5c5d9372512fde041dee.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/87a9186bc8aab370449bf4df.json",
+    "sha256": "d39b1f70ed209d373ffe4fd41bc7551f769a10d646da8e2895e9428d2ff0e68e",
+    "src": "results/y/cache/w_learn/87a9186bc8aab370449bf4df.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/119f8cce28d459177d921e29.json",
+    "sha256": "66bf3d4b35fe513de3c287de1aa0dd57c7df84b6aed971ff79341e7507c2d24b",
+    "src": "results/y/cache/w_learn/119f8cce28d459177d921e29.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/4b74fce2583729a4fcb67c88.json",
+    "sha256": "1b41a6203b4984506ca019797dde03bc61a46acfd4cecf833b5b76cf49116fd4",
+    "src": "results/y/cache/w_learn/4b74fce2583729a4fcb67c88.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/01db1bfdfea5e98186adf014.json",
+    "sha256": "66fdcb9c7d02fed9031eb0689501bdc118794a506e1d33dbafc40c02bc5e94e7",
+    "src": "results/y/cache/w_learn/01db1bfdfea5e98186adf014.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/52ed09c4e54987e7c6db00e9.json",
+    "sha256": "d6b62e6cf7524542d811d60dd37e954cacfc655a21b5a289f5a645ad55c8eef2",
+    "src": "results/y/cache/w_learn/52ed09c4e54987e7c6db00e9.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/084746b63d3b089d1d45e0f4.json",
+    "sha256": "c80f695c7ad6f90f0a9ec37bcd2a9a2003ba81a9637eb306d94fc94879d61da6",
+    "src": "results/y/cache/w_learn/084746b63d3b089d1d45e0f4.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/f2db759f465d82d9da651fb0.json",
+    "sha256": "a284cc4aee1e78bf1ab7f1ae681fbf3adfdfb562b43d28a60c75bb1a2bcd59fa",
+    "src": "results/y/cache/w_learn/f2db759f465d82d9da651fb0.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/f7bdbc3a062ccf7da65c7fa0.json",
+    "sha256": "b482e2724029ed2445ff260c0d01b082c67028c8e6189132187d51a58d5b1cc1",
+    "src": "results/y/cache/w_learn/f7bdbc3a062ccf7da65c7fa0.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/1a97f271ff08ea6f0d565aa7.json",
+    "sha256": "f7c7e509a0490f9bc4f334d88218bd5d57feeacd91665a6be8388d025e77c301",
+    "src": "results/y/cache/w_learn/1a97f271ff08ea6f0d565aa7.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/82aae5c527585f0b77d9aa14.json",
+    "sha256": "73e2d2dc142ddc20fb8fcf28d087f74907e6baa41cd4c3a4ca572f852c32bf9f",
+    "src": "results/y/cache/w_learn/82aae5c527585f0b77d9aa14.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/ed563f7069875358f017a9a6.json",
+    "sha256": "1acfb308f42c11247daec3aac618ecdb3e6569f0d964eb9874b8b3b430a35459",
+    "src": "results/y/cache/w_learn/ed563f7069875358f017a9a6.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/ce943cb5db3090fdf19f59ac.json",
+    "sha256": "e17c5a9fc27fa4d763f7f4d0e945d0aca37f94150b476e592eeda5ca4a012776",
+    "src": "results/y/cache/w_learn/ce943cb5db3090fdf19f59ac.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/0e2ce3e1e59e204f1e36d5c8.json",
+    "sha256": "f6aa2b1bd2b887d26d25f5c4003f5969e972072d84d419a418b523ce0a078ebd",
+    "src": "results/y/cache/w_learn/0e2ce3e1e59e204f1e36d5c8.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/bb3391452e765de064a334b1.json",
+    "sha256": "4e788137a54c73703a2519d8f58c62946cfb191d9f6a9803ca098d17a37da14c",
+    "src": "results/y/cache/w_learn/bb3391452e765de064a334b1.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/afcbfb665f74d1fe8d6aaa7f.json",
+    "sha256": "ea5761047730a8cd7b64a875c213156a56d0d279ebf8c2672a10126f1574acad",
+    "src": "results/y/cache/w_learn/afcbfb665f74d1fe8d6aaa7f.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/4c718a6c5cad003101a0ddac.json",
+    "sha256": "5f9a556e27095d886644af1fba5e718d923ecf5ce5bc4cea2afb2f6a15d370f0",
+    "src": "results/y/cache/w_learn/4c718a6c5cad003101a0ddac.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/a528250bfbe5ee186079e8c6.json",
+    "sha256": "e7f2d3b9706b5205ec91e4d987fc940b668913b3866afb88516c72598d2bcea3",
+    "src": "results/y/cache/w_learn/a528250bfbe5ee186079e8c6.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/639a6c202769c3eea8c51bc4.json",
+    "sha256": "58194403d95dc91f6652cc18b2f7776096707cb3e6883d5e80cc786f00eac89f",
+    "src": "results/y/cache/w_learn/639a6c202769c3eea8c51bc4.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/47d9947d4e325694c5f36c1e.json",
+    "sha256": "d46f87dbfd334bd12899b0735e4f5f923ec31427e586ae1a36e89ca12e7ab44b",
+    "src": "results/y/cache/w_learn/47d9947d4e325694c5f36c1e.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/b432682204d060b7d2837c28.json",
+    "sha256": "29b406882fb170c51a67f21beb12d93b863420523c77601869b601db0b4aa49c",
+    "src": "results/y/cache/w_learn/b432682204d060b7d2837c28.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/5293b57206a0616e34bca9b1.json",
+    "sha256": "5474803b14cb35f4b5b1652168d67c323555e8326ca80b6a607a3218170db140",
+    "src": "results/y/cache/w_learn/5293b57206a0616e34bca9b1.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/8a2f50ca64ed960ea73ab2f5.json",
+    "sha256": "21cda9597de527c46792a34a582e776537d03e6b7931bc03586edeb4a727dfae",
+    "src": "results/y/cache/w_learn/8a2f50ca64ed960ea73ab2f5.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/c7d3c0b34cd7fd328afc369f.json",
+    "sha256": "7e49acd6be64b1bd5cf12c8560275f427d2ec93ebd5356afa3522fa403fe443c",
+    "src": "results/y/cache/w_learn/c7d3c0b34cd7fd328afc369f.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/d75f9eebc1cc9a1e2e5f6081.json",
+    "sha256": "dcdb50f9f418e54a55599090a54d8f6b8644d9c68e5cb5b991644146521821e4",
+    "src": "results/y/cache/w_learn/d75f9eebc1cc9a1e2e5f6081.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/8c8d17a9595b22231d331a44.json",
+    "sha256": "136f7285e769d04194a1c75cad58b3367ed9ce3a000f2eaf487b647c87823447",
+    "src": "results/y/cache/w_learn/8c8d17a9595b22231d331a44.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/0b727c954eb835c9cde0814b.json",
+    "sha256": "4ef78950b71acce06c9cb5b16ef9fda4377df05b432908655357baf208d8fcba",
+    "src": "results/y/cache/w_learn/0b727c954eb835c9cde0814b.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/826bcd2eb2f42063ea7be83b.json",
+    "sha256": "77c1a327807cf0f3fd04799ced9b95eda98f3ee58d82bf58b97cc44bf45b80b4",
+    "src": "results/y/cache/w_learn/826bcd2eb2f42063ea7be83b.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/fc88f9e5215579e1bb7ece14.json",
+    "sha256": "9d49c57df125e435176c19676bb4ae5b1052aac43fd4363a70e9db23e6f9adf3",
+    "src": "results/y/cache/w_learn/fc88f9e5215579e1bb7ece14.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/6a8944d1b2b0df16780c2616.json",
+    "sha256": "0403135ab2e431b52dea4828dbfdd0b91da2d57761d6f41d95b0f5fe1b952684",
+    "src": "results/y/cache/w_learn/6a8944d1b2b0df16780c2616.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/23f0a8057d3780408fb8b870.json",
+    "sha256": "177f0529860ee53a4084245abd7980c7221cf750384dfac3c4be5f7659aedf26",
+    "src": "results/y/cache/w_learn/23f0a8057d3780408fb8b870.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/818d518e7527e230a12e5fb7.json",
+    "sha256": "e67927d97fa6dae9726b36d31e48f2578ec93aed0fba1cd403adab63e2f8dde5",
+    "src": "results/y/cache/w_learn/818d518e7527e230a12e5fb7.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/pilot/w_learn/786641c0fd236bf9208d08e4.json",
+    "sha256": "8a3431c60566c03d8d3ecf1c961102e295e882b6af0691d9e17e7e1768a12cc7",
+    "src": "results/y/cache/w_learn/786641c0fd236bf9208d08e4.json"
+   }
+  ],
+  "candidates": [
+   "a|4|Rock Slide|Strength",
+   "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel",
+   "b|10|Surf vs Slowbro|Surf vs Venusaur",
+   "b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy",
+   "a|218|Earthquake|Strength",
+   "a|305|Earthquake|Rock Slide",
+   "a|223|Surf|Earthquake"
+  ],
+  "costs": {
+   "oracle_round_s": 689.9133451848684,
+   "presentation_s": 3.46501247351019,
+   "trial_s": 3.71789051508822,
+   "workers": 16
+  },
+  "detail_path": "results/y/pilot.json",
+  "detail_sha256": "fcc81761a5427cba966c2306828731b59dbe32d456deb3bf3c9edb5a2e856816",
+  "exploratory": {
+   "label": "\ud0d0\uc0c9",
+   "pairs": {
+    "a|218|Earthquake|Strength": "PASS",
+    "a|305|Earthquake|Rock Slide": "PASS",
+    "a|4|Rock Slide|Strength": "PASS",
+    "b|10|Surf vs Slowbro|Surf vs Venusaur": "PASS",
+    "b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy": "PASS",
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": "PASS"
+   },
+   "verdict": "PASS"
+  },
+  "facts": {
+   "v_oracle": {
+    "a|218|Earthquake|Strength": true,
+    "a|223|Surf|Earthquake": true,
+    "a|305|Earthquake|Rock Slide": true,
+    "b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy": true
+   },
+   "w_naive": {
+    "a|4|Rock Slide|Strength": true,
+    "b|10|Surf vs Slowbro|Surf vs Venusaur": true,
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": true
+   }
+  },
+  "flip": {
+   "available": true,
+   "lenient_mismatch": [
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel",
+    "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard"
+   ],
+   "matches_spec": true,
+   "n": 16,
+   "note": "\uae30\ub85d \uc804\uc6a9(Y.9.2 P1-6 \u00b7 P1-7) \u2014 \ubb38\ud131\uc744 \ubc14\uafb8\uc9c0 \uc54a\ub294\ub2e4(P0-1)",
+   "recall": [
+    2,
+    3
+   ],
+   "strict_flips": [
+    "b|10|Surf vs Slowbro|Surf vs Venusaur",
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel"
+   ],
+   "yield_basis": {
+    "c": 1.5,
+    "lenient": 3,
+    "matches_spec": true,
+    "strict_of_lenient": 2
+   }
+  },
+  "git": {
+   "commit": "2b82a8f110843a785f03f2904d1fd5ac94cae8e4",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "groups": [
+   [
+    "a|4|Rock Slide|Strength"
+   ],
+   [
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel"
+   ],
+   [
+    "b|10|Surf vs Slowbro|Surf vs Venusaur"
+   ],
+   [
+    "b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy"
+   ],
+   [
+    "a|218|Earthquake|Strength",
+    "a|305|Earthquake|Rock Slide"
+   ]
+  ],
+  "level_compare": {
+   "note": "\uae30\ub85d \uc804\uc6a9(Y.9.2 P1-4) \u2014 \uc120\ud0dd\u00b7STOP\uc5d0 \uc4f0\uc9c0 \uc54a\ub294\ub2e4",
+   "oracle_lenient": {
+    "A": [
+     17.0,
+     24.25,
+     32.0,
+     41.25,
+     52.0
+    ],
+    "P": [
+     70.5,
+     89.25,
+     100.0,
+     120.75,
+     152.5
+    ],
+    "n": 31,
+    "quantiles": [
+     0.0,
+     0.25,
+     0.5,
+     0.75,
+     1.0
+    ]
+   },
+   "pilot": {
+    "A": [
+     31.0,
+     35.375,
+     41.5,
+     45.0,
+     47.0
+    ],
+    "P": [
+     107.0,
+     109.0,
+     111.75,
+     119.375,
+     128.5
+    ],
+    "n": 6,
+    "quantiles": [
+     0.0,
+     0.25,
+     0.5,
+     0.75,
+     1.0
+    ]
+   }
+  },
+  "n_admitted": 6,
+  "n_sigma": 5,
+  "n_units": 96,
+  "note": "Y.4: \ud30c\uc77c\ub7ff\uc740 \uc8fc \uc138\ud2b8 \ubc16(W \uade0\ud615 3 \u00b7 V \uc138\ud2b8 \ud6c4\ubcf4 4), \ud310\uc815 \ucf54\ub4dc\ub294 \ud0d0\uc0c9 \ub77c\ubca8. \u03b8\ub294 \uac70\ub984 \ud1b5\uacfc \uc30d\ub9cc, \u03a3\ub294 Earthquake \ubb36\uae30 \ub4a4 \ub300\uac01 + W V0 \uc0c1\uad00(Y.9.2 P1-3).",
+  "outcome": "PASS",
+  "precision": {
+   "main_probes_per_pair": [
+    64,
+    512
+   ],
+   "note": "Y.9.2 P3-15: \ud30c\uc77c\ub7ff \uc785\uc7a5\uc740 \uc30d\ub2f9 64 \ud504\ub85c\ube0c, \uc8fc \uc138\ud2b8 \ucd5c\uc885 \uac70\ub984\uc740 F \u00d7 K",
+   "pilot_probes_per_pair": 64
+  },
+  "reasons": [],
+  "record": {
+   "a|218|Earthquake|Strength": {
+    "mech": {
+     "punish": 1.0,
+     "reward": 1.0
+    },
+    "median": {
+     "punish_assoc": -9.054193267709241,
+     "punish_drop": -9.422193464058099,
+     "reward_assoc": 11.369763813873467,
+     "reward_level": 8.251558199855808
+    },
+    "naive_d": -0.11038555104681672,
+    "naive_median": {
+     "MBON05_X": 109.0,
+     "MBON13_X": 45.0
+    },
+    "q_sat": 1.0
+   },
+   "a|223|Surf|Earthquake": {
+    "mech": {
+     "punish": 1.0,
+     "reward": 1.0
+    },
+    "median": {
+     "punish_assoc": -6.221947502347175,
+     "punish_drop": -4.7422041071169545,
+     "reward_assoc": 4.503039163050209,
+     "reward_level": 4.326711373120438
+    },
+    "naive_d": -0.90258416868582,
+    "naive_median": {
+     "MBON05_X": 136.0,
+     "MBON13_X": 40.0
+    },
+    "q_sat": 1.0
+   },
+   "a|305|Earthquake|Rock Slide": {
+    "mech": {
+     "punish": 1.0,
+     "reward": 1.0
+    },
+    "median": {
+     "punish_assoc": -9.000419868352104,
+     "punish_drop": -5.009936737939048,
+     "reward_assoc": 7.449613087696399,
+     "reward_level": 6.903002115681877
+    },
+    "naive_d": 0.4740485920839358,
+    "naive_median": {
+     "MBON05_X": 109.0,
+     "MBON13_X": 45.0
+    },
+    "q_sat": 1.0
+   },
+   "a|4|Rock Slide|Strength": {
+    "mech": {
+     "punish": 1.0,
+     "reward": 1.0
+    },
+    "median": {
+     "punish_assoc": -5.197678781543217,
+     "punish_drop": -4.043313059294904,
+     "reward_assoc": 11.129329543383186,
+     "reward_level": 6.7501452953508
+    },
+    "naive_d": 0.0774736247426054,
+    "naive_median": {
+     "MBON05_X": 107.0,
+     "MBON13_X": 31.0
+    },
+    "q_sat": 1.0
+   },
+   "b|10|Surf vs Slowbro|Surf vs Venusaur": {
+    "mech": {
+     "punish": 1.0,
+     "reward": 1.0
+    },
+    "median": {
+     "punish_assoc": -7.777878753285755,
+     "punish_drop": -6.077513037972519,
+     "reward_assoc": 11.959425512117445,
+     "reward_level": 7.471436029644279
+    },
+    "naive_d": -0.31809323191179406,
+    "naive_median": {
+     "MBON05_X": 121.0,
+     "MBON13_X": 34.5
+    },
+    "q_sat": 1.0
+   },
+   "b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy": {
+    "mech": {
+     "punish": 1.0,
+     "reward": 1.0
+    },
+    "median": {
+     "punish_assoc": -4.699443285414391,
+     "punish_drop": -5.4442414197058575,
+     "reward_assoc": 6.884266502831548,
+     "reward_level": 4.927847270677252
+    },
+    "naive_d": -0.2044506479225026,
+    "naive_median": {
+     "MBON05_X": 128.5,
+     "MBON13_X": 47.0
+    },
+    "q_sat": 1.0
+   },
+   "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": {
+    "mech": {
+     "punish": 1.0,
+     "reward": 1.0
+    },
+    "median": {
+     "punish_assoc": -9.130855057740106,
+     "punish_drop": -7.238084220550306,
+     "reward_assoc": 8.981792974239417,
+     "reward_level": 8.855104100983759
+    },
+    "naive_d": -0.05203918740539968,
+    "naive_median": {
+     "MBON05_X": 114.5,
+     "MBON13_X": 38.0
+    },
+    "q_sat": 1.0
+   }
+  },
+  "record_pooled": {
+   "floor_both_share": 0.0,
+   "floor_taught_share": 0.08258928571428571,
+   "naive_floor_share": 0.0,
+   "walls": {
+    "job_s_median": 315.4755218124483,
+    "probe_s_median": 166.32059872848913,
+    "train_s_median": 148.7156206035288
+   }
+  },
+  "stage": "pilot",
+  "theta": {
+   "drift": {
+    "N1-pre": [
+     [
+      -11.213541666666666,
+      -1.3151041666666667
+     ],
+     [
+      -6.828125,
+      -0.3619791666666667
+     ]
+    ],
+    "N2-N1": [
+     [
+      -0.53125,
+      -0.23958333333333334
+     ],
+     [
+      -0.2109375,
+      0.13802083333333334
+     ]
+    ],
+    "RN2-RN1": [
+     [
+      -0.5859375,
+      -0.3020833333333333
+     ],
+     [
+      -0.057291666666666664,
+      0.005208333333333333
+     ]
+    ]
+   },
+   "fly_cov": [
+    [
+     0.013144807265603594,
+     0.046234367087964356,
+     0.03813154753650608,
+     0.08027101620970976
+    ],
+    [
+     0.04623436708796435,
+     0.6275674005964601,
+     0.09285537180519982,
+     0.7299067252195827
+    ],
+    [
+     0.03813154753650608,
+     0.09285537180519982,
+     0.11427753262002696,
+     0.19313405776809164
+    ],
+    [
+     0.08027101620970976,
+     0.7299067252195828,
+     0.19313405776809164,
+     0.9210287518199352
+    ]
+   ],
+   "m0": [
+    [
+     39.510416666666664,
+     30.622395833333332
+    ],
+    [
+     114.04427083333333,
+     92.75260416666667
+    ]
+   ],
+   "m0s": [
+    [
+     35.06640625,
+     35.06640625
+    ],
+    [
+     103.3984375,
+     103.3984375
+    ]
+   ],
+   "n_fly": 8,
+   "n_pairs": 6,
+   "n_probe": 8,
+   "n_resid": 384,
+   "pair_cov": [
+    [
+     51.186474609375,
+     -70.71075698038369,
+     13.346984395646631,
+     -132.74530663604298
+    ],
+    [
+     -70.71075698038369,
+     432.2162963867189,
+     -5.7571753761198075,
+     629.0686458507838
+    ],
+    [
+     13.346984395646631,
+     -5.7571753761198075,
+     77.45550537109375,
+     -96.41713326504058
+    ],
+    [
+     -132.74530663604298,
+     629.0686458507838,
+     -96.41713326504058,
+     1396.2806884765625
+    ]
+   ],
+   "spill": {
+    "A": 0.00229274767708459,
+    "P": 0.016620244253313335
+   }
+  },
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "values": {
+   "floor_both_share": 0.0,
+   "punish_share": 1.0,
+   "reversed_share": 0.0,
+   "reward_share": 1.0
+  },
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-05T21:49:35.464272+00:00",
+  "z_V": {
+   "A": [
+    16.916666666666668,
+    12.483878492769072
+   ],
+   "P": [
+    80.16666666666667,
+    29.775432639827233
    ]
   }
  },
