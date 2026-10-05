@@ -516,3 +516,268 @@ def residual_compare(pilot: list, balanced, xs) -> dict:
         out[name] = grp
     return dict(groups=out, n_pairs=dict(balanced=int(bal.sum()), rest=int((~bal).sum())),
                 note="판정·관문에 쓰지 않는다(X.9.1.3 P1-5); '균형 쌍 전용 파일럿'은 다음 결정 목록")
+
+
+# ================================================================ record-only diagnostics (X.9.1.4)
+TAG_DIAG_GRID, TAG_DIAG_PAIR, TAG_DIAG_ACCEPT = 6, 7, 8
+GATE_GROUP = np.array([0, 1, 0, 1])                    # WV.GATES → 0 reward stage, 1 punishment stage
+ASSIGN = ("기계 대조", "순진(바닥)", "순진(쌍 효과·균형)", "마리·프로브 잡음")
+STAGE = ("없음", "보상", "처벌", "둘 다")
+
+
+def _stage_idx(rew, pun):
+    return np.asarray(rew, int) + 2 * np.asarray(pun, int)
+
+
+def pair_true_dprimes(theta, bases, a, b, idx, z, xs) -> tuple:
+    """(td [N, 4], floor [N, 2]) for naive bases [N, 2, 2] (fly effect 0), the calibrated a, b and the calibration
+    draws idx: td = the four gates' directional true d′ with that base in place of the population pair (w_oc.
+    true_dprimes per base); floor = (reward, punishment) "caught" — the share of draws with rint(μ + r) < 0 at
+    MBON05(X)·R1 (reward) / MBON13(X)·R2 (punishment) ≥ diag_floor_share."""
+    r = theta["resid"][idx]
+    s1, s2 = w_oc.SI["R1"], w_oc.SI["R2"]
+    td, fl = [], []
+    for s in range(0, len(bases), xs.diag_pair_chunk):
+        mu = w_oc.slot_means(theta, np.asarray(bases[s:s + xs.diag_pair_chunk], float), np.zeros((2, 2)), a, b)
+        c = np.clip(np.rint(mu[:, None] + r[None]), 0, None)
+        td.append(WV.SIGNS * WV.gate_stats(w_oc.to_stages(c), z))
+        low_r = (np.rint(mu[:, None, s1, WV.P, WV.X] + r[None, :, s1, WV.P, WV.X]) < 0).mean(1)
+        low_p = (np.rint(mu[:, None, s2, WV.A, WV.X] + r[None, :, s2, WV.A, WV.X]) < 0).mean(1)
+        fl.append(np.round(np.stack([low_r, low_p], -1) - xs.diag_floor_share, xs.round_digits) >= 0)
+    return np.concatenate(td), np.concatenate(fl)
+
+
+def evaluate_grid(theta, rng_, n_rep, a, b, g, z, xs, accept=None) -> dict:
+    """P(PASS) [p_set, q, K, F f_min..diag_f_max, k k_min..diag_k_max] with diag_pairs pairs × diag_f_max flies
+    (nested in k and F), X's set rule, diag_tries rejection rounds and the filter accept; the fill share."""
+    P, Fm = xs.diag_pairs, xs.diag_f_max
+    fs, kk = list(range(xs.f_min, Fm + 1)), list(range(xs.k_min, xs.diag_k_max + 1))
+    hits = np.zeros((len(xs.p_set_grid), len(xs.q_grid), len(xs.k_grid), len(fs), len(kk)))
+    filled, done = 0, 0
+    while done < n_rep:
+        n = min(xs.diag_chunk, n_rep - done)
+        d, _base, fill = simulate(theta, rng_, n, P, Fm, 2 * max(xs.k_grid), [a] * P, [b] * P, [1.0] * Fm, [1.0] * Fm,
+                                  g, z, xs, xs.diag_tries, accept)
+        hits += tally(d, z, xs, xs.q_grid, xs.k_grid, fs, kk)
+        filled += int(fill.sum())
+        done += n
+    return dict(p=hits / n_rep, fill_share=filled / (n_rep * P))
+
+
+def filters(theta, abs_d, xs) -> dict:
+    """X.9.1.4 (ii): none (V0), F1 (Σ_pair from the balanced pilot pairs, the < 6 rule), F2(ℓ) (base[MBON13, X] ≥
+    the ℓ-th percentile of the pilot pair means' MBON13(X) ∧ base[MBON05, X] ≥ MBON05(X)'s)."""
+    pm = theta["pair_means"]
+    d = np.abs(np.asarray(abs_d, float))
+    bal = d < xs.naive_max
+    out = {"none": dict(theta=theta, accept=None, pass_counts=dict(pilot=int(len(pm)), balanced=int(bal.sum()))),
+           "F1": dict(theta=dict(theta, pair_cov=pair_cov_variant(pm, d, "F1", xs)), accept=None,
+                      pass_counts=dict(pilot=int(bal.sum()), balanced=int(bal.sum())))}
+    for lv in xs.diag_levels:
+        cA = float(np.percentile(pm[:, WV.A, WV.X], lv))
+        cP = float(np.percentile(pm[:, WV.P, WV.X], lv))
+
+        def acc(base, cA=cA, cP=cP):
+            return (base[..., WV.A, WV.X] >= cA) & (base[..., WV.P, WV.X] >= cP)
+        keep = acc(pm)
+        out[f"F2({lv:g})"] = dict(theta=theta, accept=acc, pass_counts=dict(
+            pilot=int(keep.sum()), balanced=int((keep & bal).sum()), c_A=cA, c_P=cP))
+    return out
+
+
+def _pair_counts() -> dict:
+    return dict(n=0, n_pass=0, n_fail=0, solo=[0] * len(WV.GATES), low=[0] * len(WV.GATES), joint_only=0, mech=0,
+                floor=[0, 0], table=[[0] * len(STAGE) for _ in ASSIGN])
+
+
+def _accumulate(c, fin, solo, mcomp, fl, low) -> None:
+    fail = fin == WV.P_FAIL
+    mok = mcomp.all(-1)
+    mf = fail & ~mok
+    c["n"] += int(fin.size)
+    c["n_pass"] += int((fin == WV.P_PASS).sum())
+    c["n_fail"] += int(fail.sum())
+    for j in range(len(WV.GATES)):
+        c["solo"][j] += int((fail & solo[..., j]).sum())
+        c["low"][j] += int((fail & low[..., j]).sum())
+    c["joint_only"] += int((fail & mok & ~solo.any(-1)).sum())
+    c["mech"] += int(mf.sum())
+    for h in range(2):
+        c["floor"][h] += int((fail & fl[..., h]).sum())
+    live = fail & ~mf
+    s = solo & live[..., None]
+    fg, lg = s & fl[..., GATE_GROUP], s & low
+    a_floor = live & fg.any(-1)
+    a_low = live & ~a_floor & lg.any(-1)
+    a_noise = live & ~a_floor & ~a_low
+
+    def st(m):
+        return _stage_idx(m[..., 0] | m[..., 2], m[..., 1] | m[..., 3])
+    for ai, (mask, sidx) in enumerate(((mf, _stage_idx(~mcomp[..., 0], ~mcomp[..., 1])), (a_floor, st(fg)),
+                                       (a_low, st(lg)), (a_noise, st(s)))):
+        cnt = np.bincount(np.asarray(sidx)[mask].ravel(), minlength=len(STAGE))
+        for si in range(len(STAGE)):
+            c["table"][ai][si] += int(cnt[si])
+
+
+def _share(a, b):
+    return None if not b else a / b
+
+
+def _finish(c) -> dict:
+    nf = c["n_fail"]
+    return dict(pass_share=_share(c["n_pass"], c["n"]), fail_share=_share(nf, c["n"]),
+                solo_share=dict(zip(WV.GATES, [_share(v, nf) for v in c["solo"]])),
+                low_dprime_share=dict(zip(WV.GATES, [_share(v, nf) for v in c["low"]])),
+                joint_only_share=_share(c["joint_only"], nf), mech_share=_share(c["mech"], nf),
+                floor_share=dict(reward=_share(c["floor"][0], nf), punish=_share(c["floor"][1], nf)),
+                assignment={ASSIGN[a]: dict(zip(STAGE, c["table"][a])) for a in range(len(ASSIGN))}, counts=c)
+
+
+def pair_diag(theta, cal, idx, root, n_rep, z, xs, cell=run_cell, log=None) -> dict:
+    """X.9.1.4 (i) at true d′ 1.5 (cal = the power calibration): diag_pairs gate pairs × diag_f_max flies per
+    experiment, every g, every (q, K, F ∈ diag_fs): the final PASS share; for FAIL pairs the single-gate failures (a
+    gate whose satisfying flies on the decision data — K, or 2K for a BAND pair — are < q·F), joint-only failures,
+    mechanism-control failures, floor caught (reward / punishment), per-pair true d′ < bar, and each failure's
+    assignment (mechanism → floor → pair effect / balance → fly / probe noise) × stage; the share of drawn pairs whose
+    four per-pair true d′ are all ≥ bar (the F → ∞ ceiling)."""
+    a, b = cal["a"]["value"], cal["b"]["value"]
+    P, Fm, d = xs.diag_pairs, xs.diag_f_max, xs.round_digits
+    kw = dict(bar=xs.bar, band=xs.band_width, digits=d)
+
+    def one(gi, g):
+        r = rng(root, TAG_DIAG_PAIR, gi)
+        acc, ceil_ok, ceil_n, done = {}, 0, 0, 0
+        while done < n_rep:
+            n = min(xs.diag_chunk, n_rep - done)
+            st, base, _fill = simulate(theta, r, n, P, Fm, 2 * max(xs.k_grid), [a] * P, [b] * P, [1.0] * Fm,
+                                       [1.0] * Fm, g, z, xs, xs.diag_tries)
+            td, fl = pair_true_dprimes(theta, base.reshape(-1, 2, 2), a, b, idx, z, xs)
+            low = (np.round(td - xs.bar, d) < 0).reshape(n, P, -1)
+            fl = fl.reshape(n, P, -1)
+            ceil_ok += int((~low).all(-1).sum())
+            ceil_n += n * P
+            for K in xs.k_grid:
+                dK = {s: v[..., :K, :, :] for s, v in st.items()}
+                d2 = {s: v[..., :2 * K, :, :] for s, v in st.items()}
+                sK, s2 = WV.gate_stats(dK, z), WV.gate_stats(d2, z)
+                cK, c2 = WV.fly_class(sK, **kw), WV.fly_class(s2, **kw)
+                fK, f2 = WV.mech_fractions(dK), WV.mech_fractions(d2)
+                for F in xs.diag_fs:
+                    oK = np.round(np.median(fK[..., :F, :], axis=-2) - xs.mech_min, d) >= 0
+                    o2 = np.round(np.median(f2[..., :F, :], axis=-2) - xs.mech_min, d) >= 0
+                    for q in xs.q_grid:
+                        codeK = WV.pair_gate_code(cK[..., :F], q, F, d)
+                        fin = WV.pair_final(codeK, oK.all(-1), WV.pair_gate_code(c2[..., :F], q, F, d), o2.all(-1))
+                        band = codeK == WV.P_BAND
+                        used = np.where(band[..., None, None], s2[..., :F, :], sK[..., :F, :])
+                        solo = np.round((WV.margins(used, xs.bar, d) >= 0).sum(-2) / F - q, d) < 0
+                        _accumulate(acc.setdefault(f"{q}|{K}|{F}", _pair_counts()), fin, solo,
+                                    np.where(band[..., None], o2, oK), fl, low)
+            done += n
+        if log is not None:
+            log(f"x diag (i) g {g} done")
+        return dict(cells={k: _finish(v) for k, v in acc.items()}, ceiling_share=ceil_ok / ceil_n)
+    key = dict(theta=w_oc.summary(theta), a=a, b=b, n_rep=n_rep)
+    out = {f"g{g}": cell(f"pair_g{g}", dict(key, g=g), lambda gi=gi, g=g: one(gi, g))
+           for gi, g in enumerate(xs.cluster_grid)}
+    gs = [f"g{g}" for g in xs.cluster_grid]
+    out["worst_g"] = {c: min(gs, key=lambda k: out[k]["cells"][c]["pass_share"]) for c in out[gs[0]]["cells"]}
+    return out
+
+
+def min_change(worst_by_filter: dict, xs, fs, kk) -> dict:
+    """X.9.1.4 (iii): per filter and k range [k_lo, k_lo + width], the smallest F whose design meets both targets at
+    every k of the range (g worst; ties larger p_set, larger q, smaller K); ranked by the knobs changed (filter ≠
+    none, k range ≠ [k_min, k_min + width], F > f_max) → smaller k_lo → smaller F."""
+    entries = []
+    for name, (pw, fp) in worst_by_filter.items():
+        for k_lo in xs.diag_k_los:
+            ks = [kk.index(k) for k in range(k_lo, k_lo + xs.diag_k_width + 1)]
+            ok = meets(np.asarray(pw)[..., ks], np.asarray(fp)[..., ks], xs).all(-1)
+            e = dict(filter=name, k_lo=k_lo, k_hi=k_lo + xs.diag_k_width, found=bool(ok.any()))
+            if ok.any():
+                i = min((c for c in np.ndindex(ok.shape) if ok[c]),
+                        key=lambda i: (fs[i[3]], -xs.p_set_grid[i[0]], -xs.q_grid[i[1]], xs.k_grid[i[2]]))
+                F = int(fs[i[3]])
+                e.update(F=F, p_set=xs.p_set_grid[i[0]], q=xs.q_grid[i[1]], K=xs.k_grid[i[2]],
+                         knobs=int(name != "none") + int(k_lo != xs.k_min) + int(F > xs.f_max),
+                         power_by_k=np.asarray(pw)[i][ks].tolist(), false_by_k=np.asarray(fp)[i][ks].tolist())
+            entries.append(e)
+    found = sorted((e for e in entries if e["found"]), key=lambda e: (e["knobs"], e["k_lo"], e["F"]))
+    return dict(entries=entries, ranking=found, rank1=found[0] if found else None,
+                same_knobs=[e for e in found if e["knobs"] == found[0]["knobs"]] if found else [])
+
+
+def diagnostics(theta, abs_d, z, xs, n_rep: int | None = None, cell=run_cell, log=None) -> dict:
+    """X.9.1.4 (i)–(iii) on θ̂ (V0 point estimate), root diag_seed, its own calibration (X.9.1.2 per status). Never
+    used by a gate, a STOP or a selection."""
+    t0 = time.perf_counter()
+    n_rep = xs.diag_reps if n_rep is None else int(n_rep)
+    root = xs.diag_seed
+    idx = rng(root, TAG_CAL).integers(0, len(theta["resid"]), xs.cal_reps)
+    cal = {m: calibrate_x(theta, getattr(xs, f), m, idx, z, xs) for m, f in MODES}
+    flt = filters(theta, abs_d, xs)
+    fs, kk = list(range(xs.f_min, xs.diag_f_max + 1)), list(range(xs.k_min, xs.diag_k_max + 1))
+    shp = (len(xs.p_set_grid), len(xs.q_grid), len(xs.k_grid), len(fs), len(kk))
+    key0 = dict(theta=w_oc.summary(theta), n_rep=n_rep,
+                cal={m: [(c["a"] or {}).get("value"), (c["b"] or {}).get("value")] for m, c in cal.items()})
+    grid = {}
+    for fi, (name, f) in enumerate(flt.items()):
+        for gi, g in enumerate(xs.cluster_grid):
+            for m, _f in MODES:
+                c = cal[m]
+                if not c["ok"]:
+                    grid[(name, g, m)] = dict(p=np.full(shp, c["fill"]), fill_share=None)
+                    continue
+
+                def run(f=f, fi=fi, gi=gi, g=g, m=m, c=c):
+                    r = evaluate_grid(f["theta"], rng(root, TAG_DIAG_GRID, fi, gi, int(m == "max")), n_rep,
+                                      c["a"]["value"], c["b"]["value"], g, z, xs, f["accept"])
+                    return dict(p=r["p"].tolist(), fill_share=r["fill_share"])
+                v = cell(f"diag_{name}_g{g}_{m}", dict(key0, filter=name, g=g, mode=m), run)
+                grid[(name, g, m)] = dict(p=np.asarray(v["p"]), fill_share=v["fill_share"])
+                if log is not None:
+                    log(f"x diag (ii/iii) {name} g {g} {m} done ({time.perf_counter() - t0:.0f} s)")
+    g0 = xs.cluster_grid[0]
+    worst_ = {n: (np.min([grid[(n, g, "min")]["p"] for g in xs.cluster_grid], 0),
+                  np.max([grid[(n, g, "max")]["p"] for g in xs.cluster_grid], 0)) for n in flt}
+    nf, nk = xs.f_max - xs.f_min + 1, xs.k_cap - xs.k_min + 1
+    sl = (Ellipsis, slice(0, nf), slice(0, nk))
+    base_acc, _ = pair_bases(theta, rng(root, TAG_DIAG_ACCEPT), n_rep, xs.diag_pairs, g0, z, xs, xs.diag_tries)
+    ii = {}
+    for name, f in flt.items():
+        pw, fp = worst_[name]
+        best = pick(pw[sl], fp[sl], xs, fs[:nf], True)
+        i = tuple(best["index"])
+        fill = {f"g{g}|{m}": grid[(name, g, m)]["fill_share"] for g in xs.cluster_grid for m, _f in MODES}
+        ii[name] = dict(best=best, best_g0=dict(power_by_k=grid[(name, g0, "min")]["p"][sl][i].tolist(),
+                                                false_by_k=grid[(name, g0, "max")]["p"][sl][i].tolist()),
+                        fill=fill, fill_flag=any(v is not None and v > xs.diag_fill_flag for v in fill.values()),
+                        pass_counts=f["pass_counts"],
+                        acceptance=None if f["accept"] is None else float(f["accept"](base_acc).mean()))
+    iii = min_change(worst_, xs, fs, kk)
+    pair = pair_diag(theta, cal["min"], idx, root, n_rep, z, xs, cell, log) if cal["min"]["ok"] else None
+    arrays = {n: dict(power_worst=worst_[n][0].tolist(), false_worst=worst_[n][1].tolist(),
+                      power_g0=grid[(n, g0, "min")]["p"].tolist(), false_g0=grid[(n, g0, "max")]["p"].tolist())
+              for n in flt}
+    return dict(calibration=cal, filters={n: dict(pass_counts=f["pass_counts"]) for n, f in flt.items()}, ii=ii,
+                iii=iii, i=pair, arrays=arrays,
+                axes=dict(p_set=list(xs.p_set_grid), q=list(xs.q_grid), K=list(xs.k_grid), F=fs, k=kk,
+                          g=list(xs.cluster_grid)),
+                n_rep=n_rep, seed=int(root), timing_s=time.perf_counter() - t0)
+
+
+def diag_summary(diag: dict) -> dict:
+    """The block's part: (ii) per filter, (iii)'s rank 1 and same-knob entries, (i) the pass share by F per (q, K)
+    for every g with the worst g per cell."""
+    i = None
+    if diag["i"] is not None:
+        i = dict(worst_g=diag["i"]["worst_g"],
+                 pass_share={g: {c: v["pass_share"] for c, v in diag["i"][g]["cells"].items()}
+                             for g in diag["i"] if g != "worst_g"},
+                 ceiling_share={g: diag["i"][g]["ceiling_share"] for g in diag["i"] if g != "worst_g"})
+    return dict(ii=diag["ii"], iii=dict(rank1=diag["iii"]["rank1"], same_knobs=diag["iii"]["same_knobs"]), i=i,
+                calibration={m: dict(ok=c["ok"], failure=c["failure"], retried=c["retried"])
+                             for m, c in diag["calibration"].items()},
+                note="기록 전용(X.9.1.4) — 관문·STOP·선택에 쓰지 않는다; 거름은 순진(훈련 전) 관찰 지표만으로 정의")
