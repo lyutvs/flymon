@@ -800,3 +800,328 @@ def oc_timing(theta, z: dict, ys, a: float, b: float) -> dict:
                 precheck_point_s=s * cells * (1 + 2) * ys.precheck_reps / ys.boot_reps,
                 phase_b_boot_s=s * cells * ys.boot_draws,
                 reconfirm_s=s * cells * ys.boot_draws * ys.reconfirm_reps / ys.boot_reps)
+
+
+# ================================================================ the pilot θ (Y.4, Y.9.2 P1-3) and its bootstrap draw
+def r_v0(theta_w) -> np.ndarray:
+    """W θ̂'s (16 pairs, V0, block f30ae35) pair-effect correlation matrix."""
+    c = np.asarray(theta_w["pair_cov"], float)
+    s = np.sqrt(np.diag(c))
+    return c / np.outer(s, s)
+
+
+def sigma_diag_v0(pair_means, groups: list, r) -> np.ndarray:
+    """Σ_pair = D^½ R_V0 D^½, D = the variances (ddof 1) of the group-averaged pair means (Y.4 merge)."""
+    x = np.asarray(pair_means, float).reshape(len(pair_means), -1)
+    merged = np.stack([x[g].mean(0) for g in groups])
+    s = np.sqrt(merged.var(0, ddof=1)) if len(merged) > 1 else np.zeros(x.shape[1])
+    return np.asarray(r, float) * np.outer(s, s)
+
+
+def fit_y(pairs: list, keys: list, r, merge: bool = True) -> dict:
+    """Y.4's θ: w_oc.fit on the admitted pairs in declared order (every component from all of them), then Σ_pair
+    from the X-odour-merged pairs by the diagonal + V0 rule for any n_Σ (Y.9.2 P1-3); merge False = records R-un."""
+    th = w_oc.fit(list(pairs))
+    groups = y_rules.merge_groups(keys) if merge else [[i] for i in range(len(keys))]
+    return dict(th, pair_cov=sigma_diag_v0(th["pair_means"], groups, r), n_sigma=len(groups),
+                groups=[[keys[i] for i in g] for g in groups])
+
+
+def boot_y(theta, rng_, r) -> dict:
+    """One Y.6.4 parametric draw (Reading 4): w_oc.boot(θ, rng) (W.9.9 P1-3), then n_Σ pair means from N(m0, Σ_pair)
+    on the same generator, whose diagonal + V0 rule gives Σ*."""
+    tb = w_oc.boot(theta, rng_)
+    pm = rng_.multivariate_normal(theta["m0"].ravel(), theta["pair_cov"], theta["n_sigma"],
+                                  method="eigh").reshape(-1, 2, 2)
+    return dict(tb, pair_cov=sigma_diag_v0(pm, [[i] for i in range(len(pm))], r), n_sigma=theta["n_sigma"])
+
+
+def theta_fixtures(ys) -> dict:
+    """The mutations "Earthquake 묶기 생략" and "대각 + V0 대신 표본 공분산" (Y.6.6, Y.9.2 P1-3): the seven declared
+    candidates merge to 6; a fitted Σ_pair's correlation is R_V0 (fix_exact)."""
+    keys = list(ys.pilot_w_pairs) + list(ys.pilot_v_pairs)
+    out = dict(merge=dict(ok=len(y_rules.merge_groups(keys)) == len(keys) - 1))
+    pil = w_oc.synthetic_pilot(rng(ys.oc_seed, tag("fixR")), n_pair=len(keys), base=ys.synth_base, sd=ys.synth_sd,
+                               corr=ys.synth_corr, learn=ys.synth_learn)
+    rw = r_v0(_synth_theta(ys, "fixW"))
+    th = fit_y(pil, keys, rw)
+    s = np.sqrt(np.diag(th["pair_cov"]))
+    out["sigma_rule"] = dict(ok=bool(np.all(np.abs(th["pair_cov"] / np.outer(s, s) - rw) <= ys.fix_exact)))
+    out["ok"] = all(v["ok"] for v in out.values())
+    return out
+
+
+# ================================================================ P2-12 small bootstrap and P2-10 thresholds (records)
+def small_bootstrap(theta, z: dict, ys, r, n_draws: int | None = None, log=None) -> dict:
+    """Y.9.2 P2-12: small_boot_draws draws (boot_y, root small_boot_seed, TAG_BOOT, draw), calibration only (both
+    targets, Y's rule) — status counts, floor share, coarse_step counts. Record only."""
+    n = ys.small_boot_draws if n_draws is None else int(n_draws)
+    rows = []
+    for bi in range(n):
+        rb = rng(ys.small_boot_seed, TAG_BOOT, bi)
+        tb = boot_y(theta, rb, r)
+        ib = rb.integers(0, len(tb["resid"]), ys.cal_reps)
+        rows.append({m: calibrate_y(tb, getattr(ys, f), m, ib, z, ys) for m, f in MODES})
+        if log is not None:
+            log(f"y small bootstrap {bi + 1}/{n}")
+    return dict(counts=status_counts(rows), n_draws=n, seed=ys.small_boot_seed,
+                rows=[{m: dict(ok=c["ok"], failure=c["failure"], a=c["a"]["status"],
+                               b=[x["status"] for x in (c["b"] or [])]) for m, c in row.items()} for row in rows],
+                note="기록 전용(Y.9.2 P2-12) — 사전 점검 통과 조건에 쓰지 않는다")
+
+
+def threshold_recompute(theta, cal_min: dict, ys) -> dict:
+    """Y.9.2 P2-10: Y.0's definition on Y θ̂ under Y's power calibration, at the all-lo and all-hi stairs, on
+    floor_resid_n residual vectors drawn from root records_seed, tag "thr". Record only (P0-1)."""
+    if not cal_min.get("ok"):
+        return dict(available=False, calibration_failure=cal_min.get("failure"))
+    res = theta["resid"][rng(ys.records_seed, tag("thr")).integers(0, len(theta["resid"]), ys.floor_resid_n)]
+    st = stair_corners(cal_min)
+    return dict(available=True, lo=thresholds(theta, st["lo"][0]["a"], st["lo"][0]["b"], ys, res),
+                hi=thresholds(theta, st["hi"][0]["a"], st["hi"][0]["b"], ys, res), seed=ys.records_seed,
+                note="기록 전용(Y.9.2 P2-10) — 값이 어떻든 20 · 43은 바뀌지 않는다(P0-1)")
+
+
+# ================================================================ the point-θ precheck (Y.6.1 + Y.9.2)
+def precheck_y(theta, z: dict, ys, k_ranges, n_rep: int | None = None, cell=run_cell, log=None) -> dict:
+    """Y.6.1 on Y θ̂: Y's calibration (root precheck_seed, TAG_CAL draws), per g × target × scenario one evaluate
+    (main stream (TAG_POINT, g, target[, "near"]), mixture stream ("mix", 0, g, target, scenario)), plus the
+    record-only all-lo / all-hi stairs on the same main stream; point power = min over g and scenarios, point false
+    = max; fill > fill_max at a k excludes it (P1-5); passed iff a design of a KEPT k range meets both targets at
+    every k of it (no envelope). Also Y.8's best-power design, Y.6.5's records target, the F = f_max table and
+    X.9.1.3 P1-3's m table on k_min..k_cap. Each evaluate is a resumable cell."""
+    t0 = time.perf_counter()
+    n_rep = ys.precheck_reps if n_rep is None else int(n_rep)
+    root = ys.precheck_seed
+    k_ranges = [tuple(int(v) for v in kr) for kr in k_ranges]
+    idx = rng(root, TAG_CAL).integers(0, len(theta["resid"]), ys.cal_reps)
+    cal = {m: calibrate_y(theta, getattr(ys, f), m, idx, z, ys) for m, f in MODES}
+    shp = x_oc.grid_shape(ys)
+    ones = [1.0] * ys.f_max
+    key0 = dict(theta=w_oc.summary(theta), root=root, n_rep=n_rep, cal={m: c["corners"] for m, c in cal.items()})
+    point, stairs, fills = {}, {}, {}
+
+    def run(mix, gi, g, mi, si, sc):
+        extra = (tag("near"),) if sc == "near" else ()
+        r = evaluate_y(theta, rng(root, TAG_POINT, gi, mi, *extra), rng(root, tag("mix"), 0, gi, mi, si), n_rep,
+                       [mix] * ys.k_cap, ones, ones, g, z, ys, sc)
+        return dict(p=r["p"].tolist(), fill_by_k=r["fill_by_k"])
+    for gi, g in enumerate(ys.cluster_grid):
+        for mi, (m, _f) in enumerate(MODES):
+            c = cal[m]
+            for si, sc in enumerate(SCENARIOS):
+                lab = f"g{g}|{m}|{sc}"
+                if not c["ok"]:
+                    point[lab] = np.full(shp, c["fill"])
+                    fills[lab] = None
+                    stairs[f"{lab}|lo"] = stairs[f"{lab}|hi"] = point[lab]
+                    continue
+                v = cell(f"point_{lab}", dict(key0, g=g, mode=m, scenario=sc),
+                         lambda c=c, gi=gi, g=g, mi=mi, si=si, sc=sc: run(c["corners"], gi, g, mi, si, sc))
+                point[lab], fills[lab] = np.asarray(v["p"]), v["fill_by_k"]
+                st = stair_corners(c)
+                for s in ("lo", "hi"):
+                    if len(c["corners"]) == 1:
+                        stairs[f"{lab}|{s}"] = point[lab]
+                        continue
+                    w = cell(f"stair_{s}_{lab}", dict(key0, g=g, mode=m, scenario=sc, stair=s),
+                             lambda s=s, gi=gi, g=g, mi=mi, si=si, sc=sc, st=st: run(st[s], gi, g, mi, si, sc))
+                    stairs[f"{lab}|{s}"] = np.asarray(w["p"])
+                if log is not None:
+                    log(f"y precheck {lab} done ({time.perf_counter() - t0:.0f} s)")
+    labs = [(g, sc) for g in ys.cluster_grid for sc in SCENARIOS]
+    power = np.min([point[f"g{g}|min|{sc}"] for g, sc in labs], 0)
+    false = np.max([point[f"g{g}|max|{sc}"] for g, sc in labs], 0)
+    fill_bad = np.zeros(shp[-1], bool)
+    for v in fills.values():
+        if v is not None:
+            fill_bad |= np.round(np.asarray(v) - ys.fill_max, ys.round_digits) > 0
+    fs = list(range(ys.f_min, ys.f_max + 1))
+    passing = []
+    for kr in k_ranges:
+        ok = range_ok(power, false, fill_bad, ys, kr, envelope=False)
+        passing += [dict(p_set=ys.p_set_grid[i[0]], q=ys.q_grid[i[1]], K=ys.k_grid[i[2]], F=fs[i[3]],
+                         k_range=list(kr)) for i in np.ndindex(ok.shape) if ok[i]]
+    st_worst = {s: dict(power=np.min([stairs[f"g{g}|min|{sc}|{s}"] for g, sc in labs], 0).tolist(),
+                        false=np.max([stairs[f"g{g}|max|{sc}|{s}"] for g, sc in labs], 0).tolist())
+                for s in ("lo", "hi")}
+    return dict(passed=bool(passing), passing=passing, calibration=cal, power=power.tolist(), false=false.tolist(),
+                fill_bad=fill_bad.tolist(), fills=fills, stairs=st_worst,
+                point={k: v.tolist() for k, v in point.items()},
+                best_power=pick_y(power, false, ys, k_ranges, False),
+                records_target=pick_y(power, false, ys, k_ranges, True),
+                at_f32=table_at_f_y(power, false, ys, k_ranges, ys.f_max), m_needed=XV.m_needed_table(ys),
+                k_ranges=[list(kr) for kr in k_ranges],
+                axes=dict(p_set=list(ys.p_set_grid), q=list(ys.q_grid), K=list(ys.k_grid), F=fs,
+                          k=list(range(ys.k_min, ys.k_cap + 1)), g=list(ys.cluster_grid), scenario=list(SCENARIOS)),
+                n_rep=n_rep, seed=root, timing_s=time.perf_counter() - t0)
+
+
+# ================================================================ R-pre (Y.9.2 P1-5): the real filter on generated pre
+def simulate_pre(theta, rng_, n_rep, n_pair, n_fly, n_probe, K, a_exp, b_exp, fly_a, fly_b, g, z, ys) -> tuple:
+    """Each candidate pair's whole draw (base m0s + w + u without a base filter, fly effects, residuals) is kept only
+    when its own pre (n_fly flies × the first K probes) passes y_rules.filter_values / filter_passes — the real filter's
+    code — within ys.tries rounds; that same pre is the experiment's pre. A slot never accepted gets the population
+    pair (last round's fly effects and residuals). Returns (stages, filled)."""
+    L = np.linalg.cholesky(theta["pair_cov"] + ys.chol_jitter * np.eye(4))
+    Lf = np.linalg.cholesky(theta["fly_cov"] + ys.chol_jitter * np.eye(4))
+    w = (rng_.standard_normal((n_rep, 4)) @ L.T * math.sqrt(g)).reshape(n_rep, 1, 2, 2)
+    a = np.asarray(a_exp, float)[:, :, None] * np.asarray(fly_a, float)[None, None, :]
+    b = np.asarray(b_exp, float)[:, :, None] * np.asarray(fly_b, float)[None, None, :]
+    out = np.zeros((n_rep, n_pair, n_fly, n_probe, len(w_oc.SLOTS), 2, 2), np.int32)
+    need = np.ones((n_rep, n_pair), bool)
+
+    def draw(base):
+        v = (rng_.standard_normal((n_rep, n_pair, n_fly, 4)) @ Lf.T).reshape(n_rep, n_pair, n_fly, 2, 2)
+        mu = w_oc.slot_means(theta, base[:, :, None], v, a, b)
+        idx = rng_.integers(0, len(theta["resid"]), (n_rep, n_pair, n_fly, n_probe))
+        return np.clip(np.rint(mu[:, :, :, None] + theta["resid"][idx]), 0, None).astype(np.int32)
+    for _ in range(ys.tries):
+        u = (rng_.standard_normal((n_rep, n_pair, 4)) @ L.T).reshape(n_rep, n_pair, 2, 2)
+        c = draw(theta["m0s"] + w + u)
+        d, la, lp = y_rules.filter_values(c[..., :K, w_oc.SI["pre"], :, :], z)
+        ok = y_rules.filter_passes(d, la, lp, ys)
+        take = need & ok
+        out[take] = c[take]
+        need &= ~ok
+        if not need.any():
+            return w_oc.to_stages(out), need
+    c = draw(theta["m0s"] + w + np.zeros((n_rep, n_pair, 2, 2)))
+    out[need] = c[need]
+    return w_oc.to_stages(out), need
+
+
+def evaluate_pre(theta, rng_, mix_rng, n_rep: int, pair_mix: list, fly_a, fly_b, g: float, z: dict, yd) -> dict:
+    """evaluate_y with simulate_pre on a one-design spec yd (its F flies, 2K probes, the filter on F × K pre)."""
+    fs = list(range(yd.f_min, yd.f_max + 1))
+    kk = list(range(yd.k_min, yd.k_cap + 1))
+    K = yd.k_grid[0]
+    hits = np.zeros(x_oc.grid_shape(yd))
+    filled = np.zeros(yd.k_cap)
+    mixes, which = _distinct(pair_mix)
+    done = 0
+    while done < n_rep:
+        n = min(yd.oc_chunk, n_rep - done)
+        a, b = _corner_effects(mix_rng, n, yd.k_cap, mixes, which)
+        d, fill = simulate_pre(theta, rng_, n, yd.k_cap, yd.f_max, 2 * K, K, a, b, fly_a, fly_b, g, z, yd)
+        hits += x_oc.tally(d, z, yd, yd.q_grid, yd.k_grid, fs, kk)
+        filled += fill.sum(0)
+        done += n
+    cum = np.cumsum(filled)[yd.k_min - 1:]
+    return dict(p=hits / n_rep, fill_by_k=(cum / (n_rep * np.asarray(kk, float))).tolist())
+
+
+# ================================================================ point records on a precheck STOP (Y.6.5, Y.6.4, P1-3, P1-5)
+RECORD_VARIANTS = ("Y", "R-W", "R-Σ2", "R-un")          # root precheck_seed, TAG_RECORD (Reading 12)
+EXTRA_VARIANTS = ("R-V", "R-pre")                       # root records_seed, their own string tag
+
+
+def record_thetas(theta_y, theta_w, cands: dict, keys: list, r, ys) -> tuple:
+    """The records' θ per variant: Y θ̂; R-W = W θ̂ (16 pairs, V0) under Y's filter; R-Σ2 = Σ_pair × sigma2_scale;
+    R-un = Σ from the unmerged pairs (same diagonal + V0 rule); R-V = the admitted V pairs only (merge + rule), None
+    when fewer than 2 remain after the merge; R-pre = Y θ̂ with the measured-pre filter. Returns (thetas, notes)."""
+    vkeys = [k for k in keys if k in ys.pilot_v_pairs]
+    notes = {}
+    rv = None
+    if len(y_rules.merge_groups(vkeys)) >= 2:
+        rv = fit_y([cands[k] for k in vkeys], vkeys, r)
+    else:
+        notes["R-V"] = f"묶은 뒤 V 쌍 {len(y_rules.merge_groups(vkeys))} < 2(Y.9.2 P1-3) — null"
+    thetas = {"Y": theta_y, "R-W": theta_w, "R-Σ2": dict(theta_y, pair_cov=theta_y["pair_cov"] * ys.sigma2_scale),
+              "R-un": fit_y([cands[k] for k in keys], keys, r, merge=False), "R-V": rv, "R-pre": theta_y}
+    return thetas, notes
+
+
+def point_records_y(thetas: dict, target: dict, z: dict, ys, n_rep: int | None = None, cell=run_cell,
+                    log=None) -> dict:
+    """Y.6.5's point records on the target design (Reading 10): Y θ̂ — homogeneous true d′ record_dprimes (power
+    calibration), the false-pass 0.5, mixed flies, Σ × het_scales at both targets, W's heterogeneous three — each with
+    the mixture and the two stairs; every other variant — the homogeneous four and the false-pass 0.5, mixture only;
+    R-pre through simulate_pre. k-wise P(PASS) (k_min..k_cap; the target's range is what Y.10 reads), worst g kept per
+    g. A failed calibration → None with its status."""
+    n_rep = ys.oc_reps if n_rep is None else int(n_rep)
+    yd = x_oc.design_spec(ys, target)
+    F_, K_ = yd.f_max, yd.k_cap
+    ones, half = [1.0] * F_, [1.0 if i % 2 == 0 else 0.0 for i in range(F_)]
+    out, cals, roots = {}, {}, {}
+    for vi, (name, th) in enumerate(thetas.items()):
+        root = ys.precheck_seed if name in RECORD_VARIANTS else ys.records_seed
+        roots[name] = root
+        if th is None:
+            out[name] = None
+            continue
+        vt = (TAG_RECORD, vi) if name in RECORD_VARIANTS else (tag(name),)
+        idx = (rng(root, TAG_CAL) if name in RECORD_VARIANTS else rng(root, TAG_CAL, tag(name))).integers(
+            0, len(th["resid"]), ys.cal_reps)
+        cmin = {t: calibrate_y(th, t, "min", idx, z, ys) for t in sorted(set(ys.record_dprimes) | {ys.d_power})}
+        cmax = calibrate_y(th, ys.d_false, "max", idx, z, ys)
+        cals[name] = {f"min|{t}": dict(ok=c["ok"], failure=c["failure"]) for t, c in cmin.items()}
+        cals[name][f"max|{ys.d_false}"] = dict(ok=cmax["ok"], failure=cmax["failure"])
+        ev = evaluate_pre if name == "R-pre" else evaluate_y
+
+        def at(th_, mixes, fa, fb, scen, gi, g, mode_i, vt=vt, root=root, ev=ev):
+            main = rng(root, *vt, gi, scen)
+            mix = rng(root, tag("mix"), 0, gi, mode_i, scen)
+            r = ev(th_, main, mix, n_rep, mixes, fa, fb, g, z, yd)
+            return dict(p=np.asarray(r["p"])[0, 0, 0, 0].tolist(), fill=r["fill_by_k"])
+
+        def one(name=name, th=th, cmin=cmin, cmax=cmax):
+            res = {}
+            for gi, g in enumerate(ys.cluster_grid):
+                e, s = {}, 0
+                e["true_dprime"] = {}
+                for t in ys.record_dprimes:
+                    s += 1
+                    e["true_dprime"][str(t)] = (at(th, [cmin[t]["corners"]] * K_, ones, ones, s, gi, g, 0)
+                                                if cmin[t]["ok"] else None)
+                s += 1
+                e["false_pass"] = at(th, [cmax["corners"]] * K_, ones, ones, s, gi, g, 1) if cmax["ok"] else None
+                if name == "R-pre":
+                    e["fill"] = (e["false_pass"] or {}).get("fill")
+                if name != "Y":
+                    res[f"g{g}"] = e
+                    continue
+                hi, lo, mid = cmin[ys.d_power], cmin[ys.het_low_dprime], cmin[ys.het_all_dprime]
+                het = {}
+                if lo["ok"] and hi["ok"]:
+                    s += 1
+                    het[f"one_pair_{ys.het_low_dprime}"] = at(th, [lo["corners"]] + [hi["corners"]] * (K_ - 1), ones,
+                                                              ones, s, gi, g, 0)
+                    s += 1
+                    het[f"half_pairs_{ys.het_low_dprime}"] = at(th, [lo["corners"] if i % 2 else hi["corners"]
+                                                                     for i in range(K_)], ones, ones, s, gi, g, 0)
+                if mid["ok"]:
+                    s += 1
+                    het[f"all_{ys.het_all_dprime}"] = at(th, [mid["corners"]] * K_, ones, ones, s, gi, g, 0)
+                e["heterogeneous_w"] = het
+                s += 1
+                e["mixed_flies"] = at(th, [hi["corners"]] * K_, half, half, s, gi, g, 0) if hi["ok"] else None
+                e["pair_cov_scaled"] = {}
+                for sc in ys.het_scales:
+                    ts = dict(th, pair_cov=th["pair_cov"] * sc)
+                    s += 1
+                    e["pair_cov_scaled"][f"{sc}|power"] = (at(ts, [hi["corners"]] * K_, ones, ones, s, gi, g, 0)
+                                                           if hi["ok"] else None)
+                    s += 1
+                    e["pair_cov_scaled"][f"{sc}|false"] = (at(ts, [cmax["corners"]] * K_, ones, ones, s, gi, g, 1)
+                                                           if cmax["ok"] else None)
+                e["stairs"] = {}
+                for t in ys.record_dprimes:
+                    if cmin[t]["ok"]:
+                        stc = stair_corners(cmin[t])
+                        e["stairs"][str(t)] = {k: at(th, [stc[k]] * K_, ones, ones, ys.record_dprimes.index(t) + 1,
+                                                     gi, g, 0)["p"] for k in ("lo", "hi")}
+                if cmax["ok"]:
+                    stc = stair_corners(cmax)
+                    e["stairs"][f"false|{ys.d_false}"] = {k: at(th, [stc[k]] * K_, ones, ones,
+                                                                len(ys.record_dprimes) + 1, gi, g, 1)["p"]
+                                                          for k in ("lo", "hi")}
+                res[f"g{g}"] = e
+            if log is not None:
+                log(f"y records {name} done")
+            return res
+        out[name] = cell(f"records_{name}", dict(theta=w_oc.summary(th), target=target, n_rep=n_rep, root=root,
+                                                 variant=name), one)
+    return dict(target=target, variants=out, calibrations=cals, roots=roots, n_rep=n_rep,
+                k=list(range(ys.k_min, ys.k_cap + 1)),
+                note="사전 점검 STOP의 점 records(Y.6.5) — 변형은 기록 전용(Y.6.4, Y.9.2 P1-3 · P1-5)")
