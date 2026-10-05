@@ -9,8 +9,121 @@
    "at": "2026-10-05T07:08:00.316122+00:00",
    "stage": "reuse",
    "wall_s": 0.0
+  },
+  {
+   "at": "2026-10-05T07:11:54.137964+00:00",
+   "stage": "path",
+   "wall_s": 207.82225779199507
   }
  ],
+ "path": {
+  "checks": [
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uad00\ubb38 \u2461 \ucc98\ubc8c \ud314 \ud589(L_V r1 25400000)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uad00\ubb38 \u2461 \ucc98\ubc8c \ud314 \ud589(L_V r1 25400001)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uad00\ubb38 \u2461 \ucc98\ubc8c \ud314 \ud589(L_V r2 25400000)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uad00\ubb38 \u2461 \ucc98\ubc8c \ud314 \ud589(L_V r2 25400001)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uad00\ubb38 \u2461 \ucc98\ubc8c \ud314 \ud589(C r1 25400000)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uad00\ubb38 \u2461 \ucc98\ubc8c \ud314 \ud589(C r1 25400001)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uad00\ubb38 \u2461 \ucc98\ubc8c \ud314 \ud589(C r2 25400000)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uad00\ubb38 \u2461 \ucc98\ubc8c \ud314 \ud589(C r2 25400001)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uc624\ub77c\ud074 \uc21c\uc9c4 \uce74\uc6b4\ud2b8(L b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uc624\ub77c\ud074 \uc21c\uc9c4 \uce74\uc6b4\ud2b8(L b|18|Surf vs Vileplume|Surf vs Diglett)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uc624\ub77c\ud074 \uc21c\uc9c4 \uce74\uc6b4\ud2b8(L b|19|Surf vs Slowpoke|Surf vs Farfetch\u2019d)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uc624\ub77c\ud074 \uc21c\uc9c4 \uce74\uc6b4\ud2b8(C b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uc624\ub77c\ud074 \uc21c\uc9c4 \uce74\uc6b4\ud2b8(C b|18|Surf vs Vileplume|Surf vs Diglett)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "V \uc624\ub77c\ud074 \uc21c\uc9c4 \uce74\uc6b4\ud2b8(C b|19|Surf vs Slowpoke|Surf vs Farfetch\u2019d)"
+   },
+   {
+    "diffs": [],
+    "invalid": [],
+    "ref": "\ubcf4\uc0c1 \uacbd\ub85c \uc591\uc131 \uac80\uc0ac"
+   }
+  ],
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "detail_path": "results/w/path.json",
+  "detail_sha256": "0f3fe5f59386d64cacdfb9a4ce7f00a0f57e0f74143c461b64304f3a61bb802a",
+  "failed": [],
+  "git": {
+   "commit": "744d1bc6bb52df2043aa7583fe809e0b915ba3d3",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "n_naive": 6,
+  "n_p": 8,
+  "outcome": "PASS",
+  "pipeline_key": "9636cf4c7f868338f512cd7cf1a722027bd842c37528188859c14bebb04a2853",
+  "reasons": [],
+  "stage": "path",
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-05T07:11:54.137964+00:00",
+  "z_V": {
+   "A": [
+    16.916666666666668,
+    12.483878492769072
+   ],
+   "P": [
+    80.16666666666667,
+    29.775432639827233
+   ]
+  }
+ },
  "reuse": {
   "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
   "git": {
