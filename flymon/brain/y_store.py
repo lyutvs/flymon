@@ -6,7 +6,10 @@ adds here and changes none of these.
   the stage's fixed file set (stage_files: results/y/oracle.json from the oracle stage on + the stage's detail files)
   under <ys.archive_root>/<stage>/ via r_store.archive_copy (sha-checked). An archive is never overwritten: a repeat for
   the same stage is a no-op when the archive holds exactly that set byte-identically (so the controller may call it
-  again after committing), and refuses (SystemExit 2) otherwise."""
+  again after committing), and refuses (SystemExit 2) otherwise.
+Phase A: ARCHIVE_ORDER grows by stage0 · reuse · pilot · precheck; own_files gives each stage's own detail files
+(stage0.json; pilot.json plus the raw unit files of its manifest — "그 블록이 쓴 것 전부", plan Reading 13;
+precheck.json); digest / oracle / reuse own nothing, so the 0p sets are unchanged."""
 from __future__ import annotations
 
 import dataclasses
@@ -98,7 +101,20 @@ class YCache(RCache):
                                               "inputs": json.loads(canonical(inputs)), "result": result}, params_list)
 
 
-ARCHIVE_ORDER = ("digest", "oracle")          # phase A appends its stages (and their detail files) here
+ARCHIVE_ORDER = ("digest", "oracle", "stage0", "reuse", "pilot", "precheck")
+
+
+def own_files(stage: str, ys) -> list:
+    """A stage's own detail files (empty for digest, oracle and reuse)."""
+    if stage == "stage0":
+        return [ys.stage0_detail]
+    if stage == "pilot":
+        p = Path(ys.pilot_detail)
+        man = json.loads(p.read_text()).get("manifest", []) if p.exists() else []
+        return [ys.pilot_detail] + [m["cache_file"] for m in man]
+    if stage == "precheck":
+        return [ys.precheck_detail]
+    return []
 
 
 def stage_files(stage: str, ys) -> list:
@@ -106,7 +122,7 @@ def stage_files(stage: str, ys) -> list:
     exactly then), plus the stage's own detail files (none in 0p besides oracle.json)."""
     if stage not in ARCHIVE_ORDER:
         _refuse(f"no archive file set for stage {stage!r}")
-    own = {"digest": [], "oracle": []}.get(stage, [])
+    own = own_files(stage, ys)
     return ([ys.oracle_detail] if ARCHIVE_ORDER.index(stage) >= ARCHIVE_ORDER.index("oracle") else []) + own
 
 

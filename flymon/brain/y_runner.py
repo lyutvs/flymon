@@ -26,31 +26,52 @@ ORDER after oracle and never edits these two.
 - The block's derived section (y_rules.derive): count table, P1-7 yield rule (k ranges kept), P1-4 lenient-level
   quantiles; the early STOP_FEW_PAIRS now also fires when the yield rule drops both k ranges.
 Every stage refuses (SystemExit 2, nothing written) when an earlier block is missing, a later block or its own block
-exists, an earlier gate did not PASS, the summary has uncommitted changes, or a hashed Y / W / V file is dirty."""
+exists, an earlier gate did not PASS, the summary has uncommitted changes, or a hashed Y / W / V file is dirty.
+Phase A (Y.7 orders 0 · 1 · 4 · 5; appended after oracle, digest / oracle untouched): stage0 (Y.6.6 fixtures,
+synthetic validation, bit identity on W θ̂ with X's power a, b, threshold reproduction, fixture 6, Y.3.4 comparison,
+OC timing, tables, decision-file and test hashes; INVALID on a failed check — never committed), reuse (X.5 1 through
+X's own _reuse + Y.7 1's X facts), pilot (Y.4 on V's four candidates + W's three, 4a, θ, records), precheck (Y.6.1 on
+the oracle block's kept k ranges, P2-12, P2-10, STOP records, env hashes). stage0 and pilot / precheck re-run the reuse
+checks they rest on (STOP_REUSE, 〈where〉 "1(…)"). Long computations are resumable cells under
+results/y/progress/<stage>/ (key = cell inputs + YSpec + Y files' sha256); the wall time of finished cells is kept in
+results/y/progress/<stage>.json so a killed run's spend stays in the ledger."""
 from __future__ import annotations
 
 import datetime as _dt
+import hashlib
 import json
+import platform
+import re
 import sys
 import time
 from pathlib import Path
 
+import numpy as np
+
 from ..agent.e_runner import summary_git
-from . import w_runner, y_rules, y_store
+from . import w_oc, w_records, w_runner, w_verdict, x_runner, x_verdict, y_oc, y_rules, y_store
+from .h3_store import ROOT, canonical
 from .h3_store import git_state as _h3_git_state
 from .h3_store import sha256_file
 from .h4_formula import pair_stats
 from .v_spec import SPEC as V_SPEC
 from .w_pairs import set_summary
+from .r_pairs import row_key
 from .w_spec import SPEC as W_SPEC
+from .x_spec import SPEC as X_SPEC
 
-ORDER = ("digest", "oracle")
-GATES = ("digest", "oracle")
+ORDER = ("digest", "oracle", "stage0", "reuse", "pilot", "precheck")
+GATES = ORDER
 Y_FILES = ("flymon/brain/y_spec.py", "flymon/brain/y_rules.py", "flymon/brain/y_store.py", "flymon/brain/y_runner.py",
-           "scripts/run_y.py")
+           "scripts/run_y.py", "flymon/brain/y_oc.py")
 W_FILES = tuple(dict.fromkeys(tuple(w_runner.W_PIPELINE_FILES) + ("flymon/brain/w_measure.py",)))
-Y_HASHED_FILES = tuple(dict.fromkeys(Y_FILES + W_FILES + tuple(w_runner.V_HASHED_FILES)
-                                     + ("results/summary/v_lever.json", "results/summary/w_learning.json")))
+X_FILES = tuple(x_runner.X_FILES)
+Y_HASHED_FILES = tuple(dict.fromkeys(Y_FILES + W_FILES + X_FILES + tuple(w_runner.V_HASHED_FILES)
+                                     + ("results/summary/v_lever.json", "results/summary/w_learning.json",
+                                        "results/summary/x_learning.json")))
+Y_TEST_FILES = ("tests/brain/test_y_spec.py", "tests/brain/test_y_rules_a.py", "tests/brain/test_y_cal.py",
+                "tests/brain/test_y_eval.py", "tests/brain/test_y_records.py", "tests/brain/test_y_precheck.py",
+                "tests/brain/test_y_runner_a.py")
 
 
 def git_state() -> dict:
@@ -64,6 +85,17 @@ def refuse(msg: str, code: int = 2):
 
 def _now() -> str:
     return _dt.datetime.now(_dt.timezone.utc).isoformat()
+
+
+def env_hashes() -> dict:
+    """X.9.1.3 P2-11 for Y (Y.7 5): uv.lock, Python, numpy, y_* and the x_* / w_* files Y imports."""
+    return dict(uv_lock_sha256=sha256_file(ROOT / "uv.lock"), python=platform.python_version(), numpy=np.__version__,
+                y_files=x_runner.files_sha(Y_FILES), x_files=x_runner.files_sha(X_FILES),
+                w_files=x_runner.files_sha(W_FILES))
+
+
+def _log(m: str) -> None:
+    print(m, file=sys.stderr, flush=True)
 
 
 def build_ctx(npz: str) -> dict:
@@ -91,14 +123,88 @@ def build_ctx(npz: str) -> dict:
         c = wctx()
         return RMeasurer(UPool(pool), y_store.YCache(YS.cache_dir, w_measure_key(npz)), V_SPEC, c["params"],
                          c["readout"], W_SPEC.z_v(), c["types"], c["n_kc"])
+    def xctx():
+        if "x" not in cache:
+            from . import x_runner as XR
+            cache["x"] = XR.build_ctx(npz)
+        return cache["x"]
+
+    def x_reuse():
+        return x_runner.Runner(xctx(), X_SPEC)._reuse()
+
+    def x_facts(ys):
+        p, dp = Path(ys.x_summary), Path(ys.x_precheck_diag)
+        gf = w_runner.git_facts(ys.x_summary, [c for _, c in ys.x_commits])
+        wd = json.loads(Path(W_SPEC.summary).read_text())
+        wg = w_runner.git_facts(W_SPEC.summary, [c for _, c in ys.w_commits])
+        return dict(x_doc=json.loads(p.read_text()) if p.exists() else {}, ancestors=gf.get("ancestors"),
+                    last=gf.get("last"), git=summary_git(ys.x_summary),
+                    diag_sha=sha256_file(dp) if dp.exists() else None, x_files=x_runner.files_sha(X_FILES),
+                    w_ancestors=wg.get("ancestors"),
+                    w_blocks={b: (wd.get(b) or {}).get("w_measure_key") for b, _ in ys.w_commits})
+
+    def w_oc_detail():
+        p = Path(W_SPEC.oc_detail)
+        return json.loads(p.read_text()), sha256_file(p)
+
+    def v_candidates(ys):
+        c = wctx()
+        n = len(c["v_doc"]()["jm:L"]["manifest"])
+        got = {row_key(r): (r, res) for r, res in c["v_jm"]("L", n)}
+        missing = [k for k in ys.pilot_v_pairs if k not in got]
+        if missing:
+            raise ValueError(f"V 세트 후보 {missing}가 V jm:L에 없음")
+        return [got[k] for k in ys.pilot_v_pairs]
+
+    def v_even_oracle(keys, z):
+        from .r_measure import RMeasurer
+        from .w_store import VReadCache
+        c = wctx()
+        want = set(keys)
+        rows = [r for r in c["even_rows"] if row_key(r) in want]
+        m = RMeasurer(None, VReadCache(V_SPEC.cache_dir, u_measure_key(npz)), V_SPEC, c["params"], c["readout"], z,
+                      c["types"], c["n_kc"])
+        return {g["key"]: g["result"] for g in m.oracle(rows, V_SPEC.cond("L"), "even", V_SPEC.h4_seeds())}
+
+    def pilot_measure(rows, pool, check=None):
+        import dataclasses
+        from .w_measure import WMeasurer
+        c = wctx()
+        yw = dataclasses.replace(W_SPEC, pilot_probe_seed0=YS.pilot_probe_seed0,
+                                 pilot_train_seed0=YS.pilot_train_seed0)
+        windows = dict(strength=W_SPEC.strength, settle_ms=V_SPEC.settle_ms, read_ms=V_SPEC.read_ms,
+                       window_ms=V_SPEC.window_ms)
+        timing = dict(present_ms=W_SPEC.pulse_ms, gap_ms=W_SPEC.gap_ms, train_settle_ms=W_SPEC.train_settle_ms,
+                      seed_stride=W_SPEC.fly_train_stride)
+        wm = WMeasurer(pool, y_store.YCache(YS.cache_dir, w_measure_key(npz)), c["params"], c["readout"],
+                       V_SPEC.p_type, W_SPEC.reward_dan, W_SPEC.punish_dan, windows, timing)
+        r = w_runner.Runner(None, lambda smoke=False: wm, c, yw)
+        units = r.units(rows, "pilot", YS.pilot_probes, YS.pilot_flies, V_SPEC.lever_edit)
+        got = wm.learn(units, "pilot", check=check)
+        pairs, mach = r._pilot_data(rows, got, YS.pilot_probes, YS.pilot_flies)
+        return dict(pairs=pairs, machine=mach, manifest=r._manifest(got), jobs=[g["result"] for g in got],
+                    n_units=len(units))
+
+    def pilot_back(manifest):
+        from . import w_store
+        got, bad = w_store.load_manifest(manifest)
+        if bad:
+            return None, bad
+        by = {}
+        for g in got:
+            pair, fly, brain = g["key"].rsplit("|", 2)
+            by.setdefault(pair, []).append(dict(unit=dict(pair=pair, fly=int(fly), brain=brain), result=g["result"]))
+        return {k: w_records.pair_data(v, list(range(YS.pilot_flies))) for k, v in by.items()}, []
     return dict(keys=lambda: dict(w_measure_key=w_measure_key(npz)["key"], u_measure_key=u_measure_key(npz)["key"]),
                 reuse=reuse, w_set=lambda: wctx()["w_set"](), main_rows=lambda blk: wctx()["main_rows"](blk),
-                params=lambda: wctx()["params"], measurer=measurer)
+                params=lambda: wctx()["params"], measurer=measurer, x_reuse=x_reuse, x_facts=x_facts,
+                w_oc_detail=w_oc_detail, v_candidates=v_candidates, v_even_oracle=v_even_oracle,
+                pilot_measure=pilot_measure, pilot_back=pilot_back)
 
 
 class Runner:
-    def __init__(self, ctx: dict, ys, measure=None, summary_path=None):
-        self.ctx, self.ys, self.measure = ctx, ys, measure
+    def __init__(self, ctx: dict, ys, measure=None, summary_path=None, pool=None):
+        self.ctx, self.ys, self.measure, self.pool = ctx, ys, measure, pool
         self.summary_path = str(summary_path or ys.summary)
 
     @property
@@ -277,3 +383,260 @@ class Runner:
         except (KeyError, TypeError, ValueError):
             return None
         return pairs if y_store.to_json(rebuilt) == pairs else None
+
+    # ================================================================ phase A helpers
+    def _cells(self, stage: str):
+        """Resumable cells: progress_dir/<stage>/<tag>.json = {key, value, at}; a different key (inputs, YSpec, Y
+        files) is recomputed. Each computed cell's seconds are added to progress_dir/<stage>.json."""
+        spec_sha = hashlib.sha256(canonical(self.ys).encode()).hexdigest()
+        y_sha = x_runner.files_sha(Y_FILES)
+
+        def cell(tag: str, key_obj, fn):
+            key = hashlib.sha256(canonical(dict(tag=tag, key=key_obj, ys=spec_sha, y=y_sha)).encode()).hexdigest()
+            p = Path(self.ys.progress_dir) / stage / (re.sub(r"[^A-Za-z0-9._-]", "_", tag) + ".json")
+            if p.exists():
+                try:
+                    d = json.loads(p.read_text())
+                except ValueError:
+                    d = {}
+                if d.get("key") == key:
+                    return d["value"]
+            t = time.perf_counter()
+            v = y_store.to_json(fn())
+            y_store.write_json(str(p), dict(key=key, value=v, at=_now()), self.plist)
+            dt = time.perf_counter() - t
+            self._prog_add(stage, dt)
+            self._cell_s += dt
+            return v
+        self._cell_s = 0.0
+        return cell
+
+    def _finish_wall(self, stage: str, t0: float) -> float:
+        return self._prog_add(stage, (time.perf_counter() - t0) - getattr(self, "_cell_s", 0.0))
+
+    def _tables(self) -> dict:
+        ys = self.ys
+        n = (len(ys.p_set_grid) * len(ys.q_grid) * len(ys.k_grid) * (ys.f_max - ys.f_min + 1) * len(ys.k_ranges))
+        tags = dict(cal=y_oc.TAG_CAL, point=y_oc.TAG_POINT, record=y_oc.TAG_RECORD, synth=y_oc.TAG_SYNTH,
+                    p26=y_oc.TAG_P26, boot=y_oc.TAG_BOOT, accept=y_oc.TAG_ACCEPT,
+                    **{s: y_oc.tag(s) for s in ("mix", "near", "thr", "R-V", "R-pre")})
+        return dict(designs=dict(p_set=list(ys.p_set_grid), q=list(ys.q_grid), K=list(ys.k_grid),
+                                 F=[ys.f_min, ys.f_max], k_ranges=[list(k) for k in ys.k_ranges], n=n),
+                    m_needed=x_verdict.m_needed_table(ys),
+                    filter=dict(naive_max=ys.naive_max, c_a=ys.c_a, c_p=ys.c_p, lenient=[ys.lenient_d, ys.lenient_a,
+                                                                                         ys.lenient_p]),
+                    calibration=dict(grid_steps=ys.grid_steps, widen=list(ys.widen), refine_delta=ys.refine_delta,
+                                     refine_parts=ys.refine_parts, knob_tol=ys.knob_tol, cal_tol=ys.cal_tol,
+                                     cal_reps=ys.cal_reps, coarse_step_flag=ys.coarse_step_flag,
+                                     fill=dict(power=y_oc.x_oc.fill_value("min"), false=y_oc.x_oc.fill_value("max"))),
+                    generator=dict(tries=ys.tries, fill_max=ys.fill_max, scenarios=list(y_oc.SCENARIOS)),
+                    seeds=dict(pilot_probe="60_000_000 + j·4_000 + f·100 + k",
+                               pilot_train="61_000_000 + j·40_000 + f·1_000 + t", oc=ys.oc_seed,
+                               precheck=ys.precheck_seed, compare=ys.compare_seed, small_boot=ys.small_boot_seed,
+                               records=ys.records_seed, reconfirm=ys.reconfirm_seed, tags=tags),
+                    pilot=dict(candidates=list(ys.pilot_w_pairs) + list(ys.pilot_v_pairs), flies=ys.pilot_flies,
+                               probes=ys.pilot_probes, min_sigma=ys.pilot_min_sigma))
+
+    def _reuse_all(self, where: str) -> tuple:
+        """X's _reuse (W facts, θ̂ = W oc.theta) + W blocks reuse / path / pilot / oc + Y.7 1's X facts; (stop body or
+        None, w_doc, pairs, θ_W, facts)."""
+        why, w_doc, pairs, theta = self.ctx["x_reuse"]()
+        facts = self.ctx["x_facts"](self.ys)
+        why = list(why) + y_rules.w_block_reasons(facts, self.ys) + y_rules.x_reasons(facts, self.ys)
+        return (y_rules.reuse_stop(why, where) if why else None), w_doc, pairs, theta, facts
+
+    def _early(self, stage: str, body: dict, t0: float) -> dict:
+        """An early STOP_REUSE still writes the stage's detail file, so the archive's fixed file set (P3-13,
+        y_store.own_files) exists for every committed block."""
+        det = dict(stage0=self.ys.stage0_detail, pilot=self.ys.pilot_detail, precheck=self.ys.precheck_detail)[stage]
+        y_store.write_json(det, dict(body, note="재사용 조건 STOP — 계산 없음"), self.plist)
+        return self._write(stage, body, time.perf_counter() - t0)
+
+    # ================================================================ order 0: stage0 (Y.6.6, Y.3.4)
+    def stage_stage0(self) -> dict:
+        doc = self._require("stage0")
+        ys, t0 = self.ys, time.perf_counter()
+        stop, w_doc, _pairs, theta, facts = self._reuse_all("1(순서 0에서 확인)")
+        if stop:
+            return self._early("stage0", stop, t0)
+        z = x_runner.Runner._z(w_doc)
+        xm = facts["x_doc"]["precheck"]["calibration"]["min"]
+        a, b = float(xm["a"]), float(xm["b"])
+        cell = self._cells("stage0")
+        syn = cell("synthetic", dict(z=z), lambda: y_oc.synthetic_validation(ys, z))
+        fx = dict(calibration=cell("fixtures_cal", {}, lambda: y_oc.calibration_fixtures(ys)),
+                  generator=cell("fixtures_gen", dict(z=z), lambda: y_oc.generator_fixtures(ys, z)),
+                  theta=cell("fixtures_theta", {}, lambda: y_oc.theta_fixtures(ys)))
+        th_key = w_oc.summary(theta)
+        bit = cell("bit_identity", dict(theta=th_key, z=z, a=a, b=b),
+                   lambda: y_oc.bit_identity(theta, z, ys, X_SPEC, ys.p26_reps, a, b))
+        thr = y_oc.thresholds(theta, a, b, ys)
+        oc_doc, _sha = self.ctx["w_oc_detail"]()
+        boot = oc_doc["boot_calibration"]
+        f6 = cell("fixture6", dict(theta=th_key, z=z, boot=hashlib.sha256(canonical(boot).encode()).hexdigest()),
+                  lambda: y_oc.w_failed_recal(theta, boot, z, W_SPEC, ys, log=_log))
+        vals = {k: (p["naive_d"], p["naive_median"]["MBON13_X"], p["naive_median"]["MBON05_X"])
+                for k, p in w_doc["pilot"]["record"]["pairs"].items()}
+        cmp_ = y_oc.compare_filters(theta, vals, z, ys, cell=cell, log=_log)
+        timing = y_oc.oc_timing(theta, z, ys, a, b)
+        bad = (([] if syn.get("ok") else ["합성 검증(W.9.9 P2-11) 실패"])
+               + [f"픽스처 {k} 실패" for k, v in fx.items() if not v.get("ok")]
+               + ([] if bit["equal"] else ["비트 동일 시험 실패"]))
+        dec = dict(outcome=y_rules.INVALID, reasons=bad) if bad else dict(outcome=y_rules.PASS, reasons=[])
+        p = y_store.write_json(ys.stage0_detail, dict(synthetic=syn, fixtures=fx, bit_identity=bit, thresholds=thr,
+                                                      fixture6=f6, compare=cmp_), self.plist)
+        body = dict(dec, synthetic={k: (v.get("ok") if isinstance(v, dict) else v) for k, v in syn.items()},
+                    fixtures={g: {k: v.get("ok") for k, v in f.items() if isinstance(v, dict)} for g, f in fx.items()},
+                    bit_identity=bit, thresholds=thr, fixture6=dict(n_failed=f6["n_failed"], counts=f6["counts"]),
+                    compare=y_oc.compare_summary(cmp_), oc_timing=timing, tables=self._tables(),
+                    decision_files=x_runner.files_sha(Y_FILES), x_files=x_runner.files_sha(X_FILES),
+                    w_files=x_runner.files_sha(W_FILES), tests=x_runner.files_sha(Y_TEST_FILES),
+                    k_ranges=doc["oracle"].get("k_ranges"), z_V={k: list(v) for k, v in z.items()},
+                    detail_path=ys.stage0_detail, detail_sha256=sha256_file(p),
+                    note="Y.7 0(국면 A): Y.6.6 전부 + 거름 후보 비교(Y.3.4, 기록 전용) + OC 시간 + 결정 파일 해시 + 수치 "
+                         "표. 변이는 pytest(tests 해시). 문턱 재현은 기록 전용(20 · 43 불변).")
+        return self._write("stage0", body, self._finish_wall("stage0", t0))
+
+    # ================================================================ order 1: reuse (X.5 1 + X blocks)
+    def stage_reuse(self) -> dict:
+        self._require("reuse")
+        t0 = time.perf_counter()
+        stop, *_ = self._reuse_all("1")
+        body = stop or dict(outcome=y_rules.PASS, reasons=[])
+        body = dict(body, note="Y.7 1: X.5 1 조건(X의 _reuse: W 블록 · W 측정 키 · w_* 불변 · 매니페스트 · oc.json · θ̂) + "
+                               "X 블록 868771a · 4b81035, precheck_diag.json 33f83895…, x_* 불변.")
+        return self._write("reuse", body, time.perf_counter() - t0)
+
+    # ================================================================ order 4: the pilot (Y.4, 4a)
+    def _oracle_round_s(self, doc: dict) -> float:
+        wall = sum(e["wall_s"] for e in (doc.get("budget") or {}).get("ledger", []) if e.get("stage") == "oracle")
+        return float(wall) / max(1, -(-int(doc["oracle"].get("n", 0)) // max(1, int(self.ys.workers))))
+
+    def _oracle_values(self, res: dict, z: dict) -> dict:
+        st = pair_stats(res["report"], z, V_SPEC.testable_min)
+        la, lp = y_rules.levels(res["report"])
+        return dict(value=st is not None, testable=bool(st and st["testable"]), d_pre=st and st["d_pre"], L_A=la,
+                    L_P=lp)
+
+    def stage_pilot(self) -> dict:
+        doc = self._require("pilot")
+        ys, t0 = self.ys, time.perf_counter()
+        stop, w_doc, wpairs, theta_w, _f = self._reuse_all("1(순서 4에서 확인)")
+        vc = None
+        if stop is None:
+            try:
+                vc = self.ctx["v_candidates"](ys)
+            except ValueError as e:
+                stop = y_rules.reuse_stop([f"V 세트 후보: {e}"], "1(순서 4에서 확인)")
+        if stop:
+            return self._early("pilot", stop, t0)
+        z = x_runner.Runner._z(w_doc)
+        rows = [r for r, _res in vc]
+        def tick(done, todo):
+            self._prog_add("pilot", time.perf_counter() - tick.t)
+            tick.t = time.perf_counter()
+        tick.t = time.perf_counter()
+        m = self.ctx["pilot_measure"](rows, self.pool, tick)
+        wall = self._prog_add("pilot", time.perf_counter() - tick.t)
+        cands = {k: wpairs[k] for k in ys.pilot_w_pairs}
+        cands.update({k: m["pairs"][k] for k in ys.pilot_v_pairs})
+        adm = y_rules.admission({k: d["pre"] for k, d in cands.items()}, z, ys)
+        keys = [k for k in cands if adm[k]["passed"]]
+        jobs = m["jobs"]
+        walls = dict(job_s_median=float(np.median([j["wall_s"] for j in jobs])),
+                     train_s_median=float(np.median([j["train_s"] for j in jobs])),
+                     probe_s_median=float(np.median([j["probe_s"] for j in jobs])))
+        rec_all = w_records.pilot_record(cands, z, walls, W_SPEC)
+        rec_adm = w_records.pilot_record({k: cands[k] for k in keys}, z, walls, W_SPEC) if keys else None
+        dec = y_rules.pilot_gates(adm, rec_adm, m["machine"], ys, W_SPEC)
+        extra = {}
+        if dec["outcome"] == y_rules.PASS:
+            th = y_oc.fit_y([cands[k] for k in keys], keys, y_oc.r_v0(theta_w))
+            ex = w_verdict.judge({k: (cands[k], None) for k in keys}, [], z, W_SPEC.exploratory_q, ys.pilot_flies,
+                                 ys.pilot_probes, W_SPEC)
+            extra = dict(theta=json.loads(canonical(w_oc.summary(th))),
+                         exploratory=dict(label="탐색", verdict=ex["verdict"],
+                                          pairs={k: v["status"] for k, v in ex["pairs"].items()}))
+        v_vals = {}
+        for (r, res), k in zip(vc, ys.pilot_v_pairs):
+            o = self._oracle_values(res, z)
+            v_vals[k] = (o["d_pre"], o["L_A"], o["L_P"]) if o["value"] else None
+        w_vals = {k: (p["naive_d"], p["naive_median"]["MBON13_X"], p["naive_median"]["MBON05_X"])
+                  for k, p in w_doc["pilot"]["record"]["pairs"].items()}
+        try:
+            even = self.ctx["v_even_oracle"](list(w_vals), z)
+            missing = [k for k in w_vals if k not in even]
+            if missing:
+                raise KeyError(f"V 짝수 블록 오라클에 {len(missing)}쌍 없음")
+            flip = dict(y_rules.flip_record({k: self._oracle_values(even[k], z) for k in w_vals}, w_vals, ys),
+                        available=True)
+        except (KeyError, AttributeError, RuntimeError, ValueError) as e:
+            flip = dict(available=False, reason=str(e))
+        facts = dict(w_naive=y_rules.fact_flags(w_vals, dict(zip(ys.pilot_w_pairs, ys.pilot_w_naive)), ys),
+                     v_oracle=y_rules.fact_flags({k: v for k, v in v_vals.items() if v},
+                                                 dict(zip(ys.pilot_v_pairs, ys.pilot_v_oracle)), ys))
+        costs = w_records.unit_costs(jobs, 2 * W_SPEC.trials, self._oracle_round_s(doc), W_SPEC.cost_workers())
+        p = y_store.write_json(ys.pilot_detail, dict(admission=adm, record_all=rec_all, record_admitted=rec_adm,
+                                                     v_oracle=v_vals, flip=flip, manifest=m["manifest"]), self.plist)
+        body = dict(dec, **extra, admission=adm, candidates=list(cands), n_units=m["n_units"],
+                    record={k: dict(naive_d=v["naive_d"], naive_median=v["naive_median"], median=v["median"],
+                                    q_sat=v["q_sat"], mech=v["mech"]) for k, v in rec_all["pairs"].items()},
+                    record_pooled={k: rec_all[k] for k in ("floor_both_share", "floor_taught_share",
+                                                           "naive_floor_share", "walls")},
+                    level_compare=y_rules.level_compare(doc["oracle"]["derived"]["lenient_levels"], adm, ys),
+                    flip=flip, facts=facts, costs=costs,
+                    precision=dict(pilot_probes_per_pair=ys.pilot_flies * ys.pilot_probes,
+                                   main_probes_per_pair=[ys.f_min * min(ys.k_grid), ys.f_max * max(ys.k_grid)],
+                                   note="Y.9.2 P3-15: 파일럿 입장은 쌍당 64 프로브, 주 세트 최종 거름은 F × K"),
+                    z_V={k: list(v) for k, v in z.items()}, detail_path=ys.pilot_detail, detail_sha256=sha256_file(p),
+                    note="Y.4: 파일럿은 주 세트 밖(W 균형 3 · V 세트 후보 4), 판정 코드는 탐색 라벨. θ는 거름 통과 쌍만, Σ는 "
+                         "Earthquake 묶기 뒤 대각 + W V0 상관(Y.9.2 P1-3).")
+        return self._write("pilot", body, wall)
+
+    # ================================================================ order 5: the point-θ precheck (Y.6.1)
+    def stage_precheck(self) -> dict:
+        doc = self._require("precheck")
+        ys, t0 = self.ys, time.perf_counter()
+        stop, w_doc, wpairs, theta_w, _f = self._reuse_all("1(순서 5에서 확인)")
+        if stop:
+            return self._early("precheck", stop, t0)
+        z = x_runner.Runner._z(w_doc)
+        pil = doc["pilot"]
+        man = json.loads(Path(ys.pilot_detail).read_text())["manifest"]
+        vpairs, bad = self.ctx["pilot_back"](man)
+        if bad:
+            refuse(f"pilot raw changed since block pilot: {bad[:3]}")
+        cands = {k: wpairs[k] for k in ys.pilot_w_pairs}
+        cands.update({k: vpairs[k] for k in ys.pilot_v_pairs})
+        keys = list(pil["admitted"])
+        r = y_oc.r_v0(theta_w)
+        th = y_oc.fit_y([cands[k] for k in keys], keys, r)
+        if json.loads(canonical(w_oc.summary(th))) != pil["theta"]:
+            refuse("the refitted θ̂ is not block pilot's theta (Reading 21)")
+        cell = self._cells("precheck")
+        kr = [tuple(k) for k in doc["oracle"]["k_ranges"]]
+        pc = y_oc.precheck_y(th, z, ys, kr, cell=cell, log=_log)
+        dec = y_rules.precheck_decision(pc, len(keys), th["n_sigma"], ys)
+        sb = cell("small_bootstrap", dict(theta=w_oc.summary(th), r=r.tolist()),
+                  lambda: y_oc.small_bootstrap(th, z, ys, r, log=_log))
+        thr = y_oc.threshold_recompute(th, pc["calibration"]["min"], ys)
+        rec, notes = None, {}
+        if dec["outcome"] != y_rules.PASS:
+            thetas, notes = y_oc.record_thetas(th, theta_w, cands, keys, r, ys)
+            rec = y_oc.point_records_y(thetas, pc["records_target"], z, ys, cell=cell, log=_log)
+        p = y_store.write_json(ys.precheck_detail, dict(precheck=pc, records=rec, small_bootstrap=sb), self.plist)
+        cal = {m: dict(ok=c["ok"], failure=c["failure"], corners=c["corners"], a=c["a"],
+                       b=c["b"]) for m, c in pc["calibration"].items()}
+        body = dict(dec, theta=pil["theta"], n_admitted=len(keys), n_sigma=th["n_sigma"], calibration=cal,
+                    best_power=pc["best_power"], records_target=pc["records_target"], at_f32=pc["at_f32"],
+                    n_passing=len(pc["passing"]), passing=pc["passing"][:ys.block_list_max],
+                    fill_bad=pc["fill_bad"], stairs=pc["stairs"], m_needed=pc["m_needed"], k_ranges=pc["k_ranges"],
+                    small_bootstrap=dict(counts=sb["counts"], n_draws=sb["n_draws"], seed=sb["seed"]),
+                    thresholds=thr, records=rec, records_notes=notes,
+                    records_note=None if rec is not None else "사전 점검 통과 — records는 국면 B의 OC(Y.6.5)",
+                    env=env_hashes(), detail_path=ys.precheck_detail, detail_sha256=sha256_file(p),
+                    timing=dict(precheck_s=pc["timing_s"]),
+                    note="점 θ 사전 점검(Y.6.1): 점 추정 · 포락선 없음 — 통과해도 자격이 아니다. 시나리오 {기본, 근-문턱} × "
+                         "군집 최악, 채움 > 1 % 제외(Y.9.2 P1-4 · P1-5), 0p 수율 규칙이 남긴 k 범위만(P1-7). 작은 "
+                         "부트스트랩(P2-12)과 문턱 재계산(P2-10)은 기록 전용.")
+        return self._write("precheck", body, self._finish_wall("precheck", t0))

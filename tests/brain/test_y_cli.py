@@ -9,7 +9,8 @@ spec.loader.exec_module(run_y)
 
 
 def test_stages_and_exit_codes():
-    assert run_y.STAGES == ("digest", "oracle") and run_y.POOL_STAGES == ("oracle",)
+    assert run_y.STAGES == ("digest", "oracle", "stage0", "reuse", "pilot", "precheck")
+    assert run_y.POOL_STAGES == ("oracle", "pilot")
     assert run_y.exit_code({"outcome": "PASS"}) == 0
     assert run_y.exit_code({"outcome": "STOP_FEW_PAIRS"}) == 3 and run_y.exit_code({"outcome": "STOP_REUSE"}) == 3
     assert run_y.exit_code({"outcome": "INVALID"}) == 5

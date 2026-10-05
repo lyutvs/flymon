@@ -4,6 +4,10 @@ before the next.
 
     .venv/bin/python scripts/run_y.py --stage digest                 # 0p-b keys, V blocks, main-set digest (no pool)
     .venv/bin/python scripts/run_y.py --stage oracle --workers 16    # 0p-c 249-pair oracle (24_700_xxx; resumes)
+    .venv/bin/python scripts/run_y.py --stage stage0                 # order 0: fixtures, bit identity, Y.3.4 (≈ 0.5–1 h)
+    .venv/bin/python scripts/run_y.py --stage reuse                  # order 1: X.5 1 + X blocks (minutes)
+    .venv/bin/python scripts/run_y.py --stage pilot --workers 16     # order 4: 96 V units + W 3 (≈ 0.55 h; resumes)
+    .venv/bin/python scripts/run_y.py --stage precheck               # order 5: point-θ precheck (≈ 0.3–1 h; resumes)
     .venv/bin/python scripts/run_y.py --stage archive --name oracle  # re-archive a committed block (idempotent)
 
 Exit 0 PASS, 3 a gate STOP (STOP_REUSE, STOP_FEW_PAIRS; recorded, Y stops), 5 INVALID (a code / machine defect: do not
@@ -21,11 +25,13 @@ from pathlib import Path
 
 NPZ = "data/malecns.npz"
 EXIT_STOP, EXIT_INVALID = 3, 5
-STAGES = ("digest", "oracle")
+STAGES = ("digest", "oracle", "stage0", "reuse", "pilot", "precheck")
 ARCHIVE = "archive"
-POOL_STAGES = ("oracle",)
+POOL_STAGES = ("oracle", "pilot")
 LABEL_ONLY = ("oracle",)
-QUIET = ("set", "reuse", "v_reuse", "keys", "git", "seeds", "z_V", "detail_path", "archive")
+QUIET = ("set", "reuse", "v_reuse", "keys", "git", "seeds", "z_V", "detail_path", "archive", "decision_files",
+         "x_files", "w_files", "tests", "env", "tables", "record", "records", "admission", "at_f32", "passing",
+         "calibration", "stairs", "m_needed", "compare", "fixtures", "synthetic")
 
 
 def exit_code(out: dict) -> int:
@@ -84,7 +90,8 @@ def main(argv=None) -> int:
             pool = FlyPool(NPZ, ctx["params"](), flies=[{}] * workers, workers=workers, punish_type=W.punish_dan,
                            reward_type=W.reward_dan, timeout_s=SPEC.pool_timeout_s)
         try:
-            out = getattr(y_runner.Runner(ctx, SPEC, measure=lambda: ctx["measurer"](pool)), f"stage_{a.stage}")()
+            runner = y_runner.Runner(ctx, SPEC, measure=lambda: ctx["measurer"](pool), pool=pool)
+            out = getattr(runner, f"stage_{a.stage}")()
         finally:
             if pool is not None:
                 pool.close()
