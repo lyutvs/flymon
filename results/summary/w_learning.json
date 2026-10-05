@@ -14,6 +14,11 @@
    "at": "2026-10-05T07:11:54.137964+00:00",
    "stage": "path",
    "wall_s": 207.82225779199507
+  },
+  {
+   "at": "2026-10-05T09:26:08.658329+00:00",
+   "stage": "pilot",
+   "wall_s": 8034.26179499994
   }
  ],
  "path": {
@@ -123,6 +128,4170 @@
     29.775432639827233
    ]
   }
+ },
+ "pilot": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "exploratory": {
+   "label": "\ud0d0\uc0c9",
+   "pairs": {
+    "a|4|Rock Slide|Strength": "PASS",
+    "b|0|Strength vs Chansey|Strength vs Rhydon": "FAIL",
+    "b|0|Surf vs Chansey|Surf vs Rhydon": "PASS",
+    "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": "PASS",
+    "b|10|Strength vs Slowbro|Strength vs Venusaur": "PASS",
+    "b|10|Surf vs Slowbro|Surf vs Venusaur": "PASS",
+    "b|12|Surf vs Poliwrath|Surf vs Snorlax": "FAIL",
+    "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": "FAIL",
+    "b|14|Surf vs Nidoking|Surf vs Kangaskhan": "FAIL",
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": "PASS",
+    "b|2|Psychic vs Machamp|Psychic vs Tentacruel": "PASS",
+    "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": "PASS",
+    "b|6|Surf vs Snorlax|Surf vs Exeggutor": "PASS",
+    "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": "PASS",
+    "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": "PASS",
+    "b|8|Strength vs Hypno|Strength vs Dragonite": "FAIL"
+   },
+   "verdict": "FAIL"
+  },
+  "git": {
+   "commit": "5620f957aae94770e290a264405ad1ef85ed05cf",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "manifest": [
+   {
+    "cache_file": "results/w/cache/w_learn/1aba0fd8b27ba64794f2756e.json",
+    "cache_key": "1aba0fd8b27ba64794f2756e0ab8a93538722627d62dc8c5c6fad5f97a5bcfa2",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|0|R",
+    "sha256": "d5820af829c4057325776781cd3ca74b308873d8362d63440e63026ae1990539"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8c2d8d68f1ee41aeb18173e8.json",
+    "cache_key": "8c2d8d68f1ee41aeb18173e8227a43f383247697c1c44c950237e1e3506f4597",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|0|N",
+    "sha256": "f622723ddc8e992e2346a9aa51535efac14677953f7a7bcd65d8e13c6874d728"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0cc2ab083addb570d50ac26e.json",
+    "cache_key": "0cc2ab083addb570d50ac26ecad82bdaa5339627fa03edc9c8e6b735e6903b22",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|0|RN",
+    "sha256": "4cd03ef151689fa9a7187caaa865ae74cec88a34e9761588a9bbcbdf905f441f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e91f7f987f0c0d8bfc5196b7.json",
+    "cache_key": "e91f7f987f0c0d8bfc5196b7cc3cbbebea75d99faedb468af4edac9f71077310",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|1|R",
+    "sha256": "57d015e59b1b7cde0f9410a18039a926aa94c06bd73c372cd8588d2a20e7d723"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/87f328a340413c5376476a02.json",
+    "cache_key": "87f328a340413c5376476a029aa91e45ea06a0a1237d93d5639f69a2a029d4aa",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|1|N",
+    "sha256": "9520792fcd59f68540b62001a5aa54b0cb53aa8c07de77ba0a844c8ee5e1698f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e6888ff06cf2359cf9633013.json",
+    "cache_key": "e6888ff06cf2359cf96330133530a7b600f699562cd823f0c91733e1887766f2",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|1|RN",
+    "sha256": "ac52110cbe40ac1ec95a7cfce0244e2d855db46910f399a3ff5045306d34baf9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0d4a5fbea9f76d3c791d78d5.json",
+    "cache_key": "0d4a5fbea9f76d3c791d78d56fbb130913dedc90418c7ef8c833b29cdd1e29c7",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|2|R",
+    "sha256": "fb5e72ee3f319195ff5dde74526637cc68124b212de2edd20b56bb749c73ee20"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6dab320c73934a6990a238d3.json",
+    "cache_key": "6dab320c73934a6990a238d39d9b249c0d2dc770d7c23d3e21e72869bfbe08ad",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|2|N",
+    "sha256": "f7fd7f9d20f83c3be5b7260ca545df75233eff698db0f3b997617275b8143e0a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/311c8046f8ee37605a0e5ba6.json",
+    "cache_key": "311c8046f8ee37605a0e5ba610a224e222f09ca0fbc2bcc2a8d46fc08063873b",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|2|RN",
+    "sha256": "a2688ac500b6d3af2ba8531781a7ec45933fda912aafac58bac6078ca162f7e9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2a2f630813a18d13d628bdc1.json",
+    "cache_key": "2a2f630813a18d13d628bdc15d87c774543d9bd8123c13be718f935da0eb04de",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|3|R",
+    "sha256": "fb6cab807b7ea4fdd9d568458eee8e80a3d826340af4e25276a8b202c2e7355b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2e275e236f4a75baaf26dfcc.json",
+    "cache_key": "2e275e236f4a75baaf26dfcce0fc1ad15bb15d8e5cdd80d61385564e35655aa2",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|3|N",
+    "sha256": "a4433c24971a9dc81e6836d29c19ff2399f42bcdf898ab14f1b1110f3c720781"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9a52fd84acbad7907a4f374f.json",
+    "cache_key": "9a52fd84acbad7907a4f374f70145222a62484be6f2728af93fb47eab9c4bc9c",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|3|RN",
+    "sha256": "3c67497a597143fc8c1699bf07d1e881d0a30cb923014077a7d7ccddbd749d18"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/bf6d45298a3651eabb0f7430.json",
+    "cache_key": "bf6d45298a3651eabb0f7430fee851fd1af24f9065b71dddb7a069e0c8ced4b0",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|4|R",
+    "sha256": "075c2f64717c335d047858c68a818eafb55da86f496ac2e63ac9185a8c01821a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/fd79e863ada9e9350b38d9c0.json",
+    "cache_key": "fd79e863ada9e9350b38d9c0cd4c63f99855ca2b8ee55ae8f85c93185cfab264",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|4|N",
+    "sha256": "59a0e57a56364ecdb12d40726334737679ecd8cc089b5c5b70ec8263b25bf419"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f7d28a238da6f608bd32424e.json",
+    "cache_key": "f7d28a238da6f608bd32424e00c66dbf30aff8531f3d2780e2f325f9e0983106",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|4|RN",
+    "sha256": "e3b74740371cfe27aba5c555d9ca0473ee856dbd47106ce0a67c0f95c7ab3e4b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/709d0eb70690bfe66818761a.json",
+    "cache_key": "709d0eb70690bfe66818761a78d68a8eee783d36b6bc6e4aa884f8d02759ab19",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|5|R",
+    "sha256": "3cd0e7efec97353be4798f08dc265d0f2a7ec4104d799f3dd8cac4ccf6ee0102"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/1cefa1fbe7bcb8e14b559318.json",
+    "cache_key": "1cefa1fbe7bcb8e14b559318eff72ff265c5c599791045e423391da1cd2b5190",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|5|N",
+    "sha256": "db47175e93feadaf211d3e79cc0cfeca83bc5f3285850e57003954ebe65804af"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/fa8ad7102e5945875b9d5eb1.json",
+    "cache_key": "fa8ad7102e5945875b9d5eb120310d09454514394747715c8837e5eabf413b7f",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|5|RN",
+    "sha256": "2462646d2ef845353c5d2f5b862b4759bd1e38719f7465429bc5b564e8a303b9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/d3b500d8821ebb04aa4e4ee9.json",
+    "cache_key": "d3b500d8821ebb04aa4e4ee9f2184a8d0833940fa90217a7b3a4b9acfa4de9a0",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|6|R",
+    "sha256": "54db0bc1205a8b01029a6911038b5d704afbcf2ac1cef30218ad26b73d5b6b13"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e5a23c533e5c3a0412255d1c.json",
+    "cache_key": "e5a23c533e5c3a0412255d1cc8e285787fd3a39b0672baf3ec4116b607e7ff94",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|6|N",
+    "sha256": "a61471b036f31354f2bdbba8ad4fff46c88bdc95cc92858edbff8194dbddf624"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7ef09a3299a9ded61f787cfb.json",
+    "cache_key": "7ef09a3299a9ded61f787cfb51867f8a243ff957370ecf5c115499e44332f5d0",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|6|RN",
+    "sha256": "939ef26e7e551a2b149ae2f96662bf379446cf07906917fdee5e4f26bafac8d4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8c645edb67c49fa8b455ab84.json",
+    "cache_key": "8c645edb67c49fa8b455ab84a2c32f118691eb12c0c78080e1af3d478053d4e1",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|7|R",
+    "sha256": "7e83f84040fd0fae4cbec772b12bf682c61dcbe60d6e9a4ad775873284415d90"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3056800ba3fdf7d1c1077fe8.json",
+    "cache_key": "3056800ba3fdf7d1c1077fe8ed0722d7e6acf9256f93571a5af7019d80cf9813",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|7|N",
+    "sha256": "59e2308b326b7f1f16d0da9b33fe9997ca8fb225aeede11392260a39f9275760"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/cdabc55c44ebfb2dbb40d91d.json",
+    "cache_key": "cdabc55c44ebfb2dbb40d91d39c19ce6dfa91e54588485dd1d08b893e750401d",
+    "key": "b|0|Surf vs Chansey|Surf vs Rhydon|7|RN",
+    "sha256": "0ad829661fad47e0621754ab9ec238c7afbd9294e38bedacfb46d6b2c15319b7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/866a4deeba56dcff5e80eb57.json",
+    "cache_key": "866a4deeba56dcff5e80eb57ab1f0e4d2c9eb9730ec02473fd7abc34486acf62",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|0|R",
+    "sha256": "42362deb0ee9fe6792a9f48b7f773013d9068e2b861b6328507b8af39db60612"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a82d7ef95637fb8237be96f5.json",
+    "cache_key": "a82d7ef95637fb8237be96f5c7fb6a60b72aa715c859fee3f35515c620794f3a",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|0|N",
+    "sha256": "40538ff1dffec9f8a31ae9de7cc9d7dd0d80edce8b1fe049cc5f499776f91aa2"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4ad425c2f754a2a857cce249.json",
+    "cache_key": "4ad425c2f754a2a857cce2499db9532784f6aee7e7f41bd025664fb251e01e03",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|0|RN",
+    "sha256": "acdeea8a18c95ff5ebc100c029400bc7e34817de46c629648d96723f7bf56c18"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/5ab975b73bb67b1af4c30136.json",
+    "cache_key": "5ab975b73bb67b1af4c30136994908a6d16e896ee79142370336d5761ea4beb2",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|1|R",
+    "sha256": "17bfa6ee999a065f37ed17934ef918e0644bf29df5d4e09b9eadb12898367b8f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9fcd06626f7e09dc0bebcd4f.json",
+    "cache_key": "9fcd06626f7e09dc0bebcd4f5e73035da0c243b6085bef6091010d56e1528426",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|1|N",
+    "sha256": "0a96e5ea34cde250174aaac0c2a3ba0aee93a3e6db0473dd2d55f287bda0c3d5"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0878eaaa5d546a26ae03225e.json",
+    "cache_key": "0878eaaa5d546a26ae03225ef54352577ddf94e3f1d0233b7487582c98e8f013",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|1|RN",
+    "sha256": "32963f437b2e47e31c3e4ea5ab1c270f2801efd6eda975ee5eabc46d230c4660"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ebd7ad45348f92336b7e8505.json",
+    "cache_key": "ebd7ad45348f92336b7e85058578ae89b2d17b6f0a55f796b6efa8bb059713d3",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|2|R",
+    "sha256": "1da55a9c53493b2e4a9e6cc5706e0e5e1c2722fc049ccafeb863ee7b6aeba205"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a40d27bcd23b724bd54e5da8.json",
+    "cache_key": "a40d27bcd23b724bd54e5da871d797bd53b78289262e3090ff8d527810554866",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|2|N",
+    "sha256": "545008d41fdc2de2fc08e5725f0a85d5aa9dea2a9cd9d12e3fbc961265a7b0e2"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8ec2fb6b33a5d6560b8ccb0f.json",
+    "cache_key": "8ec2fb6b33a5d6560b8ccb0faaa94023009c6298697e86c3a9f1fdcbef356e12",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|2|RN",
+    "sha256": "113325c1beffb68d12f71cb3c92c4da27425110330737b425c2c5265b6749237"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/215719e05995843ab93d041f.json",
+    "cache_key": "215719e05995843ab93d041f7b11855c5eb3736df5c0d61f11346105f97e09aa",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|3|R",
+    "sha256": "0d7fd2f84d73ae23537af554ff3513f94d88bbb42fe6bfa63a88545ab7da5553"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/04c01cff431ea3449165d2d1.json",
+    "cache_key": "04c01cff431ea3449165d2d11c62243043949e966f6d64c84b257f080977e3f4",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|3|N",
+    "sha256": "3a44ef00e441b36d45c166604e06ccdfe891bfa7568dee70038b616227987743"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/272c802927447d95995f9441.json",
+    "cache_key": "272c802927447d95995f9441ea880e124961d3ec6c681f76f5f7b127e922ff6d",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|3|RN",
+    "sha256": "72366b7395cafe4629ffd54aab3a5c84632c736fcd5790bae40c775f67c7f888"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/abf9442f6f6abd196be09cff.json",
+    "cache_key": "abf9442f6f6abd196be09cff3052e1e0e1a9fa8bca6197fb9bb13cea053da907",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|4|R",
+    "sha256": "1ae96fafdd7d8952d08f6e728cec4599382deeeb3789c9773d9c3b843a5399e6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9fea473fbe97537ceb3a6310.json",
+    "cache_key": "9fea473fbe97537ceb3a631060d9a5abea8799539768425e15e05e18afc866e6",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|4|N",
+    "sha256": "f09b29e379a8f983bb6de37a7c67f9850befdad7dbd50cd1fab29c66c0868c69"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/caa86193cf5e036f98731979.json",
+    "cache_key": "caa86193cf5e036f987319790cc197a49fabf59549e9b054f2f6821d6e6a9379",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|4|RN",
+    "sha256": "d21740c98c9828f38218661d94c0ce408cf0ffeef273b879b02bfc31d504ec4e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f4714da4c05d5b912c62515f.json",
+    "cache_key": "f4714da4c05d5b912c62515f081518719d296d4d949c8e4f10c2622a2ba509d9",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|5|R",
+    "sha256": "b1c5d8d48df7e91f0d1a8b62c36396db0789c42360934b9ac193d015dc5044c4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a83b436b6731023b0247c130.json",
+    "cache_key": "a83b436b6731023b0247c130a3e165f8ac854cf9ad03c4eae6c65d3b30de1aa4",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|5|N",
+    "sha256": "360e45ba6cbdb7cf13a967db16a515b2723888f0f97ec65cdec78cc099be9d48"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/093698f0f09ce342e58ae659.json",
+    "cache_key": "093698f0f09ce342e58ae6592884032ffdf406dd2edbeb7efd79034169ce1db4",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|5|RN",
+    "sha256": "1be8d6d2b6d8bd31e86a9fe94c16a521295e71c34fa5bbaec16ffbc1d239bdc1"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/07810bcd0ebdab28f5d6e9f7.json",
+    "cache_key": "07810bcd0ebdab28f5d6e9f789994c17fcc255970a7f9db722517800e2bbec0d",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|6|R",
+    "sha256": "2abb4fad5d70b553762e6c48de6317f4a635d568262ddd69042afe2a4eaa810f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9e2847f0204b823f266d34f7.json",
+    "cache_key": "9e2847f0204b823f266d34f75b23cb0e0d5e9784838502f964656cab6c3ec0bb",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|6|N",
+    "sha256": "2227895c896d61a7a5e12f598e5a42aa602088e5770b41893c0ee25238e0db35"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/95cee6d760b88fd37420c0a7.json",
+    "cache_key": "95cee6d760b88fd37420c0a7259912f94ce59e317fde1efe3137ba29d689530d",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|6|RN",
+    "sha256": "e78a8f753053e52a805c2211930c4b67bbefe5010d26bb944b0daa81f67184df"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2657f25c8e8816bb9624b540.json",
+    "cache_key": "2657f25c8e8816bb9624b540cb6e75aa6ebda79098674f3ffcc98834aae04877",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|7|R",
+    "sha256": "d9021237950ed577fe0c826f45e743c4781db3dab93398829ababd5684160ec9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a35c973ad7737d3e2d4ac3ad.json",
+    "cache_key": "a35c973ad7737d3e2d4ac3ad9678ffa6056679f89bf44c805b3bca8eed867760",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|7|N",
+    "sha256": "b2ba6e63c18da877d431616aa66a021d4e81866e260424c18d6161ddd0621160"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b7d3ebb4cae8f776ccd211f5.json",
+    "cache_key": "b7d3ebb4cae8f776ccd211f59e4715b706c1a13987b45fa411dfcbd3d1133f6e",
+    "key": "b|0|Strength vs Chansey|Strength vs Rhydon|7|RN",
+    "sha256": "ce84490f47be2c8e47ca8a79b4c6455fbaeb0be40e9c138ad0769996e6375d84"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2fc383447d6036515a93e71b.json",
+    "cache_key": "2fc383447d6036515a93e71b72566b3a9e28a8a4f513e592f2669a2d120f28b7",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|0|R",
+    "sha256": "a9e908d6f96fd4db93cda1de7973a1061afe370c9f0ba80c37c512dfe327ccc2"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/14a9e2e83e6d0ccd971fa144.json",
+    "cache_key": "14a9e2e83e6d0ccd971fa1444879505225b3679fb14b9450be40af72a918b436",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|0|N",
+    "sha256": "0a8cc21adaa073b5a374b03fb25469bad5214d7a50abdc71684af4774ea158aa"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c3f9d4f3c218c2a398469891.json",
+    "cache_key": "c3f9d4f3c218c2a398469891b2488845ff92cde0bebb62c26f4e454837b41683",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|0|RN",
+    "sha256": "3586e51a5558aa121b3f172442d6db96de3fac62163cdc6759fa1a435dfc3bad"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/65bd611560bdb543acf5415c.json",
+    "cache_key": "65bd611560bdb543acf5415cb670992d1b586fb1511e4c654440d51914da84d3",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|1|R",
+    "sha256": "5d739d0b3127e2ca9554db8600a0da1b9429b0ed0ae3fbaa5be9afdd8fba0f3b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/736d8728c177f84216f2091c.json",
+    "cache_key": "736d8728c177f84216f2091cdae6350ce0c19146b9b7c4e9f209c614573a2bea",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|1|N",
+    "sha256": "c4080da670ff247674355b628aa1c67fcad8df87c711f4fba7c6bbdefbd9a935"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8ae31892831eb0573c4e3d91.json",
+    "cache_key": "8ae31892831eb0573c4e3d91fd5f7e21a9ccb44a5c1ecb4d52d77b74da2df423",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|1|RN",
+    "sha256": "deafe77e4e3b16644a15b8c6c0d220bd84dce4449e65b242ffe05e95a797c70d"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/5086670dfd3fe84a6ddd3d42.json",
+    "cache_key": "5086670dfd3fe84a6ddd3d42d2f3a3a789ff48becbff4aa53c6d18e1e795f065",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|2|R",
+    "sha256": "738fb508f278d1bdfe31375297f7bc0cf566f95347b7371296fe5166886485de"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/42949e98d40f3d00d09932fa.json",
+    "cache_key": "42949e98d40f3d00d09932fa24c2803be30faf5201bf749169265b3fcdc0ee56",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|2|N",
+    "sha256": "05d905c94bd357b402ce7f657aaf449d7b7fbb43ab5ee8efebd1bc5198d23b4e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ce80ad633ba58ff9bec7bec5.json",
+    "cache_key": "ce80ad633ba58ff9bec7bec5829bfd3503a02a5110da67865a97c1a7c1a62e35",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|2|RN",
+    "sha256": "5d1fdd0b212c9cd99a28740f9561dcf51771549236588305e1e8cf711e53f5e6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0b2e953f21ff14e70a8bedb7.json",
+    "cache_key": "0b2e953f21ff14e70a8bedb7bee23e70997f645d2a749665bbe4b0557db8b29b",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|3|R",
+    "sha256": "37caab5feea1aa53841f2efb72ff40729cfdb4b7094a2e7c42a7adc08a6d5567"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8ef75115581a8d3de1a4660f.json",
+    "cache_key": "8ef75115581a8d3de1a4660f654e1eeb389ef722ba265f7ccede883777775b55",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|3|N",
+    "sha256": "38b4835ed368ce9f820547aa7da15473a156c47ad28c20f528a75b42af316427"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/5c32cc4c35eb35feb7db6ca8.json",
+    "cache_key": "5c32cc4c35eb35feb7db6ca88b364325e48eef691822168c1badfcf90c080d1a",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|3|RN",
+    "sha256": "98b38c43e8e86d05c425db996d0d7629c893c455fe35c9cfd2ec984de13c89e7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8c00a0ae7f301d6a6792ab1f.json",
+    "cache_key": "8c00a0ae7f301d6a6792ab1fbb06f1fec93408db94f61c6e250129e07dea9e41",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|4|R",
+    "sha256": "8c7a2c3351846e07032a34f3dc753a17061993dfcafdacaed0763907b5f352c7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/38d37a38aa4b97ed55a65b1d.json",
+    "cache_key": "38d37a38aa4b97ed55a65b1d58119c34ac20b988b36a7b2be8fa0ef9835f06bc",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|4|N",
+    "sha256": "d44fad743ec8467ab2e8968fe8ac313e09932fc2774f90f8350f6df3b61469dc"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/313c47804b2f0811af1f5d5c.json",
+    "cache_key": "313c47804b2f0811af1f5d5c4e48a81938d7a1d27eb3afd4d48498e8ec52ca39",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|4|RN",
+    "sha256": "0b113e5f7f59983b4c045b2402587af6d251b3cdff35ed4f8d6523c00f9f594f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4d9ec35a25dfe2bc719cd8de.json",
+    "cache_key": "4d9ec35a25dfe2bc719cd8dedecd3a31db58a004cbe5c3f9dc62639cc107a98b",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|5|R",
+    "sha256": "0feb3efa347178f1c14259eeb3c837c59d071c26f4c671c73f8086c84a8932a6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/1620afd647c90500188b10ea.json",
+    "cache_key": "1620afd647c90500188b10ea922fe3ef60fb24255f717bc2e4ba63413959e513",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|5|N",
+    "sha256": "58f5edf6536fb862693dac452f0896deec208bb0a75eebd8916d654bbfce7c62"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/285260581d7fbef739339772.json",
+    "cache_key": "285260581d7fbef739339772bb73ee048cefb171c53419b3c3a4c0b27acad741",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|5|RN",
+    "sha256": "8f12bf730f0db1bb5c67ed54fa742c78ce58f062d7be19910102de92873d0a68"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/54e46a1fede3648fa4b14b4a.json",
+    "cache_key": "54e46a1fede3648fa4b14b4ae2bbecfde1edff170abc5c3e2add695ff55f35e5",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|6|R",
+    "sha256": "c6c2ec67104853afd06c3e44be08a534d25ee00b86a733d126c765294059658b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9cd56435c40745b5016f4cc4.json",
+    "cache_key": "9cd56435c40745b5016f4cc44426eaa8178cc730e778965527a9708890fbca03",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|6|N",
+    "sha256": "9c6fa2fb4cc8c93b110fff233e1751c44e9e06ddcc34a2e6c9aed52e5f4983ee"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/480511b1257ae6b31fd509cd.json",
+    "cache_key": "480511b1257ae6b31fd509cd74124f98997e137e0003c3ec131be1b5c67e6ce8",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|6|RN",
+    "sha256": "cd86a7ad932102c6ac1b1cd1a4527d0e802aac7124934c454e0a9d1ad876d2cd"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b09ef9ca4d2bf424a16eda87.json",
+    "cache_key": "b09ef9ca4d2bf424a16eda87fbe096411fe53d2e2830cbebc787c4f89e1706d7",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|7|R",
+    "sha256": "d4eb9f1f1d86310db7d8bfd4a7c62f3b85d72e55edc7e4c6e30b09c1fa4ae34b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4bf37ecf632324ea8feaa78f.json",
+    "cache_key": "4bf37ecf632324ea8feaa78f08bf8b32ae32b91f9db2c0c894ca978193e6bae8",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|7|N",
+    "sha256": "8829cccfad2689e4fa40ae6737a311ca87a5109c57c29232679a89066e8924ae"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6efd4470f25676b6f729ded1.json",
+    "cache_key": "6efd4470f25676b6f729ded15c477c4ea22cc5258b9e92d543afb2a1d3555486",
+    "key": "b|2|Psychic vs Machamp|Psychic vs Tentacruel|7|RN",
+    "sha256": "afbc091bf7a43a69c51ea263b0ff01efabf55278cf40c310678e57b04a6d1a6d"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/1de10bd485f75d05e24603d5.json",
+    "cache_key": "1de10bd485f75d05e24603d5d78168fe9ba8c0ed8dfd2335ebd68e7174609cdc",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|0|R",
+    "sha256": "7e299c8d43fab3dcfd5d356ab5bcba2f778df7e2018dcc4f02e11b6e63845d9e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4eab68872bb605cf01564ea5.json",
+    "cache_key": "4eab68872bb605cf01564ea55a7d3fb0c46ef0a7a5c31b00e7fde5cc2b436af4",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|0|N",
+    "sha256": "4618dbf30df36e0564410f1e3870ca906750d84f2635e4b84c493c4898272d19"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/983a85b909189424af139780.json",
+    "cache_key": "983a85b909189424af139780aaad293ef92b1ec22a240dc104a61f8934a79bf9",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|0|RN",
+    "sha256": "511dc94d255657135665a372ac74d41bc8cd68e167685b46839befb71f2d647a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/942db90dfaa520aa65051359.json",
+    "cache_key": "942db90dfaa520aa65051359de70e570aafe3c7346b6469c277a687c6913a216",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|1|R",
+    "sha256": "c02dcc4176a7657ca9c99a739a0c472ed594b56255a0a89f849a815b2f204e8c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/d93c04f3c01851315f61727f.json",
+    "cache_key": "d93c04f3c01851315f61727f0d041aa896f7c39ef92b7e6707ad87711544f095",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|1|N",
+    "sha256": "9577694d00d20f1ec1e5c3def30e1cad85dcc551d5469ba683377695c6bc9c1a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/951af4f64abe4d87a3cc2eaf.json",
+    "cache_key": "951af4f64abe4d87a3cc2eaf0eae415daa82509d59d038be53fe23085c734a9f",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|1|RN",
+    "sha256": "37ed92e7c1e9a98e7256d5c3a6e84123b499ada66573e6fd4fb543caf569a60f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/fedd896d4a2052ddacf73105.json",
+    "cache_key": "fedd896d4a2052ddacf73105b5c18601dd182e752e45f8ab73a6f0f345e69660",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|2|R",
+    "sha256": "92e85e6a3a4e9a68151fbeb1c0f8fc1c11ac605045cd68b0f33f7bb5112d1bfa"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7eb99e90ac3351dbec279fb5.json",
+    "cache_key": "7eb99e90ac3351dbec279fb553940249ac318b1250676372f947cea0d2113a46",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|2|N",
+    "sha256": "4a8bfcc13508d6d31a7b4118bcffac8684160b847e00c2742094d74726e18999"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c86ac637e2d88d82cf419dc1.json",
+    "cache_key": "c86ac637e2d88d82cf419dc18ff5976c807d9d785499b76764bf94ee60e93ee6",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|2|RN",
+    "sha256": "a334fb6a34b882c09f180378ee546910ba140ebf935b2456a823dca684187971"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/05a5f78de5c4a8bd031ec951.json",
+    "cache_key": "05a5f78de5c4a8bd031ec95194984734ad9656cd3828c561826054c427e2a1f7",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|3|R",
+    "sha256": "fe58537f72db7fb645a2aaac2e0c9cde9f5eb5fe291f22e0ccebbc056fcf01aa"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3ae26f9100a0e0b4d67cb745.json",
+    "cache_key": "3ae26f9100a0e0b4d67cb7452434d30d3c3fd6e4eb82203b245a00b9ec7e142b",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|3|N",
+    "sha256": "9d1b68a22880f7bf5489f32f0c7f828f19afa589cfc50f834a96166f5b6c8006"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6930dfc6408a10952ee43c6d.json",
+    "cache_key": "6930dfc6408a10952ee43c6d3147cfbcd44d7ec50012e991b2c2b8603760c066",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|3|RN",
+    "sha256": "7280b45f12c61b3927daf893752a063b34f24650afea2e9cca976ee7e7e0030b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/13ef05d78d09deca183f76cd.json",
+    "cache_key": "13ef05d78d09deca183f76cd2379c87c317eaecd45ca6cc81451bcef4e2d10af",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|4|R",
+    "sha256": "5be3856371540ca35484e03d4e900509f89243f2c70639a3b9638f54c5d4b876"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c5b94e4a4151f147379ffc32.json",
+    "cache_key": "c5b94e4a4151f147379ffc32873cd06d9f1913263888f984f829ea37c9eca5fa",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|4|N",
+    "sha256": "eddef81415321a596da4df92cad668133e456ca182470eea768a8ecf804f6331"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6f52cc2207f470871ce844cc.json",
+    "cache_key": "6f52cc2207f470871ce844cc2c727f6f9e2fa9d3e946449e8c3121ec699069a3",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|4|RN",
+    "sha256": "cedcda7421a34f63814ad27c96943c47dc37550b3fab9838cf002399e9609530"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/d267a9e77411e1af923d896c.json",
+    "cache_key": "d267a9e77411e1af923d896cc1721619293caaa0f0512a238cd7c9310574ea07",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|5|R",
+    "sha256": "c2f00d46184eb770c354103fae7458ad3dc283f8bb175d5a9d092342b23f4c91"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b8d3abfe04b4cbef6a66d562.json",
+    "cache_key": "b8d3abfe04b4cbef6a66d5628eccce0a819a239c5df33d1800a5e9cbd174854b",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|5|N",
+    "sha256": "12c8f83fe7faae447f34edb84e2c6d7ad288c3e52a391af65f13d48247c23b10"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/bda7b0a05990b9ff648b0b07.json",
+    "cache_key": "bda7b0a05990b9ff648b0b0762cb7eed66bfeda805f4b8d715284520791a998a",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|5|RN",
+    "sha256": "6a968747907541b337beab2174de88a4b44e9f1748d2ee827a5aa706f55e79a7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/dc6f89854ddd8526d3218622.json",
+    "cache_key": "dc6f89854ddd8526d32186227dff11668052d7e054152120aaf32b86cecd5ee8",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|6|R",
+    "sha256": "05dc386115984b76d133f95c0c878de4f4a9ea18aa0cbb18a2a4bcbdef96f2c9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/89caf9c6deaef2373dc8208e.json",
+    "cache_key": "89caf9c6deaef2373dc8208e3f54c4620ac7cdca285aca83016f3b7be780ec5d",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|6|N",
+    "sha256": "19b58aa724b5a7db69900c9336a3788bb48aa2e95cc969891dbb654128898e22"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/837e833d6f958ed5991842c8.json",
+    "cache_key": "837e833d6f958ed5991842c8728835c07e9f81fd7ddb096397fc9d60d7d83c82",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|6|RN",
+    "sha256": "7752e818ab409762d674d3a157c2036d8be927042f3bb2a037399d0f98d86f50"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2e6fa1fcf11c797ef459a2b3.json",
+    "cache_key": "2e6fa1fcf11c797ef459a2b3c05b7b946f2503681083a8d9f9d22623d722218e",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|7|R",
+    "sha256": "969035ceb45fde2f01e3def860a42e6b4366dad559bbe28a03567ce37ec67805"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/970759a925dd22dba87baf3d.json",
+    "cache_key": "970759a925dd22dba87baf3d1fd9e33c9cf7578e535b54c23742346ad8292c3a",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|7|N",
+    "sha256": "7cd8c42aaff8b5b26c6cc07967e1e20055495a925a48ba4a8bdac031c1c1cef3"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/5bec3967240a892dcdc663af.json",
+    "cache_key": "5bec3967240a892dcdc663af6ce7e4c830d3a133dbab1f4210787587cf1b7d83",
+    "key": "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel|7|RN",
+    "sha256": "b44661c20e24a0afe249cf95f208bc28b86eecfab91faa6c03aad36b20bc19e7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4dc65f8b8d3b01365e7922e1.json",
+    "cache_key": "4dc65f8b8d3b01365e7922e163de79f32a6dc5d1d17f00fc4c55fef2618b82e3",
+    "key": "a|4|Rock Slide|Strength|0|R",
+    "sha256": "a16a312d74f4793c258ac674730743d3c9b3ba83eed02f55cfa079693332dfd6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/47799edcae6da3382828d95a.json",
+    "cache_key": "47799edcae6da3382828d95ae8c83b7aa743d9495e11d55c4f6b91d9202fb6ec",
+    "key": "a|4|Rock Slide|Strength|0|N",
+    "sha256": "e5dfc4de4bbf040c870646bbcd8cf0ee221d7cce893ed13aee39425faf5db253"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6d2091333065c73484139cc8.json",
+    "cache_key": "6d2091333065c73484139cc8c68925f9786debdac6e8ffa5c09fe942db005582",
+    "key": "a|4|Rock Slide|Strength|0|RN",
+    "sha256": "37ebcfaa99031224832fd6b7292fc44c1a71dbd8b5749451968b201e88083507"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9c6be81f19b551420522364d.json",
+    "cache_key": "9c6be81f19b551420522364d717b29a874f5fc868463d961eeb20451dd22f136",
+    "key": "a|4|Rock Slide|Strength|1|R",
+    "sha256": "2cb72620b2cec73a4470189bdd48f8c3ffb9b93736a22bdbdd5eff08c3c9e7aa"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b9742949036f0c7d2a242d94.json",
+    "cache_key": "b9742949036f0c7d2a242d94e3af94762542bbc3db0995215c4ad448138c5c46",
+    "key": "a|4|Rock Slide|Strength|1|N",
+    "sha256": "081160181824b18227f6d3c0c3d136ea2b9570ab8f084432f6e2f722a96ca032"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9f153a7c77d9e07b53838391.json",
+    "cache_key": "9f153a7c77d9e07b538383915768728d162a62f5fdf19789ea9be2a52a6438d3",
+    "key": "a|4|Rock Slide|Strength|1|RN",
+    "sha256": "dd1959c7236afbd5cd282081515321a8363aff860ff65ee2f184e652b44281bb"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/be6abe374b14e82eac1cda9c.json",
+    "cache_key": "be6abe374b14e82eac1cda9c1b7c036ecba2af5d57837428dbde94cc6dca20a1",
+    "key": "a|4|Rock Slide|Strength|2|R",
+    "sha256": "1097fcbc189034cc39244326a413ef1c10203aaa56ee2aa0a0eb4d5139197ae7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/58e059c60f92c83c2d096f03.json",
+    "cache_key": "58e059c60f92c83c2d096f03c0c9746b7d7dfcfca029f0de15967597f2f959d5",
+    "key": "a|4|Rock Slide|Strength|2|N",
+    "sha256": "ee78f407cd905386b761f0c3cfbd71e86c6a68ecb01c1ce8f692ba70e9de563a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/57eac22c191cd973a09f6c5a.json",
+    "cache_key": "57eac22c191cd973a09f6c5a5df9f38a44659f4f91ab703aca03d47bbf9a6441",
+    "key": "a|4|Rock Slide|Strength|2|RN",
+    "sha256": "7142907557e0067dd208f8d67c526f2d83116dd405f2970ebd043d7ad8ebee78"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2de2edc8cd13b8438d3b3450.json",
+    "cache_key": "2de2edc8cd13b8438d3b34501b5b8f511ca0a83f5824a234dca587c380ec2144",
+    "key": "a|4|Rock Slide|Strength|3|R",
+    "sha256": "b6e8908190988842c6ff6d7913610d5d19e7cbe5842bd1e1a5ddf1206683da01"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a0ed34f27a4e368b68970624.json",
+    "cache_key": "a0ed34f27a4e368b689706248ea22dea8a53fa85ab4eef0ab312f8e9e2e1044e",
+    "key": "a|4|Rock Slide|Strength|3|N",
+    "sha256": "a370ae59e14c7b34c2414cfa98001f83d9cb34f40c33ace785a23837bafa6e3c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/321e1a5ecfca2767f443bb11.json",
+    "cache_key": "321e1a5ecfca2767f443bb11b446a2b50fc27387e74587941ab5a362184803b1",
+    "key": "a|4|Rock Slide|Strength|3|RN",
+    "sha256": "7f15be135912c61be9d06cd88bd62d14d576f28e9177d91b5473b780125d3994"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9ffe5902fef0fcad9dd88848.json",
+    "cache_key": "9ffe5902fef0fcad9dd8884810ef8a69c300472d76349edafe39e62eb95dc3b4",
+    "key": "a|4|Rock Slide|Strength|4|R",
+    "sha256": "455133d11f213218479d6ba6c2fa2484ca2d2da9c7282af8f26ee471e8c1aa28"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7d2e0dd4e1a2eefc939f4d55.json",
+    "cache_key": "7d2e0dd4e1a2eefc939f4d55cffbd3a88efab662cb2480fc0aa1af718f6a1b8f",
+    "key": "a|4|Rock Slide|Strength|4|N",
+    "sha256": "f27950f6d1d4f0574ad7bf507cd69ed3d04904d9bcf45217603635fb01f24bb9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0e399207e8d3c0ba8a15f384.json",
+    "cache_key": "0e399207e8d3c0ba8a15f38444fef3c22141fcef813517dc420975e9d411612f",
+    "key": "a|4|Rock Slide|Strength|4|RN",
+    "sha256": "68a42aa58aa4d5389d4acadb6119673109c65f310afe964c3f2180eeccca46cd"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/67c4750d79e432b1fbc56cc7.json",
+    "cache_key": "67c4750d79e432b1fbc56cc790aba9f155543491c0f5453df092e3401e238881",
+    "key": "a|4|Rock Slide|Strength|5|R",
+    "sha256": "1d7889144be2907973ef7fec4a57e0f444217b6db6403c4349207d3b5c8dc1b5"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e6808b30a8c56199bdef122b.json",
+    "cache_key": "e6808b30a8c56199bdef122b1435dc89b4c5b84d1ec1fe893892ce87dffc4881",
+    "key": "a|4|Rock Slide|Strength|5|N",
+    "sha256": "cbfcb8c82ffad77007aec9ca002e16fcfb7e4e8b292d919d0fc973c056b50806"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/176ade7db45442153194f3a6.json",
+    "cache_key": "176ade7db45442153194f3a6cc70e57bc9b542cc093c4847745fe7ab0eade118",
+    "key": "a|4|Rock Slide|Strength|5|RN",
+    "sha256": "c7aab14cd65ea1f80aeb5f44aa9a8dc5f06aa605aa87c56605a613fd74555b1f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3a55a0f036cf7becafe446b7.json",
+    "cache_key": "3a55a0f036cf7becafe446b7bf1e419f5d16bc08f9a48305c033a401f414ee85",
+    "key": "a|4|Rock Slide|Strength|6|R",
+    "sha256": "921da5a4fffbc2d279355cc260ae806e68866b889abf90a5293f91ee7701f557"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0d4cb408ea0fb889420335bd.json",
+    "cache_key": "0d4cb408ea0fb889420335bd38e299da34f151b4839c9707fe7804a22e464dec",
+    "key": "a|4|Rock Slide|Strength|6|N",
+    "sha256": "dffc1180f0558b4fb4e08fc3f457a36bbc4d93eba55ae2fe6e208a5377d1c441"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0690dde99ef7fab4bfa0d0df.json",
+    "cache_key": "0690dde99ef7fab4bfa0d0dfe0a821b15a9971fe57137bd0f2f26feae5bdff49",
+    "key": "a|4|Rock Slide|Strength|6|RN",
+    "sha256": "6fae31d1b3ca44c96740ebfcda5dffc98217d10bbad93fc65ec12f5a64997225"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a959693fe94fb89bdff8243b.json",
+    "cache_key": "a959693fe94fb89bdff8243b945f34fd6cb2d8b3ebcb9940b7f50c1645d97c3d",
+    "key": "a|4|Rock Slide|Strength|7|R",
+    "sha256": "a852408638de17c48ebcea07b9e16bb8c6749950311b5179740adff0ef2e6d79"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/51442972700c660107a0bbb8.json",
+    "cache_key": "51442972700c660107a0bbb898d2687c56117245a75f90f91f1936709cbaf0eb",
+    "key": "a|4|Rock Slide|Strength|7|N",
+    "sha256": "f1c0b8a0689187b232a099514705dd5020ff80fc0ee674220de7cf101d941dfc"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7fd96a08f0d92f5f98463020.json",
+    "cache_key": "7fd96a08f0d92f5f9846302030028720589f33e067416fce6324cb1deacb5b80",
+    "key": "a|4|Rock Slide|Strength|7|RN",
+    "sha256": "006dfc73837b3a594f451a168faf52d0651cc706bfcaeb90c0402c6449e6ee36"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/051e0c8c5c98de2852a0bd9a.json",
+    "cache_key": "051e0c8c5c98de2852a0bd9aaeccbff483cbe7641f5f5a88c940f005c186f9f9",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|0|R",
+    "sha256": "91d589d823e69c876858e246d2fb67c87ddf2a3ad759cc7d5609a9a454f5068e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b3ad01d6066013bcc5550c82.json",
+    "cache_key": "b3ad01d6066013bcc5550c8270fa79bb435458fc5adf9ae383ba7f9e75420b84",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|0|N",
+    "sha256": "743ddc506e7ebddbaebd4355035f36c0af9558cced48de95e1642371891c143a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/aefb45c5d06767525a12c4a7.json",
+    "cache_key": "aefb45c5d06767525a12c4a7348fbe9d0c0182d74a2d3ec00d2a5fb9a6edab4f",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|0|RN",
+    "sha256": "56d80e2114f34e24c31e72c3f6ca4e5d9240c233a990f4cabc6c9b0589dca662"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/fd7e0628d51e1bd3f315d0c8.json",
+    "cache_key": "fd7e0628d51e1bd3f315d0c8299544132b3eabc7fd7d30bdad9be86dc0260998",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|1|R",
+    "sha256": "97e8e79bb54139584146bee39f9c4468cfec26f0451c072e364f1cfbc7f7b962"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2e9b17c03e435061f20f4823.json",
+    "cache_key": "2e9b17c03e435061f20f4823e552b34f9de94f6fac05e9e293ebe181537e3e9e",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|1|N",
+    "sha256": "b6f79e1bfa8c049ecb3b43d09458d7e5f548b64892a359f4193965696ce2f570"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e1343aa9e22b11fcd137dd8c.json",
+    "cache_key": "e1343aa9e22b11fcd137dd8c390cba62298987605a867981ae248f589d9a51d6",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|1|RN",
+    "sha256": "683f891794afece392c9831b586c8ac59128dfd33e8f5d26d0745c2d4f7407e0"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/529347ce2e877c902026a399.json",
+    "cache_key": "529347ce2e877c902026a39933dfd172b42e8431f85995b947d019bd9829ef94",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|2|R",
+    "sha256": "44f520dd5cbe15385ba2a4c598cdc72b6e5deac9e08f8d7c6d30b2673c81f640"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/90ebf06987ae927320f1f243.json",
+    "cache_key": "90ebf06987ae927320f1f243df7676bb4dae048e6fd0e946d9394583553cdf72",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|2|N",
+    "sha256": "099f2e8a6a3c82057904aa11cf556e887f1111bb7e8935689799fcb607b7eb5e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7120b36746e87293fb7483c8.json",
+    "cache_key": "7120b36746e87293fb7483c80f8292d8b2fe9255e7ecb53d75c7e20a7c5924e8",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|2|RN",
+    "sha256": "0d44320b9bbe298bab96b2c89326f1f3af92642d8bc02548e6b34b053243d09b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/25aece6472106dbc9e456119.json",
+    "cache_key": "25aece6472106dbc9e4561196bd59c0c1824ef75d88e0b465015c0818c134e7d",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|3|R",
+    "sha256": "61eea4ed9cf890b4eae206fb9dffb626a9ad93e991df1b20723f65608f531db8"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b8c17801c77fe049e13a7b52.json",
+    "cache_key": "b8c17801c77fe049e13a7b52a38152725b9c1f99aeaeb01555b0c3323044513b",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|3|N",
+    "sha256": "a1da7b782472c42552a5696f81aa10c54beb245d47757bce24fd5e6b18d32d5e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3e06064284887c63d69cf12a.json",
+    "cache_key": "3e06064284887c63d69cf12a8bdd77572931340f189258037f05dd78a73c7419",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|3|RN",
+    "sha256": "ec4b6146c0b826426daf9a912079c383406e903a3954ecc82d82c8870b389d09"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9049acbcdbb471c745724ac2.json",
+    "cache_key": "9049acbcdbb471c745724ac259d999f7359ca15df0a3b4677a739e45264422e5",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|4|R",
+    "sha256": "6ca2f8c4d88ee28520c1e21ddcc19b64a6d01658bbb8af1794323029240342bf"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/92629f11db6865dbd840ca21.json",
+    "cache_key": "92629f11db6865dbd840ca2171ba9c15e870b5e05410ec8e6ff1892a109e449d",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|4|N",
+    "sha256": "6c755228c0d0752e965fd7273515468d83852a602762f4c326fea33cdde9d244"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c0d10eafe361a859fdaadd30.json",
+    "cache_key": "c0d10eafe361a859fdaadd30cb2db2e85b526e952c65bbe8f7e4d328b746238e",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|4|RN",
+    "sha256": "eb6cba8694c20131e0156361b99afb1f42391e2e27a24ef01472cc9dd84d87a1"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/28e60152c9c61021f35711df.json",
+    "cache_key": "28e60152c9c61021f35711df95f02726d55f8cabbe1d5381a3c6068baf4b2616",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|5|R",
+    "sha256": "a2d103859e06a992aeda3c4859a41c8ceb7030b75903c3747917aea1a02ea693"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6508a597d805d3d028a084c7.json",
+    "cache_key": "6508a597d805d3d028a084c728fda2f2339e95ba419cb07b4ff87ba5256c94af",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|5|N",
+    "sha256": "308bd5a8795e508f02de7965f02488c6d4a4f3c852b3590220cd967f90c9167e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ba507fada79449bcc5d30061.json",
+    "cache_key": "ba507fada79449bcc5d30061becdf950a860b47961bcf1ec0f50abcdadbd3c85",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|5|RN",
+    "sha256": "355fb9ec9749b380ef8e1e067310665d730757556fd6d20b9dce310bc06603a6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e1007ff7dea9ba03729b30cf.json",
+    "cache_key": "e1007ff7dea9ba03729b30cf335f5e283428bb0a921923bb3a00909d99ff68c6",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|6|R",
+    "sha256": "bec27e61aea0bec13a9b34db149a78af48cc3f5f7ea7fe85159d64381e9e7649"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4e166410a496288b487e8970.json",
+    "cache_key": "4e166410a496288b487e8970abc420e06661c2728ed132886f2020cc621a334d",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|6|N",
+    "sha256": "40b471114ace23d1a94c3cf26e1efcd749d32362f26fca03f911558c3ea556b7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f617d9f27c963e4fa14584c2.json",
+    "cache_key": "f617d9f27c963e4fa14584c21fff55b1f00c94be83d17acacd8ca2d8b27a9ef8",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|6|RN",
+    "sha256": "4386b7091246c9c1467f01d9d980ad730a69cac6b8c4a1dedb72560a83625b9c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/82a2be71add2e5168ea86378.json",
+    "cache_key": "82a2be71add2e5168ea863782d1b477cef44574d04c0e7a04a1c0c638e118a3f",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|7|R",
+    "sha256": "311feec820bb2925f1b9c74ffa67cb67edd0c7c1c5ba4b334c5dc7121af6eb44"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/dd680c6c05ccfc6e481a58d2.json",
+    "cache_key": "dd680c6c05ccfc6e481a58d2ea7784cff73e0352afef1ae7eee0f7139fe700a5",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|7|N",
+    "sha256": "4429d5c3f74d7ebeb1a8b51989e38db7fad93f69e2dc67dcb489ec0b2cd79558"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8978bb22b15fbbd39a0cbbd9.json",
+    "cache_key": "8978bb22b15fbbd39a0cbbd97aa5d50d8a8a7514972ac9b7e504a675e87dd413",
+    "key": "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard|7|RN",
+    "sha256": "2ffa40834ea0b37a6d906134132d2e04af3713fdd65b5e27e87b666e4c370edd"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ac1144ba9cbefe0016a2573d.json",
+    "cache_key": "ac1144ba9cbefe0016a2573dcdc3ac445a0c68eaec97cca5693b1fc5a8a1e29b",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|0|R",
+    "sha256": "3e92f14dc2d7bdf54b80fbe9fe9bde2cdde05d52b7dc2a550f32853b4d71ee18"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/989e62dab40c6cc82d277b6e.json",
+    "cache_key": "989e62dab40c6cc82d277b6edd96d07b9ed1348fc080703c3dab0bd6f7121d53",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|0|N",
+    "sha256": "d7cb6a1d839216ea4cc03eb3faae724766b72ac39e8923dd0f6d5a365d4b7213"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3deded8f89bc3ab3bcd9733a.json",
+    "cache_key": "3deded8f89bc3ab3bcd9733a217b45b82c113b5670b1f24252116c1a44877890",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|0|RN",
+    "sha256": "faa681e2c85b411900d824e82c5f1330a2906256aab28899530d0955864036d4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b4ce571990cce1c5c0e9abab.json",
+    "cache_key": "b4ce571990cce1c5c0e9abab29e9bac4bd8059ee39fe3373488025da638798f6",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|1|R",
+    "sha256": "7074a984be1a3003d8ab4bde6b9cb25dc2add43859f7bee9021bcac148b80920"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4e0b46b9aa72978d52c48187.json",
+    "cache_key": "4e0b46b9aa72978d52c48187092288462a6d3288078c48994328c5c93ef42793",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|1|N",
+    "sha256": "41c5c8f61804a893c517607584932fb9eacdf2918424b3ce6fb956449c899c43"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/49bc51af7edb3d7fb161d5ee.json",
+    "cache_key": "49bc51af7edb3d7fb161d5ee0bc0647f0bf8af1b7feb630aaecd614ddd533bc4",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|1|RN",
+    "sha256": "a75580240add31d8e69a87f2be083893896a50e883acdc3fd2f58976d374e64d"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/58338fa23b99c4c6698a5eb0.json",
+    "cache_key": "58338fa23b99c4c6698a5eb0203fe10510ee3d8c235d6e339819977fd8a71b29",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|2|R",
+    "sha256": "2487f8cad249ec3313b4e6c9bf2629e96a7fdcbade16ff2f8427f0efc7a51719"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/431fd505ce10a5760593eaba.json",
+    "cache_key": "431fd505ce10a5760593eaba8c24bf1c74968afd2f15d080ab2abfe30dc6e7ec",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|2|N",
+    "sha256": "5307f2d511e77e0c13fc05b84f2fcf68744e45958a1f18a78cdfa8abc1925ecf"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2203d14f1ec241fbffc288eb.json",
+    "cache_key": "2203d14f1ec241fbffc288eb5c433d632df74a57dacbd1b33df526d8e8d721f2",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|2|RN",
+    "sha256": "5911fdd80a498354c3f017e7d1a6c1ba32dcd36a83cb00c4f5adca900c2b2125"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6438740c7721975d940efe81.json",
+    "cache_key": "6438740c7721975d940efe815690faa21b7876479bb57495e6ba6ea16346b630",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|3|R",
+    "sha256": "6bf6eea85f1fc974d509033b2c7b998884839d06aedb537e287235554169bcb9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/54e5b95e2972ef4c768ef7e5.json",
+    "cache_key": "54e5b95e2972ef4c768ef7e5e8e6fa00f855d5f82d81a74d18779abe5d4682ce",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|3|N",
+    "sha256": "15b286670ce8e6f39dfc8a7328935a5bddca8da542035a2eb055ac74feb0ba75"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2b0da710ca590fc5911be059.json",
+    "cache_key": "2b0da710ca590fc5911be0596cd86d18fb0c85abd8c70e6c69ae8a4004cf9596",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|3|RN",
+    "sha256": "ffd1bc5be7e93f559626bc6e8fc13885e287988871d71e0b301070fd3617a056"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e7f97f069d6bf246a449aeca.json",
+    "cache_key": "e7f97f069d6bf246a449aeca03550cbd82e79b7f7f40dfa3f556abfd9cf9b137",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|4|R",
+    "sha256": "918c59d1d6155c79b872c1cd96a9f4178436d30660ad50c6f9aeed74f74648fa"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/842e78ec7db8a8a15ad8efcc.json",
+    "cache_key": "842e78ec7db8a8a15ad8efcc40e770d56ed1aa9416879d621469469fce9a799a",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|4|N",
+    "sha256": "6f9777baf263e651560721300e6470cfddf970461e801225d19b11b8b5115a23"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/cfe5bd767726498b95a4737d.json",
+    "cache_key": "cfe5bd767726498b95a4737d84e5eae490abd1ee0382e316b2349460bac41aa1",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|4|RN",
+    "sha256": "82cf0dae2c62d65bbbe62dac3e0f27b8dd62dbd9e1f023a4667856ad6b328b8e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/01e7b9d947bf7ea1422e8bc5.json",
+    "cache_key": "01e7b9d947bf7ea1422e8bc58c66f962759e1442fda0a88085af726588408697",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|5|R",
+    "sha256": "f20f5577b0e5df4f97ed64f385606532f2d2254956ddd2b63679e726ab2abad8"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/edcecf7072f47ee483ca4346.json",
+    "cache_key": "edcecf7072f47ee483ca4346fed8447a634504ccdb6c0a0c6c1394250ba0d209",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|5|N",
+    "sha256": "806129400dcf38079fdcc0d93adb3444cd54c64b1253fea841ecaf5c5db5bb81"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/156802bf4b4c9418b4116ada.json",
+    "cache_key": "156802bf4b4c9418b4116ada7a380585eaf6c0f7d3710e1090114233bab40a46",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|5|RN",
+    "sha256": "917f59ace3c7207738d73bf359f0b442d245810ed35128aa8fe6e176040484f3"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/89b344e3dc310d6775831874.json",
+    "cache_key": "89b344e3dc310d67758318742d7402dbb88db2cc85d395b50657d38a966defff",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|6|R",
+    "sha256": "84fedbf6604595fc20f871ed40b5bb72208c67f87bbc338ecc8a9e2880e4ad61"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a591f3bc98ed35dfa2ebdca1.json",
+    "cache_key": "a591f3bc98ed35dfa2ebdca12e6d1a0bc99e50e6a42329d4fd0dd77b1e5d3a5f",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|6|N",
+    "sha256": "d117f3d158762837aa473fcff23583840d3dead535d84d0f1cf1879e4cf3ef73"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/285a3de77f803e8a86d60484.json",
+    "cache_key": "285a3de77f803e8a86d60484ee50bbcffddb627a97febf5e2ec7af862de5c0d6",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|6|RN",
+    "sha256": "87ad579ff10ada92f386b861d0ce027ae692dc04a0ffb15e9bf35f352adfa127"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/99af9cb3599cf78ac7f8d47a.json",
+    "cache_key": "99af9cb3599cf78ac7f8d47ace0b7ebe621b59ee57c0c842ba7e2902a1a2ea68",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|7|R",
+    "sha256": "fcb8e3aad8b8936a294fb1514a89fbd93c822d5bb6d4ab4a530a1c58a9ce7e34"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3861fc35cdc696d0102a8aee.json",
+    "cache_key": "3861fc35cdc696d0102a8aee28b2a2f158091e816c1c989f446689b7b9908463",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|7|N",
+    "sha256": "b5969d6d3bf102b81d41a4f7468c1abce4add075a918c4d46568e8b51bab0c3c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7153ed15efb65f99f36df763.json",
+    "cache_key": "7153ed15efb65f99f36df763beafcf50239cb79747c54bd625a94b2d96d365af",
+    "key": "b|6|Surf vs Snorlax|Surf vs Exeggutor|7|RN",
+    "sha256": "bb31b0f7c9d19c74a26dbec80fea6ef2744e8f7fba81d29e7e8dfc892c5cc4e4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/90a2492a85496d90420d50e4.json",
+    "cache_key": "90a2492a85496d90420d50e483c7066bcab4a5dc2106b54b04cc691f4fee6774",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|0|R",
+    "sha256": "479c21b9a4056670aa2289ad5bd6eea3b9b607e243eaf2b70b9c49920367e9a9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/56ae31c563715c5684057099.json",
+    "cache_key": "56ae31c563715c56840570995e7a541e1d45fb9c2116183c07b22f11f50209fc",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|0|N",
+    "sha256": "971d1bdf79878db532c41e59f31dcacc95a61b383610c33d7f74e8587c5ac231"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/795cd8589240d51243762904.json",
+    "cache_key": "795cd8589240d51243762904c9262ae9b5f4415711757bd437a11e68f1a7dbbc",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|0|RN",
+    "sha256": "63720e52d2880998977f65ba49ed8a989d71621f7b77d44bd1b23b9ba433f834"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8bf9133d18cd116f05ea17a2.json",
+    "cache_key": "8bf9133d18cd116f05ea17a2dda04a5602a977bb3b8e4ff311f7fe5b7e385f29",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|1|R",
+    "sha256": "7bd61c9fab463577b1ca3273da91168e0fef9116c7ae8235c4f15e9b59f6eef4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/01ff9a3133123fdc638faaa3.json",
+    "cache_key": "01ff9a3133123fdc638faaa3b4312db3e8c47da76570d7b5bacb652b7b941d51",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|1|N",
+    "sha256": "c19c2db723f1545c1954b9ffc35f150b4c662415b19cbe991ce89cb301634b7e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/fcaa77276192fdbc258fcf9a.json",
+    "cache_key": "fcaa77276192fdbc258fcf9a32fe59b0036f3eec88752178364aa70dd6b7f1db",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|1|RN",
+    "sha256": "98879f27d696aab00137c2ace36af7784a8f8259e51ab821745d1c62e2eb69da"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b78b8fa42fb82c0699ef3ac8.json",
+    "cache_key": "b78b8fa42fb82c0699ef3ac8a73f7eb554897b55cf4761dcf757b5130e4c55ce",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|2|R",
+    "sha256": "bdaac9d783c29ac70eeefdb8a9f90adf163871ba94b24e63419a5c78b52959a5"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/eedcd10bf57cc268c9446101.json",
+    "cache_key": "eedcd10bf57cc268c9446101e7fff485ff18a3c907b480b5c9417f7b0063604b",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|2|N",
+    "sha256": "e6906a3cbb157e4280691b4ff634a82ff89dbade862a3d7dcd64e03d22c1ddf3"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f334509bf9f81f8a0121e2e4.json",
+    "cache_key": "f334509bf9f81f8a0121e2e4cf67d901090c0780a5c8c95609d289ee339d0ed6",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|2|RN",
+    "sha256": "fd5443ab6a83e2316790d4826593728e3449f653bc2c257c7bdc9c6a8df99b95"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e4ad1b13921b662205ca5a0b.json",
+    "cache_key": "e4ad1b13921b662205ca5a0b1ad052b388871f6e7068bdcdef4e0dc44da1b1bb",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|3|R",
+    "sha256": "4aa154e3aec62903a1d8a9823c13bf13e13515825247f3240a20aa123e285e78"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/99190ca7203e48bb34d7d0a1.json",
+    "cache_key": "99190ca7203e48bb34d7d0a1229378ee7eba08c6d2e6890303cad09bfa0cfc88",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|3|N",
+    "sha256": "aeeb5086cee0267c4461c3184bd50bbb42b460d45b8c878debb2dd0f5fbab056"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2cf13ee3f8fd41b01ae8644c.json",
+    "cache_key": "2cf13ee3f8fd41b01ae8644cd21e765669edc390a7baf94c1b63421142a294a0",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|3|RN",
+    "sha256": "24e2112fcc864f972a9ec528739a6545c01332e14faef7dc53bfc968b76919e8"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2740c30b08c9ce487b479732.json",
+    "cache_key": "2740c30b08c9ce487b4797324f3f4ba84e8b902abb880e58d340ca85da107c2e",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|4|R",
+    "sha256": "e62c71284878dde7d07752629f7871f0a4a2f82bc357ca58f6201cde7c5f2b79"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ce2c76b0594b0cc938e0612b.json",
+    "cache_key": "ce2c76b0594b0cc938e0612becf4550c4db5450218838ca2a1a38a47046fd7af",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|4|N",
+    "sha256": "928890dd575cd69aef504f943088905b6d554fea36c8ded3051d081d562b1801"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/27d71ef95d35faf67c611e04.json",
+    "cache_key": "27d71ef95d35faf67c611e044e538b652c23979fdb8db32bc9dbaf8cb990f1ec",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|4|RN",
+    "sha256": "202582e5961860cd43769571bdfa4f1a4aab892dec6b7a34b1ce35b5f17c6442"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3dad4b856ee4a173cec433bf.json",
+    "cache_key": "3dad4b856ee4a173cec433bf562760b3990b89b23b2a07ed22ba12b5a4fde1b9",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|5|R",
+    "sha256": "c2725af460a029ffa7eb0f85bc1ae4738a83e8dc8547bcc751f4508dc8697f23"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/062c7e1d664e856016b72906.json",
+    "cache_key": "062c7e1d664e856016b7290665f4d857f301295bf4f5101b35c75fcfb901de3f",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|5|N",
+    "sha256": "61d97177d67057e5fb06b2f1cd10445eda340134731417a88c48874cc80e204d"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/89a863461d5ad665fac22c31.json",
+    "cache_key": "89a863461d5ad665fac22c3145ce72cc913a7b1d4598b936cafcbfc136249608",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|5|RN",
+    "sha256": "d840ba1908a38f8765c1cd4dcac6a8b97cac51bf6f298f50c5eb99bdc9c91279"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/868084e88646e436cb3c238b.json",
+    "cache_key": "868084e88646e436cb3c238bf80d5988ff4076bc96cf0105410e9ef63a1a7442",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|6|R",
+    "sha256": "64f5f9ea25ebda6ac9e9ff87e27309c29877c8f130cb252e1d42bbc66e7b025c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a6e683a259cb3f1ee7f33887.json",
+    "cache_key": "a6e683a259cb3f1ee7f338877f16ac6abb3c2deebfe9ba60fa30b04af9bd4bc2",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|6|N",
+    "sha256": "717f93106d8ca69505683e6f3e0c41ef21fa193abbd308ac7cae5754123f031f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ce3a27479ba83a472dff1bdc.json",
+    "cache_key": "ce3a27479ba83a472dff1bdca179ef887f0704e76e9829bd65ea1e6669f89488",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|6|RN",
+    "sha256": "efcdaca51b8cd2d683953e0e1d44b956853240cfcb3bb69cc9b806cf66b62c3e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b83d9a5ead8d07d86b38cb08.json",
+    "cache_key": "b83d9a5ead8d07d86b38cb08860458bda09b2246b20556ea4bc545ec8e8e1508",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|7|R",
+    "sha256": "48562da051c97cc5763d132b15015fe1d00be33503d1dfeffc1bc4ba7b8ea943"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/986257eb956196a3b68e5f1c.json",
+    "cache_key": "986257eb956196a3b68e5f1c05dceb158d13438d84c19a4c86d2e173b39a8e05",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|7|N",
+    "sha256": "1df158adf4eba928d0ec7b50c46c734fee2343da68087cfca146ef38998464b5"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4e59f424c54d6a22dd51899c.json",
+    "cache_key": "4e59f424c54d6a22dd51899cc208e4add5e52fdfb7d939142e5163c994c013a0",
+    "key": "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor|7|RN",
+    "sha256": "5b3c7b5d204bf13295e94ff796967405f024ea5d158688f2298ec41e8bd64b6d"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2451b9bbb76b9805bb5d594f.json",
+    "cache_key": "2451b9bbb76b9805bb5d594f7874c8940390ae740dd6c425b24e2e3dd4e33243",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|0|R",
+    "sha256": "8f57e58cda5c7863036fe14f7557a4839060d2f372814852b4e99300c12b4f33"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8364845a9166b60a39efd3b5.json",
+    "cache_key": "8364845a9166b60a39efd3b546133e786eee8f5206451c175fe4a9d45310eb9f",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|0|N",
+    "sha256": "1775d444fbf3922cddeac8702bcb4ab7a28bd84387bbf8d410cb145e5934930b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6e0b18c4cdfd6d26b5c39414.json",
+    "cache_key": "6e0b18c4cdfd6d26b5c39414fbb89bdb9b3008e32a198fd21307e9956b1fcec4",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|0|RN",
+    "sha256": "9d34fbafc8931f5b163af355e060ca8b2289d0be37f7d291caaaf2a516ff402b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/bc2ff4408c5f75fcb92f4bbd.json",
+    "cache_key": "bc2ff4408c5f75fcb92f4bbd10cd026dbb58e62d89b4211f7813ad8683d84fd0",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|1|R",
+    "sha256": "535388a5616e6a8d1676bec71ea69159bf88c319c94869084a9f72c09ac4a0a0"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/18b16330123b0064c7572fef.json",
+    "cache_key": "18b16330123b0064c7572fefa6ce22e6e2b86021ce42a5a1ca6a4522666fa363",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|1|N",
+    "sha256": "184539f10fdd244c49169fd95b211cdce2281f43cfddf28e394326d163e764d3"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/20bd61c7cc1929e0bdae0a81.json",
+    "cache_key": "20bd61c7cc1929e0bdae0a818e3668ca46ceda4a3ee6bbf0ef18aedd30202b8b",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|1|RN",
+    "sha256": "2b40b9e8eda3da0a116735aa3279a7df695bca723683f2ac03b9ccacb0cbafd4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a756344134249138df56bf27.json",
+    "cache_key": "a756344134249138df56bf2705d58159ba3f704de307431ace627c1d944f7e1d",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|2|R",
+    "sha256": "5afcfc009ae2ce7f4ca1db6209277f478ed9f63f6968b99e3f123d1e1ae4b926"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/d842b4fd31b97a974216b67f.json",
+    "cache_key": "d842b4fd31b97a974216b67f4ec809c0a0c116e0bdcdafcfdda184cdf3ef9393",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|2|N",
+    "sha256": "7df3dbea70e5d2812bf3aecf547b4d93196f178ab51c08a7c99526637a4e9dbd"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4de7527ddab45fc6b2f4d6a4.json",
+    "cache_key": "4de7527ddab45fc6b2f4d6a45fd1f94a10f961f950a06e545b426e994ea3e606",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|2|RN",
+    "sha256": "4d1a855d7816ff7e67ae098668ce4c37617ad5ddaab857f21f80c8da7a1eacc5"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c74642e25dbff04c7e0d69cc.json",
+    "cache_key": "c74642e25dbff04c7e0d69cca1eab974b02f06455e3ffd695283c358f5065339",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|3|R",
+    "sha256": "c603501efefd68317aabd5ac5c00ed85da5f45635986735bfab2719179480fb8"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2cb724829021a86ac29ae961.json",
+    "cache_key": "2cb724829021a86ac29ae961b9ad3adba4b197faa8e631a5d434b947e7d9a257",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|3|N",
+    "sha256": "8b2761af0a795f79e5ced04f8366737984ea159d634f024304a4ab0cbd0e7f21"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3d900efbf842d1d755f13fb9.json",
+    "cache_key": "3d900efbf842d1d755f13fb9f7e261a35a1dfabff628c464ad62a28c48f83d6d",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|3|RN",
+    "sha256": "3cede93cb4c656655c3010ce57046cc66b3658aa8598151c741d892ee3460d77"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e389ce65266a58989a86a942.json",
+    "cache_key": "e389ce65266a58989a86a9422d4055e2a6d1e8166037d99869236a19b209dd2e",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|4|R",
+    "sha256": "bfd52d8398cacaabf45b3ecc6073395188411cfe9d2899eefd486a9e68563350"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3c53f2de9128feddfe96f647.json",
+    "cache_key": "3c53f2de9128feddfe96f647530a3d7d7bd1c3923586e3179d43af0aed6f6aaf",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|4|N",
+    "sha256": "a4e85191801271d427a8af73781c42fb9666739a985bb70284606e24c9aff24a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9b5551cca8a580ab04515f19.json",
+    "cache_key": "9b5551cca8a580ab04515f1937e4b11d099bbda6df32b9f4a8dc392b1511f15b",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|4|RN",
+    "sha256": "579f4d0f92644d29a988b529a1ad4f54dc686a88f448595eb43976a978ed637a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c238881d0760a289dac6927a.json",
+    "cache_key": "c238881d0760a289dac6927ae7f32622610a7c2a92048313f7bdaaa53112e4ba",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|5|R",
+    "sha256": "7694cca534569e0bd613a0954f9ed4ea9926b5c9df5976c1996ab7f186daf33c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/218c98f208e594c63eff3505.json",
+    "cache_key": "218c98f208e594c63eff3505dd70ff71e6c26bf2e740e7337f196c1672bc15e1",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|5|N",
+    "sha256": "3e2fdf91b681b9103811c5ddcbae4e5275d74cf0371110d2048835d6e2fe75fd"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/74add09b7c0715b6d983c4d1.json",
+    "cache_key": "74add09b7c0715b6d983c4d162ce73c67d2206557d7a513885d522ac6a7161ce",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|5|RN",
+    "sha256": "fc63668cef31a77374fcc4c5df19ae8177949a94e8c9d18cc46f6066d92ca666"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/63cce2aec6835e7fb3217fc7.json",
+    "cache_key": "63cce2aec6835e7fb3217fc787717053a84b62111682c3b964435036e3c1f467",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|6|R",
+    "sha256": "47be6dc56d4265dc3709bd8a59f51f2224ef92079d913c45148a9f8b89fcf9f1"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/02c69ef097e50192a04856b7.json",
+    "cache_key": "02c69ef097e50192a04856b7074bd1225020f06745d952e6a60685e537e0e9b4",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|6|N",
+    "sha256": "c1decc57a7b76920dcedfb1f6bd4fa424f897e57350f2e6355eb0d2988dd0697"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9cadd16a8fda6d05df159752.json",
+    "cache_key": "9cadd16a8fda6d05df1597529c0f204c6804b0b21eef1743dea372412c1b87b7",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|6|RN",
+    "sha256": "87b3b180b1d10da76b6c1972d965e9763ea2d9a9a4b45691b7309929d0f1ba3d"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/643b266b760bed51b3e9c535.json",
+    "cache_key": "643b266b760bed51b3e9c535a9aaa4cc509e6b42f8df0bd052a7511695f9d0cf",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|7|R",
+    "sha256": "a1da252f73ca16b7e9b453ace6d2a75802dadae2b7ffc5d15bcd236efdfd333f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a98a204de097a0e6052fb580.json",
+    "cache_key": "a98a204de097a0e6052fb580824de52344d0d978d387d583b72b44258198399d",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|7|N",
+    "sha256": "5b72b35b1e59266dfa006f608968e8774bc88293fe66383cc474294bb597bf58"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/cc5bae62c598202887e5e425.json",
+    "cache_key": "cc5bae62c598202887e5e425daef096091952abe25c2766465452f07798a5f5d",
+    "key": "b|8|Earthquake vs Hypno|Earthquake vs Dragonite|7|RN",
+    "sha256": "6307ed6428297078ff07a91ce873cfd1b7150a5d6376b9edaed6266233f7d623"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/d573e8524415270561f531dd.json",
+    "cache_key": "d573e8524415270561f531dde5d0bb9cfb28cf73974b390249c0ab4be8eedda8",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|0|R",
+    "sha256": "2fd4d162d4a8de6d855bb3c8593a51c1eca52eb71a3c2779d08ae668633db507"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b48f7e028b7394a36092161f.json",
+    "cache_key": "b48f7e028b7394a36092161fa070040deb4ab0702b6b600b4b04a120f8b49ac3",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|0|N",
+    "sha256": "dd1cc3a3115abb767f76dacaffa12442f7f9968295b6bca272002acadd8e779c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f67a7f7fe971be3bed84c8cc.json",
+    "cache_key": "f67a7f7fe971be3bed84c8cc45fab9e3635365044c6bbe4c339505a73d4913b7",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|0|RN",
+    "sha256": "eeb9d5f9d358c2fbec74ecebab18e2e54fb1ec2bf0fbf1b5de40817123b76244"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6c991d1b68aa4e481054ee1e.json",
+    "cache_key": "6c991d1b68aa4e481054ee1e0dba10672acae2207255811ed715c30105121644",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|1|R",
+    "sha256": "6c1520967dc61061515006d874317d8448f52b7edc69a3157c5720c8247c610c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8fcee3fd18b4b9eacd0fe9a4.json",
+    "cache_key": "8fcee3fd18b4b9eacd0fe9a424e97c086004e7aac1876711464c5ee084a3c255",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|1|N",
+    "sha256": "6116effae90a8b3ce3083c57f30bb2bc26dadd4d0cd22b1238c97395e4cbd3d4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a3ff4a07ad6cbe04a26f51e9.json",
+    "cache_key": "a3ff4a07ad6cbe04a26f51e964c05d7f0889920a2aa3517db6dd9fd9b3506294",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|1|RN",
+    "sha256": "2a235aaa94a04543d8f8313d799c613ada728a821a950829064d446b1b527583"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a0dd685eba3e4db427225834.json",
+    "cache_key": "a0dd685eba3e4db4272258348428240ed1c4d58802306dc20a0eb71043f39e94",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|2|R",
+    "sha256": "b2b19e3d368296ce302f010579d654fc04c778b49b844621bd4d0b5893e032a9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/dc93c6033d1a4b367d5349d4.json",
+    "cache_key": "dc93c6033d1a4b367d5349d4379c8a1f2c32060cc65a96644cc7d9b8a77c96a9",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|2|N",
+    "sha256": "6fa216e017a2580e4ca60d72674717b6f22cdcb3db2fa52f0ba0b1cc96184081"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/df7e23d85fa244c5d9c2ddc6.json",
+    "cache_key": "df7e23d85fa244c5d9c2ddc61a98ab83bad9694586831482b282498e056e1304",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|2|RN",
+    "sha256": "253ab8627f3a66af99717a111e723d30158d32b2ebf7a13af2a91cb41a9899c2"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ce245e17fcba617c74e79f43.json",
+    "cache_key": "ce245e17fcba617c74e79f43a61986652bb0b067c6f4ca638170f6a3c85d6db0",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|3|R",
+    "sha256": "185d8222af7e9ea6c429064991410e5dde6560e7f540a044475555400f3ed304"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/1383715a10b1e65dc8c4fcb3.json",
+    "cache_key": "1383715a10b1e65dc8c4fcb38afc56ffeedde8081cc8ff91cb4afcf28e8f7c15",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|3|N",
+    "sha256": "61c294168c1d708aa8f8f44a79f8be07c2c2cdf37b8bfb4fa0226268e6270c1b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/af58f8c7525c1258f63ff4af.json",
+    "cache_key": "af58f8c7525c1258f63ff4af38c863af2a66cf22d70c885cf3bfe8e29c4a009b",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|3|RN",
+    "sha256": "edd98edaf7e39591645c509cdd1e90e540f94ff7c47da1a33d7b7785883b8c98"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/344f4e037a81493b0f7ace14.json",
+    "cache_key": "344f4e037a81493b0f7ace144ecafed52d1bed5bec6d312efb172ea38b686b68",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|4|R",
+    "sha256": "ae9d154b3d39bd119fc92b78ea51304f9df165ceb3bbdc9f16138e4274fcfd73"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8cc3543818365a21937ecca4.json",
+    "cache_key": "8cc3543818365a21937ecca404b1bfe7fb6a5fb5bdcbaa3f60b062e7b29dae4d",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|4|N",
+    "sha256": "1dc547909af4829b091a1e9ba59df7fa17862405114e437cd870355d7d1fb4e4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/d796ac83cce6abe6152d0c4d.json",
+    "cache_key": "d796ac83cce6abe6152d0c4d81744151aa2d4eeaf6ec92b74a4bd211d5a0d363",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|4|RN",
+    "sha256": "377c757713f7c6ab04c26ff4020835f61ff92a15a50e09271368306bfb8ec2f3"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f2dd369b3eaf6e3a9edd0ae9.json",
+    "cache_key": "f2dd369b3eaf6e3a9edd0ae9a801651a41de32f1c05f75b3e5f4bd6a195d4d2c",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|5|R",
+    "sha256": "04c848eb38e3afbe52572601caf33a3ef6c4d317760bc75a89cb93544abfe47a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b13cfe9e923f193930f16910.json",
+    "cache_key": "b13cfe9e923f193930f16910a9f77289d304cc2b59cb10f45d3c659cca2183f7",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|5|N",
+    "sha256": "7380a5373fb9a8f2cdda430ab400e8f5340bd5eb708cb17e1841b4d94e71080a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/70ab46d5938a68cf3c9de1ef.json",
+    "cache_key": "70ab46d5938a68cf3c9de1ef626d08ad8e7f430451fbe9421fb2a2c99cf66b52",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|5|RN",
+    "sha256": "ce2e86a14390d82e839de725b4ec77c9421df332c741160b3d54a7d225bb2343"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/05dd5c2f6ff5af8cd6e47cc3.json",
+    "cache_key": "05dd5c2f6ff5af8cd6e47cc39862e43e76577707641400f8c3053e94e2c08c91",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|6|R",
+    "sha256": "2a0511c199a64ccbcb824952e623839989b46749b72a04786faf999e245de78e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ad3b0e7037cdc2800f45b136.json",
+    "cache_key": "ad3b0e7037cdc2800f45b1364cb3a1b21acf43629a045c7eab8d1b33cb82c2a9",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|6|N",
+    "sha256": "c9826cf73fed42ed1a7e418fef09d6c87e0788b2ed85332db5632cd8735aa61c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f972a740522a0ed6b4d39a15.json",
+    "cache_key": "f972a740522a0ed6b4d39a15b7d7a4ac4c794e0f05ce0d1d5efffa8956cbd6a1",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|6|RN",
+    "sha256": "15dc51a000665fccbc607e755ae347ca257005739ae9d57645a7fe1866f46f82"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/49671887fb26755af7ced5c9.json",
+    "cache_key": "49671887fb26755af7ced5c9ee6c56554f6088a3fd210a55dedf2bd4954ab1f3",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|7|R",
+    "sha256": "5a07c8687f9190416c8c121af5874fc91016bc53852c0d2075887ce9a7e49f06"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a788be9ba4185bb457342538.json",
+    "cache_key": "a788be9ba4185bb457342538719c34c812c61e803fd718c4c243aad2054d15a4",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|7|N",
+    "sha256": "f53a52c7d3c6e595bb122991a865de4d813d8eaf1bf5d50178d4f950280d6869"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/330f461b2ce09573bfa17abd.json",
+    "cache_key": "330f461b2ce09573bfa17abd916e5a495f32a066cda719ae2e86cd0173418fa9",
+    "key": "b|8|Strength vs Hypno|Strength vs Dragonite|7|RN",
+    "sha256": "3fff259cdef6c28418176c17c230e8432f4dc7b18c764ad0820b9aacefd0407a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6d62b9e1927125824bec4d98.json",
+    "cache_key": "6d62b9e1927125824bec4d98ecdcea3a262fea0bb29e8042c76a26ab9783c38e",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|0|R",
+    "sha256": "95e3d72956de95cc94f0dbd3c11c0feba7d1975d1aef98501e4879e211671751"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/288449a4d9649208665a56c6.json",
+    "cache_key": "288449a4d9649208665a56c6b69d3314423fa524280990f672fccebd2bbe3ba8",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|0|N",
+    "sha256": "ca960c7267a13b917a13d69bf300dbd1e1a9cc707a9e021634cf1fcecd7bbcca"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/34a26e0e5fab00b47700daf7.json",
+    "cache_key": "34a26e0e5fab00b47700daf743f6725509461d3b3ad418e5306f4a9c550311cb",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|0|RN",
+    "sha256": "1bf3f7880d382324b2d619f1871622555abbcd46a3387327b80298bf4761c2d6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4c52ab1c8d276e16a451304e.json",
+    "cache_key": "4c52ab1c8d276e16a451304ebb6c5bf89d0cb97a95f36a1df04b5dbdb16d512e",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|1|R",
+    "sha256": "c8b23710c7163a0b3754377ac5ef70c922f1d5f4d35c829ebe3a9fee715ad295"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8f76b28438fb392bd5ff3c86.json",
+    "cache_key": "8f76b28438fb392bd5ff3c8640ee187b856cd2667872c4add48646558298cfa8",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|1|N",
+    "sha256": "6e860eee363ef8f8eb560b1c3826695b517f28b5ed9f6971b6aa930dcedb3fa5"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ed1bc7cd826785a055e34cf9.json",
+    "cache_key": "ed1bc7cd826785a055e34cf9002686a16c9252c6940ee0d6a02b0f4993655ef1",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|1|RN",
+    "sha256": "aad664e5f5b09700b3194effeaa3ed86a1eebe7e9584e8ff5c38be7d13c3ff92"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/bedeef3ba1585968ce432a8b.json",
+    "cache_key": "bedeef3ba1585968ce432a8bed3f3679b72edc6a00800ced7103c7238b5c8530",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|2|R",
+    "sha256": "01a4609885243dffe262460c63d4f951b5f4c49a1863a24d0556fef968a1c5b3"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/5feeb9f658c6c51583972bf9.json",
+    "cache_key": "5feeb9f658c6c51583972bf951a5961834d47a1b9c065503c6fbe0915989bff4",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|2|N",
+    "sha256": "86c523e6f9a368ff25a8b35a2c984988b5dba4adff30c3a091217d09f1503a3f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c295a410a6382b96d6ecfb75.json",
+    "cache_key": "c295a410a6382b96d6ecfb75d903b2a89498c68bc90bb6ba6ff501c899648572",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|2|RN",
+    "sha256": "126e49f8dea01be4e54c736ecdbf3662c0c24a6c352e95318bf892e605ae274f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/27f5c426c32b2a734bfa76ca.json",
+    "cache_key": "27f5c426c32b2a734bfa76caa0c7f4dcf4935d606964edc15e668ffa43d49b80",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|3|R",
+    "sha256": "1e583b743fd65c356867502950a29bc44ad9e0f1536613e0a51ce2750afe435e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/bbd275c8c3ef145f5d24160d.json",
+    "cache_key": "bbd275c8c3ef145f5d24160d013e81420404abfd9f06901d594aa22cddb33abd",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|3|N",
+    "sha256": "790fdd6e41026a84523c736083d57cd0e365ecdf6eb8114c84079ba88a1f321b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/da8d98503668ba086da68f6c.json",
+    "cache_key": "da8d98503668ba086da68f6c192330571ce48633a09ce3a0e0a284e693b4f6ed",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|3|RN",
+    "sha256": "80664425ba6488e2ac9b75eec515d8baecd0448dd8ec275c19a95fcb2f246b92"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/50bcb00d2c754c2dd3442f36.json",
+    "cache_key": "50bcb00d2c754c2dd3442f36521c710c26470a325ac8c2d9949ccb3f82024fd9",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|4|R",
+    "sha256": "f37fb1fa66f2d564ce809ccc90d734ad7a709691895b272a2b1622d9c48b1d0a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/296984336cb1183e1c20607a.json",
+    "cache_key": "296984336cb1183e1c20607a8e7279ea822ef9398823c7a10ecac7b88905fd8f",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|4|N",
+    "sha256": "89bc00b391aa244dcf9e4f821523c9934421f35a7271fe9c6a30c5bd294202c7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/095f87e18615a469d2a88858.json",
+    "cache_key": "095f87e18615a469d2a888588a763b002b1e1bfe316065fb9c0bcc11a1762e4d",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|4|RN",
+    "sha256": "5f14509d96abe3d56b957ec7a1b5f11a1b63f0b16da41a5c41b4d64258cabb03"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/18ec70524de7bac070e14ad8.json",
+    "cache_key": "18ec70524de7bac070e14ad8daa9edf58995a760e77cfce1eb65b8e7cf75b06b",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|5|R",
+    "sha256": "b9fd0a44e9ea36645128e599fcc9de52ae76a3160fd1f0a28c786918a3cf06b9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/1db5ce242deba73cb4ccb462.json",
+    "cache_key": "1db5ce242deba73cb4ccb4629e746a28ffa242eea243ae9cba353daf51cba401",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|5|N",
+    "sha256": "b5af03399f405ba3a38841a678dd300ce69f97384a4d9c41df6e9b2e2198f782"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/5e9cbbe8d08dd57a88d8ae68.json",
+    "cache_key": "5e9cbbe8d08dd57a88d8ae68a40eede9e2fdd713022e5fbdd1a70f34480741c1",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|5|RN",
+    "sha256": "41e692a195a34d3bb9edce585ce6d12b9f800843372da694df668fa7fca70156"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b00d771d3f17958f82d29fe8.json",
+    "cache_key": "b00d771d3f17958f82d29fe86f638396a67bd429d7f1ae5af2f4b0756542ed88",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|6|R",
+    "sha256": "f3de79429cd2b39f274ffafab735277467a5937e77e2769338f287819cd94807"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8b5c6f00727349ee41e20d0a.json",
+    "cache_key": "8b5c6f00727349ee41e20d0aa970d70077435c2e5ea86a7b114ded71c4b6117d",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|6|N",
+    "sha256": "23e2b006972c0bda8d0e65370a08f539847287a9afaa7ddd47582c968f05edaf"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3b564c692f59208ab69044cc.json",
+    "cache_key": "3b564c692f59208ab69044cc757876c8984e3d26b8e0a28d2a3b32d26f328b2f",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|6|RN",
+    "sha256": "c7543ed9a02cd64a12b5b4d86ffbe42e89fd7827ca8205676b33522dded6c90c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/eafa374758f3a6f360de196a.json",
+    "cache_key": "eafa374758f3a6f360de196a59b0302ff42e4f5ebab2b39bb2edf70b33215f60",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|7|R",
+    "sha256": "ff6b4e0250275ddc8b3105494d4d1854b8ff95a28de8ccb1264214a0f4a375f4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f4aec4f5234be8e7217e5e30.json",
+    "cache_key": "f4aec4f5234be8e7217e5e3076ae8e011f7a850429e6082e1956a79952c2c4b1",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|7|N",
+    "sha256": "c6fb53fd56b9984b3b29c100df999acd25aa0d21b19662a6d9272599a93a8e3a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/09a6889ae8321d0e300b5936.json",
+    "cache_key": "09a6889ae8321d0e300b5936c97d3e143bdf64df6428ee9f64ae1e5ada3da396",
+    "key": "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur|7|RN",
+    "sha256": "5c905e46b78a8aaf389cc34098a20eeb1c6e3cfc888491e039444f0e497504b6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/584686025a5627d2374b99bc.json",
+    "cache_key": "584686025a5627d2374b99bc1abc09a32e4200b69cfecd8a3e6186447d533b9b",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|0|R",
+    "sha256": "cf1b4bb1e4d46baaddd4ee79abae74032ab882e83c77491599bdab722e1a61cf"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/943c4a6f915b970f1d5fe438.json",
+    "cache_key": "943c4a6f915b970f1d5fe438ce7c4023a337bcf96da353b073d14632489e38e2",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|0|N",
+    "sha256": "6bc57048eca98a363255fd9f34b82dd568fd646c82622594fb66387876a5aebc"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9e3cca8167efe0319ddcc159.json",
+    "cache_key": "9e3cca8167efe0319ddcc1594b04f2e08adf31a51ecde4a6f55260614e50bd64",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|0|RN",
+    "sha256": "88afc3bebbe99416b1d7eb1c22ea7b6ea3680559454c89286d5e1fafa74ba23e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f76fc7e4a7502d6129ba309a.json",
+    "cache_key": "f76fc7e4a7502d6129ba309af1f23d21607cd44782301f65e80225e65100d336",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|1|R",
+    "sha256": "4e98036a24b72abc1b52e56dcf9f09225e41bc771c0cf8833d63a67437b11efc"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/37e089e453535112a2f791ee.json",
+    "cache_key": "37e089e453535112a2f791ee0e1165055f79e2856497c6a162bbea0df4ade053",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|1|N",
+    "sha256": "bbf3134bbc1b5974777c478265d62dd24cf9274a23087eca7fa44bd651d6cf37"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/1daef4a41f93047b8b19b77a.json",
+    "cache_key": "1daef4a41f93047b8b19b77aaee614211499a1bb705db9665c0bdf1ec78ec1cc",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|1|RN",
+    "sha256": "672f9b4bc22ea8766d64866594c25906dbdfe85c985eee16d20ddf942421db07"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9b05ffc928a6f6999f2563d3.json",
+    "cache_key": "9b05ffc928a6f6999f2563d30e2735a870e2e634a510c74a34067c90539557dd",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|2|R",
+    "sha256": "5bffe40cb406a7db7e51cf050528b8710c6d5c711c6aa7049043e3c363a4bb71"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/399ab367c882786c335722c1.json",
+    "cache_key": "399ab367c882786c335722c17b566f730f28d085c7826aa8eb4ed82076bc7624",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|2|N",
+    "sha256": "6ab9220cebe4ab73bc576b72c141551d6203db092e2b91859b47c7abfed276d2"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9f7de0f2ae863ddd1b30ee2b.json",
+    "cache_key": "9f7de0f2ae863ddd1b30ee2b8398d6673ae94409a837d1af0b35ce4e5d52ab1c",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|2|RN",
+    "sha256": "7503e4efdee2f2f9a6aa7df60f0f1d7febc7d83548b298dd4a527c405832e006"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e91fc2ab9fa4d0f93591dd97.json",
+    "cache_key": "e91fc2ab9fa4d0f93591dd97a2bc5440146f2b63b424416cab79ecef1eb6bf59",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|3|R",
+    "sha256": "1599da295d65d44a1959dcd96b8f421a1a13fe0066dfbea0c5e7059bf43e24a1"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4d0108ff18e5901616a7281f.json",
+    "cache_key": "4d0108ff18e5901616a7281febafa269b700c117aafe6b203028e06a317fe381",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|3|N",
+    "sha256": "6fb4fc3d205f80914930bfba611c1aba6b83f078b87a073c2d57fface89148a7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a374e16da0d74bf090939c96.json",
+    "cache_key": "a374e16da0d74bf090939c9678da72d02c89fb2bc34998638633fe171d28b064",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|3|RN",
+    "sha256": "7cc2a0da8c9df4d218a19a7203d4e4693e916682512b590e79155951c6a8eaed"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/09820fba1bcf02213f2d9837.json",
+    "cache_key": "09820fba1bcf02213f2d98378dc4e2683e9a576100828af7d4b5431a5ccd6d1a",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|4|R",
+    "sha256": "f5f9aee5b11902953ff00488efb52ed378c5c9d243ca7dbc1d5ba2d29bd7caa4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/755b5fc6ea228e34ebc9896a.json",
+    "cache_key": "755b5fc6ea228e34ebc9896a8184588dd40f5e24cbf5b5ef658881539aaec31d",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|4|N",
+    "sha256": "16f763b16e9b319be0fa44554a5967da9b75e732d231dcf977c32d4263a9a5a2"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/5205491ba944ff100026ceaa.json",
+    "cache_key": "5205491ba944ff100026ceaad57b8e102ceb7807ad1848d02b7171f05aac4337",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|4|RN",
+    "sha256": "a68c752e4c4268a539c462e0302eb08780f4268b1d94c36db7f66efc6d4593a2"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c23aa29ba00d41d78b894d12.json",
+    "cache_key": "c23aa29ba00d41d78b894d12fe01bcd52a8a57c14f3d39d16cfcf8ecb3bbe441",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|5|R",
+    "sha256": "16be61f260c21215d53e9792b5bda8bc57f0405c3b6d376aeef12e3c122f8e85"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/1f8b8189faf133818c2a5c34.json",
+    "cache_key": "1f8b8189faf133818c2a5c34778d738bb94dfa601164f7ba842acbaaf1533e18",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|5|N",
+    "sha256": "a2f74482bd8cde5c34535a43ab9732df228296e9ae9c59b688f10652baac81f5"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c7356755e7d4566489029827.json",
+    "cache_key": "c7356755e7d4566489029827581bd9cdd0c8b6719733a7d67cc8fcf061cb9626",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|5|RN",
+    "sha256": "723a4cc41115d0f6f2aae797bbacb81f968e9cd6b064fd5fc80ac21ce5d94529"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6076dff17640d653ed7904ce.json",
+    "cache_key": "6076dff17640d653ed7904ce321f2451c0e18418ec119efdefcea5ae7fb238b4",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|6|R",
+    "sha256": "f9f9a9b47be782961deff3adb0748d03eed6473dea24d1ce82e6f02e4d6ce202"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c544c9254c91d0c3d9e3981a.json",
+    "cache_key": "c544c9254c91d0c3d9e3981a14f2dae178fdcada5820c6f1b0e84d0aa31a503f",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|6|N",
+    "sha256": "1078e18789ab265b6106b731ff5d15f6c6ead42f4b75bfad1568d813593aa216"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2ace29b64136cf159a1e90b5.json",
+    "cache_key": "2ace29b64136cf159a1e90b548ca1fdf324f7dd4911ce4214d2e43161fba1a1c",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|6|RN",
+    "sha256": "445b8dcc28ce1aa550ff0c49ee629bd95d1c1f4eae786b15134f8180bf3bd97c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/206733944b1e49c0f6a9cbc2.json",
+    "cache_key": "206733944b1e49c0f6a9cbc250a973580a567769d27b37c9897f9411fdd0297d",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|7|R",
+    "sha256": "7105a51c72734258e03d0c0f1759b4ca878076c47abdc8072e796c4634620c66"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f95a32bc96705b7d524bbf27.json",
+    "cache_key": "f95a32bc96705b7d524bbf27740624978e65f52f0cca55f9e9e8e4c1f58d74f0",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|7|N",
+    "sha256": "2247e05e3b16d4ff8fbadd86a7f2be60415081b3d08d7732b205627cc0a5565e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0c5c1f55559ca783dc549381.json",
+    "cache_key": "0c5c1f55559ca783dc549381af7a62871d87804878f528a7e4ed63596a384fe2",
+    "key": "b|10|Surf vs Slowbro|Surf vs Venusaur|7|RN",
+    "sha256": "09c10cc4fcf0fce49c8c6d4a963a71ca3c12cf1bd6c181b4bec0398727b94892"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/470b793592decab8f270bedb.json",
+    "cache_key": "470b793592decab8f270bedb83db7a0934003ab6a4efbdf3471f5d6decb9e61d",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|0|R",
+    "sha256": "c30893c9d6b9088c60a0ac31e7da9cc311a61b1fa6a234c677bfa8ca0a7993bf"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6ef46f2f89620e44cee215fb.json",
+    "cache_key": "6ef46f2f89620e44cee215fb4407be01759114946eac206419b742005d7147f4",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|0|N",
+    "sha256": "f7a7573286fe35d456953d378e83d802a4f89143730506a3996075559ab1ebf3"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/afc0ea14fa9cbb449b62deea.json",
+    "cache_key": "afc0ea14fa9cbb449b62deeaf99fa46b78d3661e8e3efe894416e244002f480d",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|0|RN",
+    "sha256": "d1e8fa5b8ccf2a3c141120936cb36ee60c21c713757f85fde11cb61a3f15046c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/92ef5600f10807873c7ee685.json",
+    "cache_key": "92ef5600f10807873c7ee685e7e7fa039eaef0ef1949886950d8d7833febf2ea",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|1|R",
+    "sha256": "72d96a4592ae2d1f3828923f0ee79a47f52dc8fa71a6606c1d0b8ef9fd0ee227"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/3106480497b5d0b4ca360377.json",
+    "cache_key": "3106480497b5d0b4ca360377f4411aea2f4ff839274b57cddf99f113f021aee9",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|1|N",
+    "sha256": "de4de4fd73fe28430494b29d50547e25b35a89f7ccfd293cdcd07c156bb44c4b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/141a393a28e467f6f628cdae.json",
+    "cache_key": "141a393a28e467f6f628cdae73085e743fcf5b721fd65363951959d8065fe86c",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|1|RN",
+    "sha256": "88e01b431b28d65cb1f1155051d5de0f3990b98cbc8e5518cedddfe13d191e8e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/85aca070c735615f7044ced3.json",
+    "cache_key": "85aca070c735615f7044ced3fdfc373161646775f077e0b091ed807f5fff9a8b",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|2|R",
+    "sha256": "b415f37b4c28dd3099c4355bd3ab0758a27271734dc5e7eaadf5e813b3d1e20c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/27e77c279832e4c24c20c8d1.json",
+    "cache_key": "27e77c279832e4c24c20c8d1fec295ac483f93c1ae6e6d81dfc17c1d9ae09da2",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|2|N",
+    "sha256": "5f09e3f626ca290c201c250a95ae93ed1f1d4862f25baec692abb71fc539f7da"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a7d9bc9473c80e48046d09b4.json",
+    "cache_key": "a7d9bc9473c80e48046d09b423920a0c936dda7123d158db98bbf501f2cfa6cd",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|2|RN",
+    "sha256": "7f5e19bff9c52c369a29a9e317f6926e46bfd7913926dea4a50d63cfd99a0dbc"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/caceeb1a9e5a6d97e44bd1e2.json",
+    "cache_key": "caceeb1a9e5a6d97e44bd1e27c7c8fa4ddd9d7cc1f185f4f7505fe73915e9abb",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|3|R",
+    "sha256": "40c0339bc7fd517922375bdb6704b2e3806855687fb897b31762898effb0840a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f88c7230d6bc398068a86446.json",
+    "cache_key": "f88c7230d6bc398068a864467e77345eef3b1bbb573b2de2a1069e16ae863864",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|3|N",
+    "sha256": "d3d3a2fd525fc6c133c29679dfd428635989fb4b727fc844778140d50c48215c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/37778a6b8f6b11c397999977.json",
+    "cache_key": "37778a6b8f6b11c3979999779420e1567a51b6629eb4e6c7e212790d367a6ee5",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|3|RN",
+    "sha256": "dc6c3d9446aff0b510407b9b0eabf06bbe9caff35f51667ca4a32bed9acb204a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c9285972f683254a45bf60d3.json",
+    "cache_key": "c9285972f683254a45bf60d3cbfbd7e36719da75e5160847ff4883931ed1a105",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|4|R",
+    "sha256": "975df58b89fc8d3ef0ad9aa641de66c67b660e5ca64239eea633c967ebdf3fc0"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e2cfc4f42a3f3fe813fc5019.json",
+    "cache_key": "e2cfc4f42a3f3fe813fc5019cbb0f2c29bf7d06ea6c3222aa54454394a2094f7",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|4|N",
+    "sha256": "dd5cccb860269fe5dfaca7c49099b3c2085798a2e9fc874b178db13275213289"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/d2e0928fd330f34255e520c6.json",
+    "cache_key": "d2e0928fd330f34255e520c647dc1e8a9adcc763f7e05b175454a0b91b21018e",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|4|RN",
+    "sha256": "7d3f951553f0015e4a2f88b6501e5c4584663b3d9d5e93386a7eaaf5943d557d"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ea316cade9a52e337918703c.json",
+    "cache_key": "ea316cade9a52e337918703cb309c3a111ca11b84efd233bb8b9f0dbb2534550",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|5|R",
+    "sha256": "a55af84d0d54b2563ae3c67e6a015df1758ec790b893029e571512c883e1cc2a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/bf5a91e4811a5401cf85c491.json",
+    "cache_key": "bf5a91e4811a5401cf85c4911a542428fac9fb5e9a4f48f1c3145d0b22b2789f",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|5|N",
+    "sha256": "9b7aa80ac78a3f67d80ce33206e5a1d479b3f2d678ca55615ddd4645b551c53a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/fdaf4110b30e60b43c053579.json",
+    "cache_key": "fdaf4110b30e60b43c053579efd958ba2570bec5cedf51a0f3cd7edd96d2027a",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|5|RN",
+    "sha256": "bdd208b9d1b4b7f2d17a402e5ff49431c272edf16df56bcfbdc064172865e3b4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c25114e68fc82914a9f8a960.json",
+    "cache_key": "c25114e68fc82914a9f8a960febd6b3f1d4d2b62f9788f13ddd6e4de7715678e",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|6|R",
+    "sha256": "e80ce02ebf9df1874cd71d3329e2640349b4b5509ecd255ba62eeaf22e6ed98e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0561079cd6f033c8a06b1b92.json",
+    "cache_key": "0561079cd6f033c8a06b1b92ab3d8e055f3f4be7c484f0d939d8fb27d09e103c",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|6|N",
+    "sha256": "d36e4dfdbbf88501634008ce067fbf57325393539ac13967820f7367b4b057ef"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/aa622aacd877eb2ae2bd4f20.json",
+    "cache_key": "aa622aacd877eb2ae2bd4f20c635f84d3685d92c8f42d77b17e5aed65c02844b",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|6|RN",
+    "sha256": "d1dde3c41b59e163fb8ac8544ef287c53dcd0804bbcf902f0ac98e3f951db78b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/aef41197c0992bb5460f9d1a.json",
+    "cache_key": "aef41197c0992bb5460f9d1a4d853de5e25e5907dcecff8e032396ea539451a5",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|7|R",
+    "sha256": "09d8f268d3471369821e2753686af100d3a770b654b523ad469fc2647610d74c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/35ca1c2e3ba1e33f0f83d021.json",
+    "cache_key": "35ca1c2e3ba1e33f0f83d0217818a85700af60675e3181bf2e86df56e68e2081",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|7|N",
+    "sha256": "f273c78e160baffe9037c64e96ea478df66e8ee8c9f27f8afd8a86a04c106b02"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/73f96c5631c4f356bc4f2c51.json",
+    "cache_key": "73f96c5631c4f356bc4f2c51f85997fbd15d333abf946b01bcda784ee46d1d52",
+    "key": "b|10|Strength vs Slowbro|Strength vs Venusaur|7|RN",
+    "sha256": "9a1b768e7e8329743aae2564d7550e4055a0c78053072a847965c81d112d9c0c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/dd66f269c6b54a8e4bbe7ec0.json",
+    "cache_key": "dd66f269c6b54a8e4bbe7ec043f7cb34a66048ef10bb8fd1007307fe66654ef0",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|0|R",
+    "sha256": "1a19c192a9bd1fa3473005a0594896d1c42a9903e8cf0def84475378e7789402"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/76424b7daa42996a96877ff0.json",
+    "cache_key": "76424b7daa42996a96877ff0ed47d2814568ba9402476d30d505a808f983720c",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|0|N",
+    "sha256": "b5066607eda63370a4987433fbe2f2ba5e868990b139c865f8b174cda31c1d6b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/71a854041b580e9115498641.json",
+    "cache_key": "71a854041b580e911549864186a7f98f094a34d48937a722c64abb0d59bb4170",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|0|RN",
+    "sha256": "82303e00058934efa3f00c00246fca784fc2a5306d0e2177227457f151d5e8bb"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/5e09976418d7952c06e3f724.json",
+    "cache_key": "5e09976418d7952c06e3f724cfefa30d2a1ef95f7de813937a47de48ed809bd5",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|1|R",
+    "sha256": "ed62ec25a380c0e8e2c981985341c66b47dceba93792f83c2d7e9b3922c0de58"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/58127d93c806b542851b4848.json",
+    "cache_key": "58127d93c806b542851b484888b3b516ab6702e90b9d860825f0ec1ab7791095",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|1|N",
+    "sha256": "6ba7473d9a9f924e6f2fc3ff62b1f30afa4d120a274802c43b0913caff86c6cb"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4f449dc577922ec89a5ba43f.json",
+    "cache_key": "4f449dc577922ec89a5ba43f9a20d68d16a58c6b7c277e59ab66b9bce44d040c",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|1|RN",
+    "sha256": "51c51ce49c9bcfbff93c0483828e83ef9277162009d4f4b5d6c10477c60c3214"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c4fb891a520df414a92391ec.json",
+    "cache_key": "c4fb891a520df414a92391ecccb564da3b9b9d640d745b793c1d4d4857e937a7",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|2|R",
+    "sha256": "f447460b547f8b18764d1a6bc135fbece437d20656b839269a4ef3f568b91ee3"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/325a35252f752ebed505d8fa.json",
+    "cache_key": "325a35252f752ebed505d8fa80755d086d855a97c1c53e464e06840690e37d09",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|2|N",
+    "sha256": "820468de97c1efe1363f8960eafe08bb2b60cfea0efb6681173ee90f05fcac8c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7fb930bda60a8f0d05aba6d5.json",
+    "cache_key": "7fb930bda60a8f0d05aba6d516ebea8a93237e4a01290986e4c6d9db1e11a09b",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|2|RN",
+    "sha256": "bf68c052a0c6afae752d624d471f5dfb0ca0c9cbc315a76743762fb6466c579d"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7aa31b516c064f03ad67b89b.json",
+    "cache_key": "7aa31b516c064f03ad67b89b18d55c9bafb88233cb5f2c42918bb8e249ddcb25",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|3|R",
+    "sha256": "fc7b8cb7a4ab0666401ba91172a9ef8a909ac4f7ac8ad31609db9904a4ce9aff"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/61ddf2e2e3ff6257a24cb31d.json",
+    "cache_key": "61ddf2e2e3ff6257a24cb31d28dfb95ca963cf3d10133d0d0fe56f369beb6a0c",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|3|N",
+    "sha256": "534a76fb3c724c8a33f2783958a162edfa49fa5d3733477d4a81a6495baffaa6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/cf9457e6ea8f7954f56eaedd.json",
+    "cache_key": "cf9457e6ea8f7954f56eaedd57e81bba8811c40a2f3e8187cd2c701f8d1b0181",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|3|RN",
+    "sha256": "9576b3824fa82d8bc145285302b56e7c32519f68112e013a79e94cf8cb5d619b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b9ef324de866890413568d6e.json",
+    "cache_key": "b9ef324de866890413568d6e6a45e0c75706519674d03cb8c7b5bd2a6184db6b",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|4|R",
+    "sha256": "45b5737c807fe3aea8f0440813844577324b9d9ff034400dca9389ef86760da0"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7fcbb8192e61b779516e1b0d.json",
+    "cache_key": "7fcbb8192e61b779516e1b0d81bfefd9991cc5720ff4a79447db7286d5c8a04c",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|4|N",
+    "sha256": "61b85395915f621691d637a469751cbd8d1f511d50fdec099e41a70de9ce84a1"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/b2196bbebbf62210f5c9dd94.json",
+    "cache_key": "b2196bbebbf62210f5c9dd94bade1d4fe0b640087fdb0e2e0532baf5d4becddb",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|4|RN",
+    "sha256": "607084f0ddcb20df7cde06c80c104027d1b7f55d5ad619982ac15ab96cd0bf38"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/cfbacb8a913ccfbdf79dad43.json",
+    "cache_key": "cfbacb8a913ccfbdf79dad4338e1fa8176fe3b0c3b1435c52417192e15837b41",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|5|R",
+    "sha256": "b3d85e727c44a52dbc8215c0a2dfcb8e511e11a3037405b9205704b35d3a3395"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ec2d55806d28aea145be22ac.json",
+    "cache_key": "ec2d55806d28aea145be22acc2e695e392717f65e02497d6d208bebe5e11d2b8",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|5|N",
+    "sha256": "092404ef4753d8eb8d6d36f3a8ec15b78828b2d6381c0fa4f417ecb5ef538d2b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/83e6a19676c5937859778fc1.json",
+    "cache_key": "83e6a19676c5937859778fc1840b45681b07dbe47c2bce4fd63c35a4d38e2cc5",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|5|RN",
+    "sha256": "ac3700f345a28f368315c135fc6449f469822f2b893a0cb730ab46f79fae2fb3"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/caa93210ba8a3e5478bfa6f6.json",
+    "cache_key": "caa93210ba8a3e5478bfa6f6a2eed0c26443b29bbe47216fd1d1e5564ba19f37",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|6|R",
+    "sha256": "c60d249e826f831cc42a747d97fc6dbaa470546cdf16308e789058357a71cfed"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2bea1300c8bc9baaded940a6.json",
+    "cache_key": "2bea1300c8bc9baaded940a6be8d8c1d71796343fa0714a5c533e8e4c1ffa74c",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|6|N",
+    "sha256": "eae9e390077fc6025335527360cfc51bb8d6ef4c0d18f7114b4d0ac17c6624dc"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/046472ff3c7568f29a25c271.json",
+    "cache_key": "046472ff3c7568f29a25c271922a5d2458e7805493ae9ffb32054a4c785443a0",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|6|RN",
+    "sha256": "1780087f79752e88c12aba9adc4f651db5d32f5e544a975860cdf4a8cfc3d818"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/75e5a170a69eeb01b6eefc8f.json",
+    "cache_key": "75e5a170a69eeb01b6eefc8fc1babd60a8dd07a2b37cb04af35b078af9add3cd",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|7|R",
+    "sha256": "167a85a92b91201a2ca2a7653acece58acf96179f9cd6b12c165e91928de3b4b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/55fb6473774d16fb8b0eb3b1.json",
+    "cache_key": "55fb6473774d16fb8b0eb3b13d284a170693177f1cf7cb8e25f034cfee3c579a",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|7|N",
+    "sha256": "cbff943eb4e7ca0b685a4e6ba7ce695aa72711398c05c2c441da1d22fdc540b9"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/12d97ae4cb71a3505e40f0e1.json",
+    "cache_key": "12d97ae4cb71a3505e40f0e17e4dcdd584b38ebe7b9245a9c7ee1e82ee56cf6d",
+    "key": "b|12|Surf vs Poliwrath|Surf vs Snorlax|7|RN",
+    "sha256": "7ae7ec1374826f2446fdb1ba85a94fb78f4f0bc74afba376d480ca93d8eeba2f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/f8df5206b8c32ae462d3d560.json",
+    "cache_key": "f8df5206b8c32ae462d3d56052439bed53df8ed80dbb3c89b8105081dbc4aef7",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|0|R",
+    "sha256": "a3ed3c749b85b6752213c301257d65b06d949f9b40b5ad1a3c83aaa620f0acce"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/743a16b00ee6e6211e409f6d.json",
+    "cache_key": "743a16b00ee6e6211e409f6d79651b791b4754dfa6ef680d906cdcef5153b8e7",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|0|N",
+    "sha256": "a63a266cef140d4b542be869c6130c10bddd64ee83e7f041047876dfc4c5d4d7"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/713bd8095fb5bfe4be510a24.json",
+    "cache_key": "713bd8095fb5bfe4be510a2448fc69bab5d2084e5a8d08d8d9d3f7eee0ac36c9",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|0|RN",
+    "sha256": "963660e3fba1ed4a812ecb38fff8616a763944889e6039e7f6c0f54bfca5400c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/fdda228564b776c17183bcb9.json",
+    "cache_key": "fdda228564b776c17183bcb900a266fbb1c5442acb391de053db85a388dbf474",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|1|R",
+    "sha256": "5f99233d828deedfe9e711561012fbb8debb9f70b61f121aed38730f5c541f68"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/99700d487c1f8f8bf9605f07.json",
+    "cache_key": "99700d487c1f8f8bf9605f078bba788234adf2bb16280a1a8a54f8170937f7d1",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|1|N",
+    "sha256": "4b1cb544cbffdc003c26679b061a1c094f28030bf9fabd8e3f09a57a7f986aac"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a7baf7e9d35650bd6795deec.json",
+    "cache_key": "a7baf7e9d35650bd6795deec75d93f5516ef2417ab20981842eb78d0c6e42f09",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|1|RN",
+    "sha256": "04c97888d1cd2befde00c16804c0a36ba4ad084dbf2f0dd1a19c1ff7ff0e3f5b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8e9fb3bff39cb89b8897fa89.json",
+    "cache_key": "8e9fb3bff39cb89b8897fa891d46c9a775584d430106b56e5e0e9aa07ba65ca0",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|2|R",
+    "sha256": "23a80f615b4da3618e89d21f38625a25f84a86c09baf7f68758f2d5597fee21c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/17f3a93e09630c5024708f54.json",
+    "cache_key": "17f3a93e09630c5024708f54595bd20b73a68e4d31108127b52394db02c1194d",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|2|N",
+    "sha256": "13f5f58d4a11443204ae432f129fc95446316b8cefd2a793aeaf1f7b0bf6d19e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/1b59d1c00467a8c0c549bd82.json",
+    "cache_key": "1b59d1c00467a8c0c549bd8271e1ca646c45e5a9a5f783f12d4880f33ce40d6a",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|2|RN",
+    "sha256": "b82c1896b768884902f96f849e93bfc57a873964104756ac866cd768cd38fc70"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e32f50da31c35f98f9769e2d.json",
+    "cache_key": "e32f50da31c35f98f9769e2d251f085f7a07fb07a6cc67b956d2a10095d35522",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|3|R",
+    "sha256": "673a263c385e7a2b93eccaa2a483f62eeef5a2d66d823f5b3781cf1651f658c6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/bb2c027c45233465544a1924.json",
+    "cache_key": "bb2c027c45233465544a19242ff823a8597578263bd8618d69e00d50f82362a3",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|3|N",
+    "sha256": "cef8426b4c25f3fb37a58292525b76f378ce5ae64d189ba633a61c08928659cc"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/46db36c66c775d4069fb7d46.json",
+    "cache_key": "46db36c66c775d4069fb7d466102d772cdae301390e24bd17e4a4c44e968d865",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|3|RN",
+    "sha256": "7003c6684632c3d1f208a390cf464892c75f1e75ab761d111131046554aab100"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6b10b0bc9c5a4f2636c7b618.json",
+    "cache_key": "6b10b0bc9c5a4f2636c7b61889fad1cd10bfec7ae45c1a6e1922835b1d5740f6",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|4|R",
+    "sha256": "f7c0ea698d163ffe5477430701a2317253cfc3b470421ae2ff29f86204c0c913"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/16191def4bed306ba7ad8ec6.json",
+    "cache_key": "16191def4bed306ba7ad8ec63b0ceac3a4df669908acb99066de0ddffeb0f8c7",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|4|N",
+    "sha256": "8e67e3266878fd68d98863804bb8d7757dbd7f557dd693633deeca6ee1e64604"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/4876c2fc70383a75667adbc4.json",
+    "cache_key": "4876c2fc70383a75667adbc4c874144ac718a091075d753116a94c388a7c07ee",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|4|RN",
+    "sha256": "76106f8d70c2420037a5969e0e2a5b7e936c22f6d99838fc22604df21f3fec0c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9eafea1d6a1c2f64aa44719f.json",
+    "cache_key": "9eafea1d6a1c2f64aa44719fd1d523c603fb82b8973080441c805b528fc65374",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|5|R",
+    "sha256": "a8e51189fb0a13106e09d972dc17c9e1c9a5843afa9b4d374d1e3073d07d4291"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/7ab62568848807ea4a3adf1c.json",
+    "cache_key": "7ab62568848807ea4a3adf1c99888f9baee717171bbeb6138cfbfa006bdfa5f3",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|5|N",
+    "sha256": "349770b6b1925078842867a8e321f439f80fda74ed49e07f62519d85b9040d2a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/55d1bb6f7e30f170931f123a.json",
+    "cache_key": "55d1bb6f7e30f170931f123aded4eef7a2dc030601854f62b4b38e8e56793f7e",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|5|RN",
+    "sha256": "5badfde9b030683e29f0650f381371e32d4b81bdc4f45d16b04360289f01ee48"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/66a048f21f15b4a68058968a.json",
+    "cache_key": "66a048f21f15b4a68058968a69bbf9aa0263b18367d50272e8e0e7038df4f034",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|6|R",
+    "sha256": "f4af67b94218859a155cb18b0a93a2350e30f93acfa8343757f3c1602f40a456"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a499003255718654ce21c839.json",
+    "cache_key": "a499003255718654ce21c8392b3e896524c5491e75c29a013889173b0128c210",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|6|N",
+    "sha256": "c35344ae152456c4d14a9432cb548683d3b4e74cd38a7815928fd793aa29de21"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/116f0664ebc811b3be6064ca.json",
+    "cache_key": "116f0664ebc811b3be6064cac191431032cd88e73ae7b243b02a019c48118a60",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|6|RN",
+    "sha256": "a2a86880cd77a93eda51c0232e62db77ccbed0a11831d4a7a2691bf84eb93e27"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6b5f2d889677d80c98fc2971.json",
+    "cache_key": "6b5f2d889677d80c98fc297121b57ae0116212b961739e2963a1965621e68740",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|7|R",
+    "sha256": "7937135e457ca46d4c7cd1bf1f6c5aba16cb3bbd8933571c7b0b9197ec5bcc1e"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/125f3c5954e2caba3cbf8084.json",
+    "cache_key": "125f3c5954e2caba3cbf8084c14b64d2a99e8dbdf6e860a3e041e3b78b736c68",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|7|N",
+    "sha256": "e55440e6b5a9be2d4bac81898827b5f2c312788baf6c96a45363157c084b231a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/e0d95305864080b964cbb2cc.json",
+    "cache_key": "e0d95305864080b964cbb2cc1624030dc984a8780ef476bcea1907fc1c854965",
+    "key": "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax|7|RN",
+    "sha256": "efa17823ad424478860eabc142573fa48e4f1737d77864049880883d961f4405"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/539fe262ce1421d8dfd42d34.json",
+    "cache_key": "539fe262ce1421d8dfd42d34bf7f468c6c8711fa99253c4c7a849ec3dd8925ae",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|0|R",
+    "sha256": "e016c820cfc93d49d64489a36a7ca8a42d725e152b8ba50e8b009cc8c506f649"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/92ecbe679e9c1847fa877cb8.json",
+    "cache_key": "92ecbe679e9c1847fa877cb848751bfc36626a6bac89cff739530047c9540d79",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|0|N",
+    "sha256": "a3d5b026685f14f81fe8ce63b3b6d8b69eab3ac13b82c6a18de639c0d17e9c98"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/0ac0a4eb9a6a011fbc3bbb13.json",
+    "cache_key": "0ac0a4eb9a6a011fbc3bbb13886f9aabc8df48bf0a30834a82054ca5744e697a",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|0|RN",
+    "sha256": "8489856099dbfe1e1a72d0eb85a327c9ed30d2cebc8c94a470dce6644dd15477"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/25d6cd15b6f80c8974a940e4.json",
+    "cache_key": "25d6cd15b6f80c8974a940e426b822f094de10369c72c6847e5f60566a6dfcc6",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|1|R",
+    "sha256": "98952b5d308a762bfa907aa0cb009bc8217d52c0fcea05467f0a855a95139bb1"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/56fe6798c96a0393a7466e7c.json",
+    "cache_key": "56fe6798c96a0393a7466e7cc291dcd931e4269d286be990061020179800a5d7",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|1|N",
+    "sha256": "38c51f5d2625668bbe584195f337b2999f373f25202b4f441c4fea0604a1922a"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/6356b4448a1c0a125dc5a7ae.json",
+    "cache_key": "6356b4448a1c0a125dc5a7ae8b0981671a7715bdca5730660ac534fd3bcca0a5",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|1|RN",
+    "sha256": "1058297f0a032bf3d511a5a7aa4059c8bf9d1ce71963fb9516b985199f661bf6"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/13ae9638e7023d427df7f970.json",
+    "cache_key": "13ae9638e7023d427df7f9708861ec27c7d96619a481651b0af27ab5bce16149",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|2|R",
+    "sha256": "942df247b44099fe550d54ea204112b7395114c4d062f577cab6856cb7914093"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/345fd769a3fedf797dc5d0db.json",
+    "cache_key": "345fd769a3fedf797dc5d0db103fcc7374cf3ca401011f7eccb961c1d2676964",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|2|N",
+    "sha256": "3457dbf3dacf7a4ac7e44ee089e454d51a7909bb3734cfc0908a9cc41c2c0176"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/15ff5dbee488af8167840082.json",
+    "cache_key": "15ff5dbee488af8167840082c5a4fcd64eb8fc2c1d6efc79eef0cb553c7498d5",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|2|RN",
+    "sha256": "329736bc980dd6f3f240bf4de4d576b25b2b25ef24b0a82cf43c6c2fbde0d878"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/8b70170529cf29f890f13bb8.json",
+    "cache_key": "8b70170529cf29f890f13bb81ec7e9228d29118eabdb0b8b4aab2379a5c126c3",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|3|R",
+    "sha256": "e06d75dc4c5bd8f0f203e8fe163c0c5faf8e7a298ea9d0830a77057ff284fd66"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/fda87e02ae022f2812f2e8bb.json",
+    "cache_key": "fda87e02ae022f2812f2e8bb2befc63d80e8cabfe70608c4fc28d3764dc02561",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|3|N",
+    "sha256": "b4e26163b2dd78f3a7b32f41ed722a78a90490c2658217e586e373e0c4295709"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/646c74d1f44a6590dffd36cf.json",
+    "cache_key": "646c74d1f44a6590dffd36cfea8e7ab3bd3fa73c7a238ad01e00faecb385c5f8",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|3|RN",
+    "sha256": "45004c70adf669669069d679590b66308e06363038e031b3e82f170460a8ae34"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/5dd76ade97abced34cbc2c64.json",
+    "cache_key": "5dd76ade97abced34cbc2c643cd61c8e4f3559603ecdb9bdc7d12c85fdf6cc68",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|4|R",
+    "sha256": "8ea9d9d41a03abc34a402899562fbba1fe6c0f912ede1507cb0eb25d59b2ac8c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/9fb9cf5d07da23e6f085ec0d.json",
+    "cache_key": "9fb9cf5d07da23e6f085ec0d48e3db80aed1886edb8951df578b6212aa901b91",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|4|N",
+    "sha256": "4c471e2663139e2a32caff7baa65f09e82b4170ccd6da874682af8dfea8e16a4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/429f8bafad27f701cbf41a85.json",
+    "cache_key": "429f8bafad27f701cbf41a856a380f6208c04fd1e0a69418bff5dc2f26524319",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|4|RN",
+    "sha256": "042636ab72a5c15c60022e556e7aa07168aaec8a035ea53160b73fedc29eea04"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/22dfb93e65f2e9725e885256.json",
+    "cache_key": "22dfb93e65f2e9725e885256a4b131f1bd0489018415099424c6ce2b4aa40c51",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|5|R",
+    "sha256": "bd6ebdd8c2cc5a518e9b3d270ad80fb182841330f2a9b3ce2fe7ae827f48293f"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/391d7c7e992173161496f266.json",
+    "cache_key": "391d7c7e992173161496f2663ff1c4217ae49e0cbbb251ea880735671705870f",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|5|N",
+    "sha256": "d4edf4683b8cfe64adf56de66d7b5d8ecdf888e8bdd14921d1e0d17e1f4dcb02"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/ca52f96e0ae9493154c5b806.json",
+    "cache_key": "ca52f96e0ae9493154c5b8068e103b20c4714402c834441e88fc9977cebd539a",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|5|RN",
+    "sha256": "5b72e0bdca691f8bbbe789f9ec4955c8bc6f3bf228ce20ee540ef4e04e876156"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/2e42aae3f2f8defc8b6c2eb1.json",
+    "cache_key": "2e42aae3f2f8defc8b6c2eb13aecb435eca7799eb8fcb9367cc7c551baf9c80a",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|6|R",
+    "sha256": "a597c1810116c1ea3ebb881b0e853597fa63322d9ad4f273dc999c612cee474b"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/c32f2e8c7e2f655f2ca13383.json",
+    "cache_key": "c32f2e8c7e2f655f2ca13383897c0484dbbbb8ca8f63e29c7159f86a4fd210ad",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|6|N",
+    "sha256": "7dedae8d1edced0388cb72d80dd0ea0da1c604f281f94713bad17439b5ece4a4"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/a232aa81e2a8e58926b052fb.json",
+    "cache_key": "a232aa81e2a8e58926b052fb4dbb3a1125d9a741cedd3c71b5c361479ec23dd2",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|6|RN",
+    "sha256": "94bd2827df0be75d11a179cec84610a821b949d31c85b7ef08d0ebec21fdd628"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/cca385b89c3eac8d0b416e0b.json",
+    "cache_key": "cca385b89c3eac8d0b416e0bf5ba8f37f34d2e81313809e1e71bb554ffb0cbc1",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|7|R",
+    "sha256": "8ebfeee597d58558fb625dbff378ba2f316c928768294f574ee8c498b206830d"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/bc3b84e5cf5028ae69141b78.json",
+    "cache_key": "bc3b84e5cf5028ae69141b78cf8447ba558236958560a68749573fa897ee2eb4",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|7|N",
+    "sha256": "4ce7c5c85791d5d637e29ea87021d0788fd61eb95970c8b57c4709c746eb1e2c"
+   },
+   {
+    "cache_file": "results/w/cache/w_learn/20eafba5f9b64fb40ccd6a2e.json",
+    "cache_key": "20eafba5f9b64fb40ccd6a2eb71cbb67af6a886775c62368825de3a8140d1656",
+    "key": "b|14|Surf vs Nidoking|Surf vs Kangaskhan|7|RN",
+    "sha256": "79ef8d1ed04e452d9d84d6adcbd8602a42f3ce0eccd33d4596085f8fe92dadbf"
+   }
+  ],
+  "n_units": 384,
+  "outcome": "PASS",
+  "pairs": [
+   "b|0|Surf vs Chansey|Surf vs Rhydon",
+   "b|0|Strength vs Chansey|Strength vs Rhydon",
+   "b|2|Psychic vs Machamp|Psychic vs Tentacruel",
+   "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel",
+   "a|4|Rock Slide|Strength",
+   "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard",
+   "b|6|Surf vs Snorlax|Surf vs Exeggutor",
+   "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor",
+   "b|8|Earthquake vs Hypno|Earthquake vs Dragonite",
+   "b|8|Strength vs Hypno|Strength vs Dragonite",
+   "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur",
+   "b|10|Surf vs Slowbro|Surf vs Venusaur",
+   "b|10|Strength vs Slowbro|Strength vs Venusaur",
+   "b|12|Surf vs Poliwrath|Surf vs Snorlax",
+   "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax",
+   "b|14|Surf vs Nidoking|Surf vs Kangaskhan"
+  ],
+  "pipeline_key": "9636cf4c7f868338f512cd7cf1a722027bd842c37528188859c14bebb04a2853",
+  "reasons": [],
+  "record": {
+   "floor_both_share": 0.033203125,
+   "floor_taught_share": 0.349609375,
+   "label": "\ud0d0\uc0c9",
+   "naive_floor_pairs": [],
+   "naive_floor_share": 0.0,
+   "noise_by_naive_bin": {
+    "1-5": 1.3884911427345135,
+    "<1": 2.731258737594757,
+    ">=5": 1.4146002042451151
+   },
+   "pairs": {
+    "a|4|Rock Slide|Strength": {
+     "between_fly_sd": {
+      "punish_assoc": 2.731258737594757,
+      "punish_drop": 2.0484982189060617,
+      "reward_assoc": 4.370034002029269,
+      "reward_level": 1.3958437171095437
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.43280206205339905,
+      "R1_R2": 0.5879736065038111,
+      "R2_RN2": 0.7577308143095487
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -5.563902589005571,
+       -7.90295127629827,
+       -4.30664713617991,
+       -6.574424981752994,
+       -11.736234789491844,
+       -4.831454974080862,
+       -4.53260893665659,
+       -3.030962030109012
+      ],
+      "punish_drop": [
+       -7.042412308841494,
+       -8.452286588835733,
+       -4.55577303650977,
+       -4.414058672752579,
+       -2.6893263915969645,
+       -3.6725674458372284,
+       -3.624004757153191,
+       -2.8395914795963786
+      ],
+      "reward_assoc": [
+       11.086435380612643,
+       18.41705981908183,
+       7.307658705728391,
+       5.911292759810306,
+       7.7697359282495615,
+       15.868675248570879,
+       11.172223706153728,
+       13.467600719853973
+      ],
+      "reward_level": [
+       6.995947670385856,
+       8.379357501126533,
+       6.656236852971166,
+       5.239660807485888,
+       3.9627293178909677,
+       7.783091285980711,
+       6.281068140007563,
+       6.844053737730432
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.5963214626844818,
+       0.8201505708247775,
+       0.5392533251390871
+      ],
+      [
+       -0.5963214626844819,
+       0.9999999999999998,
+       -0.4285390385883961,
+       0.07626419473768183
+      ],
+      [
+       0.8201505708247775,
+       -0.42853903858839615,
+       1.0,
+       0.17440736091116854
+      ],
+      [
+       0.5392533251390871,
+       0.07626419473768183,
+       0.17440736091116854,
+       0.9999999999999999
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -5.197678781543217,
+      "punish_drop": -4.043313059294904,
+      "reward_assoc": 11.129329543383186,
+      "reward_level": 6.7501452953508
+     },
+     "naive_d": 0.0774736247426054,
+     "naive_median": {
+      "MBON05_X": 107.0,
+      "MBON13_X": 31.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -11.640625,
+       "y": 0.03125
+      },
+      "reward": {
+       "x": -75.65625,
+       "y": -1.1875
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -13.953125,
+      "RN2_minus_RN1": -0.203125
+     }
+    },
+    "b|0|Strength vs Chansey|Strength vs Rhydon": {
+     "between_fly_sd": {
+      "punish_assoc": 0.3952427628977904,
+      "punish_drop": 0.6488999683388894,
+      "reward_assoc": 2.3758590019188564,
+      "reward_level": 1.249871812003834
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.1460241855881726,
+      "R1_R2": 0.16521741862032155,
+      "R2_RN2": 0.20981426719864335
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -0.3377096471461706,
+       0.11002892405878398,
+       0.3971062585465254,
+       -0.18527550004689303,
+       -0.5218439692580863,
+       -0.45793322751383114,
+       0.13698682099216397,
+       0.5362342601809681
+      ],
+      "punish_drop": [
+       -0.6041276488381454,
+       -0.03793718094000241,
+       -0.543293221004068,
+       0.45235522029435243,
+       -0.5093348314709815,
+       -1.0610812709283401,
+       -0.6700860261895464,
+       -1.7384812275647843
+      ],
+      "reward_assoc": [
+       7.3599011009881306,
+       5.839963334878399,
+       10.363325415901528,
+       8.400262132311457,
+       3.142414638256924,
+       10.32572983142437,
+       7.007104993402779,
+       6.725714123588276
+      ],
+      "reward_level": [
+       -3.457165275339353,
+       -4.744907409077813,
+       -5.97466658466196,
+       -4.669876351610969,
+       -1.9213633077593881,
+       -5.3162494242367755,
+       -4.778447021000261,
+       -3.875355110399114
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.0880202830480665,
+       -0.8598148271166753,
+       -0.45038356969707344
+      ],
+      [
+       -0.0880202830480665,
+       1.0,
+       -0.05517356008928051,
+       -0.31300147272541856
+      ],
+      [
+       -0.8598148271166755,
+       -0.05517356008928051,
+       0.9999999999999998,
+       0.19754183264636502
+      ],
+      [
+       -0.45038356969707344,
+       -0.31300147272541856,
+       0.19754183264636502,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 0.9375,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -0.037623287994054525,
+      "punish_drop": -0.5737104349211066,
+      "reward_assoc": 7.183503047195455,
+      "reward_level": -4.707391880344391
+     },
+     "naive_d": -12.884520210525691,
+     "naive_median": {
+      "MBON05_X": 77.0,
+      "MBON13_X": 9.0
+     },
+     "q_sat": 0.0,
+     "spill": {
+      "punish": {
+       "x": -2.359375,
+       "y": -1.84375
+      },
+      "reward": {
+       "x": -61.484375,
+       "y": -0.375
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -7.203125,
+      "RN2_minus_RN1": -2.203125
+     }
+    },
+    "b|0|Surf vs Chansey|Surf vs Rhydon": {
+     "between_fly_sd": {
+      "punish_assoc": 1.3807993900511062,
+      "punish_drop": 2.6003926596099567,
+      "reward_assoc": 0.556815416813109,
+      "reward_level": 3.9466290422545116
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.15279586738791237,
+      "R1_R2": 0.3036085016163112,
+      "R2_RN2": 0.5107591742070056
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -8.184304386854851,
+       -8.099835198391663,
+       -9.84857626386172,
+       -11.075514542112671,
+       -8.392428618193385,
+       -8.159032222834544,
+       -11.306866947615244,
+       -10.393189637083864
+      ],
+      "punish_drop": [
+       -5.656541982689416,
+       -7.097733425021937,
+       -11.074156750134234,
+       -6.313924795690421,
+       -5.704182915327335,
+       -5.865612364344638,
+       -9.569165380179516,
+       -12.062062429844715
+      ],
+      "reward_assoc": [
+       3.0747323083181897,
+       4.354370690757122,
+       3.0943100508792156,
+       3.7448322438294372,
+       3.2352435908530586,
+       4.056221144135983,
+       3.6046751415391673,
+       4.494180595756174
+      ],
+      "reward_level": [
+       14.220945659634772,
+       21.51326498338578,
+       15.987678626644815,
+       14.717137286277232,
+       15.5269299909222,
+       15.537831648115795,
+       24.966634910751566,
+       20.63949586289041
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.5226734508027199,
+       0.4839507166858222,
+       -0.39598169591234267
+      ],
+      [
+       -0.5226734508027198,
+       1.0,
+       -0.2294113190363873,
+       0.5803131453023386
+      ],
+      [
+       0.4839507166858221,
+       -0.2294113190363873,
+       1.0,
+       -0.06393204869216354
+      ],
+      [
+       -0.39598169591234267,
+       0.5803131453023386,
+       -0.06393204869216354,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -9.120502441027552,
+      "punish_drop": -6.705829110356179,
+      "reward_assoc": 3.6747536926843023,
+      "reward_level": 15.762755137380305
+     },
+     "naive_d": 14.50552275702547,
+     "naive_median": {
+      "MBON05_X": 51.0,
+      "MBON13_X": 40.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -27.984375,
+       "y": -0.109375
+      },
+      "reward": {
+       "x": -45.640625,
+       "y": 0.03125
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -4.84375,
+      "RN2_minus_RN1": -0.34375
+     }
+    },
+    "b|10|Earthquake vs Slowbro|Earthquake vs Venusaur": {
+     "between_fly_sd": {
+      "punish_assoc": 1.5671748919705575,
+      "punish_drop": 3.237725973148375,
+      "reward_assoc": 3.090173402512867,
+      "reward_level": 4.1362671147488435
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.2430897355402755,
+      "R1_R2": 0.19303720826272988,
+      "R2_RN2": 0.0623637958766042
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -9.301862086157037,
+       -9.602051502179938,
+       -9.771979906137739,
+       -11.324673251541133,
+       -9.822623355196525,
+       -7.713487178747913,
+       -12.922604388736135,
+       -9.013450614157529
+      ],
+      "punish_drop": [
+       -12.703052757961908,
+       -8.274146915256702,
+       -14.70662789724438,
+       -9.695582190154362,
+       -12.749972988450507,
+       -9.540598101277704,
+       -17.59303313199526,
+       -15.334094282707689
+      ],
+      "reward_assoc": [
+       12.48809233938051,
+       10.045411120681463,
+       16.207831675821403,
+       10.535435572933212,
+       12.321454329858106,
+       9.501408539570624,
+       7.72190818173591,
+       16.287836575937302
+      ],
+      "reward_level": [
+       17.41434379774512,
+       12.60494358335861,
+       26.252676629489606,
+       15.636280253222237,
+       17.213283535324372,
+       21.098948043653586,
+       19.39481833319162,
+       21.203315411660792
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.57416552967359,
+       0.5474118028789264,
+       0.17713571662735972
+      ],
+      [
+       -0.57416552967359,
+       1.0,
+       -0.280657590052605,
+       0.4553248701969562
+      ],
+      [
+       0.5474118028789264,
+       -0.280657590052605,
+       1.0,
+       0.4011357125123408
+      ],
+      [
+       0.1771357166273597,
+       0.45532487019695617,
+       0.40113571251234076,
+       0.9999999999999999
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -9.687015704158839,
+      "punish_drop": -12.726512873206207,
+      "reward_assoc": 11.428444951395658,
+      "reward_level": 18.40458106546837
+     },
+     "naive_d": 13.307058341201637,
+     "naive_median": {
+      "MBON05_X": 104.0,
+      "MBON13_X": 60.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -32.59375,
+       "y": -0.1875
+      },
+      "reward": {
+       "x": -90.875,
+       "y": -0.578125
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -24.796875,
+      "RN2_minus_RN1": -0.25
+     }
+    },
+    "b|10|Strength vs Slowbro|Strength vs Venusaur": {
+     "between_fly_sd": {
+      "punish_assoc": 1.6664280093882247,
+      "punish_drop": 2.008818765741505,
+      "reward_assoc": 2.0661684755738072,
+      "reward_level": 6.1329342040914
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.6328437443139562,
+      "R1_R2": 0.6883963706944275,
+      "R2_RN2": 0.7736497933402061
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -9.987243332910117,
+       -8.189286802663442,
+       -6.66864828938547,
+       -7.0976837075072465,
+       -5.784102380807806,
+       -5.8635968592895455,
+       -9.081632844002216,
+       -9.609902829022989
+      ],
+      "punish_drop": [
+       -11.247181299948885,
+       -8.281887768838654,
+       -5.455727295403789,
+       -8.882188570396833,
+       -5.5721274755991415,
+       -5.835971209558907,
+       -8.579936037097369,
+       -8.057062555742807
+      ],
+      "reward_assoc": [
+       14.69781257043792,
+       9.902771683305513,
+       8.635559955388397,
+       10.402269394125177,
+       8.919681900970998,
+       12.599926137024958,
+       9.256857171622482,
+       10.944999686396013
+      ],
+      "reward_level": [
+       24.622340624070546,
+       9.618983708820153,
+       6.583277323035524,
+       6.9230846320341115,
+       9.097446997459416,
+       6.923971478604886,
+       5.7778993542404296,
+       9.569022264737105
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.6898993065846123,
+       0.7717371911909646,
+       -0.5511890174891106
+      ],
+      [
+       -0.6898993065846122,
+       1.0,
+       -0.5875976974038345,
+       0.826682961907926
+      ],
+      [
+       0.7717371911909645,
+       -0.5875976974038345,
+       1.0,
+       -0.3932798503932817
+      ],
+      [
+       -0.5511890174891106,
+       0.826682961907926,
+       -0.3932798503932817,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -7.643485255085345,
+      "punish_drop": -8.16947516229073,
+      "reward_assoc": 10.152520538715345,
+      "reward_level": 8.01070923803215
+     },
+     "naive_d": 1.431731734970312,
+     "naive_median": {
+      "MBON05_X": 116.0,
+      "MBON13_X": 40.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -18.71875,
+       "y": 0.015625
+      },
+      "reward": {
+       "x": -85.90625,
+       "y": 0.0625
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -17.453125,
+      "RN2_minus_RN1": 0.015625
+     }
+    },
+    "b|10|Surf vs Slowbro|Surf vs Venusaur": {
+     "between_fly_sd": {
+      "punish_assoc": 1.6245853226544629,
+      "punish_drop": 1.2073923917173055,
+      "reward_assoc": 3.547923616092477,
+      "reward_level": 5.745860822065175
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.659409022056189,
+      "R1_R2": 0.579272414330172,
+      "R2_RN2": 0.7069133307579886
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -7.136327276734106,
+       -8.418061944231956,
+       -7.5452265035922474,
+       -8.662698978726555,
+       -8.010531002979263,
+       -5.879402998572773,
+       -10.7087031089613,
+       -5.639039062737008
+      ],
+      "punish_drop": [
+       -5.850109349457678,
+       -7.6443559540695505,
+       -5.4403755823707,
+       -6.304916726487361,
+       -5.417317169866932,
+       -4.270318726521558,
+       -7.727083671014255,
+       -7.061029207341941
+      ],
+      "reward_assoc": [
+       9.178950635422373,
+       9.906449228786734,
+       17.381635069457364,
+       12.31905131997669,
+       7.15788429002065,
+       14.130846121922096,
+       11.5997997042582,
+       16.368562978254314
+      ],
+      "reward_level": [
+       6.730486932355989,
+       8.912580247046353,
+       10.014983111880925,
+       6.464811957005635,
+       6.784431547680113,
+       8.158440511608445,
+       6.179447889046664,
+       23.409167441850038
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.22694745704521152,
+       0.5820632166725747,
+       0.5961317983167531
+      ],
+      [
+       -0.2269474570452115,
+       1.0,
+       0.1098011310862032,
+       0.5489407637737361
+      ],
+      [
+       0.5820632166725745,
+       0.1098011310862032,
+       0.9999999999999999,
+       0.3998195408260333
+      ],
+      [
+       0.5961317983167532,
+       0.5489407637737362,
+       0.39981954082603327,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -7.777878753285755,
+      "punish_drop": -6.077513037972519,
+      "reward_assoc": 11.959425512117445,
+      "reward_level": 7.471436029644279
+     },
+     "naive_d": -0.31809323191179406,
+     "naive_median": {
+      "MBON05_X": 121.0,
+      "MBON13_X": 34.5
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -21.484375,
+       "y": 0.046875
+      },
+      "reward": {
+       "x": -92.25,
+       "y": 0.203125
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -6.28125,
+      "RN2_minus_RN1": -0.78125
+     }
+    },
+    "b|12|Surf vs Poliwrath|Surf vs Snorlax": {
+     "between_fly_sd": {
+      "punish_assoc": 1.7801609127274745,
+      "punish_drop": 1.855828505396591,
+      "reward_assoc": 4.911337943679499,
+      "reward_level": 0.23922621750800102
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.07588207802663577,
+      "R1_R2": 0.29799243235374884,
+      "R2_RN2": 0.008443301910264198
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -9.714789603830805,
+       -6.748549874173576,
+       -5.83457249548859,
+       -6.326093727581736,
+       -6.117870223190305,
+       -3.8532978859694387,
+       -6.1144134197938484,
+       -4.221735534809759
+      ],
+      "punish_drop": [
+       -9.868484504008409,
+       -5.842634144350308,
+       -8.95738474583799,
+       -8.258046573658065,
+       -6.083261422804112,
+       -4.1701285698940165,
+       -6.9292337748372725,
+       -6.442015103001365
+      ],
+      "reward_assoc": [
+       15.899066207521786,
+       13.762950568805737,
+       18.453189023934677,
+       20.00049595454572,
+       20.626622323209997,
+       6.811104109696976,
+       15.96631178799265,
+       9.516910131974463
+      ],
+      "reward_level": [
+       -0.841033904596733,
+       -0.5481362328543373,
+       -0.6639310405148541,
+       -1.256194106059922,
+       -1.1830396913924908,
+       -0.9747201594151707,
+       -0.8421167898565189,
+       -0.8574486908380824
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.06971629840691505,
+       -0.3052608803029771,
+       -0.12792180156347163
+      ],
+      [
+       -0.06971629840691505,
+       1.0,
+       -0.5955249933287728,
+       0.7248521087387888
+      ],
+      [
+       -0.3052608803029771,
+       -0.5955249933287727,
+       1.0,
+       -0.5139772247344823
+      ],
+      [
+       -0.12792180156347163,
+       0.7248521087387888,
+       -0.5139772247344824,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -6.116141821492077,
+      "punish_drop": -6.685624438919319,
+      "reward_assoc": 15.932688997757218,
+      "reward_level": -0.8497827403473006
+     },
+     "naive_d": -16.066008195239334,
+     "naive_median": {
+      "MBON05_X": 173.0,
+      "MBON13_X": 42.0
+     },
+     "q_sat": 0.0,
+     "spill": {
+      "punish": {
+       "x": -24.75,
+       "y": -1.125
+      },
+      "reward": {
+       "x": -138.125,
+       "y": -1.4375
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -9.984375,
+      "RN2_minus_RN1": -0.640625
+     }
+    },
+    "b|12|Thunderbolt vs Poliwrath|Thunderbolt vs Snorlax": {
+     "between_fly_sd": {
+      "punish_assoc": 1.4146002042451151,
+      "punish_drop": 1.3789595495762437,
+      "reward_assoc": 2.991277915415228,
+      "reward_level": 0.6334945226129244
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.1497672400918573,
+      "R1_R2": 0.11196396016121629,
+      "R2_RN2": 0.2545719034599161
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -2.375175516093228,
+       -0.7704103139844966,
+       -0.2673672178499712,
+       -1.0812945569570651,
+       -1.3058259173450821,
+       -4.607002771895757,
+       -2.1790982144689344,
+       -0.4956697555033087
+      ],
+      "punish_drop": [
+       -0.8741381963136841,
+       -3.0014692445263402,
+       -0.8522791441839707,
+       -2.128399494458539,
+       -4.279364275115142,
+       -1.0471231779623347,
+       -3.110442529386514,
+       -0.458044554407508
+      ],
+      "reward_assoc": [
+       8.020161642458595,
+       7.365471154939468,
+       14.215257527460995,
+       8.296289525549305,
+       12.91559559729352,
+       5.390277387131866,
+       8.481280975975206,
+       7.363677843604654
+      ],
+      "reward_level": [
+       0.6944807872492439,
+       1.1795975150699642,
+       2.1207088983441493,
+       0.2093262980842103,
+       1.6483934474346869,
+       0.7740711720708915,
+       0.9878103538569825,
+       0.42463882425914334
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.27868071769282743,
+       0.8073261455902774,
+       0.2729709739499823
+      ],
+      [
+       -0.27868071769282743,
+       1.0,
+       -0.2667984362301316,
+       -0.10412847378590984
+      ],
+      [
+       0.8073261455902774,
+       -0.2667984362301316,
+       1.0,
+       0.5567111690992426
+      ],
+      [
+       0.2729709739499823,
+       -0.10412847378590984,
+       0.5567111690992426,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -1.1935602371510736,
+      "punish_drop": -1.5877613362104368,
+      "reward_assoc": 8.15822558400395,
+      "reward_level": 0.880940762963937
+     },
+     "naive_d": -9.885073257927072,
+     "naive_median": {
+      "MBON05_X": 126.0,
+      "MBON13_X": 13.0
+     },
+     "q_sat": 0.125,
+     "spill": {
+      "punish": {
+       "x": -4.75,
+       "y": 0.28125
+      },
+      "reward": {
+       "x": -95.0625,
+       "y": -0.375
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -8.9375,
+      "RN2_minus_RN1": -3.359375
+     }
+    },
+    "b|14|Surf vs Nidoking|Surf vs Kangaskhan": {
+     "between_fly_sd": {
+      "punish_assoc": 0.9149094024783386,
+      "punish_drop": 1.8387054004405152,
+      "reward_assoc": 1.4767929914599074,
+      "reward_level": 0.929825602974244
+     },
+     "brain_noise_corr": {
+      "R1_N1": -0.08170084402190174,
+      "R1_R2": 0.17667904721236488,
+      "R2_RN2": 0.095798389920874
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -5.8510283296702985,
+       -4.82933615698078,
+       -4.359311068253377,
+       -3.560578289025445,
+       -5.428018049798719,
+       -3.3950900888290665,
+       -3.8315868827483732,
+       -5.223281894832707
+      ],
+      "punish_drop": [
+       -4.936943225791778,
+       -9.35704315207007,
+       -4.822630124674036,
+       -4.575483044535721,
+       -6.128104824018335,
+       -3.399468031122656,
+       -4.431740640385062,
+       -6.603951815114646
+      ],
+      "reward_assoc": [
+       5.006327836269065,
+       7.854519402997866,
+       8.287885481105421,
+       7.733423059717943,
+       5.932236545344434,
+       8.20607908870691,
+       4.551611952332014,
+       6.5195843605978965
+      ],
+      "reward_level": [
+       0.20586944040991495,
+       2.8186382798834746,
+       0.47981927648296413,
+       0.9187644621247187,
+       1.4919698096466576,
+       0.6956033133052905,
+       -0.2269733299276721,
+       0.6708607924870572
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.8201323157664473,
+       0.4631707340047123,
+       -0.18589912689110213
+      ],
+      [
+       -0.8201323157664473,
+       0.9999999999999999,
+       -0.095226077864196,
+       0.49885608658438585
+      ],
+      [
+       0.46317073400471226,
+       -0.095226077864196,
+       0.9999999999999999,
+       0.4443517100615958
+      ],
+      [
+       -0.18589912689110213,
+       0.4988560865843858,
+       0.4443517100615958,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -4.594323612617078,
+      "punish_drop": -4.879786675232907,
+      "reward_assoc": 7.12650371015792,
+      "reward_level": 0.6832320528961738
+     },
+     "naive_d": -5.898975086121431,
+     "naive_median": {
+      "MBON05_X": 102.0,
+      "MBON13_X": 35.0
+     },
+     "q_sat": 0.25,
+     "spill": {
+      "punish": {
+       "x": -24.296875,
+       "y": -0.34375
+      },
+      "reward": {
+       "x": -79.6875,
+       "y": -1.03125
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -9.859375,
+      "RN2_minus_RN1": -0.546875
+     }
+    },
+    "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel": {
+     "between_fly_sd": {
+      "punish_assoc": 4.042829126050489,
+      "punish_drop": 1.625311557395524,
+      "reward_assoc": 5.380102249772381,
+      "reward_level": 3.187357624963164
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.6004791292097754,
+      "R1_R2": 0.49793612938198967,
+      "R2_RN2": 0.6613591278915668
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -9.194829708645512,
+       -10.040712376215337,
+       -5.461398717876879,
+       -17.788068443086303,
+       -8.661517578613832,
+       -9.0668804068347,
+       -6.504761945271897,
+       -14.211594003314087
+      ],
+      "punish_drop": [
+       -6.526772014750704,
+       -3.9105075953284705,
+       -6.799288032816158,
+       -9.295126574040628,
+       -8.427343115706304,
+       -7.676880408284454,
+       -6.745536092996765,
+       -8.05462120365198
+      ],
+      "reward_assoc": [
+       10.200798804155294,
+       7.960533750345327,
+       21.618390160244466,
+       8.805246672998617,
+       8.125738382696095,
+       17.925339219300124,
+       6.938652630059958,
+       9.158339275480216
+      ],
+      "reward_level": [
+       6.168965598131382,
+       4.640912329404304,
+       12.683156654941165,
+       7.5139759878847645,
+       10.196232214082752,
+       11.43512203016047,
+       7.343930495774976,
+       13.292337120567153
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.5165668308795862,
+       0.580595912485153,
+       0.0703228799004519
+      ],
+      [
+       -0.5165668308795863,
+       1.0,
+       -0.02917498270812084,
+       0.4709728406723348
+      ],
+      [
+       0.580595912485153,
+       -0.02917498270812084,
+       1.0,
+       0.40234507300147193
+      ],
+      [
+       0.0703228799004519,
+       0.47097284067233475,
+       0.4023450730014719,
+       0.9999999999999998
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -9.130855057740106,
+      "punish_drop": -7.238084220550306,
+      "reward_assoc": 8.981792974239417,
+      "reward_level": 8.855104100983759
+     },
+     "naive_d": -0.05203918740539968,
+     "naive_median": {
+      "MBON05_X": 114.5,
+      "MBON13_X": 38.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -24.328125,
+       "y": 0.125
+      },
+      "reward": {
+       "x": -90.125,
+       "y": -0.5
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -5.359375,
+      "RN2_minus_RN1": 0.171875
+     }
+    },
+    "b|2|Psychic vs Machamp|Psychic vs Tentacruel": {
+     "between_fly_sd": {
+      "punish_assoc": 1.3989116185062436,
+      "punish_drop": 2.0700653398621873,
+      "reward_assoc": 1.5083745074154995,
+      "reward_level": 2.042350809982142
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.013421659910556456,
+      "R1_R2": 0.27719372766072725,
+      "R2_RN2": 0.017917343428529017
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -6.551033153421369,
+       -5.714438420277686,
+       -6.038034829010542,
+       -5.433733508653431,
+       -8.167574045782777,
+       -5.088218827868354,
+       -3.815198835322789,
+       -7.647504891453146
+      ],
+      "punish_drop": [
+       -7.620450892902681,
+       -8.776394434217893,
+       -3.4481368559761423,
+       -7.939014056682599,
+       -10.48738623605929,
+       -6.342667839308705,
+       -7.453396657780394,
+       -8.748751582626493
+      ],
+      "reward_assoc": [
+       6.575494613327535,
+       7.826731948786998,
+       6.062184904770154,
+       9.323050187237293,
+       4.709384297900649,
+       7.322934504674289,
+       5.5235728165061335,
+       8.135562669264548
+      ],
+      "reward_level": [
+       7.931183548187221,
+       9.57040787674398,
+       3.7684163550907073,
+       10.069566191753687,
+       8.4716183822534,
+       9.456948510207525,
+       7.066700696439013,
+       9.284375019047491
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.7182199470727704,
+       0.5766805879140814,
+       -0.09687518947535195
+      ],
+      [
+       -0.7182199470727704,
+       1.0,
+       -0.006733000235977243,
+       0.4411470350389613
+      ],
+      [
+       0.5766805879140814,
+       -0.006733000235977242,
+       0.9999999999999999,
+       0.1323191093370055
+      ],
+      [
+       -0.09687518947535194,
+       0.4411470350389613,
+       0.13231910933700547,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -5.876236624644114,
+      "punish_drop": -7.77973247479264,
+      "reward_assoc": 6.949214559000913,
+      "reward_level": 8.877996700650446
+     },
+     "naive_d": 4.1306742616613,
+     "naive_median": {
+      "MBON05_X": 142.0,
+      "MBON13_X": 60.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -27.96875,
+       "y": -0.34375
+      },
+      "reward": {
+       "x": -120.5625,
+       "y": -5.40625
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -23.984375,
+      "RN2_minus_RN1": -0.234375
+     }
+    },
+    "b|4|Rock Slide vs Venusaur|Rock Slide vs Charizard": {
+     "between_fly_sd": {
+      "punish_assoc": 1.3780706669627834,
+      "punish_drop": 1.6089379823503205,
+      "reward_assoc": 4.292610136285344,
+      "reward_level": 2.1310856671146956
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.3534034602161086,
+      "R1_R2": 0.6029675031899328,
+      "R2_RN2": 0.537388089088038
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -2.0744998603519322,
+       -4.581919089074123,
+       -2.551062029561207,
+       -3.22747998695149,
+       -3.669411957385403,
+       -2.378463324410729,
+       -4.536363898825328,
+       -6.130761841013612
+      ],
+      "punish_drop": [
+       -1.9567352629623762,
+       -4.930162922264533,
+       -3.9963813702860134,
+       -1.7769304123935303,
+       -5.502240409508543,
+       -5.430669078788006,
+       -5.894234719325367,
+       -3.4103740599453127
+      ],
+      "reward_assoc": [
+       6.162847089076229,
+       18.796450698500006,
+       10.618801913481008,
+       4.7353311074179505,
+       9.320934371059906,
+       9.16298659180282,
+       6.962145663764895,
+       10.44336467914403
+      ],
+      "reward_level": [
+       7.405630652013197,
+       6.463031895166629,
+       11.667085471007308,
+       6.869130368471348,
+       10.842112249195848,
+       5.761676568675378,
+       7.016205373004553,
+       8.582515529889845
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.04489837858285508,
+       0.007220770411752614,
+       0.027718474646345217
+      ],
+      [
+       -0.04489837858285508,
+       0.9999999999999999,
+       -0.41196128753231165,
+       0.22300387410183273
+      ],
+      [
+       0.007220770411752614,
+       -0.41196128753231165,
+       1.0,
+       -0.3676048498742702
+      ],
+      [
+       0.02771847464634522,
+       0.22300387410183273,
+       -0.3676048498742702,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -3.4484459721684466,
+      "punish_drop": -4.463272146275274,
+      "reward_assoc": 9.241960481431363,
+      "reward_level": 7.210918012508875
+     },
+     "naive_d": 1.0880857783310909,
+     "naive_median": {
+      "MBON05_X": 108.0,
+      "MBON13_X": 31.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -11.328125,
+       "y": 0.296875
+      },
+      "reward": {
+       "x": -75.921875,
+       "y": -0.390625
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -14.84375,
+      "RN2_minus_RN1": 0.671875
+     }
+    },
+    "b|6|Surf vs Snorlax|Surf vs Exeggutor": {
+     "between_fly_sd": {
+      "punish_assoc": 1.7217908095957801,
+      "punish_drop": 1.8758337751620686,
+      "reward_assoc": 0.7487195179023095,
+      "reward_level": 2.820999552826451
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.33183026589112496,
+      "R1_R2": 0.42046671926883333,
+      "R2_RN2": 0.6473572483805085
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -6.309114298547105,
+       -8.886722844878383,
+       -8.156984176067914,
+       -8.911660925342401,
+       -7.260389601862082,
+       -8.815623496158542,
+       -10.982406334885475,
+       -5.504145109511735
+      ],
+      "punish_drop": [
+       -6.6195282682233785,
+       -4.953437689047318,
+       -7.664922117517656,
+       -6.988931377654731,
+       -3.857544224091801,
+       -8.631972452854894,
+       -9.708734207102422,
+       -6.740703217312054
+      ],
+      "reward_assoc": [
+       4.799638093198465,
+       3.7725894187178213,
+       3.568018203303412,
+       3.125353373933912,
+       2.7969375909774308,
+       3.4179866619331754,
+       2.805911028541133,
+       4.559418011535922
+      ],
+      "reward_level": [
+       10.982768341257113,
+       11.29615902760756,
+       16.517996436924363,
+       17.895107055646136,
+       15.24110764765862,
+       12.685964162816274,
+       11.176509865545857,
+       10.809631633383798
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       0.13809363010000736,
+       -0.5113952207026752,
+       -0.14001272238902485
+      ],
+      [
+       0.13809363010000736,
+       1.0,
+       0.10111327482432719,
+       0.5037967763534498
+      ],
+      [
+       -0.5113952207026752,
+       0.10111327482432719,
+       1.0,
+       0.7352923067236158
+      ],
+      [
+       -0.14001272238902485,
+       0.5037967763534499,
+       0.7352923067236159,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -8.486303836113228,
+      "punish_drop": -6.864817297483392,
+      "reward_assoc": 3.493002432618294,
+      "reward_level": 11.991061595211917
+     },
+     "naive_d": 10.717796983028546,
+     "naive_median": {
+      "MBON05_X": 50.0,
+      "MBON13_X": 40.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -27.421875,
+       "y": 0.046875
+      },
+      "reward": {
+       "x": -46.046875,
+       "y": 0.546875
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -4.59375,
+      "RN2_minus_RN1": -0.71875
+     }
+    },
+    "b|6|Thunderbolt vs Snorlax|Thunderbolt vs Exeggutor": {
+     "between_fly_sd": {
+      "punish_assoc": 5.910701955932225,
+      "punish_drop": 5.148636216686432,
+      "reward_assoc": 5.204249619417314,
+      "reward_level": 11.348860568622406
+     },
+     "brain_noise_corr": {
+      "R1_N1": -0.0010910626596553371,
+      "R1_R2": -0.02408674633245498,
+      "R2_RN2": 0.019320639966505813
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -8.143265840562064,
+       -3.7963149235686227,
+       -4.373233170037726,
+       -5.429218283369294,
+       -16.884336028447628,
+       -17.805005163255174,
+       -3.4194145299715855,
+       -12.429432730347353
+      ],
+      "punish_drop": [
+       -9.678655942884482,
+       -19.339874303689214,
+       -11.205440772327188,
+       -4.888001565312839,
+       -14.462375328137284,
+       -2.8633701477187326,
+       -9.86286484021011,
+       -9.55032910371821
+      ],
+      "reward_assoc": [
+       10.242143719810372,
+       12.257826681806698,
+       13.834300908671562,
+       4.3931886621086065,
+       12.278174348020324,
+       3.254917920627334,
+       18.583685399149388,
+       6.24791768183647
+      ],
+      "reward_level": [
+       21.52768401918595,
+       36.80824793284249,
+       28.50615729473326,
+       8.4577762380631,
+       33.455576533390165,
+       5.133730953058667,
+       28.932184781925432,
+       21.201781892080714
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.9402249096546523,
+       0.8113971118943839,
+       0.3371063895495413
+      ],
+      [
+       -0.9402249096546523,
+       1.0,
+       -0.6016876648181174,
+       -0.3011240869086941
+      ],
+      [
+       0.8113971118943838,
+       -0.6016876648181174,
+       1.0,
+       0.519736870737605
+      ],
+      [
+       0.3371063895495413,
+       -0.3011240869086941,
+       0.5197368707376051,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -6.7862420619656785,
+      "punish_drop": -9.770760391547295,
+      "reward_assoc": 11.249985200808535,
+      "reward_level": 25.016920656959606
+     },
+     "naive_d": 5.978542014323093,
+     "naive_median": {
+      "MBON05_X": 127.0,
+      "MBON13_X": 48.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -39.5,
+       "y": -0.3125
+      },
+      "reward": {
+       "x": -109.796875,
+       "y": -2.78125
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -1.546875,
+      "RN2_minus_RN1": -0.28125
+     }
+    },
+    "b|8|Earthquake vs Hypno|Earthquake vs Dragonite": {
+     "between_fly_sd": {
+      "punish_assoc": 1.0209667307673804,
+      "punish_drop": 0.6431137428964908,
+      "reward_assoc": 2.3512576441390136,
+      "reward_level": 1.555863145668503
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.03811863768159481,
+      "R1_R2": 0.2165467452677304,
+      "R2_RN2": 0.4586177555411466
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -5.119431610339565,
+       -4.305187476236044,
+       -3.5101304625506593,
+       -3.965848117811022,
+       -2.8975572512014054,
+       -2.355911734389722,
+       -5.349166910718183,
+       -4.010468114952275
+      ],
+      "punish_drop": [
+       -3.5443345571211426,
+       -2.426896235957444,
+       -3.7271996784547237,
+       -3.186367295851242,
+       -2.9705958634410634,
+       -3.5079976728252715,
+       -2.1161663833774416,
+       -2.1743159438481885
+      ],
+      "reward_assoc": [
+       6.79507097974126,
+       2.4605849099195414,
+       6.781811148960745,
+       2.381767778092045,
+       3.7858599938245603,
+       8.174131795776894,
+       3.714506578275808,
+       2.2708460303358278
+      ],
+      "reward_level": [
+       8.04392250212387,
+       3.6525379024549762,
+       5.721718359330329,
+       3.906539760135835,
+       4.587571372466644,
+       5.775428430063077,
+       4.915142652778641,
+       3.162718962750081
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.6764690173420084,
+       0.8205970565565013,
+       -0.15395331666511333
+      ],
+      [
+       -0.6764690173420084,
+       1.0,
+       -0.7671970966883521,
+       -0.4249298173657909
+      ],
+      [
+       0.8205970565565013,
+       -0.7671970966883521,
+       1.0,
+       0.322122456536507
+      ],
+      [
+       -0.15395331666511336,
+       -0.4249298173657909,
+       0.322122456536507,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 1.0,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -3.9881581163816486,
+      "punish_drop": -3.0784815796461524,
+      "reward_assoc": 3.7501832860501843,
+      "reward_level": 4.751357012622643
+     },
+     "naive_d": 2.719542285214475,
+     "naive_median": {
+      "MBON05_X": 92.0,
+      "MBON13_X": 39.0
+     },
+     "q_sat": 1.0,
+     "spill": {
+      "punish": {
+       "x": -19.1875,
+       "y": 0.1875
+      },
+      "reward": {
+       "x": -70.875,
+       "y": 1.890625
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -17.203125,
+      "RN2_minus_RN1": 0.1875
+     }
+    },
+    "b|8|Strength vs Hypno|Strength vs Dragonite": {
+     "between_fly_sd": {
+      "punish_assoc": 0.5546819328176765,
+      "punish_drop": 0.5357738270693253,
+      "reward_assoc": 2.243747662542113,
+      "reward_level": 4.159864376626411
+     },
+     "brain_noise_corr": {
+      "R1_N1": 0.3330278497565693,
+      "R1_R2": 0.3198429501787199,
+      "R2_RN2": 0.4333342486219222
+     },
+     "fly_stats": {
+      "punish_assoc": [
+       -0.7658584192617083,
+       -0.677405765465605,
+       -1.1786168696070054,
+       -0.47921320416030955,
+       -0.3698762846665462,
+       -0.3371951937639613,
+       0.62941279102782,
+       0.11793623687644561
+      ],
+      "punish_drop": [
+       -0.8663483592551079,
+       -0.5089927537380317,
+       -1.6054800120477097,
+       -0.28311514821902706,
+       -0.5635801683130511,
+       -0.20365984635812326,
+       0.2230345322317026,
+       -0.4693117613420795
+      ],
+      "reward_assoc": [
+       8.3856775662326,
+       1.432488709081413,
+       2.4953691394231914,
+       5.848880288983244,
+       4.005593069651961,
+       3.4876341892900427,
+       3.9522737134407477,
+       2.135687726927708
+      ],
+      "reward_level": [
+       25.609372906860745,
+       24.508350419400408,
+       25.95669686109841,
+       14.936737916573712,
+       25.636313556592174,
+       18.612531081047276,
+       22.220542352656825,
+       18.60568797308011
+      ]
+     },
+     "gate_corr": [
+      [
+       1.0,
+       -0.540186046659105,
+       -0.02367629080735965,
+       -0.38220580563019463
+      ],
+      [
+       -0.540186046659105,
+       1.0,
+       0.027086674848519662,
+       0.8469068330187695
+      ],
+      [
+       -0.02367629080735965,
+       0.027086674848519666,
+       1.0,
+       -0.10439599167217502
+      ],
+      [
+       -0.38220580563019463,
+       0.8469068330187695,
+       -0.10439599167217502,
+       1.0
+      ]
+     ],
+     "mech": {
+      "punish": 0.9375,
+      "reward": 1.0
+     },
+     "median": {
+      "punish_assoc": -0.4245447444134279,
+      "punish_drop": -0.4891522575400556,
+      "reward_assoc": 3.719953951365395,
+      "reward_level": 23.364446386028618
+     },
+     "naive_d": 7.982586011569504,
+     "naive_median": {
+      "MBON05_X": 98.0,
+      "MBON13_X": 19.5
+     },
+     "q_sat": 0.125,
+     "spill": {
+      "punish": {
+       "x": -2.234375,
+       "y": -1.046875
+      },
+      "reward": {
+       "x": -70.40625,
+       "y": -0.140625
+      }
+     },
+     "suppression": {
+      "N2_minus_pre": -16.140625,
+      "RN2_minus_RN1": -0.40625
+     }
+    }
+   },
+   "walls": {
+    "job_s_median": 331.58838931197533,
+    "probe_s_median": 175.37556614656933,
+    "train_s_median": 155.93393210403156
+   }
+  },
+  "stage": "pilot",
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "values": {
+   "floor_both_share": 0.033203125,
+   "punish_share": 0.875,
+   "reversed_share": 0.0,
+   "reward_share": 1.0
+  },
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-05T09:26:08.658329+00:00"
  },
  "reuse": {
   "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
