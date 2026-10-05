@@ -69,14 +69,40 @@ def test_pilot_h6():
     assert R.pilot(rec([(1.0, -1.0)] * 4, floor=0.5), [], SPEC)["outcome"] == "PASS"
 
 
+def oc_doc(**kw):
+    """A STOP_OC_UNREACHABLE doc: combined limits over k (must NOT be printed) and per-k limits on [q, K, F, k]; F = 32
+    is picked by value (axes F), not by position."""
+    import numpy as np
+    fs = list(range(SPEC.f_min, SPEC.f_max + 1))
+    ks = list(range(SPEC.k_min, SPEC.k_cap + 1))
+    nq, nk, nf, nkk = len(SPEC.q_grid), len(SPEC.k_grid), len(fs), len(ks)
+    pk = np.full((nq, nk, nf, nkk), 0.9)
+    fk = np.full((nq, nk, nf, nkk), 0.2)
+    f32 = fs.index(32)
+    for i in range(nkk):
+        pk[:, :, f32, i] = 0.40 + 0.01 * i
+        fk[:, :, f32, i] = 0.010 + 0.001 * i
+    pk[0, 1, f32] += 0.1
+    d = dict(selected=None, reachable=True, power_lo=np.full((nq, nk, nf), 0.111).tolist(),
+             false_hi=np.full((nq, nk, nf), 0.999).tolist(), power_lo_by_k=pk.tolist(), false_hi_by_k=fk.tolist(),
+             k_values=ks, axes=dict(q=list(SPEC.q_grid), K=list(SPEC.k_grid), F=fs, k=ks))
+    d.update(kw)
+    return d
+
+
 def test_oc_outcome_and_open3_text():
     assert R.oc(dict(selected=dict(q=0.75, K=8, F=10)), SPEC)["outcome"] == "PASS"
-    nf = SPEC.f_max - SPEC.f_min + 1
-    doc = dict(selected=None, reachable=True, power_lo=[[[0.5] * nf] * 2] * 3, false_hi=[[[0.01] * nf] * 2] * 3)
-    out = R.oc(doc, SPEC)
+    out = R.oc(oc_doc(), SPEC)
     assert out["outcome"] == R.STOP_OC_UNREACHABLE
-    assert out["sentence"].startswith("파일럿 잡음에서 F ≤ 32로 G.6 작동 특성 목표를 맞출 수 없다(q 0.5·K 8·F 32: 검정력 하한 "
-                                      "0.500, 거짓 통과 상한 0.010; ")
+    q0, K0, K1 = SPEC.q_grid[0], SPEC.k_grid[0], SPEC.k_grid[1]
+    first = (f"q {q0}·K {K0}·F 32: k 4 검정력 하한 0.400 / 거짓 통과 상한 0.010, k 5 검정력 하한 0.410 / 거짓 통과 "
+             "상한 0.011, k 6 검정력 하한 0.420 / 거짓 통과 상한 0.012, k 7 검정력 하한 0.430 / 거짓 통과 상한 0.013, "
+             "k 8 검정력 하한 0.440 / 거짓 통과 상한 0.014; ")
+    assert out["sentence"].startswith("파일럿 잡음에서 F ≤ 32로 G.6 작동 특성 목표를 맞출 수 없다(" + first)
+    assert f"q {q0}·K {K1}·F 32: k 4 검정력 하한 0.500 / " in out["sentence"]
+    assert out["sentence"].count("F 32:") == len(SPEC.q_grid) * len(SPEC.k_grid)
+    assert out["sentence"].count("검정력 하한") == len(SPEC.q_grid) * len(SPEC.k_grid) * 5
+    assert "0.111" not in out["sentence"] and "0.999" not in out["sentence"] and "0.900" not in out["sentence"]
     un = R.oc(dict(selected=None, reachable=False, calibration=dict(min=dict(ok=False, a=dict(status="floor"), b=None),
                                                                   max=dict(ok=True, a=dict(status="ok"),
                                                                            b=dict(status="ok")))), SPEC)
@@ -84,15 +110,26 @@ def test_oc_outcome_and_open3_text():
 
 
 def test_budget_order():
+    import pytest
     opts = [dict(design="s", with_c=True, total_h=10.0), dict(design="s", with_c=False, total_h=7.0),
             dict(design="alt", with_c=False, total_h=6.0)]
-    assert R.budget(10.0, opts, SPEC)["plan"]["with_c"] is True
-    assert R.budget(15.0, opts, SPEC)["plan"] == opts[1]
-    assert R.budget(17.5, opts, SPEC)["plan"] == opts[2]
-    out = R.budget(19.0, opts, SPEC)
-    assert out["outcome"] == R.STOP_BUDGET and out["sentence"] == (
-        "남은 추정 비용 누적 19.00 h + 남은 10.00 h = 29.00 h가 W 상한 24 h를 넘는다.")
-    assert R.budget(14.0, opts, dataclasses.replace(SPEC, budget_h=24.0))["plan"]["with_c"] is True
+    assert R.budget(10.0, opts, SPEC, "5a")["plan"]["with_c"] is True
+    assert R.budget(15.0, opts, SPEC, "5a")["plan"] == opts[1]
+    assert R.budget(17.5, opts, SPEC, "5a")["plan"] == opts[2]
+    out = R.budget(19.0, opts, SPEC, "5a")
+    assert out["outcome"] == R.STOP_BUDGET and out["sentence"] == (        # the cheapest tried option, not opts[0]
+        "남은 추정 비용 누적 19.00 h + 남은 6.00 h = 25.00 h가 W 상한 24 h를 넘는다.")
+    assert R.budget(14.0, opts, dataclasses.replace(SPEC, budget_h=24.0), "5a")["plan"]["with_c"] is True
+    # stage 8 (W.9.9 P1-5): only [with C, without C]; C dropped, then stop
+    assert R.budget(15.0, opts[:2], SPEC, "8")["plan"] == opts[1]
+    assert R.budget(10.0, opts[:1], SPEC, "8")["plan"] == opts[0]
+    s8 = R.budget(18.0, opts[:2], SPEC, "8")
+    assert s8["outcome"] == R.STOP_BUDGET and "남은 7.00 h = 25.00 h" in s8["sentence"]
+    for bad in (opts, [opts[1], opts[0]], [opts[0], opts[2]], [opts[1]]):
+        with pytest.raises(ValueError):
+            R.budget(0.0, bad, SPEC, "8")
+    with pytest.raises(ValueError):
+        R.budget(0.0, opts, SPEC, "6")
 
 
 def test_few_pairs():
@@ -124,5 +161,11 @@ def test_verdict_sentences():
     # W.9.10 6: RN1 ≠ R1 / INVALID pairs with their reasons
     m = R.verdict_sentence(dict(v, verdict="STOP_MACHINE", machine=["p: RN1 ≠ R1"], invalid=["q"],
                                 pairs=dict(pairs, q=dict(status="INVALID", reasons=["NaN 관문 통계"]))), {}, SPEC)
-    assert m["sentence"] == ("W 학습 측정에서 기계 검사가 맞지 않았다(p: RN1 ≠ R1; INVALID 쌍 q(NaN 관문 통계)) — 같은 "
+    assert m["sentence"] == ("W 학습 측정에서 기계 검사가 맞지 않았다(INVALID 쌍 q(NaN 관문 통계); p: RN1 ≠ R1) — 같은 "
                              "관문 쌍으로 다시 돌리지 않으며(W.5·W.9.8 H8), INVALID_RUN 여부는 사용자 몫이다.")
+    # W.9.10 6: INVALID pairs (with reasons) first, then machine reasons, nothing truncated (> 6 entries)
+    inv = [f"i{j}" for j in range(5)]
+    big = R.verdict_sentence(dict(v, verdict="STOP_MACHINE", machine=[f"m{j}" for j in range(4)], invalid=inv,
+                                  pairs={k: dict(status="INVALID", reasons=[f"r{k}"]) for k in inv}), {}, SPEC)
+    assert big["sentence"].startswith("W 학습 측정에서 기계 검사가 맞지 않았다(INVALID 쌍 i0(ri0); INVALID 쌍 i1(ri1); "
+                                      "INVALID 쌍 i2(ri2); INVALID 쌍 i3(ri3); INVALID 쌍 i4(ri4); m0; m1; m2; m3) — ")

@@ -129,33 +129,48 @@ def oc(doc: dict, spec) -> dict:
 
 
 def oc_unreachable_text(doc: dict, spec) -> str:
-    """W.9.10 3: for every (q, K) at F = 32, the bootstrap limits "power 95% lower / false-pass 95% upper" over k =
-    4-8 (w_oc's power_lo / false_hi: simultaneous over k — min / max over k inside each draw — and the worst cluster
-    level); or the calibration status when the targets were unreachable."""
+    """W.9.10 3: for every (q, K) the bootstrap limits at F = 32 for each k = 4-8 (w_oc.limits_at_f on the per-k
+    arrays power_lo_by_k / false_hi_by_k: 5th / 95th percentile over draws, worst cluster level), as "검정력 하한 /
+    거짓 통과 상한" per k; or the calibration status when the targets were unreachable."""
     if not doc.get("reachable"):
         cal = doc.get("calibration") or {}
 
         def st(m, ab):
             return ((cal.get(m) or {}).get(ab) or {}).get("status")
         return "보정 불가 — " + "; ".join(f"{m}: a {st(m, 'a')}, b {st(m, 'b')}" for m in ("min", "max"))
+    from . import w_oc
     out = []
-    lo, hi = doc["power_lo"], doc["false_hi"]
-    for qi, q in enumerate(spec.q_grid):
-        for ki, K in enumerate(spec.k_grid):
-            out.append(f"q {q}·K {K}·F 32: 검정력 하한 {lo[qi][ki][-1]:.3f}, 거짓 통과 상한 {hi[qi][ki][-1]:.3f}")
+    for r in w_oc.limits_at_f(doc, 32):
+        per_k = ", ".join(f"k {k} 검정력 하한 {lo:.3f} / 거짓 통과 상한 {hi:.3f}"
+                          for k, lo, hi in zip(r["k"], r["power_lo"], r["false_hi"]))
+        out.append(f"q {r['q']}·K {r['K']}·F {r['F']}: {per_k}")
     return "; ".join(out)
 
 
 # ================================================================ W.9.6 F / W.9.9 P1-4 / P1-5: the budget
-def budget(elapsed_h: float, options: list, spec) -> dict:
-    """options = [dict(design, with_c, total_h)] in the order to try (selected with C, selected without C, then the
-    alternative designs without C). The first whose elapsed + total ≤ 24 h is the plan; none → STOP_BUDGET."""
+BUDGET_STAGES = ("5a", "8")
+
+
+def budget(elapsed_h: float, options: list, spec, stage: str) -> dict:
+    """options = [dict(design, with_c, total_h)] in the order to try. Stage "5a" (before the screen): selected with
+    C, selected without C, then the alternative designs without C. Stage "8" (after the screen, W.9.9 P1-5): only
+    [selected with C, selected without C] — C dropped, then stop; no alternative designs (anything else is refused).
+    The first whose elapsed + total ≤ 24 h is the plan; none → STOP_BUDGET with the cheapest option's estimate."""
+    if stage not in BUDGET_STAGES:
+        raise ValueError(f"budget stage {stage!r} not in {BUDGET_STAGES}")
+    if not options:
+        raise ValueError("budget: no options")
+    if stage == "8":
+        if (len(options) > 2 or options[0].get("with_c") is not True
+                or (len(options) == 2 and (options[1].get("with_c") is not False
+                                           or options[1].get("design") != options[0].get("design")))):
+            raise ValueError("budget stage 8 (W.9.9 P1-5): only [selected with C, selected without C]")
     for o in options:
         if elapsed_h + o["total_h"] <= spec.budget_h:
-            return dict(outcome=PASS, reasons=[], plan=o, elapsed_h=elapsed_h)
-    worst = options[0]
-    h = f"누적 {elapsed_h:.2f} h + 남은 {worst['total_h']:.2f} h = {elapsed_h + worst['total_h']:.2f} h"
-    return dict(outcome=STOP_BUDGET, reasons=[h], plan=None, elapsed_h=elapsed_h,
+            return dict(outcome=PASS, reasons=[], plan=o, elapsed_h=elapsed_h, stage=stage)
+    best = min(options, key=lambda o: o["total_h"])
+    h = f"누적 {elapsed_h:.2f} h + 남은 {best['total_h']:.2f} h = {elapsed_h + best['total_h']:.2f} h"
+    return dict(outcome=STOP_BUDGET, reasons=[h], plan=None, elapsed_h=elapsed_h, stage=stage,
                 sentence=sentence(STOP_BUDGET, dict(h=h)))
 
 
@@ -179,8 +194,8 @@ def verdict_sentence(v: dict, design: dict, spec) -> dict:
     elif out == V_UNDECIDED:
         f = dict(cause=v["undecided_cause"])
     else:
-        f = dict(why="; ".join((v["machine"] + [f"INVALID 쌍 {k}" + _why(v["pairs"].get(k) or {})
-                                                for k in v["invalid"]])[:6]))
+        f = dict(why="; ".join([f"INVALID 쌍 {k}" + _why(v["pairs"].get(k) or {}) for k in v["invalid"]]
+                               + list(v["machine"])))      # W.9.10 6: every INVALID pair first, nothing cut
     return dict(sentence=sentence(out, f), consequence=CONSEQUENCE[out])
 
 

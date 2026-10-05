@@ -7,7 +7,8 @@ W.9.9 P1-4 / P2-9): no engine, no writes.
   jobs' weights equal the main jobs' at every stage.
 - p_repro_diffs / naive_repro_diffs / reward_check: the path gate's comparisons (W.3 2 (i), (ii), W.9.9 P2-9).
 - pilot_record: W.6 / W.9.4 / W.9.8 H6's pilot statistics (exploratory).
-- unit_costs / design_cost / worst_cost: the wall-clock model behind the OC's ranking and the budget gate."""
+- unit_costs / job_s / design_cost (n_naive default = the worst case) / elapsed_h: the wall-clock model behind the
+  OC's ranking and the budget gate."""
 from __future__ import annotations
 
 import math

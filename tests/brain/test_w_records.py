@@ -119,3 +119,14 @@ def test_costs():
                           False)
     assert no_c["parts_h"]["c"] == 0.0 and no_c["parts_h"]["oracle"] == 0.0
     assert WR.elapsed_h([dict(wall_s=1800.0), dict(wall_s=1800.0)]) == 1.0
+
+
+def test_docstring_names_exist():
+    """Every function the module docstring lists (the "- a / b / c:" lines) exists in w_records."""
+    import re
+
+    from flymon.brain import w_records
+    names = [n.split(" (")[0].strip() for line in w_records.__doc__.splitlines() if line.startswith("- ")
+             for n in line[2:].split(":")[0].split("/")]
+    assert names and all(callable(getattr(w_records, n, None)) for n in names), names
+    assert re.search(r"\bworst_cost\b", w_records.__doc__) is None
