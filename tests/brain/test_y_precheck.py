@@ -190,3 +190,28 @@ def test_records_never_reuse_a_precheck_mixture_stream(pilot7, theta_w, monkeypa
     O.point_records_y(thetas, target, Z, dataclasses.replace(TINY, oc_reps=2))
     rec = set(seen)
     assert {k[0] for k in rec} == {Y.precheck_seed, Y.records_seed} and not (rec & pre)
+
+
+def test_cell_keys_carry_z(pilot7, theta_w, monkeypatch):
+    """point, stair and cmp cell keys hold z_V (evaluate_y uses it), so a changed z never reuses a cached cell — even
+    when the calibration corners happen to be the same (calibrate_y pinned to Z here)."""
+    th = O.fit_y(pilot7, KEYS7, O.r_v0(theta_w))
+    real = O.calibrate_y
+    monkeypatch.setattr(O, "calibrate_y", lambda t, d, m, idx, z, ys: real(t, d, m, idx, Z, ys))
+    z2 = {"A": (16.917, 12.484), "P": (80.167, 29.0)}
+
+    def keys(z):
+        got = {}
+
+        def cell(tag, key, fn):
+            got[tag] = canonical(key)
+            return fn()
+        O.precheck_y(th, z, TINY, [(4, 8)], cell=cell)
+        O.compare_filters(th, {"p0": (0.1, 40.0, 90.0)}, z, dataclasses.replace(TINY, compare_reps=4), cell=cell)
+        return got
+    k1, k2 = keys(Z), keys(z2)
+    assert set(k1) == set(k2)
+    for pre in ("point_", "stair_", "cmp_"):
+        tags = [t for t in k1 if t.startswith(pre)]
+        assert tags and all(k1[t] != k2[t] for t in tags), pre
+        assert all(json.loads(k1[t])["z"] == {k: list(v) for k, v in Z.items()} for t in tags)

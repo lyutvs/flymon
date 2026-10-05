@@ -708,7 +708,8 @@ def compare_filters(theta, vals: dict, z: dict, ys, n_rep: int | None = None, ce
     cal = {m: calibrate_y(theta, getattr(ys, f), m, idx, z, ys) for m, f in MODES}
     shp = x_oc.grid_shape(ys)
     ones = [1.0] * ys.f_max
-    key0 = dict(theta=w_oc.summary(theta), n_rep=n_rep, root=root, cal={m: c["corners"] for m, c in cal.items()})
+    key0 = dict(theta=w_oc.summary(theta), n_rep=n_rep, root=root, cal={m: c["corners"] for m, c in cal.items()},
+                z={k: list(v) for k, v in z.items()})                # z_V enters evaluate_y
     L = np.linalg.cholesky(theta["pair_cov"] + ys.chol_jitter * np.eye(4))
     raw = theta["m0s"] + (rng(root, TAG_ACCEPT).standard_normal((n_rep * ys.k_cap, 4)) @ L.T).reshape(-1, 2, 2)
     sdp = w_oc.sd_pre(theta, z)
@@ -899,7 +900,8 @@ def precheck_y(theta, z: dict, ys, k_ranges, n_rep: int | None = None, cell=run_
     cal = {m: calibrate_y(theta, getattr(ys, f), m, idx, z, ys) for m, f in MODES}
     shp = x_oc.grid_shape(ys)
     ones = [1.0] * ys.f_max
-    key0 = dict(theta=w_oc.summary(theta), root=root, n_rep=n_rep, cal={m: c["corners"] for m, c in cal.items()})
+    key0 = dict(theta=w_oc.summary(theta), root=root, n_rep=n_rep, cal={m: c["corners"] for m, c in cal.items()},
+                z={k: list(v) for k, v in z.items()})                # z_V enters evaluate_y
     point, stairs, fills = {}, {}, {}
 
     def run(mix, gi, g, mi, si, sc):

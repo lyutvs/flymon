@@ -535,9 +535,8 @@ class Runner:
         def tick(done, todo):
             self._prog_add("pilot", time.perf_counter() - tick.t)
             tick.t = time.perf_counter()
-        tick.t = time.perf_counter()
+        tick.t = t0                                       # wall time from stage entry (context builds included)
         m = self.ctx["pilot_measure"](rows, self.pool, tick)
-        wall = self._prog_add("pilot", time.perf_counter() - tick.t)
         cands = {k: wpairs[k] for k in ys.pilot_w_pairs}
         cands.update({k: m["pairs"][k] for k in ys.pilot_v_pairs})
         adm = y_rules.admission({k: d["pre"] for k, d in cands.items()}, z, ys)
@@ -570,8 +569,8 @@ class Runner:
                 raise KeyError(f"V 짝수 블록 오라클에 {len(missing)}쌍 없음")
             flip = dict(y_rules.flip_record({k: self._oracle_values(even[k], z) for k in w_vals}, w_vals, ys),
                         available=True)
-        except (KeyError, AttributeError, RuntimeError, ValueError) as e:
-            flip = dict(available=False, reason=str(e))
+        except Exception as e:                            # record only: never crashes or steers the pilot
+            flip = dict(available=False, reason=str(e), error=f"{type(e).__name__}: {e}")
         facts = dict(w_naive=y_rules.fact_flags(w_vals, dict(zip(ys.pilot_w_pairs, ys.pilot_w_naive)), ys),
                      v_oracle=y_rules.fact_flags({k: v for k, v in v_vals.items() if v},
                                                  dict(zip(ys.pilot_v_pairs, ys.pilot_v_oracle)), ys))
@@ -591,6 +590,7 @@ class Runner:
                     z_V={k: list(v) for k, v in z.items()}, detail_path=ys.pilot_detail, detail_sha256=sha256_file(p),
                     note="Y.4: 파일럿은 주 세트 밖(W 균형 3 · V 세트 후보 4), 판정 코드는 탐색 라벨. θ는 거름 통과 쌍만, Σ는 "
                          "Earthquake 묶기 뒤 대각 + W V0 상관(Y.9.2 P1-3).")
+        wall = self._prog_add("pilot", time.perf_counter() - tick.t)   # stop just before the block write
         return self._write("pilot", body, wall)
 
     # ================================================================ order 5: the point-θ precheck (Y.6.1)

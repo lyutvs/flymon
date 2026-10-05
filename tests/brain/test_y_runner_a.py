@@ -232,3 +232,40 @@ def test_stage_files():
     assert YS.stage_files("stage0", Y) == [Y.oracle_detail, Y.stage0_detail]
     assert YS.stage_files("reuse", Y) == [Y.oracle_detail]
     assert YS.stage_files("precheck", Y) == [Y.oracle_detail, Y.precheck_detail]
+
+
+def test_flip_record_error_never_changes_the_pilot(w):
+    """Any exception in the record-only oracle-vs-pilot flip record (here TypeError, as on a cache miss with
+    pool=None) is recorded and leaves the pilot block and its decision unchanged."""
+    w.runner().stage_stage0()
+    w.runner().stage_reuse()
+    base = w.runner().stage_pilot()
+    Path(Y.summary).write_text(json.dumps({k: v for k, v in doc().items() if k != "pilot"}))
+
+    def bad(keys, z):
+        raise TypeError("'NoneType' object is not iterable")
+    w.ctx["v_even_oracle"] = bad
+    w.ys = dataclasses.replace(w.ys, archive_root=str(w.arch) + "2")   # the detail file differs (flip), so a new archive
+    out = w.runner().stage_pilot()
+    assert out == doc()["pilot"]
+    assert out["flip"]["available"] is False
+    assert out["flip"]["error"] == "TypeError: 'NoneType' object is not iterable"
+    for k in ("outcome", "n_admitted", "n_sigma", "admission", "theta", "exploratory", "record", "candidates"):
+        assert out[k] == base[k], k
+
+
+def test_pilot_wall_time_covers_pre_measurement_work(w):
+    import time
+    w.runner().stage_stage0()
+    w.runner().stage_reuse()
+    slow = w.ctx["v_candidates"]
+
+    def v_candidates(ys):
+        time.sleep(0.5)
+        return slow(ys)
+    w.ctx["v_candidates"] = v_candidates
+    t = time.perf_counter()
+    w.runner().stage_pilot()
+    total = time.perf_counter() - t
+    led = [e for e in doc()["budget"]["ledger"] if e["stage"] == "pilot"]
+    assert len(led) == 1 and 0.5 <= led[0]["wall_s"] <= total
