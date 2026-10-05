@@ -29,7 +29,7 @@ def _declared_without_w() -> set:
     return out
 
 
-def w_seeds(n_cand=SPEC.n_b_expected + SPEC.n_a_expected, n_pilot=16, k_max=32) -> tuple:
+def w_seeds(n_cand=SPEC.n_cand_max, n_pilot=SPEC.n_pilot_max, k_max=32) -> tuple:
     probes, trains = set(), set()
     for c in range(n_cand):
         for f in range(SPEC.f_max):
@@ -116,6 +116,7 @@ def test_numbers():
                                                                                               200.0, 1.0)
     assert (SPEC.first_turn, SPEC.last_turn, SPEC.n_b_expected, SPEC.n_a_expected) == (306, 1985, 167, 82)
     assert SPEC.budget_h == 24.0 and SPEC.min_gate_pairs == 4 and SPEC.cal_floor_rule == "zero"
+    assert SPEC.synth_reps >= 1000
     assert SPEC.z_v() == {"A": (16.917, 12.484), "P": (80.167, 29.775)}
     assert dict(SPEC.v_commits) == {"z": "928eaad", "kc_input": "7dc199d", "set": "cf0b3b2", "judge": "a279a56"}
     assert (SPEC.summary, SPEC.cache_dir, SPEC.archive_root) == (

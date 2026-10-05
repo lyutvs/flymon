@@ -71,6 +71,7 @@ class WSpec:
     record_dprimes: tuple = (0.5, 1.0, 1.5, 2.0)
     oc_chunk: int = 50
     cal_floor_rule: str = "zero"                   # W.9.10 2: "zero" (null = zero DAN injection); "unreachable" = literal
+    synth_reps: int = 1000                         # stage 0: experiments per synthetic-validation check (P2-11)
     # ---- the pilot (W.3 3, W.9.4, W.9.8 H6) --------------------------------------------------------------------------
     pilot_flies: int = 8
     pilot_probes: int = 8
