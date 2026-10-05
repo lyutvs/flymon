@@ -132,7 +132,7 @@ def test_smoke_changes_scale_only():
 
 
 def test_no_w_file_holds_another_tracks_block_as_a_literal():
-    files = sorted((ROOT / "flymon/brain").glob("w_*.py")) + [p for p in [ROOT / "scripts/run_w.py"] if p.exists()]
+    files = sorted((ROOT / "flymon/brain").glob("w_*.py")) + [ROOT / "scripts/run_w.py"]
     for p in files:
         ints = {n.value for n in ast.walk(ast.parse(p.read_text()))
                 if isinstance(n, ast.Constant) and type(n.value) is int}
