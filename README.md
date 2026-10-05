@@ -209,6 +209,11 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   재사용·끝점 재현(V 관문 ② 처벌 행 8개·순진 프로브 6개 비트 일치, 보상 경로 양성)과 파일럿(16쌍 × 8마리, 보상 쌍 비율 1.0, 처벌 0.875, 부호 반대 0.0, X·Y 바닥 0.033)은 통과했다(탐색 판정 11 PASS / 5 FAIL).
   작동 특성에서 어떤 설계(q 0.5–0.75, K 8/16, F 8–32, k 4–8)도 G.6을 맞추지 못했다 — 참 d′ 1.5의 검정력 점 추정 최대 **0.449**(k 4), F에 대해 평평(약 0.82^k: 쌍마다 약 18% 실패, 파일럿 모형의 쌍 수준 이질성과 맞는 해석), d′ 0.5의 거짓 통과 0.0; 부트스트랩 재보정 29/200 실패로 한계 0.000 / 1.000. 드리프트만의 보상 수준 d′ −2.35.
   주 세트(턴 306–1985)는 쓰지 않아 남아 있다. 다음은 사용자 판단이다.
+- **관문 STOP(F v4 학습 시험 "절반 이상", 2026-10-06, 부록 X.10 — STOP_OC_UNREACHABLE, 판정 없음)**: W와 같은 지렛대·프로토콜·관문 쌍으로 세트 판정만 "판정 가능 관문 쌍 중 PASS 비율 ≥ p_set(최소 3쌍)"으로 바꾸고 보정 실패를 상태별로 처리하는 X를 선언했고, 레드팀 뒤 점 θ 사전 점검 관문을 앞에 두었다.
+  순서 0(W 보정 진단 재현: W의 29회 실패는 모두 처벌 손잡이 b의 미수렴이고 반복 160으로도 회복 0, X의 브래킷 ×4 규칙에서는 b 바닥이 검정력 쪽 79/200 · 거짓 통과 쪽 44/200; 합성 검증·P2-6 통과)는 PASS였다.
+  사전 점검에서 750 설계 어디서도 k 4–8 모두 점 검정력 ≥ 0.80에 닿지 않았다 — 최대 p_set 0.5 · q 0.5 · K 16 · F 8의 **0.608 / 0.730 / 0.795 / 0.735 / 0.790**(군집 최악 g 1.0; g 0에서는 0.827–0.991), 거짓 통과는 모든 곳에서 0.000.
+  기록 전용 진단: 쌍당 PASS는 F 8–64에서 평평(천장 0.68–0.82)이고, g 1.0 실패는 보상 수준의 순진 쌍 효과 약 42%, 처벌 단계 기계 대조 약 40%, 처벌 바닥 약 12%, 잡음 약 2%다; 균형 쌍 θ(F1, 파일럿 3쌍뿐이라 낙관적일 수 있음)는 0.974–0.993, 순진 반응 하한 거름(F2)은 수용률 0.95 → 0.13에서도 ≤ 0.889, 최소 변경 순위 1은 F1 하나(k 4–8, F 8).
+  주 세트(턴 306–1985)는 쓰지 않아 남아 있다. 사용자 사전 승인(2026-10-06)에 따라 다음은 순진 측정 기반 관문 쌍 거름(부록 Y) 선언이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -368,6 +373,19 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   pair-level heterogeneity in the pilot model), false pass at d' 0.5 is 0.0, and 29/200 bootstrap recalibrations
   failed so the limits are 0.000 / 1.000. Drift-only reward-level d' is -2.35. The main set (turns 306-1985) was not
   used and stays available. Next is the user's decision.
+- **F v4 learning test ("at least half"): gate stop STOP_OC_UNREACHABLE, no judgement (2026-10-06, appendix
+  X.10).** X kept W's lever, protocol and gate pairs, changed only the set verdict to "PASS share of judgeable gate
+  pairs >= p_set (at least 3 pairs)" plus per-status calibration-failure handling, and after the red team put a
+  point-theta precheck gate first. Stage 0 passed (W calibration diagnosis reproduced: all 29 W failures are
+  punishment-handle b non-convergence and 160 steps recover none; under X's x4 bracket b hits the floor on 79/200
+  power-side and 44/200 false-side draws; synthetic checks and P2-6 pass). In the precheck no design of 750 reached
+  point power >= 0.80 at every k 4-8: the best, p_set 0.5 q 0.5 K 16 F 8, gives **0.608 / 0.730 / 0.795 / 0.735 /
+  0.790** (worst cluster g 1.0; 0.827-0.991 at g 0), with false pass 0.000 everywhere. Record-only diagnostics: per-pair
+  PASS is flat in F 8-64 (ceiling 0.68-0.82); at g 1.0 failures are ~42% reward-level naive pair effect, ~40%
+  punishment-stage mechanism control, ~12% punishment floor, ~2% noise; a balanced-pair theta (F1, only 3 pilot pairs,
+  likely optimistic) gives 0.974-0.993, naive-response floors (F2) stay <= 0.889 even at acceptance 0.95 -> 0.13, and
+  the minimum-change rank 1 is F1 alone (k 4-8, F 8). The main set (turns 306-1985) was not used and stays available.
+  Per the user's standing approval (2026-10-06), next is a naive-measurement pair-filter declaration (appendix Y).
 
 ## 실행
 
