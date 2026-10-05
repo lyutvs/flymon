@@ -10,6 +10,11 @@
     "at": "2026-10-05T21:05:44.087504+00:00",
     "stage": "oracle",
     "wall_s": 11038.613522957894
+   },
+   {
+    "at": "2026-10-05T21:16:37.327335+00:00",
+    "stage": "stage0",
+    "wall_s": 541.5917549158912
    }
   ]
  },
@@ -732,6 +737,1197 @@
    "P": [
     80.167,
     29.775
+   ]
+  }
+ },
+ "stage0": {
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/stage0/y/oracle.json",
+    "sha256": "fa4750ac80883bcdc571e8e5b6ba7cc3d25f320549988dc0c3ab8823f75768bb",
+    "src": "results/y/oracle.json"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/y/stage0/y/stage0.json",
+    "sha256": "5c6526da73acffb7eb81db9bf6a16a7eb8c8c1ea5b480256635554b55fdbf0c2",
+    "src": "results/y/stage0.json"
+   }
+  ],
+  "bit_identity": {
+   "a": 36.750649294843306,
+   "b": 6.513264378306776,
+   "by_g": {
+    "g0.0": {
+     "equal": true,
+     "max_abs_diff": 0.0
+    },
+    "g0.5": {
+     "equal": true,
+     "max_abs_diff": 0.0
+    },
+    "g1.0": {
+     "equal": true,
+     "max_abs_diff": 0.0
+    }
+   },
+   "equal": true,
+   "n_rep": 200
+  },
+  "compare": {
+   "calibration": {
+    "max": {
+     "failure": null,
+     "ok": true
+    },
+    "min": {
+     "failure": null,
+     "ok": true
+    }
+   },
+   "candidates": {
+    "a": {
+     "acceptance": 0.05155,
+     "by_range": {
+      "[4, 8]": {
+       "best": {
+        "F": 8,
+        "K": 16,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         1,
+         0
+        ],
+        "k": [
+         4,
+         5,
+         6,
+         7,
+         8
+        ],
+        "k_range": [
+         4,
+         8
+        ],
+        "p_set": 0.5,
+        "pmin": 0.61325,
+        "power_by_k": [
+         0.61325,
+         0.72125,
+         0.803,
+         0.7435,
+         0.79475
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.82375,
+         0.94675,
+         0.9855,
+         0.97025,
+         0.99025
+        ]
+       },
+       "fill_flag": false
+      },
+      "[6, 10]": {
+       "best": {
+        "F": 12,
+        "K": 16,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         1,
+         4
+        ],
+        "k": [
+         6,
+         7,
+         8,
+         9,
+         10
+        ],
+        "k_range": [
+         6,
+         10
+        ],
+        "p_set": 0.5,
+        "pmin": 0.74375,
+        "power_by_k": [
+         0.801,
+         0.74375,
+         0.793,
+         0.74575,
+         0.78925
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.985,
+         0.96925,
+         0.99075,
+         0.98125,
+         0.99475
+        ]
+       },
+       "fill_flag": false
+      }
+     },
+     "fill_flag": false,
+     "label": "\uade0\ud615\ub9cc",
+     "pass_counts": {
+      "balanced": 3,
+      "pilot": 3
+     }
+    },
+    "b": {
+     "acceptance": 0.042675,
+     "by_range": {
+      "[4, 8]": {
+       "best": {
+        "F": 32,
+        "K": 16,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         1,
+         24
+        ],
+        "k": [
+         4,
+         5,
+         6,
+         7,
+         8
+        ],
+        "k_range": [
+         4,
+         8
+        ],
+        "p_set": 0.5,
+        "pmin": 0.81,
+        "power_by_k": [
+         0.81,
+         0.886,
+         0.91925,
+         0.8925,
+         0.92275
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.93575,
+         0.9875,
+         0.99775,
+         0.99625,
+         0.999
+        ]
+       },
+       "fill_flag": false
+      },
+      "[6, 10]": {
+       "best": {
+        "F": 8,
+        "K": 8,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "k": [
+         6,
+         7,
+         8,
+         9,
+         10
+        ],
+        "k_range": [
+         6,
+         10
+        ],
+        "p_set": 0.5,
+        "pmin": 0.89275,
+        "power_by_k": [
+         0.91725,
+         0.89275,
+         0.9225,
+         0.90175,
+         0.924
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.99725,
+         0.99475,
+         0.99925,
+         0.99875,
+         0.9995
+        ]
+       },
+       "fill_flag": false
+      }
+     },
+     "fill_flag": false,
+     "label": "Y \uac70\ub984",
+     "pass_counts": {
+      "balanced": 3,
+      "pilot": 3
+     }
+    },
+    "c": {
+     "acceptance": 0.04915,
+     "by_range": {
+      "[4, 8]": {
+       "best": {
+        "F": 12,
+        "K": 16,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         1,
+         4
+        ],
+        "k": [
+         4,
+         5,
+         6,
+         7,
+         8
+        ],
+        "k_range": [
+         4,
+         8
+        ],
+        "p_set": 0.5,
+        "pmin": 0.7125,
+        "power_by_k": [
+         0.7125,
+         0.81825,
+         0.8755,
+         0.83,
+         0.8755
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.87175,
+         0.96625,
+         0.991,
+         0.9825,
+         0.99475
+        ]
+       },
+       "fill_flag": false
+      },
+      "[6, 10]": {
+       "best": {
+        "F": 8,
+        "K": 16,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         1,
+         0
+        ],
+        "k": [
+         6,
+         7,
+         8,
+         9,
+         10
+        ],
+        "k_range": [
+         6,
+         10
+        ],
+        "p_set": 0.5,
+        "pmin": 0.83325,
+        "power_by_k": [
+         0.8775,
+         0.83325,
+         0.87825,
+         0.8415,
+         0.8805
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.99125,
+         0.98175,
+         0.99475,
+         0.99125,
+         0.997
+        ]
+       },
+       "fill_flag": false
+      }
+     },
+     "fill_flag": false,
+     "label": "F2(0)",
+     "pass_counts": {
+      "balanced": 3,
+      "pilot": 3
+     }
+    },
+    "d": {
+     "acceptance": 0.022575,
+     "by_range": {
+      "[4, 8]": {
+       "best": {
+        "F": 30,
+        "K": 8,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         0,
+         22
+        ],
+        "k": [
+         4,
+         5,
+         6,
+         7,
+         8
+        ],
+        "k_range": [
+         4,
+         8
+        ],
+        "p_set": 0.5,
+        "pmin": 0.7435,
+        "power_by_k": [
+         0.7435,
+         0.82675,
+         0.876,
+         0.83525,
+         0.87275
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.8935,
+         0.97125,
+         0.992,
+         0.986,
+         0.99775
+        ]
+       },
+       "fill_flag": true
+      },
+      "[6, 10]": {
+       "best": {
+        "F": 14,
+        "K": 8,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         0,
+         6
+        ],
+        "k": [
+         6,
+         7,
+         8,
+         9,
+         10
+        ],
+        "k_range": [
+         6,
+         10
+        ],
+        "p_set": 0.5,
+        "pmin": 0.8365,
+        "power_by_k": [
+         0.87625,
+         0.8365,
+         0.8735,
+         0.843,
+         0.86925
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.9925,
+         0.98575,
+         0.99675,
+         0.994,
+         0.999
+        ]
+       },
+       "fill_flag": true
+      }
+     },
+     "fill_flag": true,
+     "label": "F2(25)",
+     "pass_counts": {
+      "balanced": 3,
+      "pilot": 3
+     }
+    },
+    "e": {
+     "acceptance": 0.026675,
+     "by_range": {
+      "[4, 8]": {
+       "best": {
+        "F": 10,
+        "K": 16,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         1,
+         2
+        ],
+        "k": [
+         4,
+         5,
+         6,
+         7,
+         8
+        ],
+        "k_range": [
+         4,
+         8
+        ],
+        "p_set": 0.5,
+        "pmin": 0.77675,
+        "power_by_k": [
+         0.77675,
+         0.85325,
+         0.89375,
+         0.862,
+         0.89325
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.91675,
+         0.983,
+         0.99725,
+         0.994,
+         0.99925
+        ]
+       },
+       "fill_flag": true
+      },
+      "[6, 10]": {
+       "best": {
+        "F": 20,
+        "K": 8,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         0,
+         12
+        ],
+        "k": [
+         6,
+         7,
+         8,
+         9,
+         10
+        ],
+        "k_range": [
+         6,
+         10
+        ],
+        "p_set": 0.5,
+        "pmin": 0.86275,
+        "power_by_k": [
+         0.8945,
+         0.86275,
+         0.893,
+         0.87175,
+         0.89425
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.998,
+         0.99325,
+         0.9985,
+         0.997,
+         0.99975
+        ]
+       },
+       "fill_flag": true
+      }
+     },
+     "fill_flag": true,
+     "label": "\uc0ac\uc6a9\uc790 31 \ub2e8\ub3c5",
+     "pass_counts": {
+      "balanced": 3,
+      "pilot": 3
+     }
+    },
+    "f": {
+     "acceptance": 0.3638,
+     "by_range": {
+      "[4, 8]": {
+       "best": {
+        "F": 10,
+        "K": 8,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         0,
+         2
+        ],
+        "k": [
+         4,
+         5,
+         6,
+         7,
+         8
+        ],
+        "k_range": [
+         4,
+         8
+        ],
+        "p_set": 0.5,
+        "pmin": 0.90425,
+        "power_by_k": [
+         0.90425,
+         0.95525,
+         0.9745,
+         0.96075,
+         0.9725
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.97175,
+         0.99475,
+         0.99875,
+         0.99825,
+         0.99975
+        ]
+       },
+       "fill_flag": false
+      },
+      "[6, 10]": {
+       "best": {
+        "F": 8,
+        "K": 8,
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "fmax": 0.0,
+        "index": [
+         0,
+         0,
+         0,
+         0
+        ],
+        "k": [
+         6,
+         7,
+         8,
+         9,
+         10
+        ],
+        "k_range": [
+         6,
+         10
+        ],
+        "p_set": 0.5,
+        "pmin": 0.96125,
+        "power_by_k": [
+         0.975,
+         0.96125,
+         0.97275,
+         0.96425,
+         0.974
+        ],
+        "q": 0.5,
+        "rule": "false_ok_max_power"
+       },
+       "best_g0": {
+        "false_by_k": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "power_by_k": [
+         0.99875,
+         0.99825,
+         1.0,
+         0.9995,
+         1.0
+        ]
+       },
+       "fill_flag": false
+      }
+     },
+     "fill_flag": false,
+     "label": "\uc0ac\uc6a9\uc790 \ud55c\ucabd + 31",
+     "pass_counts": {
+      "balanced": 3,
+      "pilot": 11
+     }
+    }
+   },
+   "n_rep": 4000,
+   "note": "\ubaa8\ud615 \uc548\uc758 \uac70\ub984\uc740 \uae30\ub300\uac12 base\uc5d0 \uc801\uc6a9, \uc2e4\uc81c \uac70\ub984\uc740 \uce21\uc815 \uc911\uc559\uac12\uc5d0 \uc801\uc6a9(Y.3.4) \u2014 \uae30\ub85d \uc804\uc6a9",
+   "seed": 77300000,
+   "timing_s": 515.2990939170122
+  },
+  "decision_files": {
+   "flymon/brain/y_oc.py": "15807482f7bebb9bdb00f9709393a7f8888bd920943120fd14cc24024752239d",
+   "flymon/brain/y_rules.py": "9501db05071412833bdb8e0fad31caed6960f7f975493e405dd514a05fdfcd22",
+   "flymon/brain/y_runner.py": "280ffc92fa6e1ebd6679c9597066a4755ba20e2f24e465e1badfc8b27d930d0e",
+   "flymon/brain/y_spec.py": "bd0b4952798a4b5cf025a7eb2d1e66612ec6b21c9cbaef09c32f0ca949049618",
+   "flymon/brain/y_store.py": "1ee1ac907fb9cccd7cbdd13461c53ff2d9a1255e999773e355baa31c6d0a3538",
+   "scripts/run_y.py": "e4294bf6077dcb39b4882e89e836d356a1c6a476da6c0c0f64051889eba0cf55"
+  },
+  "detail_path": "results/y/stage0.json",
+  "detail_sha256": "5c6526da73acffb7eb81db9bf6a16a7eb8c8c1ea5b480256635554b55fdbf0c2",
+  "fixture6": {
+   "counts": {
+    "max": {
+     "coarse_step": {
+      "b": 2
+     },
+     "fails": 0,
+     "floor": 0,
+     "floor_share": 0.0,
+     "handle_status": {
+      "a|ok": 29,
+      "b|ok": 58
+     },
+     "stage": {
+      "a|\u00d71": 29,
+      "b|\u00d71": 58
+     }
+    },
+    "min": {
+     "coarse_step": {
+      "b": 2
+     },
+     "fails": 0,
+     "floor": 0,
+     "floor_share": 0.0,
+     "handle_status": {
+      "a|ok": 29,
+      "b|ok": 58
+     },
+     "stage": {
+      "a|\u00d71": 29,
+      "b|\u00d71": 58
+     }
+    }
+   },
+   "n_failed": 29
+  },
+  "fixtures": {
+   "calibration": {
+    "f1_step": true,
+    "f2_nonmonotone": true,
+    "f3_x2_only": true,
+    "f4_none": true,
+    "f5_above_zero": true,
+    "f7_narrow": true,
+    "f8a_two_knobs": true
+   },
+   "generator": {
+    "accept": true,
+    "f8b_mixture_mc": true,
+    "f9_near_shift": true,
+    "qualify_ranges": true,
+    "select_budget": true,
+    "set_rule": true
+   },
+   "theta": {
+    "merge": true,
+    "sigma_rule": true
+   }
+  },
+  "git": {
+   "commit": "0bc07be98685dc7d7085bc416736d9cbcad002dc",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "k_ranges": [
+   [
+    4,
+    8
+   ],
+   [
+    6,
+    10
+   ]
+  ],
+  "note": "Y.7 0(\uad6d\uba74 A): Y.6.6 \uc804\ubd80 + \uac70\ub984 \ud6c4\ubcf4 \ube44\uad50(Y.3.4, \uae30\ub85d \uc804\uc6a9) + OC \uc2dc\uac04 + \uacb0\uc815 \ud30c\uc77c \ud574\uc2dc + \uc218\uce58 \ud45c. \ubcc0\uc774\ub294 pytest(tests \ud574\uc2dc). \ubb38\ud131 \uc7ac\ud604\uc740 \uae30\ub85d \uc804\uc6a9(20 \u00b7 43 \ubd88\ubcc0).",
+  "oc_timing": {
+   "evaluate_s": 1.5802822499535978,
+   "phase_b_boot_s": 3792.6773998886347,
+   "precheck_point_s": 568.9016099832952,
+   "reconfirm_s": 15170.709599554539,
+   "reps": 400
+  },
+  "outcome": "PASS",
+  "reasons": [],
+  "stage": "stage0",
+  "synthetic": {
+   "big_effect": true,
+   "negative_correlation": true,
+   "ok": true,
+   "one_gate": true,
+   "simple_normal": true,
+   "zero_effect": true
+  },
+  "tables": {
+   "calibration": {
+    "cal_reps": 2000,
+    "cal_tol": 0.02,
+    "coarse_step_flag": 0.1,
+    "fill": {
+     "false": 1.0,
+     "power": 0.0
+    },
+    "grid_steps": 200,
+    "knob_tol": 0.001,
+    "refine_delta": 0.25,
+    "refine_parts": 32,
+    "widen": [
+     1,
+     2,
+     4
+    ]
+   },
+   "designs": {
+    "F": [
+     8,
+     32
+    ],
+    "K": [
+     8,
+     16
+    ],
+    "k_ranges": [
+     [
+      4,
+      8
+     ],
+     [
+      6,
+      10
+     ]
+    ],
+    "n": 1500,
+    "p_set": [
+     0.5,
+     0.625,
+     0.75,
+     0.875,
+     1.0
+    ],
+    "q": [
+     0.5,
+     0.625,
+     0.75
+    ]
+   },
+   "filter": {
+    "c_a": 20.0,
+    "c_p": 43.0,
+    "lenient": [
+     1.0,
+     16.0,
+     34.4
+    ],
+    "naive_max": 0.5
+   },
+   "generator": {
+    "fill_max": 0.01,
+    "scenarios": [
+     "base",
+     "near"
+    ],
+    "tries": 2000
+   },
+   "m_needed": {
+    "duplicates": {
+     "10": [],
+     "4": [
+      [
+       0.5,
+       0.625,
+       0.75
+      ],
+      [
+       0.875,
+       1.0
+      ]
+     ],
+     "5": [
+      [
+       0.625,
+       0.75
+      ],
+      [
+       0.875,
+       1.0
+      ]
+     ],
+     "6": [
+      [
+       0.875,
+       1.0
+      ]
+     ],
+     "7": [
+      [
+       0.875,
+       1.0
+      ]
+     ],
+     "8": [],
+     "9": []
+    },
+    "k": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10
+    ],
+    "m": {
+     "0.5": [
+      3,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5
+     ],
+     "0.625": [
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      7
+     ],
+     "0.75": [
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8
+     ],
+     "0.875": [
+      4,
+      5,
+      6,
+      7,
+      7,
+      8,
+      9
+     ],
+     "1.0": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ]
+    },
+    "note": "\uc911\ubcf5(\uae30\ub85d\uc6a9) \u2014 \uc120\ud0dd \uaddc\uce59\uc740 \ubc14\uafb8\uc9c0 \uc54a\ub294\ub2e4(X.9.1.3 P1-3)"
+   },
+   "pilot": {
+    "candidates": [
+     "a|4|Rock Slide|Strength",
+     "b|2|Mega Drain vs Machamp|Mega Drain vs Tentacruel",
+     "b|10|Surf vs Slowbro|Surf vs Venusaur",
+     "b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy",
+     "a|218|Earthquake|Strength",
+     "a|305|Earthquake|Rock Slide",
+     "a|223|Surf|Earthquake"
+    ],
+    "flies": 8,
+    "min_sigma": 5,
+    "probes": 8
+   },
+   "seeds": {
+    "compare": 77300000,
+    "oc": 77000000,
+    "pilot_probe": "60_000_000 + j\u00b74_000 + f\u00b7100 + k",
+    "pilot_train": "61_000_000 + j\u00b740_000 + f\u00b71_000 + t",
+    "precheck": 77200000,
+    "reconfirm": 78000000,
+    "records": 78200000,
+    "small_boot": 78100000,
+    "tags": {
+     "R-V": 5385558,
+     "R-pre": 352949662309,
+     "accept": 8,
+     "boot": 3,
+     "cal": 1,
+     "mix": 7170424,
+     "near": 1852137842,
+     "p26": 10,
+     "point": 2,
+     "record": 5,
+     "synth": 9,
+     "thr": 7628914
+    }
+   }
+  },
+  "tests": {
+   "tests/brain/test_y_cal.py": "0cc2e25a97645c4f7c233b8c37cca241ed1b3c0abb469ab604bdc1504a92aa2a",
+   "tests/brain/test_y_eval.py": "7edc369a21d8616428f8eeffd6f088befe3ae026a4d0151f1264cee415182845",
+   "tests/brain/test_y_precheck.py": "74ac2c436429f0bf59da96e95914a6035379183b9357819212e989fdc3b3bc94",
+   "tests/brain/test_y_records.py": "e48ccdc5d836b2f5f921f557eb8dbba9305e4c51502aba155ecb6b0c9f4e2174",
+   "tests/brain/test_y_rules_a.py": "eed0e3c3416e20081d39a540aa24eb256473743dfbdbed2d1df5badb58886bc9",
+   "tests/brain/test_y_runner_a.py": "8fb28d4e27463a26e9b88df1a8c61033a9993c8ba23b9c982f6dffc41ea88cd9",
+   "tests/brain/test_y_spec.py": "ac761ee62cfd8a15e79bc0c89c2cf1e05d566e9730de3f769e25160426675d56"
+  },
+  "thresholds": {
+   "a": 36.750649294843306,
+   "b": 6.513264378306776,
+   "c_A_calc": 19.25,
+   "c_A_int": 20,
+   "c_P_calc": 42.0,
+   "c_P_int": 43,
+   "matches_declared": true,
+   "matches_expected": true,
+   "n_resid": 1024,
+   "note": "\uae30\ub85d \uc804\uc6a9 \u2014 \uac12\uc774 \uc5b4\ub5bb\ub4e0 c_A 20 \u00b7 c_P 43\uc740 \ubc14\ub00c\uc9c0 \uc54a\ub294\ub2e4(Y.6.6, Y.9.2 P0-1)"
+  },
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_files": {
+   "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+   "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+   "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+   "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+   "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+   "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+   "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+   "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+   "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+   "scripts/run_w.py": "ed1f1aea95a409e5cb60cc4da10c14500f7949325a21d55af72cbebaffb0d7df"
+  },
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-05T21:16:37.327335+00:00",
+  "x_files": {
+   "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+   "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+   "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+   "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+   "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+   "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+   "scripts/run_x.py": "c52e9a2f1669c60b5654efe15bb87a91801e3a39d4d16ac5b9a376c7308f205d"
+  },
+  "z_V": {
+   "A": [
+    16.916666666666668,
+    12.483878492769072
+   ],
+   "P": [
+    80.16666666666667,
+    29.775432639827233
    ]
   }
  }
