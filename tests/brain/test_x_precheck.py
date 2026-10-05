@@ -69,7 +69,16 @@ def test_precheck_layout_and_rule(theta):
     ok = ((np.round(pw - 0.80, 9) >= 0) & (np.round(fp - 0.05, 9) <= 0)).all(-1)
     assert pc["passed"] == bool(ok.any()) and len(pc["passing"]) == int(ok.sum())
     assert len(pc["at_f32"]) == 5 * 3 * 2 and pc["at_f32"][0]["F"] == 32 and pc["seed"] == 43_200_000
-    assert pc["best_power"]["rule"] == "max_power" and pc["records_target"]["rule"] != "max_power"
+    assert pc["best_power"]["rule"] == "max_power"
+    rt, d = pc["records_target"], 9                                    # X.9.1.1 records target (Q7)
+    pmin, fmax = np.round(pw.min(-1), d), np.round(fp.max(-1), d)
+    ok = np.round(fp.max(-1) - 0.05, d) <= 0
+    i = tuple(rt["index"])
+    if ok.any():                                                       # false target met → max point power among them
+        assert rt["rule"] == "false_ok_max_power" and ok[i] and pmin[i] == pmin[ok].max()
+    else:                                                              # none → the smallest max_k false pass
+        assert rt["rule"] == "min_false" and fmax[i] == fmax.min()
+    assert rt["power_by_k"] == pw[i].tolist() and rt["false_by_k"] == fp[i].tolist()
 
 
 def test_precheck_pass_and_stop_decisions(theta):
@@ -89,6 +98,15 @@ def test_precheck_calibration_failure_fills_and_sentence(theta):
     assert not pc["calibration"]["min"]["ok"] and np.all(np.asarray(pc["power"]) == 0.0) and not pc["passed"]
     s = x_rules.precheck_decision(pc)["sentence"]
     assert s.startswith(PREFIX + "보정 불가 — min: a ") and "; max: a ok, b " in s and s.endswith(SUFFIX)
+    if pc["calibration"]["min"]["b"] is None:
+        assert "min: a " + pc["calibration"]["min"]["a"]["status"] + ", b 미시도; max: " in s
+
+
+def test_precheck_paren_b_not_attempted():
+    cal = dict(min=dict(ok=False, a=dict(value=None, status="floor"), b=None),
+               max=dict(ok=False, a=dict(value=0.1, status="ok"), b=dict(value=None, status="no_convergence")))
+    assert x_rules.precheck_paren(dict(calibration=cal)) == ("보정 불가 — min: a floor, b 미시도; "
+                                                            "max: a ok, b no_convergence")
 
 
 def test_point_records_layout(theta):

@@ -8,11 +8,11 @@ from flymon.brain import x_verdict as XV
 from flymon.brain.x_spec import SPEC as XS
 
 P, F, B, I = WV.P_PASS, WV.P_FAIL, WV.P_BAND, WV.P_INVALID
-FIX = [  # (n, m, b, p_set) -> verdict, X.4.6 + one BAND-robustness case
+FIX = [  # (n, m, b, p_set) -> verdict, X.4.6 + one BAND-robustness case + FAIL's n ≥ 4 guard
     ((4, 2, 0, 0.5), XV.S_FAIL), ((4, 3, 0, 0.75), XV.S_PASS), ((4, 3, 0, 0.875), XV.S_FAIL),
     ((6, 3, 0, 0.625), XV.S_FAIL), ((5, 3, 1, 0.5), XV.S_PASS), ((4, 2, 2, 0.5), XV.S_UNDECIDED),
     ((3, 3, 1, 0.5), XV.S_UNDECIDED), ((4, 1, 1, 0.5), XV.S_FAIL), ((8, 8, 0, 1.0), XV.S_PASS),
-    ((8, 7, 0, 1.0), XV.S_FAIL), ((4, 3, 2, 0.75), XV.S_UNDECIDED)]
+    ((8, 7, 0, 1.0), XV.S_FAIL), ((4, 3, 2, 0.75), XV.S_UNDECIDED), ((3, 0, 1, 0.5), XV.S_UNDECIDED)]
 
 
 @pytest.mark.parametrize("args,want", FIX)
@@ -29,10 +29,12 @@ def test_causes():
 
 def test_mutations_are_caught():
     # m ≥ 3 removed → (4, 2, 0, 0.5) would PASS; BAND robustness removed → (4, 3, 2, 0.75) would PASS;
-    # the (m + b) < 3 branch removed → (4, 2, 0, 0.5) would be UNDECIDED; BAND counted in n → (3, 3, 1, 0.5) would PASS
+    # the (m + b) < 3 branch removed → (4, 2, 0, 0.5) would be UNDECIDED; BAND counted in n → (3, 3, 1, 0.5) would PASS;
+    # FAIL's n ≥ 4 guard removed → (3, 0, 1, 0.5) would FAIL
     assert int(XV.set_code_counts(4, 2, 0, False, 0.5, XS)) == XV.S_FAIL
     assert int(XV.set_code_counts(4, 3, 2, False, 0.75, XS)) == XV.S_UNDECIDED
     assert int(XV.set_code_counts(3, 3, 1, False, 0.5, XS)) == XV.S_UNDECIDED
+    assert int(XV.set_code_counts(3, 0, 1, False, 0.5, XS)) == XV.S_UNDECIDED
 
 
 def test_stop_machine_first():

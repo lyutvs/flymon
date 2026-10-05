@@ -100,7 +100,9 @@ def precheck_paren(pc: dict) -> str:
     cal = pc["calibration"]
     if not (cal["min"]["ok"] and cal["max"]["ok"]):
         def st(m, h):
-            return (cal[m].get(h) or {}).get("status")
+            if cal[m].get(h) is None:                        # a failed → b never attempted (x_oc.calibrate)
+                return "미시도"
+            return cal[m][h].get("status")
         return "보정 불가 — " + "; ".join(f"{m}: a {st(m, 'a')}, b {st(m, 'b')}" for m in ("min", "max"))
     rows = "; ".join(f"p_set {r['p_set']}·q {r['q']}·K {r['K']}·F {r['F']}: " + ", ".join(
         f"k {k} 점 검정력 {pw:.3f} / 점 거짓 통과 {fp:.3f}" for k, pw, fp in zip(r["k"], r["power"], r["false"]))
