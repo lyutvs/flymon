@@ -65,7 +65,7 @@ def test_seed_roots_are_new():
     out, seen = set(), set()
     _collect(SPEC, out, seen)
     assert out == {60_000_000, 61_000_000, 62_000_000, 64_000_000, 77_000_000, 77_100_000, 77_110_000,
-                   77_150_000, 77_200_000, 77_300_000}
+                   77_150_000, 77_200_000, 77_300_000, 78_000_000, 78_100_000, 78_200_000}
     assert not any(dataclasses.is_dataclass(getattr(SPEC, f.name)) for f in dataclasses.fields(YSpec))
     declared, seen = set(d6a.SEEDS), set()
     for path, mod in MODULES.items():
@@ -75,9 +75,9 @@ def test_seed_roots_are_new():
         _collect(m.SPEC, declared, seen)
         if hasattr(m, "smoke"):
             _collect(m.smoke(m.SPEC), declared, seen)
-    assert not any(60_000_000 <= s < 77_400_000 for s in declared)
+    assert not any(60_000_000 <= s < 78_300_000 for s in declared)
     o = W.oracle_seeds()
-    assert not any(60_000_000 <= s < 77_400_000 for s in o["act"] + o["select"] + o["report"])
+    assert not any(60_000_000 <= s < 78_300_000 for s in o["act"] + o["select"] + o["report"])
 
 
 def _numbers(path: Path) -> set:
@@ -92,3 +92,48 @@ def test_no_y_file_but_y_spec_holds_a_number():
     for p in files:
         bad = {v for v in _numbers(p) if (type(v) is int and abs(v) > 16) or (type(v) is float and v not in (0.0, 1.0))}
         assert not bad, (p.name, bad)
+
+
+SHARED = ("bar", "band_width", "naive_max", "mech_min", "round_digits", "min_gate_pairs", "min_pass_pairs",
+          "p_set_grid", "q_grid", "k_grid", "f_min", "f_max", "k_min", "envelope", "envelope_solo_from", "d_power",
+          "p_power", "d_false", "p_false", "oc_reps", "cal_reps", "cal_tol", "cal_iter", "boot_draws", "boot_reps",
+          "boot_level", "cluster_grid", "record_dprimes", "oc_chunk", "cal_floor_rule", "chol_jitter",
+          "w_rejection_tries", "synth_reps", "synth_null_max", "synth_big_min", "synth_big_dprime",
+          "synth_drift_dprime_min", "simple_normal_fs", "simple_normal_reps", "synth_base", "synth_sd", "synth_corr",
+          "synth_learn", "synth_drift", "het_scales", "het_low_dprime", "het_all_dprime", "precheck_reps",
+          "p26_reps", "budget_h")
+
+
+def test_shared_numbers_equal_x_spec():
+    from flymon.brain.x_spec import SPEC as XS
+    for n in SHARED:
+        assert getattr(SPEC, n) == getattr(XS, n), n
+    assert SPEC.k_cap == max(hi for _, hi in SPEC.k_ranges) == 10 and XS.k_cap == SPEC.k_ranges[0][1] == 8
+    assert SPEC.k_min == min(lo for lo, _ in SPEC.k_ranges)
+
+
+def test_phase_a_numbers():
+    assert (SPEC.grid_steps, SPEC.widen, SPEC.refine_delta, SPEC.refine_parts, SPEC.knob_tol) == (
+        200, (1, 2, 4), 0.25, 32, 1e-3)
+    assert (SPEC.coarse_step_flag, SPEC.tries, SPEC.fill_max) == (0.1, 2000, 0.01)
+    assert (SPEC.small_boot_draws, SPEC.floor_share, SPEC.floor_resid_n, SPEC.thr_step) == (50, 0.10, 1024, 0.25)
+    assert SPEC.thr_expected == (19.25, 42.0) and (SPEC.cost_margin, SPEC.reconfirm_reps, SPEC.reconfirm_max) == (
+        1.3, 1600, 5)
+    assert (SPEC.reconfirm_seed, SPEC.small_boot_seed, SPEC.records_seed) == (78_000_000, 78_100_000, 78_200_000)
+    assert SPEC.sigma2_scale == 2.0 and SPEC.compare_reps == 4000 and SPEC.mix_reps == 4000
+    assert (SPEC.pilot_flies, SPEC.pilot_probes) == (8, 8)
+    assert len(SPEC.pilot_w_pairs) == SPEC.pilot_w and len(SPEC.pilot_v_pairs) == SPEC.pilot_v
+    from flymon.brain.x_spec import SPEC as XS
+    assert SPEC.pilot_w_pairs == XS.balanced_pairs
+    assert SPEC.pilot_v_pairs == ("b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy", "a|218|Earthquake|Strength",
+                                  "a|305|Earthquake|Rock Slide", "a|223|Surf|Earthquake")
+    assert SPEC.x_commits == (("stage0", "868771a"), ("precheck", "4b81035"))
+    assert [c for _, c in SPEC.w_commits] == ["744d1bc", "5620f95", "5fbc4c8", "f30ae35"]
+    assert dict(SPEC.m_table)[0.625] == (3, 4, 4, 5, 5, 6, 7) and len(SPEC.set_fixtures) == 14
+
+
+def test_pilot_seed_layout_is_ws_with_y_roots():
+    import dataclasses as dc
+    yw = dc.replace(W, pilot_probe_seed0=SPEC.pilot_probe_seed0, pilot_train_seed0=SPEC.pilot_train_seed0)
+    assert yw.pilot_probe_seeds(1, 2, 3) == [60_000_000 + 4_000 + 200 + k for k in range(3)]
+    assert yw.pilot_train_base(3, 1) == 61_000_000 + 3 * 40_000 + 20
