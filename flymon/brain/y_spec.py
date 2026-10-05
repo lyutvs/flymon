@@ -18,7 +18,10 @@ largest k_hi, is Y's); Y.6.2 + Y.9.2 P1-2's calibration numbers; Y.6.3's 2000 ro
 precheck, P2-12, P2-10 / Y.0 threshold numbers (0.25 grid: plan Reading 3); phase B's ×1.3 / reconfirmation numbers
 (fixed now, Y.9.2 P2-8 / P2-9); Y.3.4's reps; the pilot's candidates and printed facts (Y.4, record-only checks);
 Y.9.2's seed roots 78_000_000 (phase B reconfirmation) · 78_100_000 (P2-12) · 78_200_000 (R-V · R-pre · thresholds);
-the calibration fixtures' synthetic numbers (Y.6.6, Y.9.2 P1-2 (d)); X's facts and the phase-A detail paths."""
+the calibration fixtures' synthetic numbers (Y.6.6, Y.9.2 P1-2 (d)); X's facts and the phase-A detail paths.
+Phase B (Y.7 orders 6–12; appended after records_seed, nothing above changed): detail / cache / marker paths, the
+bootstrap pool's thread variables, the percentile scale, the smoke's pair / flies / seed block, seconds per hour and
+the unit-cost fields 7a / 8a take the maximum of (phase-B plan Readings 2 · 7)."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -211,6 +214,29 @@ class YSpec:
     reconfirm_seed: int = 78_000_000
     small_boot_seed: int = 78_100_000
     records_seed: int = 78_200_000
+    # ================================================================ phase B (Y.7 orders 6–12); everything above unchanged
+    # ---- details, caches and markers (results/y/, git-ignored; y_store guards the writes) --------------------------
+    oc_detail: str = "results/y/oc.json"
+    smoke_detail: str = "results/y/smoke.json"
+    gates_detail: str = "results/y/gates.json"
+    learn_detail: str = "results/y/learn.json"
+    band_detail: str = "results/y/band.json"
+    records_detail: str = "results/y/records.json"
+    judge_detail: str = "results/y/judge.json"
+    smoke_cache_dir: str = "results/y/smoke/cache"
+    judge_marker: str = "results/y/judge_read.json"
+    reread_marker: str = "results/y/judge_reread.json"
+    done_marker: str = "results/y/judge_done.json"
+    # ---- the bootstrap's process pool (plan Reading 2): one draw per task, BLAS single-threaded in the workers ----------
+    thread_env: tuple = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "VECLIB_MAXIMUM_THREADS")
+    pct_scale: float = 100.0                        # numpy percentiles: lower 100·(1 − level), upper 100·level
+    # ---- the smoke (Y.7 7): Y pilot pair j 0 (b|17), one fly, the smoke seed block 77_1xx_xxx ------------------------
+    smoke_pair: int = 0
+    smoke_flies: int = 1
+    smoke_block: tuple = (77_100_000, 77_200_000)   # Y.2's smoke block [77_100_000, 77_199_999]
+    # ---- the budget arithmetic (Y.5, Y.7 7a / 8a, Y.9.2 P2-9) --------------------------------------------------------
+    s_per_h: float = 3600.0
+    cost_fields: tuple = ("trial_s", "presentation_s", "oracle_round_s")   # max(pilot, smoke) per field (Reading 7)
 
 
 SPEC = YSpec()

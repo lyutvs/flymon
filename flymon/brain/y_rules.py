@@ -392,3 +392,180 @@ def fact_flags(values: dict, facts: dict, ys) -> dict:
         out[k] = None if v is None else bool(round(float(v[0]), ys.fact_digits) == d and float(v[1]) == a
                                              and float(v[2]) == p)
     return out
+
+
+# ================================================================ phase B (Y.7 orders 6–12) — appended
+STOP_BUDGET, STOP_MACHINE, UNDECIDED, NOT_SEALED = "STOP_BUDGET", "STOP_MACHINE", "UNDECIDED", "NOT_SEALED"
+
+
+def sentences_b(ys) -> dict:
+    """Y.8 / Y.9.2 P2-8 / X.3 sentences of phase B; every number from ys; {…} are the spec's 〈…〉 fills."""
+    strict = f"|d′| < {_d(ys.naive_max)} ∧ 순진 MBON13(X) ≥ {_lv(ys.c_a)} ∧ 순진 MBON05(X) ≥ {_lv(ys.c_p)}"
+    return {
+        (STOP_OC_UNREACHABLE, "boot"): (
+            f"Y 파일럿 잡음에서 F ≤ {ys.f_max}로 G.6 작동 특성 목표를 맞출 수 없다 — p_set · q · K · k 범위 어느 "
+            f"설계도({{paren}}) — 주 세트 학습 측정 없이 멈춘다."),
+        (STOP_OC_UNREACHABLE, "reconfirm"): (
+            f"Y 파일럿 잡음에서 선택 설계와 대체 설계 {{r}}개가 독립 시드 재확인({ys.boot_draws} × {ys.reconfirm_reps})"
+            f"에서 G.6 작동 특성 목표를 다시 만족하지 못했다({{paren}}) — 주 세트 학습 측정 없이 멈춘다."),
+        STOP_BUDGET: f"남은 추정 비용 {{h}}가 Y 상한 {_lv(ys.budget_h)} h를 넘는다({{where}}).",
+        (STOP_FEW_PAIRS, "final"): (
+            f"Y 주 세트 {{n}}쌍 중 오라클 사전 거름을 통과한 {{n_pre}}쌍에서 판정 시드 순진 거름({strict})을 통과한 "
+            f"관문 쌍이 {{k}}개로 설계의 최소 {{k_lo}}에 못 미쳤다 — 설계를 바꾸지 않고, 주 세트 학습 측정 없이 "
+            f"멈춘다."),
+        STOP_MACHINE: ("Y 학습 측정에서 기계 검사가 맞지 않았다({why}) — 같은 관문 쌍으로 다시 돌리지 않으며(Y.2, W.5 · "
+                       "W.9.8 H8), INVALID_RUN 여부는 사용자 몫이다."),
+        UNDECIDED: ("원인({cause})을 기록하고 사용자 판단 — 판정 가능 관문 쌍 {n} 중 PASS {m}, BAND 잔존 {b}(BAND를 "
+                    "모두 FAIL로 세면 {r_fail}, 모두 PASS로 세면 {r_pass}, p_set {p})."),
+    }
+
+
+CONSEQUENCE = {
+    PASS: ("F.7의 PASS 행(M2 계속, STD 설계하지 않음)은 이 거름 조건부로만 적용한다. POOL 배틀 과제(M3)와 거름 밖 쌍의 "
+           "시험은 별도 선언이다(Y.9)."),
+    FAIL: ("F.7대로 M2 no-go — 이 조합 지렛대 · 이 세트 · 이 거름 조건부(F.7의 D.6 (c) 충족을 적되 지렛대 엔진 · 거름 "
+           "조건부임을 함께 적는다). STD 재설계 여부는 사용자 몫이다(Y.9)."),
+    UNDECIDED: "원인과 n · m · b를 기록하고 사용자 판단(F.7) — b = 0 강제 때문에 생기지 않아야 한다(Y.9).",
+    STOP_MACHINE: "같은 관문 쌍으로 다시 돌리지 않으며 INVALID_RUN 여부는 사용자 몫이다(Y.9, W.5 · W.9.8 H8).",
+}
+
+
+def _ratio_txt(a: int, b: int) -> str:
+    return f"{a}/{b} = {a / b:.3f}" if b else f"{a}/{b}"
+
+
+def _kr(kr) -> str:
+    return f"[{kr[0]}, {kr[1]}]"
+
+
+def boot_paren(at_f: list, counts: dict) -> str:
+    """Y.8's bootstrap parenthesis: per (p_set, q, K, k range) at F = f_max the k-wise power lower / false-pass upper
+    limits (worst over g and scenarios), then the calibration status counts per side."""
+    rows = "; ".join(
+        f"p_set {r['p_set']}·q {r['q']}·K {r['K']}·k 범위 {_kr(r['k_range'])}: "
+        + ", ".join(f"k {k} {pw:.3f} / {fp:.3f}" for k, pw, fp in zip(r["k"], r["power"], r["false"]))
+        for r in at_f)
+    cal = "; ".join(f"{m}: " + ", ".join(f"{k} {v}" for k, v in sorted(c["handle_status"].items()))
+                    for m, c in counts.items())
+    return f"{rows}; 보정 상태 개수 {cal}"
+
+
+def reconfirm_paren(results: list) -> str:
+    """P2-8's parenthesis: per reconfirmed design the k-wise power lower / false-pass upper limits (worst over g and
+    scenarios) at its F."""
+    return "; ".join(
+        f"p_set {r['design']['p_set']}·q {r['design']['q']}·K {r['design']['K']}·F {r['design']['F']}·k 범위 "
+        f"{_kr(r['design']['k_range'])}: "
+        + ", ".join(f"k {k} {pw:.3f} / {fp:.3f}" for k, pw, fp in zip(r["k"], r["power_by_k"], r["false_by_k"]))
+        for r in results)
+
+
+def oc_decision(sel: dict, at_f: list, counts: dict, ys) -> dict:
+    """Y.5 after the bootstrap (before the reconfirmation): no qualifying design → STOP_OC_UNREACHABLE (boot); none in
+    budget → STOP_BUDGET with the cheapest qualifying design's estimate; else PASS (the reconfirmation follows)."""
+    if sel["outcome"] == STOP_OC_UNREACHABLE:
+        return dict(outcome=STOP_OC_UNREACHABLE, stop_kind="boot", reasons=["부트스트랩 자격 설계 없음(Y.5)"],
+                    sentence=sentences_b(ys)[(STOP_OC_UNREACHABLE, "boot")].format(paren=boot_paren(at_f, counts)))
+    if sel["outcome"] == STOP_BUDGET:
+        return dict(outcome=STOP_BUDGET, reasons=[sel["budget_text"]],
+                    sentence=sentences_b(ys)[STOP_BUDGET].format(h=sel["budget_text"], where="순서 6 선택"))
+    return dict(outcome=PASS, reasons=[])
+
+
+def reconfirm_stop(results: list, ys) -> dict:
+    return dict(outcome=STOP_OC_UNREACHABLE, stop_kind="reconfirm", reasons=["재확인 통과 설계 없음(Y.9.2 P2-8)"],
+                sentence=sentences_b(ys)[(STOP_OC_UNREACHABLE, "reconfirm")].format(
+                    r=len(results) - 1, paren=reconfirm_paren(results)))
+
+
+# ---------------------------------------------------------------- costs and the budget gates (Y.5, 7a, 8a, P2-9)
+def design_cost_y(costs: dict, d: dict, ys, w_spec, n_naive: int, k: int, with_c: bool) -> dict:
+    """W's design_cost (w_records, unchanged) for Y: the main-set oracle is measured (in the ledger, n_set 0); the
+    naive screen of n_naive pairs × F flies (pre only); learning, the BAND 2K re-measure of every gate pair and C at
+    k gate pairs (k_hi before the screen, the real count after it); the plasticity-off control; workers = costs'."""
+    import dataclasses
+    from . import w_records
+    return w_records.design_cost(costs, int(d["K"]), int(d["F"]), dataclasses.replace(w_spec, k_cap=int(k)), 0,
+                                 int(n_naive), bool(with_c))
+
+
+def costs_max(pilot: dict, smoke: dict | None, ys) -> dict:
+    """Plan Reading 7: the unit costs a budget gate uses — per field the larger of the pilot's (96 jobs under a full
+    pool) and the smoke's; workers = the real run's (the pilot's)."""
+    out = dict(pilot)
+    for f in ys.cost_fields:
+        out[f] = max(float(pilot[f]), float((smoke or {}).get(f, 0.0)))
+    return out
+
+
+def in_budget(elapsed_h: float, total_h: float, ys) -> bool:
+    """Y.9.2 P2-9: elapsed (measured, no margin) + cost_margin × the estimate ≤ budget_h."""
+    return round(elapsed_h + ys.cost_margin * total_h - ys.budget_h, ys.round_digits) <= 0
+
+
+def budget_text(elapsed_h: float, total_h: float, ys) -> str:
+    """〈누적 h + 남은 h = 합 h〉 with the margin applied to the remaining estimate."""
+    from . import w_rules
+    return w_rules.budget_h_text(elapsed_h, ys.cost_margin * total_h)
+
+
+def budget_stop(elapsed_h: float, options: list, where: str, ys) -> dict:
+    best = min(options, key=lambda o: o["total_h"])
+    h = budget_text(elapsed_h, best["total_h"], ys)
+    return dict(outcome=STOP_BUDGET, reasons=[h], plan=None, elapsed_h=elapsed_h,
+                sentence=sentences_b(ys)[STOP_BUDGET].format(h=h, where=where))
+
+
+def few_pairs_final(n: int, n_pre: int, k: int, k_lo: int, ys) -> dict:
+    """Y.7 8: gate pairs < the design's k_lo → STOP_FEW_PAIRS (final); the design is not changed."""
+    if k >= k_lo:
+        return dict(outcome=PASS, reasons=[])
+    return dict(outcome=STOP_FEW_PAIRS, stop_kind="final", reasons=[f"관문 쌍 {k} < k_lo {k_lo}"],
+                sentence=sentences_b(ys)[(STOP_FEW_PAIRS, "final")].format(n=n, n_pre=n_pre, k=k, k_lo=k_lo),
+                main_set="미사용(Y.0) — 다음 선언은 오라클 값과 판정 시드 순진 값을 공개해야 한다(Y.9)")
+
+
+# ---------------------------------------------------------------- the set verdict (Y.5 = X.3 + P1-4) and its sentence
+def _fails_txt(v: dict) -> str:
+    if not v["failing"]:
+        return "없음"
+    def gates(k):
+        g = (v["pairs"][k].get("failing_gates") or {})
+        hit = [f"{n} {c}마리" for n, c in g.items() if c]
+        why = "·".join(v["pairs"][k].get("reasons") or [])
+        return f"{k}: {why}" + (f"({', '.join(hit)})" if hit else "")
+    return "; ".join(gates(k) for k in v["failing"])
+
+
+def set_verdict(v: dict, design: dict, n_gates: int, ys) -> dict:
+    """W's pair verdict v (w_verdict.judge, unchanged) read by X's set rule (x_verdict) at the design's p_set. b must
+    be 0 (X.9.1.3 P1-4) — the caller refuses otherwise. Returns verdict, n / m / b, ratios, sentence, consequence."""
+    from . import x_verdict as XV
+    codes = np.array([{lab: c for c, lab in WV.PAIR_LABEL.items()}[r["status"]] for r in v["pairs"].values()], int)
+    n, m, b, _inv = (int(x) for x in XV.counts(codes))
+    p = float(design["p_set"])
+    code = int(XV.set_code(codes, bool(v["machine"]), p, ys))
+    verdict = XV.SET_LABEL[code]
+    lo, hi = design["k_range"]
+    if verdict == PASS:
+        share = "전부" if p == 1.0 else f"p_set {p} 이상"
+        sent = sentences(ys)[PASS].format(k=n_gates, share=share, n=n, m=m, ratio=_ratio_txt(m, n), p=p,
+                                          q=design["q"], K=design["K"], F=design["F"], k_lo=lo, k_hi=hi,
+                                          fails=_fails_txt(v))
+    elif verdict == FAIL:
+        why = []
+        if round((m + b) / (n + b) - p, ys.round_digits) < 0:
+            why.append(f"m/n {(m + b) / (n + b):.3f} < p_set {p}")
+        if m + b < ys.min_pass_pairs:
+            why.append(f"PASS 쌍 {m + b} < {ys.min_pass_pairs}")
+        sent = sentences(ys)[FAIL].format(n=n, m=m, ratio=_ratio_txt(m, n), why=" · ".join(why), fails=_fails_txt(v),
+                                          n_mech=len(v["mech_fail"]))
+    elif verdict == UNDECIDED:
+        nb = n + b
+        sent = sentences_b(ys)[UNDECIDED].format(cause=XV.undecided_cause(n, ys), n=n, m=m, b=b,
+                                                 r_fail=_ratio_txt(m, nb), r_pass=_ratio_txt(m + b, nb), p=p)
+    else:
+        why = "; ".join([f"INVALID 쌍 {k}" for k in v["invalid"]] + list(v["machine"]))
+        sent = sentences_b(ys)[STOP_MACHINE].format(why=why)
+    return dict(verdict=verdict, n=n, m=m, b=b, p_set=p, sentence=sent, consequence=CONSEQUENCE[verdict],
+                ratio_m_n=(m / n) if n else None, failing=list(v["failing"]), mech_fail=list(v["mech_fail"]))
