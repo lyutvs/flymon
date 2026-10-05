@@ -45,6 +45,7 @@ def test_thresholds_integer_rule(theta, monkeypatch):
 @pytest.mark.parametrize("name,vals,want", [
     ("a", (0.4, 1.0, 1.0), True), ("b", (0.4, 20.0, 43.0), True), ("b", (0.4, 19.0, 43.0), False),
     ("c", (0.4, 8.875, 51.640625), True), ("d", (0.4, 30.0, 94.5), False), ("e", (0.4, 31.0, 1.0), True),
+    ("e", (0.6, 31.0, 1.0), False), ("e", (-0.6, 40.0, 50.0), False),
     ("f", (-0.9, 31.0, 1.0), True), ("f", (-1.0, 31.0, 1.0), False), ("f", (5.0, 30.0, 1.0), False)])
 def test_candidate_passes(name, vals, want):
     assert O.candidate_passes(name, *vals, Y) is want
@@ -65,6 +66,7 @@ def test_compare_filters_layout(theta):
     vals = {"p0": (0.1, 40.0, 90.0), "p1": (2.0, 10.0, 90.0), Y.pilot_w_pairs[0]: (0.0, 31.0, 107.0)}
     out = O.compare_filters(theta, vals, Z, ys)
     assert set(out["candidates"]) == set(O.CANDIDATES)
+    assert out["seed"] == ys.compare_seed == 77_300_000
     c = out["candidates"]["b"]
     assert set(c["by_range"]) == {"[4, 8]", "[6, 10]"} and c["pass_counts"] == dict(pilot=2, balanced=1)
     assert set(c["fill"]) == {f"g{g}|{m}" for g in Y.cluster_grid for m in ("min", "max")}
@@ -84,8 +86,30 @@ def test_w_failed_recal_reads_ws_draw_order(theta):
     assert out["failed"] == [i for i, c in enumerate(cal) if not (c["min"]["ok"] and c["max"]["ok"])]
     assert 1 in out["failed"] and out["n_failed"] == len(out["rows"])
     assert set(out["counts"]) == {"min", "max"}
+    row = out["rows"][out["failed"].index(1)]
+    rb = w_oc._rng(W, w_oc.TAG_BOOT, 1)                                 # W's order: boot first, then the draws
+    tb = w_oc.boot(theta, rb)
+    ib = rb.integers(0, len(tb["resid"]), W.cal_reps)
+    for m, f in O.MODES:
+        want = O.calibrate_y(tb, getattr(W, f), m, ib, Z, Y)
+        assert canonical(row[m]) == canonical(want)
 
 
 def test_oc_timing_scales(theta):
     t = O.oc_timing(theta, Z, dataclasses.replace(Y, boot_reps=4), 10.0, 3.0)
     assert t["evaluate_s"] > 0 and t["precheck_point_s"] > t["evaluate_s"] and t["phase_b_boot_s"] > 0
+
+
+def test_floor_threshold_share_exactly_at_the_limit_is_not_below(theta):
+    """Y.0's "< floor_share" is strict: 2 of 20 residuals (share 0.10 exactly) negative must not stop the search."""
+    a, b = 10.0, 3.0
+    off = w_oc.slot_means(theta, np.zeros((2, 2)), np.zeros((2, 2)), a, b)[w_oc.SI["R2"], WV.A, WV.X]
+    res = np.zeros((20,) + theta["resid"].shape[1:])
+    res[:, w_oc.SI["R2"], WV.A, WV.X] = -off + 0.2
+    res[:2, w_oc.SI["R2"], WV.A, WV.X] = -off - 5.2                   # rint(L − 5.2) < 0 until L = 4.75
+    assert O.floor_threshold(theta, a, b, "A", Y, res) == 4.75
+    res[2, w_oc.SI["R2"], WV.A, WV.X] = -off - 5.2                    # 3 of 20 (0.15): the same level
+    assert O.floor_threshold(theta, a, b, "A", Y, res) == 4.75
+    res[:3, w_oc.SI["R2"], WV.A, WV.X] = -off + 0.2
+    res[:1, w_oc.SI["R2"], WV.A, WV.X] = -off - 5.2                   # 1 of 20 (0.05): below at once
+    assert O.floor_threshold(theta, a, b, "A", Y, res) == 0.0

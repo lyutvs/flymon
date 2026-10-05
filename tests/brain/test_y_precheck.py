@@ -66,8 +66,9 @@ def test_boot_y_keeps_the_rule(pilot7, theta_w):
 def test_precheck_layout_worst_and_ranges(pilot7, theta_w):
     th = O.fit_y(pilot7, KEYS7, O.r_v0(theta_w))
     pc = O.precheck_y(th, Z, TINY, [(4, 8)])
+    assert O.SCENARIOS == ("base", "near") and pc["seed"] == Y.precheck_seed
     assert set(pc["point"]) == {f"g{g}|{m}|{s}" for g in Y.cluster_grid for m in ("min", "max")
-                                for s in O.SCENARIOS}
+                                for s in ("base", "near")}
     pw = np.min([pc["point"][k] for k in pc["point"] if "|min|" in k], 0)
     assert np.array_equal(np.asarray(pc["power"]), pw)
     assert pc["best_power"]["k_range"] == [4, 8] and pc["records_target"]["k_range"] == [4, 8]
@@ -163,3 +164,29 @@ def test_at_f32_rows_hold_the_worst_over_g_and_scenarios(pilot7, theta_w):
     para = R.precheck_paren(pc)
     r0 = pc["at_f32"][0]
     assert f"k {r0['k'][0]} 점 검정력 {r0['power'][0]:.3f} / 점 거짓 통과 {r0['false'][0]:.3f}" in para
+
+
+def test_records_never_reuse_a_precheck_mixture_stream(pilot7, theta_w, monkeypatch):
+    """The precheck's mixture streams stay SeedSequence([precheck_seed, "mix", 0, g, target, scenario]) (bit for bit
+    as before); the records under the same root add their variant tags, so no record cell reuses one of them."""
+    r = O.r_v0(theta_w)
+    th = O.fit_y(pilot7, KEYS7, r)
+    seen = []
+    real = O.rng
+
+    def spy(root, *tags):
+        if tags and tags[0] == O.tag("mix"):
+            seen.append((int(root),) + tuple(int(t) for t in tags))
+        return real(root, *tags)
+    monkeypatch.setattr(O, "rng", spy)
+    O.precheck_y(th, Z, TINY, [(4, 8)])
+    pre = set(seen)
+    root, mix = Y.precheck_seed, O.tag("mix")
+    assert pre == {(root, mix, 0, gi, mi, si) for gi in range(len(Y.cluster_grid)) for mi in range(2)
+                   for si in range(2)}
+    seen.clear()
+    thetas, _ = O.record_thetas(th, theta_w, dict(zip(KEYS7, pilot7)), KEYS7, r, Y)
+    target = dict(p_set=0.5, q=0.5, K=8, F=8, k_range=[4, 8])
+    O.point_records_y(thetas, target, Z, dataclasses.replace(TINY, oc_reps=2))
+    rec = set(seen)
+    assert {k[0] for k in rec} == {Y.precheck_seed, Y.records_seed} and not (rec & pre)

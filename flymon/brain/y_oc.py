@@ -15,7 +15,8 @@ never modified; Y adds only the following.
   2000; the near-threshold scenario (P1-4) shifts each accepted base per neuron to base[A, X] = c_A, base[P, X] = c_P
   (X and Y alike) and rejects a negative Y cell within the same rounds (fills stay the population pair, Reading 11).
 - Simulation with the mixture: every experiment draws one corner per distinct calibration (a separate stream
-  SeedSequence([root, "mix", draw, g, target, scenario]), Reading 2) and all its pairs and flies use it; the main
+  SeedSequence([root, "mix", draw, g, target, scenario]), Reading 2; the records insert their variant tags after
+  draw, so they never reuse a precheck stream) and all its pairs and flies use it; the main
   stream is untouched, so a degenerate mixture with the filter off and 200 rounds equals x_oc.evaluate bit for bit.
 - Fill share per k (first k pair slots); a k whose fill > fill_max in any (g, scenario, target) cell is excluded
   (P1-5). Precheck = point values, no envelope; qualify_y / select_y (limits, envelope, ×1.3 budget) are built for
@@ -1061,7 +1062,7 @@ def point_records_y(thetas: dict, target: dict, z: dict, ys, n_rep: int | None =
 
         def at(th_, mixes, fa, fb, scen, gi, g, mode_i, vt=vt, root=root, ev=ev):
             main = rng(root, *vt, gi, scen)
-            mix = rng(root, tag("mix"), 0, gi, mode_i, scen)
+            mix = rng(root, tag("mix"), 0, *vt, gi, mode_i, scen)     # the variant's tags: never a precheck stream
             r = ev(th_, main, mix, n_rep, mixes, fa, fb, g, z, yd)
             return dict(p=np.asarray(r["p"])[0, 0, 0, 0].tolist(), fill=r["fill_by_k"])
 

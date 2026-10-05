@@ -113,3 +113,76 @@ def test_pick_y_rules_and_ties():
     assert (r["rule"], r["p_set"], r["k_range"]) == ("false_ok_max_power", 0.5, [6, 10])
     t = O.table_at_f_y(pw, fp, Y, [(4, 8)], 32)
     assert len(t) == 30 and t[0]["k"] == [4, 5, 6, 7, 8] and t[0]["F"] == 32
+
+
+def test_near_rejects_a_shift_that_drives_y_negative(theta):
+    """c_A kept, c_P lowered to 0: the accept predicate holds for every base, but the shift moves P's Y cell by
+    0 − base[P, X], below zero for about half the pairs — those must be rejected (filled), never kept."""
+    low = dataclasses.replace(Y, c_p=0.0, tries=50)
+    raw, f0 = x_oc.pair_bases(theta, O.rng(6, 1), 40, Y.k_cap, 0.0, Z, low, low.tries, O.accept_y(low))
+    s = O.near_shift(raw, low)
+    neg = ((s[..., WV.A, WV.Y] < 0) | (s[..., WV.P, WV.Y] < 0))[~f0]
+    assert neg.mean() > 0.3                                          # the case is real: the shift makes Y < 0
+    base, filled = O.pair_bases_y(theta, O.rng(6, 1), 40, Y.k_cap, 0.0, Z, low, "near")
+    keep = ~filled
+    assert keep.any() and (base[keep][:, :, WV.Y] >= 0).all()
+    one = dataclasses.replace(low, tries=1)                         # one round: a rejected pair is a fill
+    _b, f1 = O.pair_bases_y(theta, O.rng(6, 2), 40, Y.k_cap, 0.0, Z, one, "near")
+    _r, fb = O.pair_bases_y(theta, O.rng(6, 2), 40, Y.k_cap, 0.0, Z, one, "base")
+    assert f1.mean() > 0.3 and fb.mean() < 0.05
+
+
+def _qual(*cells):
+    ok = np.zeros((5, 3, 2, 25), bool)
+    for c in cells:
+        ok[c] = True
+    return {(4, 8): ok}
+
+
+def test_select_prefers_larger_p_set_over_cost():
+    qual = _qual((0, 0, 0, 0), (2, 0, 0, 0), (4, 0, 0, 24))         # p_set 0.5 / 0.75 / 1.0 (F 32)
+    cost = {0.5: 1.0, 0.75: 10.0, 1.0: 100.0}                      # 1.0 over budget, 0.75 in budget but dearer
+    s = O.select_y(qual, lambda d: cost[d["p_set"]], 0.0, Y)
+    assert s["outcome"] == "PASS" and s["n_in_budget"] == 2 and s["n_qualifying"] == 3
+    assert (s["selected"]["p_set"], s["selected"]["cost_h"]) == (0.75, 10.0)
+    assert [r["p_set"] for r in s["ranking"]] == [0.75, 0.5]
+    same = O.select_y(_qual((1, 0, 0, 0), (1, 2, 0, 0)), lambda d: 5.0 if d["q"] == 0.75 else 1.0, 0.0, Y)
+    assert same["selected"]["q"] == 0.5                              # equal p_set: the cheaper first, before q
+
+
+def test_range_ok_envelope_f_plus_3_and_solo():
+    pw = np.ones((1, 1, 1, 25, 7))
+    fp = np.zeros((1, 1, 1, 25, 7))
+    no_fill = np.zeros(7, bool)
+    fi = lambda F: F - Y.f_min  # noqa: E731
+    pw[..., fi(15), 0] = 0.0                                         # only F 15 fails (k 4)
+    ok = O.range_ok(pw, fp, no_fill, Y, (4, 8), envelope=True)[0, 0, 0]
+    assert ok[fi(11)] and not ok[fi(12)] and not ok[fi(15)] and ok[fi(16)]   # F 12 fails only through F + 3
+    pw[..., fi(15), 0] = 1.0
+    fp[..., fi(30), 2] = 1.0                                         # only F 30 fails (false at k 6)
+    ok = O.range_ok(pw, fp, no_fill, Y, (4, 8), envelope=True)[0, 0, 0]
+    assert ok[fi(26)] and not ok[fi(27)] and not ok[fi(28)]
+    assert ok[fi(29)] and not ok[fi(30)] and ok[fi(31)] and ok[fi(32)]       # F ≥ 29 alone
+
+
+def test_fill_by_k_is_cumulative_per_k(theta, ab, monkeypatch):
+    real = O.pair_bases_y
+    pattern = np.array([0, 0, 0, 1, 1, 0, 0, 1, 0, 1], bool)        # slots 4, 5, 8, 10 filled
+
+    def fixed(*a, **k):
+        base, _f = real(*a, **k)
+        return base, np.broadcast_to(pattern, _f.shape).copy()
+    monkeypatch.setattr(O, "pair_bases_y", fixed)
+    r = O.evaluate_y(theta, O.rng(1, 6), O.rng(1, 7), 6, [O.one_corner(*ab)] * Y.k_cap, ONES, ONES, 0.0, Z,
+                     dataclasses.replace(Y, oc_chunk=4))
+    want = [pattern[:k].mean() for k in range(Y.k_min, Y.k_cap + 1)]
+    assert np.allclose(r["fill_by_k"], want, atol=1e-12) and len(set(np.round(want, 9))) > 1
+
+
+def test_pick_y_tie_prefers_larger_q():
+    pw = np.zeros((5, 3, 2, 25, 7))
+    fp = np.ones((5, 3, 2, 25, 7))
+    pw[2, 0, 0, 0] = 0.9                       # p_set 0.75, q 0.5, K 8, F 8
+    pw[2, 2, 1, 5] = 0.9                       # p_set 0.75, q 0.75, K 16, F 13: equal power and p_set → larger q
+    b = O.pick_y(pw, fp, Y, [(4, 8)], require_false=False)
+    assert (b["p_set"], b["q"], b["K"], b["F"]) == (0.75, 0.75, 16, 13)
