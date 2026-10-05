@@ -282,3 +282,347 @@ def calibration_fixtures(ys) -> dict:
     out["f8a_two_knobs"] = dict(ok=bool(ok8), cal=c8)
     out["ok"] = all(v["ok"] for v in out.values() if isinstance(v, dict))
     return out
+
+
+# ================================================================ the generator (Y.6.3, P3-14, P1-4)
+def accept_y(ys, c_a=None, c_p=None):
+    """Y.6.3's extra predicate on expected bases [..., 2, 2]: base[A, X] ≥ c_A ∧ base[P, X] ≥ c_P (rounded; balance
+    stays inside x_oc.pair_bases)."""
+    ca = ys.c_a if c_a is None else c_a
+    cp = ys.c_p if c_p is None else c_p
+    d = ys.round_digits
+
+    def acc(base):
+        b = np.asarray(base, float)
+        return (np.round(b[..., WV.A, WV.X] - ca, d) >= 0) & (np.round(b[..., WV.P, WV.X] - cp, d) >= 0)
+    return acc
+
+
+def near_shift(base, ys):
+    """Y.9.2 P1-4: per neuron, add c_A − base[A, X] to A's X and Y cells and c_P − base[P, X] to P's (so V's X − Y
+    difference, the naive balance, is unchanged)."""
+    b = np.asarray(base, float)
+    out = b.copy()
+    out[..., WV.A, :] = b[..., WV.A, :] + (ys.c_a - b[..., WV.A, WV.X])[..., None]
+    out[..., WV.P, :] = b[..., WV.P, :] + (ys.c_p - b[..., WV.P, WV.X])[..., None]
+    return out
+
+
+def pair_bases_y(theta, rng_, n_rep: int, n_pair: int, g: float, z: dict, ys, scenario: str = "base",
+                 accept=None) -> tuple:
+    """x_oc.pair_bases (tries = ys.tries) with the Y predicate; "near" also rejects a negative shifted Y cell (same
+    rounds) and shifts the accepted bases. Returns (bases [n_rep, n_pair, 2, 2], filled [n_rep, n_pair])."""
+    acc = accept_y(ys) if accept is None else accept
+    if scenario == "near":
+        inner = acc
+
+        def acc(base):
+            s = near_shift(base, ys)
+            return inner(base) & (s[..., WV.A, WV.Y] >= 0) & (s[..., WV.P, WV.Y] >= 0)
+    base, filled = x_oc.pair_bases(theta, rng_, n_rep, n_pair, g, z, ys, ys.tries, acc)
+    if scenario == "near":
+        base = np.where(filled[..., None, None], base, near_shift(base, ys))
+    return base, filled
+
+
+def simulate_y(theta, rng_, n_rep, n_pair, n_fly, n_probe, a_exp, b_exp, fly_a, fly_b, g, z, ys, scenario="base",
+               accept=None) -> tuple:
+    """x_oc.simulate's draws in its order with per-experiment knob values a_exp / b_exp [n_rep, n_pair] (the drawn
+    corners): (stages, bases, filled)."""
+    base, filled = pair_bases_y(theta, rng_, n_rep, n_pair, g, z, ys, scenario, accept)
+    Lf = np.linalg.cholesky(theta["fly_cov"] + ys.chol_jitter * np.eye(4))
+    v = (rng_.standard_normal((n_rep, n_pair, n_fly, 4)) @ Lf.T).reshape(n_rep, n_pair, n_fly, 2, 2)
+    a = np.asarray(a_exp, float)[:, :, None] * np.asarray(fly_a, float)[None, None, :]
+    b = np.asarray(b_exp, float)[:, :, None] * np.asarray(fly_b, float)[None, None, :]
+    mu = w_oc.slot_means(theta, base[:, :, None], v, a, b)
+    idx = rng_.integers(0, len(theta["resid"]), (n_rep, n_pair, n_fly, n_probe))
+    counts = np.clip(np.rint(mu[:, :, :, None] + theta["resid"][idx]), 0, None).astype(np.int32)
+    return w_oc.to_stages(counts), base, filled
+
+
+def one_corner(a: float, b: float) -> list:
+    return [dict(a=float(a), b=float(b), w=1.0)]
+
+
+def _distinct(pair_mix: list) -> tuple:
+    keys, which = [], []
+    for m in pair_mix:
+        k = tuple((float(c["a"]), float(c["b"]), float(c["w"])) for c in m)
+        if k not in keys:
+            keys.append(k)
+        which.append(keys.index(k))
+    return keys, which
+
+
+def _corner_effects(mix_rng, n: int, n_pair: int, mixes: list, which: list) -> tuple:
+    """One corner per experiment per distinct mixture (Y.9.2 P1-2 (b)); a / b [n, n_pair]."""
+    picks = []
+    for m in mixes:
+        w = np.asarray([c[2] for c in m], float)
+        picks.append(mix_rng.choice(len(m), size=n, p=w / w.sum()))
+    a, b = np.empty((n, n_pair)), np.empty((n, n_pair))
+    for j in range(n_pair):
+        m, pk = mixes[which[j]], picks[which[j]]
+        a[:, j] = np.asarray([c[0] for c in m])[pk]
+        b[:, j] = np.asarray([c[1] for c in m])[pk]
+    return a, b
+
+
+def evaluate_y(theta, rng_, mix_rng, n_rep: int, pair_mix: list, fly_a, fly_b, g: float, z: dict, ys,
+               scenario: str = "base", accept=None) -> dict:
+    """P(PASS) [p_set, q, K, F, k_min..k_cap] under W's pair verdict and X's set rule (x_oc.tally; b = 0 in
+    simulation) on k_cap pairs × f_max flies × 2·max K probes per experiment (nested, common random numbers); pair j
+    uses pair_mix[j]'s drawn corner. fill_by_k = the filled share of the first k pair slots."""
+    fs = list(range(ys.f_min, ys.f_max + 1))
+    kk = list(range(ys.k_min, ys.k_cap + 1))
+    hits = np.zeros(x_oc.grid_shape(ys))
+    filled = np.zeros(ys.k_cap)
+    mixes, which = _distinct(pair_mix)
+    done = 0
+    while done < n_rep:
+        n = min(ys.oc_chunk, n_rep - done)
+        a, b = _corner_effects(mix_rng, n, ys.k_cap, mixes, which)
+        d, _base, fill = simulate_y(theta, rng_, n, ys.k_cap, ys.f_max, 2 * max(ys.k_grid), a, b, fly_a, fly_b, g,
+                                    z, ys, scenario, accept)
+        hits += x_oc.tally(d, z, ys, ys.q_grid, ys.k_grid, fs, kk)
+        filled += fill.sum(0)
+        done += n
+    cum = np.cumsum(filled)[ys.k_min - 1:]
+    return dict(p=hits / n_rep, fill_by_k=(cum / (n_rep * np.asarray(kk, float))).tolist())
+
+
+# ================================================================ pass rule, qualification, selection, picks
+def _range_ks(kr, ys) -> list:
+    """The k-axis positions of every k in k range kr."""
+    return [k - ys.k_min for k in range(kr[0], kr[1] + 1)]
+
+
+def _qual_ranges(k_ranges) -> list:
+    return list(k_ranges)
+
+
+def range_ok(power, false, fill_bad, ys, kr, envelope: bool) -> np.ndarray:
+    """[p, q, K, F]: both targets at EVERY k of kr (x_oc.meets, rounded), no fill-excluded k (P1-5); with envelope
+    (Y.5, W.9.8 H1) F … F + envelope all meet, F ≥ envelope_solo_from alone."""
+    ks = _range_ks(kr, ys)
+    ok = x_oc.meets(np.asarray(power)[..., ks], np.asarray(false)[..., ks], ys).all(-1)
+    ok = ok & ~np.asarray(fill_bad, bool)[ks].any()
+    if not envelope:
+        return ok
+    out = np.zeros_like(ok)
+    nf = ok.shape[-1]
+    for fi in range(nf):
+        hi = fi + 1 if ys.f_min + fi >= ys.envelope_solo_from else min(nf, fi + ys.envelope + 1)
+        out[..., fi] = ok[..., fi:hi].all(-1)
+    return out
+
+
+def qualify_y(power_lo, false_hi, fill_bad, ys, k_ranges) -> dict:
+    """Y.5 자격 (phase B's bootstrap limits; tested now): {k range: ok [p, q, K, F]} with the envelope."""
+    return {tuple(kr): range_ok(power_lo, false_hi, fill_bad, ys, kr, True) for kr in _qual_ranges(k_ranges)}
+
+
+def _in_budget(r: dict, elapsed_h: float, ys) -> bool:
+    return round(elapsed_h + ys.cost_margin * r["cost_h"] - ys.budget_h, ys.round_digits) <= 0
+
+
+def select_y(qual: dict, cost_h, elapsed_h: float, ys) -> dict:
+    """Y.5 선택 (phase B; tested now): qualifying designs in budget (elapsed + cost_margin × the design's worst total
+    estimate without C ≤ budget_h; Y.9.2 P2-9, author's readings 4 · 8), ordered larger p_set → smaller cost → larger
+    q → smaller K → smaller F → smaller k_lo; none qualifying → STOP_OC_UNREACHABLE, none in budget → STOP_BUDGET."""
+    fs = list(range(ys.f_min, ys.f_max + 1))
+    rows = []
+    for kr, ok in qual.items():
+        for i in np.ndindex(ok.shape):
+            if ok[i]:
+                dsg = dict(p_set=ys.p_set_grid[i[0]], q=ys.q_grid[i[1]], K=ys.k_grid[i[2]], F=fs[i[3]],
+                           k_range=[int(kr[0]), int(kr[1])])
+                rows.append(dict(dsg, cost_h=float(cost_h(dsg))))
+    within = sorted((r for r in rows if _in_budget(r, elapsed_h, ys)),
+                    key=lambda r: (-r["p_set"], r["cost_h"], -r["q"], r["K"], r["F"], r["k_range"][0]))
+    outcome = y_rules.PASS if within else ("STOP_BUDGET" if rows else y_rules.STOP_OC_UNREACHABLE)
+    return dict(outcome=outcome, selected=within[0] if within else None, ranking=within, n_qualifying=len(rows),
+                n_in_budget=len(within))
+
+
+def _design_rows(power, false, ys, k_ranges) -> list:
+    P, Fa = np.asarray(power), np.asarray(false)
+    fs = list(range(ys.f_min, ys.f_max + 1))
+    d = ys.round_digits
+    rows = []
+    for kr in k_ranges:
+        ks = _range_ks(kr, ys)
+        for i in np.ndindex(P.shape[:-1]):
+            pw, fp = P[i][ks], Fa[i][ks]
+            rows.append(dict(index=[int(v) for v in i], p_set=ys.p_set_grid[i[0]], q=ys.q_grid[i[1]],
+                             K=ys.k_grid[i[2]], F=int(fs[i[3]]), k_range=[int(kr[0]), int(kr[1])],
+                             k=list(range(kr[0], kr[1] + 1)), power_by_k=pw.tolist(), false_by_k=fp.tolist(),
+                             pmin=round(float(pw.min()), d), fmax=round(float(fp.max()), d)))
+    return rows
+
+
+def _tie(r: dict) -> tuple:
+    """Y.5's order without cost: larger p_set, larger q, smaller K, smaller F, smaller k_lo (Y.8, Y.6.5)."""
+    return (-r["p_set"], -r["q"], r["K"], r["F"], r["k_range"][0])
+
+
+def pick_y(power, false, ys, k_ranges, require_false: bool) -> dict:
+    """require_false False: Y.8's "점 검정력 최대 설계" (largest own-range min power). True: Y.6.5's records target
+    without a selected design — among designs with own-range max false ≤ p_false the largest min power, none → the
+    smallest max false (then power). Ties by _tie."""
+    rows = _design_rows(power, false, ys, k_ranges)
+    if not require_false:
+        return dict(min(rows, key=lambda r: (-r["pmin"],) + _tie(r)), rule="max_power")
+    ok = [r for r in rows if round(r["fmax"] - ys.p_false, ys.round_digits) <= 0]
+    if ok:
+        return dict(min(ok, key=lambda r: (-r["pmin"],) + _tie(r)), rule="false_ok_max_power")
+    return dict(min(rows, key=lambda r: (r["fmax"], -r["pmin"]) + _tie(r)), rule="min_false")
+
+
+def table_at_f_y(power, false, ys, k_ranges, F: int) -> list:
+    """Y.8's table: per (p_set, q, K, k range) the k-wise point power / false at one F."""
+    fi = F - ys.f_min
+    out = []
+    for kr in k_ranges:
+        ks = _range_ks(kr, ys)
+        for pi, p in enumerate(ys.p_set_grid):
+            for qi, q in enumerate(ys.q_grid):
+                for ki, K in enumerate(ys.k_grid):
+                    out.append(dict(p_set=p, q=q, K=K, F=int(F), k_range=[int(kr[0]), int(kr[1])],
+                                    k=list(range(kr[0], kr[1] + 1)),
+                                    power=np.asarray(power)[pi, qi, ki, fi][ks].tolist(),
+                                    false=np.asarray(false)[pi, qi, ki, fi][ks].tolist()))
+    return out
+
+
+# ================================================================ Y.6.6: synthetic validation, bit identity, fixtures
+def _by_range(arr, ys, fn) -> dict:
+    return {f"[{lo}, {hi}]": float(fn(np.asarray(arr)[..., _range_ks((lo, hi), ys)])) for lo, hi in ys.k_ranges}
+
+
+def synthetic_validation(ys, z: dict, n_rep: int | None = None) -> dict:
+    """W.9.9 P2-11's five fixtures on Y's evaluate and calibration, every p_set and both k ranges (k_min..k_cap):
+    zero effect ≤ synth_null_max, big effect (d′ synth_big_dprime, Y's mixture) ≥ synth_big_min, one gate only ≤,
+    negative fly correlation ≤, and the simple normal model not rising from F 8 to 32. Root oc_seed, tag TAG_SYNTH."""
+    n_rep = ys.synth_reps if n_rep is None else int(n_rep)
+    r, mr = rng(ys.oc_seed, TAG_SYNTH), rng(ys.oc_seed, tag("mix"), TAG_SYNTH)
+    kw = dict(base=ys.synth_base, sd=ys.synth_sd, corr=ys.synth_corr, learn=ys.synth_learn)
+    th0 = w_oc.fit(w_oc.synthetic_pilot(r, **kw))
+    th_drift = w_oc.fit(w_oc.synthetic_pilot(r, drift_ax=ys.synth_drift, **kw))
+    idx = r.integers(0, len(th0["resid"]), ys.cal_reps)
+    ones, zero = [1.0] * ys.f_max, [one_corner(0.0, 0.0)] * ys.k_cap
+
+    def ev(th, mix, fa=ones, fb=ones):
+        return evaluate_y(th, r, mr, n_rep, mix, fa, fb, 0.0, z, ys)["p"]
+    lo, hi, res = ys.synth_null_max, ys.synth_big_min, {}
+    z0 = ev(th0, zero)
+    res["zero_effect"] = dict(max_p=float(z0.max()), by_range=_by_range(z0, ys, np.max), limit=lo,
+                              ok=bool(z0.max() <= lo))
+    big = calibrate_y(th0, ys.synth_big_dprime, "min", idx, z, ys)
+    pb = ev(th0, [big["corners"]] * ys.k_cap) if big["ok"] else np.zeros(x_oc.grid_shape(ys))
+    res["big_effect"] = dict(min_p=float(pb.min()), by_range=_by_range(pb, ys, np.min), limit=hi,
+                             ok=bool(big["ok"] and pb.min() >= hi), true_dprime=big.get("true_dprime"))
+    one = ev(th_drift, zero)
+    td = w_oc.true_dprimes(th_drift, 0.0, 0.0, r.integers(0, len(th_drift["resid"]), ys.cal_reps), z)
+    res["one_gate"] = dict(max_p=float(one.max()), limit=lo,
+                           ok=bool(one.max() <= lo and td[1] >= ys.synth_drift_dprime_min),
+                           true_dprime=dict(zip(WV.GATES, td.tolist())))
+    if big["ok"]:
+        alt = [1.0 if i % 2 == 0 else 0.0 for i in range(ys.f_max)]
+        neg = ev(th0, [big["corners"]] * ys.k_cap, alt, [1.0 - x for x in alt])
+        res["negative_correlation"] = dict(max_p=float(neg.max()), limit=lo, ok=bool(neg.max() <= lo))
+    else:
+        res["negative_correlation"] = dict(max_p=None, ok=False)
+    sn = w_oc.simple_normal(ys, r)
+    p = np.array([sn[F] for F in ys.simple_normal_fs])
+    res["simple_normal"] = dict(p_by_F={str(k): v for k, v in sn.items()}, diffs=np.diff(p).tolist(),
+                                tol=w_oc.SIMPLE_NORMAL_TOL, ok=bool(np.all(np.diff(p) <= w_oc.SIMPLE_NORMAL_TOL)))
+    res["ok"] = all(v["ok"] for v in res.values() if isinstance(v, dict))
+    return res
+
+
+def bit_identity(theta, z: dict, ys, xs, n_rep: int, a: float, b: float) -> dict:
+    """Y.6.6 (X.9.1.3 P2-6 extended): filter off (c_A = c_P = −∞), w_rejection_tries rounds, k range [4, 8] (X's
+    k_cap), knob values fixed, a one-corner mixture → Y's evaluate equals x_oc.evaluate (numpy.array_equal over
+    [p_set, q, K, F, k]) at every g; same θ, same stream (root oc_seed, TAG_P26, g index)."""
+    yb = dataclasses.replace(ys, k_cap=xs.k_cap, tries=ys.w_rejection_tries, c_a=-math.inf, c_p=-math.inf)
+    ones, by_g = [1.0] * yb.f_max, {}
+    for gi, g in enumerate(ys.cluster_grid):
+        x = x_oc.evaluate(theta, rng(ys.oc_seed, TAG_P26, gi), n_rep, *w_oc._uniform(xs, a, b), g, z, xs)
+        y = evaluate_y(theta, rng(ys.oc_seed, TAG_P26, gi), rng(ys.oc_seed, tag("mix"), TAG_P26, gi), n_rep,
+                       [one_corner(a, b)] * yb.k_cap, ones, ones, g, z, yb)["p"]
+        by_g[f"g{g}"] = dict(equal=bool(np.array_equal(x, y)), max_abs_diff=float(np.abs(x - y).max()))
+    return dict(equal=all(v["equal"] for v in by_g.values()), by_g=by_g, n_rep=int(n_rep), a=float(a), b=float(b))
+
+
+def _synth_theta(ys, name: str):
+    return w_oc.fit(w_oc.synthetic_pilot(rng(ys.oc_seed, tag(name)), base=ys.synth_base, sd=ys.synth_sd,
+                                         corr=ys.synth_corr, learn=ys.synth_learn))
+
+
+def generator_fixtures(ys, z: dict) -> dict:
+    """Y.6.6 + Y.9.2 P1-2 (d) 8b / 9 and the code fixtures the mutations need: 8b — a two-corner mixture's P(PASS) at
+    mix_reps equals the corners' weighted P(PASS) within fix_se standard errors at every k (fix_design); 9 — the near
+    shift keeps |Δd′(base)| ≤ fix_exact and sets the X levels; the accept predicate's three cases; qualify over both
+    k ranges and every k of each; selection in budget; X.4.6's set fixtures and Y.5's m table on k 4–10."""
+    out = {}
+    th = _synth_theta(ys, "fix8")
+    p_set, q, K, F = ys.fix_design
+    yd = x_oc.design_spec(ys, dict(p_set=p_set, q=q, K=K, F=F))
+    idx = rng(ys.oc_seed, tag("fix8"), TAG_CAL).integers(0, len(th["resid"]), ys.cal_reps)
+    big = calibrate_y(th, ys.synth_big_dprime, "min", idx, z, ys)
+    _x_s, lo_v, hi_v = ys.fix_step
+    w_hi = (0.0 - lo_v) / (hi_v - lo_v)
+    ok8 = big["ok"]
+    if ok8:
+        k0 = big["corners"][0]
+        mix = [dict(a=0.0, b=0.0, w=1.0 - w_hi), dict(a=k0["a"], b=k0["b"], w=w_hi)]
+        ones, n = [1.0] * yd.f_max, ys.mix_reps
+
+        def ev(m, t):
+            return np.asarray(evaluate_y(th, rng(ys.oc_seed, tag("fix8"), t),
+                                         rng(ys.oc_seed, tag("mix"), tag("fix8"), t), n, [m] * yd.k_cap, ones, ones,
+                                         0.0, z, yd)["p"][0, 0, 0, 0])
+        pm, p0, p1 = ev(mix, 0), ev([dict(mix[0], w=1.0)], 1), ev([dict(mix[1], w=1.0)], 2)
+        want = mix[0]["w"] * p0 + mix[1]["w"] * p1
+        se = np.sqrt(pm * (1 - pm) / n + mix[0]["w"] ** 2 * p0 * (1 - p0) / n + mix[1]["w"] ** 2 * p1 * (1 - p1) / n)
+        ok8 = bool(np.all(np.abs(pm - want) <= ys.fix_se * np.maximum(se, 1.0 / n)))
+        out["f8b_mixture_mc"] = dict(ok=ok8, p_mix=pm.tolist(), p_weighted=want.tolist())
+    else:
+        out["f8b_mixture_mc"] = dict(ok=False, reason="calibration failed")
+    th9 = _synth_theta(ys, "fix9")
+    raw, filled = x_oc.pair_bases(th9, rng(ys.oc_seed, tag("fix9")), ys.oc_chunk, ys.k_cap, 0.0, z, ys, ys.tries,
+                                  accept_y(ys))
+    sh = near_shift(raw, ys)
+    dd = float(np.abs(WV.dv(sh, z) - WV.dv(raw, z)).max() / w_oc.sd_pre(th9, z))
+    keep = ~filled
+    out["f9_near_shift"] = dict(ok=bool(dd <= ys.fix_exact and np.all(np.abs(sh[keep][:, WV.A, WV.X] - ys.c_a)
+                                                                         <= ys.fix_mean)
+                                        and np.all(np.abs(sh[keep][:, WV.P, WV.X] - ys.c_p) <= ys.fix_mean)),
+                                max_dprime_change=dd)
+    bases = np.zeros((3, 2, 2))
+    bases[:, WV.A, WV.X], bases[:, WV.P, WV.X] = ys.c_a, ys.c_p
+    bases[1, WV.A, WV.X], bases[2, WV.P, WV.X] = ys.c_a - 1, ys.c_p - 1
+    out["accept"] = dict(ok=accept_y(ys)(bases).tolist() == [True, False, False])
+    shp = x_oc.grid_shape(ys)
+    pw, fp = np.ones(shp), np.zeros(shp)
+    pw[0, 0, 0, 0, 0] = 0.0                                          # design 0 fails at k = k_min only
+    qual = qualify_y(pw, fp, np.zeros(shp[-1], bool), ys, ys.k_ranges)
+    lo_r, hi_r = (tuple(kr) for kr in ys.k_ranges)
+    out["qualify_ranges"] = dict(ok=bool(set(qual) == {lo_r, hi_r} and not qual[lo_r][0, 0, 0, 0]
+                                         and qual[hi_r][0, 0, 0, 0]))
+    sel_q = {lo_r: np.zeros(shp[:-1], bool)}
+    sel_q[lo_r][len(ys.p_set_grid) - 1, 0, 0, 0] = True              # p_set 1.0, cost over budget
+    sel_q[lo_r][0, 0, 0, 0] = True                                   # p_set 0.5, cost 1 h
+    s = select_y(sel_q, lambda d: ys.budget_h if d["p_set"] == ys.p_set_grid[-1] else 1.0, 0.0, ys)
+    out["select_budget"] = dict(ok=bool(s["selected"] is not None and s["selected"]["p_set"] == ys.p_set_grid[0]
+                                        and s["n_in_budget"] == 1))
+    codes = {"PASS": XV.S_PASS, "FAIL": XV.S_FAIL, "UNDECIDED": XV.S_UNDECIDED}
+    mt = XV.m_needed_table(ys)
+    out["set_rule"] = dict(ok=bool(all(int(XV.set_code_counts(n_, m_, b_, False, p_, ys)) == codes[w]
+                                       for (n_, m_, b_, p_), w in ys.set_fixtures)
+                                   and mt["k"] == list(range(ys.k_min, ys.k_cap + 1))
+                                   and all(mt["m"][str(p_)] == list(row) for p_, row in ys.m_table)),
+                           m_needed=mt)
+    out["ok"] = all(v["ok"] for v in out.values() if isinstance(v, dict))
+    return out
