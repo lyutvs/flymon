@@ -1194,7 +1194,8 @@ class Runner:
         d = doc["gates"]["design"]
         sv = y_rules.set_verdict(v, d, len(doc["gates"]["gates"]), ys)
         if sv["b"]:
-            refuse(f"BAND left b = {sv['b']} (X.9.1.3 P1-4: b = 0 before the verdict — resume band from the cache)")
+            refuse(f"BAND left b = {sv['b']} (X.9.1.3 P1-4: b = 0 before the verdict); band refuses after the seal, "
+                   f"so this path is INVALID_RUN (user's call)")
         y_store.write_json(ys.judge_detail, dict(judgement=v, records=out["records"], set=sv), self.plist)
         body = dict(outcome=sv["verdict"], verdict=sv["verdict"], sentence=sv["sentence"],
                     consequence=sv["consequence"], n=sv["n"], m=sv["m"], b=sv["b"], p_set=sv["p_set"],
