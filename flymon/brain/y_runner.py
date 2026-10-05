@@ -937,6 +937,90 @@ class Runner:
                          "C를 먼저 빼고, 그다음 대체 설계(재확인 통과 필요, 최대 5개), 그래도 넘으면 STOP_BUDGET.")
         return self._write("budget_gate", body, self._finish_wall("budget_gate", t0))
 
+    # ================================================================ order 8: the judged-seed naive final filter
+    def _lenient(self, doc: dict) -> list:
+        """The oracle lenient pre-filter's passes (Y.3.3 1) from results/y/oracle.json — its sha256 must be block
+        oracle's — in declared order (candidate number c: generator turn, (b) first)."""
+        ys = self.ys
+        p = Path(ys.oracle_detail)
+        if not p.exists() or sha256_file(p) != doc["oracle"]["detail_sha256"]:
+            refuse(f"{ys.oracle_detail} is missing or not block oracle's (sha256)")
+        per = json.loads(p.read_text())["pairs"]
+        out = sorted((x for x in per if y_rules.passes(x, ys)["y_lenient"]), key=lambda x: int(x["c"]))
+        if len(out) != int(doc["oracle"]["derived"]["yield_rule"]["n_len"]):
+            refuse("the lenient-pass count is not block oracle's N_len")
+        return out
+
+    def stage_gates(self) -> dict:
+        doc = self._require("gates")
+        self._keys_ok("gates")
+        ys, t0 = self.ys, time.perf_counter()
+        d = doc["budget_gate"]["plan"]["design"]
+        K, F = int(d["K"]), int(d["F"])
+        k_lo, k_hi = (int(v) for v in d["k_range"])
+        cand = self._lenient(doc)
+        try:
+            rows = {r["c"]: r for r in self.ctx["main_rows"](doc["digest"]["set"])}
+        except ValueError as e:
+            refuse(f"the main set does not reproduce block digest: {e}")
+        z = self._z_b(doc)
+        wr, wm = self.ctx["w_runner"](self.pool, False)
+        screened, gates, man = [], [], []
+        i = 0
+        n_w = max(1, int(getattr(self.pool, "n_workers", None) or ys.workers))
+        last = time.perf_counter()
+        while i < len(cand) and len(gates) < k_hi:
+            batch = cand[i:i + max(1, min(k_hi - len(gates), n_w // F or 1))]
+            units = [u for p in batch for u in wr.units([rows[p["c"]]], "main", K, F, V_SPEC.lever_edit,
+                                                         brains=("naive",))]
+            got = wm.learn(units, "naive")
+            now = time.perf_counter()
+            self._prog_add("gates", now - last)
+            last = now
+            by = wr._by_pair(got)
+            for p in batch:
+                g = sorted(by[p["key"]], key=lambda x: x["unit"]["fly"])
+                pre = np.stack([w_records.counts(x["result"]["stages"][0]) for x in g])
+                f = y_rules.final_filter(pre, z, ys)
+                ok = bool(f["passed"]) and len(gates) < k_hi
+                screened.append(dict(key=p["key"], c=p["c"], naive_d=f["d"], L_A=f["L_A"], L_P=f["L_P"], gate=ok))
+                man += wr._manifest(g)
+                if ok:
+                    gates.append(dict(key=p["key"], c=p["c"]))
+            i += len(batch)
+        dec = y_rules.few_pairs_final(int(doc["oracle"]["n"]), len(cand), len(gates), k_lo, ys)
+        p = y_store.write_json(ys.gates_detail, dict(screened=screened, gates=gates, manifest=man), self.plist)
+        body = dict(dec, gates=gates, screened=screened, n_screened=len(screened), n_pre=len(cand), stopped_at=i,
+                    design=d, manifest=man, z_V={k: list(v) for k, v in z.items()},
+                    detail_path=ys.gates_detail, detail_sha256=sha256_file(p),
+                    note="Y.3.3 2: 사전 거름 통과 쌍을 선언 순서로, 설계의 F × K pre(판정 프로브 시드)로 최종 거름 — k_hi에서 "
+                         "멈춤. 순진 조건은 이 값으로 고정(BAND 2K로 다시 계산하지 않음). 주 세트는 아직 미사용(Y.0).")
+        return self._write("gates", body, self._prog_add("gates", time.perf_counter() - last))
+
+    # ================================================================ order 8a: the estimate on the real gate count
+    def stage_estimate(self) -> dict:
+        doc = self._require("estimate")
+        ys = self.ys
+        plan = doc["budget_gate"]["plan"]
+        k = len(doc["gates"]["gates"])
+        costs = doc["smoke"]["costs_used"]
+        elapsed = self._ledger_h(doc)
+        opts = ([True, False] if plan["with_c"] else [False])
+        tried = []
+        for wc in opts:
+            c = self._design_cost(doc, plan["design"], wc, costs, k=k, n_naive=0)
+            tried.append(dict(with_c=wc, **c, in_budget=y_rules.in_budget(elapsed, c["total_h"], ys)))
+        ok = [t for t in tried if t["in_budget"]]
+        if ok:
+            dec = dict(outcome=y_rules.PASS, reasons=[], plan=dict(design=plan["design"], with_c=ok[0]["with_c"],
+                                                                   parts_h=ok[0]["parts_h"], total_h=ok[0]["total_h"]))
+        else:
+            dec = y_rules.budget_stop(elapsed, tried, "순서 8a", ys)
+        body = dict(dec, options=tried, n_gates=k, elapsed_h=elapsed, margin=ys.cost_margin,
+                    note="Y.7 8a: 실제 관문 쌍 수로 갱신(×1.3) — C를 먼저 빼고, 그래도 넘으면 STOP_BUDGET(설계는 바꾸지 "
+                         "않는다, Y.5).")
+        return self._write("estimate", body, 0.0)
+
 
 # ================================================================ phase B module level (Y.7 orders 6–12) — appended
 EXIT_KEY = 7
