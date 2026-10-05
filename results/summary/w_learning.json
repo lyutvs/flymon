@@ -1,0 +1,191 @@
+{
+ "ledger": [
+  {
+   "at": "2026-10-05T07:07:34.152186+00:00",
+   "stage": "stage0",
+   "wall_s": 320.85039312497247
+  }
+ ],
+ "stage0": {
+  "code_key": "3c2699c7d8eddfe0e1243ec9a4fe8c76ddb9c71bfa1a73cb3e554957df378ccc",
+  "decision_files": {
+   "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+   "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+   "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+   "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401"
+  },
+  "git": {
+   "commit": "853a587a889fc800119277565e9270ae73e6681c",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "note": "W.9.9 \uc21c\uc11c 0: \ud310\uc815 \ucf54\ub4dc\u00b7w_oc\u00b7\ubcf4\uc815\u00b7\uc218\uce58 \ud45c\u00b7\ud569\uc131 \uac80\uc99d, \ud30c\uc77c\ub7ff \uc804\uc5d0 \ucee4\ubc0b.",
+  "oc_compute_estimate_s": 1445.76472746511,
+  "oc_timing": {
+   "boot_s": 23.161140040960163,
+   "point_s": 58.145901709096506,
+   "records_s": 229.56182370800525,
+   "total_s": 310.88123070797883
+  },
+  "outcome": "PASS",
+  "pipeline_key": "9636cf4c7f868338f512cd7cf1a722027bd842c37528188859c14bebb04a2853",
+  "reasons": [],
+  "stage": "stage0",
+  "synthetic": {
+   "big_effect": {
+    "limit": 0.98,
+    "min_p": 1.0,
+    "ok": true,
+    "true_dprime": {
+     "punish_assoc": 4.011185900470651,
+     "punish_drop": 4.148488343428256,
+     "reward_assoc": 6.562166254604225,
+     "reward_level": 3.998917498481579
+    }
+   },
+   "negative_correlation": {
+    "limit": 0.02,
+    "max_p": 0.0,
+    "ok": true
+   },
+   "ok": true,
+   "one_gate": {
+    "limit": 0.02,
+    "max_p": 0.0,
+    "ok": true,
+    "true_dprime": {
+     "punish_assoc": -0.0380970409649988,
+     "punish_drop": 3.8106356132606356,
+     "reward_assoc": -0.013921916371056083,
+     "reward_level": 0.00015102520391195012
+    }
+   },
+   "simple_normal": {
+    "diffs": [
+     -0.13499999999999998,
+     -0.07749999999999999,
+     -0.04400000000000001
+    ],
+    "ok": true,
+    "p_by_F": {
+     "16": 0.216,
+     "24": 0.1385,
+     "32": 0.0945,
+     "8": 0.351
+    },
+    "tol": 1e-12
+   },
+   "zero_effect": {
+    "limit": 0.02,
+    "max_p": 0.0,
+    "ok": true
+   }
+  },
+  "t_measure_key": "7255f872802602bbe80244af8a6a607a44acc415f7434cbdac9ff29e6cb2d374",
+  "tables": {
+   "designs": {
+    "F": [
+     8,
+     32
+    ],
+    "K": [
+     8,
+     16
+    ],
+    "k_cap": 8,
+    "q": [
+     0.5,
+     0.625,
+     0.75
+    ]
+   },
+   "oc": {
+    "boot_draws": 200,
+    "boot_level": 0.95,
+    "boot_reps": 400,
+    "cal_floor_rule": "zero",
+    "cal_iter": 40,
+    "cal_reps": 2000,
+    "cal_tol": 0.02,
+    "cluster_grid": [
+     0.0,
+     0.5,
+     1.0
+    ],
+    "noise": "pilot residual vectors, resampled",
+    "reps": 4000,
+    "synth_reps": 1000
+   },
+   "protocol": {
+    "c3": {
+     "core_frac": 0.2,
+     "da_baseline_ms": 200.0,
+     "da_trace_ms": 100.0,
+     "da_trace_scale": 20.0,
+     "dan_drive_mv": 70.0,
+     "kc_kc_scale": 0.0,
+     "kc_trace_ms": 200.0,
+     "kc_trace_scale": 40.0,
+     "learn_rate": 0.0003,
+     "min_weight_frac": 0.2,
+     "recovery_per_pulse": 0.0
+    },
+    "gap_ms": 200.0,
+    "probe": {
+     "read_ms": 600.0,
+     "settle_ms": 800.0,
+     "window_ms": 200
+    },
+    "pulse_ms": 400.0,
+    "punish": "PPL105",
+    "reward": "PAM08",
+    "strength": 1.0,
+    "train_settle_ms": 800.0,
+    "trials": 20
+   },
+   "seeds": {
+    "oc": 42000000,
+    "oracle": {
+     "act": [
+      24700000,
+      24700001,
+      24700002,
+      24700003,
+      24700004,
+      24700005,
+      24700006,
+      24700007
+     ],
+     "report": [
+      24700200,
+      24700201,
+      24700202,
+      24700203,
+      24700204,
+      24700205,
+      24700206,
+      24700207
+     ],
+     "select": [
+      24700100,
+      24700101,
+      24700102,
+      24700103,
+      24700104,
+      24700105,
+      24700106,
+      24700107
+     ]
+    },
+    "pilot_probe": "40_000_000 + j\u00b74_000 + f\u00b7100 + k",
+    "pilot_train": "41_000_000 + j\u00b740_000 + f\u00b71_000 + t",
+    "probe": "26_000_000 + c\u00b74_000 + f\u00b7100 + k",
+    "smoke": "42_100_000-42_199_999",
+    "train": "28_000_000 + c\u00b740_000 + f\u00b71_000 + t"
+   }
+  },
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-05T07:07:34.152186+00:00"
+ }
+}
