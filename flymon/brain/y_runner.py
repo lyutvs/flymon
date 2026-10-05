@@ -34,7 +34,11 @@ X's own _reuse + Y.7 1's X facts), pilot (Y.4 on V's four candidates + W's three
 the oracle block's kept k ranges, P2-12, P2-10, STOP records, env hashes). stage0 and pilot / precheck re-run the reuse
 checks they rest on (STOP_REUSE, 〈where〉 "1(…)"). Long computations are resumable cells under
 results/y/progress/<stage>/ (key = cell inputs + YSpec + Y files' sha256); the wall time of finished cells is kept in
-results/y/progress/<stage>.json so a killed run's spend stays in the ledger."""
+results/y/progress/<stage>.json so a killed run's spend stays in the ledger.
+Phase B (Y.7 orders 6–12; appended): ORDER / GATES grow by oc · smoke · budget_gate · gates · estimate · learn ·
+band · records · seal · judge (read at call time by _require); build_ctx's dict gains _phase_b_ctx's entries; the
+bootstrap and the reconfirmation run as resumable .npz cells in a spawn process pool (phase-B plan Reading 2); W's
+Runner reads a view of Y's blocks (learn / band / records units, the seal's declared inputs, the judgement)."""
 from __future__ import annotations
 
 import datetime as _dt
@@ -199,7 +203,7 @@ def build_ctx(npz: str) -> dict:
                 reuse=reuse, w_set=lambda: wctx()["w_set"](), main_rows=lambda blk: wctx()["main_rows"](blk),
                 params=lambda: wctx()["params"], measurer=measurer, x_reuse=x_reuse, x_facts=x_facts,
                 w_oc_detail=w_oc_detail, v_candidates=v_candidates, v_even_oracle=v_even_oracle,
-                pilot_measure=pilot_measure, pilot_back=pilot_back)
+                pilot_measure=pilot_measure, pilot_back=pilot_back, **_phase_b_ctx(wctx, npz))
 
 
 class Runner:
@@ -640,3 +644,284 @@ class Runner:
                          "군집 최악, 채움 > 1 % 제외(Y.9.2 P1-4 · P1-5), 0p 수율 규칙이 남긴 k 범위만(P1-7). 작은 "
                          "부트스트랩(P2-12)과 문턱 재계산(P2-10)은 기록 전용.")
         return self._write("precheck", body, self._finish_wall("precheck", t0))
+
+    # ================================================================ phase B (Y.7 orders 6–12) — appended
+    # ---- helpers ---------------------------------------------------------------------------------------------------
+    def _keys_ok(self, stage: str) -> None:
+        """Y.7 11 / W.8: the W and U measurement keys are the declared ones (before learning and before judging too);
+        a change refuses with exit 7 and writes nothing."""
+        k = self.ctx["keys"]()
+        if (k.get("w_measure_key"), k.get("u_measure_key")) != (self.ys.w_measure_key, self.ys.u_measure_key):
+            refuse(f"stage {stage}: the measurement keys {k} are not the declared ones (Y.2)", EXIT_KEY)
+
+    def _ledger_h(self, doc: dict) -> float:
+        return float(sum(e.get("wall_s", 0.0) for e in (doc.get("budget") or {}).get("ledger", []))) / self.ys.s_per_h
+
+    def _z_b(self, doc: dict) -> dict:
+        """Phase B's z: block pilot's z_V (W block reuse's full precision — the z of the pilot θ and the precheck,
+        phase-A Reading 20)."""
+        return {k: (float(v[0]), float(v[1])) for k, v in doc["pilot"]["z_V"].items()}
+
+    def _early_b(self, stage: str, body: dict, t0: float, detail: str) -> dict:
+        y_store.write_json(detail, dict(body, note="재사용 조건 STOP — 계산 없음"), self.plist)
+        return self._write(stage, body, time.perf_counter() - t0)
+
+    def _pcells(self, stage: str, jobs: list, log=None) -> list:
+        """Resumable array cells computed in a spawn process pool (plan Reading 2): jobs = [(tag, key_obj, fn, args)]
+        with fn a module-level y_oc function returning {arrays, meta}. A cell is progress_dir/<stage>/<tag>.npz holding
+        its key; a different key recomputes. The parent writes each cell as it completes and adds the wall time since
+        the previous completion to progress_dir/<stage>.json (so a killed run keeps its spend). Results do not depend on
+        the worker count (every draw has its own streams). Returns [{arrays, meta}] in job order."""
+        import io
+        import os
+        spec_sha = hashlib.sha256(canonical(self.ys).encode()).hexdigest()
+        y_sha = x_runner.files_sha(Y_FILES)
+        root = Path(self.ys.progress_dir) / stage
+
+        def key_of(tag, key_obj):
+            return hashlib.sha256(canonical(dict(tag=tag, key=key_obj, ys=spec_sha, y=y_sha)).encode()).hexdigest()
+
+        def load(path, key):
+            if not path.exists():
+                return None
+            try:
+                with np.load(io.BytesIO(path.read_bytes()), allow_pickle=False) as f:
+                    if str(f["__key__"]) != key:
+                        return None
+                    meta = json.loads(str(f["__meta__"]))
+                    return dict(arrays={k: f[k] for k in f.files if not k.startswith("__")}, meta=meta)
+            except (ValueError, KeyError, OSError):
+                return None
+
+        def save(path, key, res):
+            buf = io.BytesIO()
+            np.savez(buf, __key__=np.array(key), __meta__=np.array(json.dumps(y_store.to_json(res["meta"]))),
+                     **res["arrays"])
+            y_store.write_bytes(str(path), buf.getvalue(), self.plist)
+        out, todo = [None] * len(jobs), []
+        for i, (tag, key_obj, fn, args) in enumerate(jobs):
+            p = root / (re.sub(r"[^A-Za-z0-9._-]", "_", tag) + ".npz")
+            k = key_of(tag, key_obj)
+            got = load(p, k)
+            if got is None:
+                todo.append((i, p, k, fn, args))
+            else:
+                out[i] = got
+        if not hasattr(self, "_cell_s"):
+            self._cell_s = 0.0
+        workers = max(1, int(getattr(self, "oc_workers", None) or self.ys.workers))
+        last = time.perf_counter()
+
+        def done(i, p, k, res):
+            nonlocal last
+            save(p, k, res)
+            out[i] = dict(arrays=res["arrays"], meta=json.loads(json.dumps(y_store.to_json(res["meta"]))))
+            now = time.perf_counter()
+            self._prog_add(stage, now - last)
+            self._cell_s += now - last
+            last = now
+            if log is not None:
+                log(f"y {stage}: {sum(o is not None for o in out)}/{len(out)} cells")
+        if workers == 1 or len(todo) <= 1:
+            for i, p, k, fn, args in todo:
+                done(i, p, k, fn(*args))
+            return out
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+        from multiprocessing import get_context
+        for v in self.ys.thread_env:
+            os.environ.setdefault(v, "1")
+        with ProcessPoolExecutor(max_workers=min(workers, len(todo)), mp_context=get_context("spawn")) as ex:
+            fut = {ex.submit(fn, *args): (i, p, k) for i, p, k, fn, args in todo}
+            for f in as_completed(fut):
+                i, p, k = fut[f]
+                done(i, p, k, f.result())
+        return out
+
+    def _theta_b(self, doc: dict, where: str):
+        """Block pilot's θ̂ rebuilt from the raw (as the precheck, phase-A Reading 21) and the W pieces; (stop body or
+        None, θ̂, θ_W, R_V0, candidates, admitted keys)."""
+        stop, w_doc, wpairs, theta_w, _f = self._reuse_all(where)
+        if stop:
+            return stop, None, None, None, None, None
+        man = json.loads(Path(self.ys.pilot_detail).read_text())["manifest"]
+        vpairs, bad = self.ctx["pilot_back"](man)
+        if bad:
+            refuse(f"pilot raw changed since block pilot: {bad[:3]}")
+        cands = {k: wpairs[k] for k in self.ys.pilot_w_pairs}
+        cands.update({k: vpairs[k] for k in self.ys.pilot_v_pairs})
+        keys = list(doc["pilot"]["admitted"])
+        r = y_oc.r_v0(theta_w)
+        th = y_oc.fit_y([cands[k] for k in keys], keys, r)
+        if json.loads(canonical(w_oc.summary(th))) != doc["pilot"]["theta"]:
+            refuse("the refitted θ̂ is not block pilot's theta (phase-A Reading 21)")
+        return None, th, theta_w, r, cands, keys
+
+    def _precheck_repro(self, doc: dict, th, z: dict) -> None:
+        """Y.7 5: phase A's computation is unchanged — the precheck's point calibration on θ̂ (root precheck_seed)
+        recomputed now equals block precheck's, bit for bit (as JSON), or the stage refuses."""
+        ys = self.ys
+        idx = y_oc.rng(ys.precheck_seed, y_oc.TAG_CAL).integers(0, len(th["resid"]), ys.cal_reps)
+        now = {m: y_oc.calibrate_y(th, getattr(ys, f), m, idx, z, ys) for m, f in y_oc.MODES}
+        want = doc["precheck"]["calibration"]
+        got = {m: dict(ok=c["ok"], failure=c["failure"], corners=c["corners"], a=c["a"], b=c["b"])
+               for m, c in now.items()}
+        if y_store.to_json(got) != want:
+            refuse("the precheck's calibration does not reproduce (Y.7 5: phase-A code changed?)")
+
+    def _design_cost(self, doc: dict, d: dict, with_c: bool, costs: dict | None = None, k: int | None = None,
+                     n_naive: int | None = None) -> dict:
+        ys = self.ys
+        c = costs or doc["pilot"]["costs"]
+        n_len = int(doc["oracle"]["derived"]["yield_rule"]["n_len"])
+        return y_rules.design_cost_y(c, d, ys, W_SPEC, n_len if n_naive is None else n_naive,
+                                     int(d["k_range"][1]) if k is None else k, with_c)
+
+    def _reconfirm(self, stage: str, th, z: dict, r, d: dict, rank: int, log=None) -> dict:
+        jobs = [(f"rc{rank}_{bi}", dict(theta=w_oc.summary(th), design=d, rank=rank, bi=bi, z=z,
+                                         reps=self.ys.reconfirm_reps),
+                 y_oc.reconfirm_draw, (th, z, self.ys, r, d, rank, bi)) for bi in range(self.ys.boot_draws)]
+        draws = self._pcells(stage, jobs, log)
+        return y_oc.reconfirm_decide(draws, d, rank, self.ys)
+
+    # ================================================================ order 6: bootstrap OC → qualify → select → P2-8
+    def stage_oc(self) -> dict:
+        doc = self._require("oc")
+        ys, t0 = self.ys, time.perf_counter()
+        stop, th, theta_w, r, cands, keys = self._theta_b(doc, "1(순서 6에서 확인)")
+        if stop:
+            return self._early_b("oc", stop, t0, ys.oc_detail)
+        z = self._z_b(doc)
+        self._precheck_repro(doc, th, z)
+        cell = self._cells("oc")            # one clock for every cell of the stage (boot, reconfirm, records)
+        kr = [tuple(int(v) for v in k) for k in doc["oracle"]["k_ranges"]]
+        jobs = [(f"boot_{bi}", dict(theta=w_oc.summary(th), bi=bi, z=z, reps=ys.boot_reps), y_oc.boot_draw,
+                 (th, z, ys, r, bi)) for bi in range(ys.boot_draws)]
+        lim = y_oc.limits(self._pcells("oc", jobs, _log), ys, kr)
+        qual = y_oc.qualify_boot(lim, ys, kr)
+        elapsed = self._ledger_h(doc) + self._prog("oc") / ys.s_per_h
+
+        def cost(dsg):
+            return self._design_cost(doc, dsg, False)["total_h"]
+        sel = y_oc.select_y(qual, cost, elapsed, ys)
+        if sel["outcome"] == y_rules.STOP_BUDGET:
+            rows = [dict(p_set=ys.p_set_grid[i[0]], q=ys.q_grid[i[1]], K=ys.k_grid[i[2]], F=ys.f_min + i[3],
+                         k_range=list(k)) for k, ok in qual.items() for i in np.ndindex(ok.shape) if ok[i]]
+            best = min(cost(x) for x in rows)
+            sel = dict(sel, budget_text=y_rules.budget_text(elapsed, best, ys))
+        at_f = y_oc.at_f_boot(lim, ys, kr, ys.f_max)
+        dec = y_rules.oc_decision(sel, at_f, lim["counts"], ys)
+        recs, design = [], None
+        if dec["outcome"] == y_rules.PASS:
+            for rank, d in enumerate(sel["ranking"][:ys.reconfirm_max]):
+                rc = self._reconfirm("oc", th, z, r, d, rank, _log)
+                recs.append(rc)
+                if rc["ok"]:
+                    design = dict(d, rank=rank)
+                    break
+            if design is None:
+                dec = y_rules.reconfirm_stop(recs, ys)
+        target = design or y_oc.records_target_b(lim, ys, kr, cost)
+        thetas, notes = y_oc.record_thetas(th, theta_w, cands, keys, r, ys)
+        rec = y_oc.records_b(thetas, {k: target[k] for k in ("p_set", "q", "K", "F")}, z, ys,
+                             cell=cell, log=_log)
+        first = _first_values(lim, design, ys) if design else None
+        det = dict(limits={k: (_nan_none(v) if isinstance(v, np.ndarray) else v) for k, v in lim.items()
+                           if k not in ("sim", "success_only")},
+                   sim={f"[{a}, {b}]": {k: v.tolist() for k, v in s.items()} for (a, b), s in lim["sim"].items()},
+                   success_only={m: (None if v is None else v.tolist()) for m, v in lim["success_only"].items()},
+                   qualified={f"[{a}, {b}]": v.tolist() for (a, b), v in qual.items()}, selection=sel,
+                   reconfirm=recs, records=rec, at_f32=at_f)
+        p = y_store.write_json(ys.oc_detail, det, self.plist)
+        body = dict(dec, design=design, design_first=first, ranking=sel["ranking"], n_qualifying=sel["n_qualifying"],
+                    n_in_budget=sel["n_in_budget"], reconfirm=recs, n_reconfirmed=len(recs),
+                    first_selected=sel.get("selected"), records_target=target, records=rec, records_notes=notes,
+                    calibration_counts=lim["counts"], fill_bad=lim["fill_bad"].tolist(), at_f32=at_f,
+                    elapsed_at_selection_h=elapsed, costs=doc["pilot"]["costs"], k_ranges=[list(k) for k in kr],
+                    n_len=int(doc["oracle"]["derived"]["yield_rule"]["n_len"]), theta=doc["pilot"]["theta"],
+                    z_V={k: list(v) for k, v in z.items()}, env=env_hashes(),
+                    env_precheck_diff=_env_diff(doc["precheck"].get("env") or {}, env_hashes()),
+                    detail_path=ys.oc_detail, detail_sha256=sha256_file(p),
+                    boot=dict(draws=ys.boot_draws, reps=ys.boot_reps, root=ys.oc_seed),
+                    note="Y.6.4 부트스트랩(200 × 400, 동시 단측 한계, 군집 · 시나리오 최악, 채움 > 1 % 제외) → Y.5 자격 · "
+                         "선택(예산 ×1.3) → Y.9.2 P2-8 재확인(200 × 1600, 최대 5개) → Y.6.5 records(결과와 무관). "
+                         "재확인 값이 공식 OC 값이고 처음 값은 함께 공개한다.")
+        return self._write("oc", body, self._finish_wall("oc", t0))
+
+
+# ================================================================ phase B module level (Y.7 orders 6–12) — appended
+EXIT_KEY = 7
+PHASE_B = ("oc", "smoke", "budget_gate", "gates", "estimate", "learn", "band", "records", "seal", "judge")
+ORDER = ORDER + PHASE_B
+GATES = ORDER
+
+
+def y_w_spec(ys, smoke: bool = False):
+    """W's spec with Y's seed roots (Y.2): main probe 62M / training 64M, pilot 60M / 61M, smoke 77_100_000 /
+    77_110_000 / 77_150_000; k_cap = Y's largest k_hi; W's every other number (protocol, verdict, noplast)."""
+    import dataclasses
+    return dataclasses.replace(W_SPEC, probe_seed0=ys.probe_seed0, train_seed0=ys.train_seed0,
+                               pilot_probe_seed0=ys.pilot_probe_seed0, pilot_train_seed0=ys.pilot_train_seed0,
+                               smoke_probe_seed0=ys.smoke_probe_seed0, smoke_train_seed0=ys.smoke_train_seed0,
+                               smoke_oracle_seed0=ys.smoke_oracle_seed0, k_cap=ys.k_cap, workers=ys.workers,
+                               smoke=bool(smoke))
+
+
+def _nan_none(a) -> list:
+    """An array as JSON lists with NaN (a cell no draw simulated) as null."""
+    a = np.asarray(a, float)
+    return np.where(np.isnan(a), None, a).tolist()
+
+
+def _first_values(lim: dict, d: dict, ys) -> dict:
+    """Y.9.2 P2-8 ("처음 값은 함께 공개"): the design's bootstrap limits — k-wise and simultaneous — beside the
+    reconfirmed ones."""
+    i = (ys.p_set_grid.index(d["p_set"]), ys.q_grid.index(d["q"]), ys.k_grid.index(d["K"]), int(d["F"]) - ys.f_min)
+    kr = tuple(int(v) for v in d["k_range"])
+    ks = [k - ys.k_min for k in range(kr[0], kr[1] + 1)]
+    return dict(k=list(range(kr[0], kr[1] + 1)), power_by_k=lim["power_lo_by_k"][i][ks].tolist(),
+                false_by_k=lim["false_hi_by_k"][i][ks].tolist(), power_sim=float(lim["sim"][kr]["power"][i]),
+                false_sim=float(lim["sim"][kr]["false"][i]))
+
+
+def _env_diff(a: dict, b: dict) -> list:
+    """The env fields (uv.lock, Python, numpy, and each file's sha256) that differ between two env_hashes records."""
+    out = []
+    for k in sorted(set(a) | set(b)):
+        va, vb = a.get(k), b.get(k)
+        if isinstance(va, dict) or isinstance(vb, dict):
+            va, vb = va or {}, vb or {}
+            out += [f"{k}:{f}" for f in sorted(set(va) | set(vb)) if va.get(f) != vb.get(f)]
+        elif va != vb:
+            out.append(k)
+    return out
+
+
+def _phase_b_ctx(wctx, npz: str) -> dict:
+    """build_ctx's phase-B entries: w_runner(pool, smoke) = (W's Runner over Y's seed spec on W's context, a
+    WMeasurer behind YCache — results/y/cache, or results/y/smoke/cache with Y's smoke seed set); smoke_oracle(pool) =
+    an RMeasurer over the smoke cache with 0p's z (W_SPEC.z_v())."""
+    from .r_measure import RMeasurer
+    from .u_measure import UPool
+    from .w_measure import WMeasurer, w_measure_key
+    from .y_spec import SPEC as YS
+
+    def w_run(pool, smoke=False):
+        c = wctx()
+        yw = y_w_spec(YS, smoke)
+        cache = (y_store.YCache(YS.smoke_cache_dir, w_measure_key(npz), smoke_seeds=yw.smoke_seed_set()) if smoke
+                 else y_store.YCache(YS.cache_dir, w_measure_key(npz)))
+        windows = dict(strength=W_SPEC.strength, settle_ms=V_SPEC.settle_ms, read_ms=V_SPEC.read_ms,
+                       window_ms=V_SPEC.window_ms)
+        timing = dict(present_ms=W_SPEC.pulse_ms, gap_ms=W_SPEC.gap_ms, train_settle_ms=W_SPEC.train_settle_ms,
+                      seed_stride=W_SPEC.fly_train_stride)
+        wm = WMeasurer(pool, cache, c["params"], c["readout"], V_SPEC.p_type, W_SPEC.reward_dan, W_SPEC.punish_dan,
+                       windows, timing)
+        return w_runner.Runner(None, lambda smoke_=False: wm, c, yw), wm
+
+    def smoke_oracle(pool):
+        c = wctx()
+        yw = y_w_spec(YS, True)
+        return RMeasurer(UPool(pool), y_store.YCache(YS.smoke_cache_dir, w_measure_key(npz),
+                                                     smoke_seeds=yw.smoke_seed_set()),
+                         V_SPEC, c["params"], c["readout"], W_SPEC.z_v(), c["types"], c["n_kc"])
+    return dict(w_runner=w_run, smoke_oracle=smoke_oracle)

@@ -152,3 +152,39 @@ def archive_stage(stage: str, ys) -> list:
             _refuse(f"archive {dest} exists and differs at {f}; an archive is never overwritten")
         out.append(dict(src=str(f), dst=str(dst), sha256=sha))
     return out
+
+# ================================================================ phase B (Y.7 orders 6–12) — appended
+# The earlier stages' file sets are unchanged: ARCHIVE_ORDER only grows at its end and own_files falls through to the
+# phase-A function for every earlier stage (stage_files reads both names at call time).
+ARCHIVE_ORDER = ARCHIVE_ORDER + ("oc", "smoke", "budget_gate", "gates", "estimate", "learn", "band", "records", "seal",
+                                 "judge")
+RAW_STAGES = ("smoke", "gates", "learn", "band", "records")
+SEAL_STAGES = ("gates", "learn", "band", "records")
+_own_files_a = own_files
+
+
+def _detail(stage: str, ys) -> str:
+    return dict(smoke=ys.smoke_detail, gates=ys.gates_detail, learn=ys.learn_detail, band=ys.band_detail,
+                records=ys.records_detail)[stage]
+
+
+def _detail_and_raw(path: str) -> list:
+    """A measuring stage's detail file and the raw unit files its manifest lists ("그 블록이 쓴 것 전부", P3-13)."""
+    p = Path(path)
+    man = json.loads(p.read_text()).get("manifest", []) if p.exists() else []
+    return [path] + [m["cache_file"] for m in man]
+
+
+def own_files(stage: str, ys) -> list:
+    """Phase B's own files: oc → oc.json; smoke / gates / learn / band / records → the detail file + its raw; seal →
+    every raw file the judgement reads (gates, learn, band, records; Y.7 11's copy); judge → judge.json. Earlier
+    stages: the phase-A sets."""
+    if stage == "oc":
+        return [ys.oc_detail]
+    if stage in RAW_STAGES:
+        return _detail_and_raw(_detail(stage, ys))
+    if stage == "seal":
+        return [f for s in SEAL_STAGES for f in _detail_and_raw(_detail(s, ys))]
+    if stage == "judge":
+        return [ys.judge_detail]
+    return _own_files_a(stage, ys)
