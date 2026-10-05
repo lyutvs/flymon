@@ -205,6 +205,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
 - **판정 SELECTED(조합 지렛대, 2026-10-05, 부록 V.10)**: APL→MBON05 2간선 제거와 MBON05→MBON09/MBON11/MBON01 11간선 제거를 함께 한 모델(커넥톰 간선 13개 제거)을, 편집 없는 엔진과 조합 엔진 둘 다에서 KC 입력으로 거른 넓힌 풀 새 세트(생성원 턴 0–305)에서 엔진별 z로 한 번 판정했다.
   지렛대 **16/21** 대 지렛대 없음 **6/21**, F_a **2/43**(기준 경계값), 처벌 가드 통과((b) 순감소 −2, (a) 0), 관문 ② 비 h4 z 1.019 · 0.942, z_V 0.773 · 0.704, 짝수 15/21 → **SELECTED**. 오른 것은 주로 보상 통과((b) 8 → 21)이고 처벌 통과는 줄지 않았다.
   귀결은 넓힌 풀·엔진별 z에서 M2 시험 가능성이 섰다는 것까지다 — 지렛대는 U 기전 기록을 보고 골랐고(다섯 번째 시도), 결과는 이 64쌍 조건부이며(군집 모형 null 0.374), POOL 배틀 과제의 F v4 학습 시험을 이것만으로 정당화하지 않는다. 다음은 사용자 결정이다.
+- **관문 STOP(F v4 학습 시험, 2026-10-05, 부록 W.10 — STOP_OC_UNREACHABLE, 판정 없음)**: 조합 지렛대 엔진(V와 같은 13간선, z_V)에서 실제 학습 규칙(F.2 순차 R·N·RN)으로 M2 학습 단위를 판정하려 했다.
+  재사용·끝점 재현(V 관문 ② 처벌 행 8개·순진 프로브 6개 비트 일치, 보상 경로 양성)과 파일럿(16쌍 × 8마리, 보상 쌍 비율 1.0, 처벌 0.875, 부호 반대 0.0, X·Y 바닥 0.033)은 통과했다(탐색 판정 11 PASS / 5 FAIL).
+  작동 특성에서 어떤 설계(q 0.5–0.75, K 8/16, F 8–32, k 4–8)도 G.6을 맞추지 못했다 — 참 d′ 1.5의 검정력 점 추정 최대 **0.449**(k 4), F에 대해 평평(약 0.82^k: 쌍마다 약 18% 실패, 파일럿 모형의 쌍 수준 이질성과 맞는 해석), d′ 0.5의 거짓 통과 0.0; 부트스트랩 재보정 29/200 실패로 한계 0.000 / 1.000. 드리프트만의 보상 수준 d′ −2.35.
+  주 세트(턴 306–1985)는 쓰지 않아 남아 있다. 다음은 사용자 판단이다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -355,6 +359,15 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   z: the lever was chosen after seeing U's mechanism records (fifth attempt), the result is conditional on these 64
   pairs (cluster-model null 0.374), and it does not by itself justify a POOL F v4 learning test. Next is the user's
   decision.
+- **F v4 learning test: gate stop STOP_OC_UNREACHABLE, no judgement (2026-10-05, appendix W.10).** The M2 learning
+  unit was to be judged with the real learning rule (F.2 sequential R/N/RN) on the combined-lever engine (V's 13 edges,
+  z_V). Reuse, the endpoint gate (8 V gate-2 punish rows and 6 naive probe rows bit for bit, reward path positive) and
+  the pilot (16 pairs x 8 flies; reward share 1.0, punishment 0.875, reversed 0.0, X+Y floor 0.033) passed (exploratory
+  verdict 11 PASS / 5 FAIL). In the operating characteristic no design (q 0.5-0.75, K 8/16, F 8-32, k 4-8) met G.6:
+  point power at true d' 1.5 is at most **0.449** (k 4) and flat in F (about 0.82^k: each pair fails ~18%, read as
+  pair-level heterogeneity in the pilot model), false pass at d' 0.5 is 0.0, and 29/200 bootstrap recalibrations
+  failed so the limits are 0.000 / 1.000. Drift-only reward-level d' is -2.35. The main set (turns 306-1985) was not
+  used and stays available. Next is the user's decision.
 
 ## 실행
 
