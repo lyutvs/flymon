@@ -1,0 +1,2204 @@
+{
+ "budget": {
+  "ledger": [
+   {
+    "at": "2026-10-06T07:51:55.987732+00:00",
+    "stage": "stage0",
+    "wall_s": 14.657165250042453
+   }
+  ]
+ },
+ "candidates": [
+  {
+   "axis": "b",
+   "c": 0,
+   "key": "b|306|Psychic vs Bulbasaur|Psychic vs Charmander",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 1,
+   "key": "b|306|Mega Drain vs Bulbasaur|Mega Drain vs Charmander",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 2,
+   "key": "b|308|Surf vs Primeape|Surf vs Growlithe",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 3,
+   "key": "b|308|Psychic vs Primeape|Psychic vs Growlithe",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 4,
+   "key": "b|310|Earthquake vs Golbat|Earthquake vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 5,
+   "key": "b|310|Thunderbolt vs Golbat|Thunderbolt vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 6,
+   "key": "b|310|Surf vs Golbat|Surf vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 7,
+   "key": "a|310|Earthquake|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 8,
+   "key": "a|310|Earthquake|Surf",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 9,
+   "key": "b|315|Surf vs Arcanine|Surf vs Poliwag",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 10,
+   "key": "b|317|Rock Slide vs Golem|Rock Slide vs Ponyta",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 11,
+   "key": "b|318|Mega Drain vs Omanyte|Mega Drain vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 12,
+   "key": "b|319|Surf vs Sandshrew|Surf vs Nidoran-F",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 13,
+   "key": "b|320|Thunderbolt vs Dodrio|Thunderbolt vs Seel",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 14,
+   "key": "a|320|Psychic|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 15,
+   "key": "b|321|Mega Drain vs Charmeleon|Mega Drain vs Squirtle",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 16,
+   "key": "b|323|Earthquake vs Ponyta|Earthquake vs Slowpoke",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 17,
+   "key": "b|323|Rock Slide vs Ponyta|Rock Slide vs Slowpoke",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 18,
+   "key": "b|324|Psychic vs Chansey|Psychic vs Tangela",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 19,
+   "key": "b|324|Tri Attack vs Chansey|Tri Attack vs Tangela",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 20,
+   "key": "b|327|Rock Slide vs Nidoran-M|Rock Slide vs Clefairy",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 21,
+   "key": "b|327|Strength vs Nidoran-M|Strength vs Clefairy",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 22,
+   "key": "b|334|Mega Drain vs Rapidash|Mega Drain vs Slowpoke",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 23,
+   "key": "b|335|Earthquake vs Jynx|Earthquake vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 24,
+   "key": "b|335|Rock Slide vs Jynx|Rock Slide vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 25,
+   "key": "a|335|Earthquake|Rock Slide",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 26,
+   "key": "a|335|Earthquake|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 27,
+   "key": "a|335|Rock Slide|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 28,
+   "key": "b|339|Rock Slide vs Zubat|Rock Slide vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 29,
+   "key": "b|339|Strength vs Zubat|Strength vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 30,
+   "key": "a|339|Earthquake|Rock Slide",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 31,
+   "key": "a|339|Earthquake|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 32,
+   "key": "a|339|Rock Slide|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 33,
+   "key": "b|345|Flamethrower vs Dugtrio|Flamethrower vs Meowth",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 34,
+   "key": "b|346|Surf vs Starmie|Surf vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 35,
+   "key": "b|351|Earthquake vs Snorlax|Earthquake vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 36,
+   "key": "b|351|Surf vs Snorlax|Surf vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 37,
+   "key": "b|353|Mega Drain vs Dragonair|Mega Drain vs Mewtwo",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 38,
+   "key": "b|353|Cut vs Dragonair|Cut vs Mewtwo",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 39,
+   "key": "a|353|Mega Drain|Cut",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 40,
+   "key": "b|355|Thunderbolt vs Pidgeotto|Thunderbolt vs Ekans",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 41,
+   "key": "b|355|Psychic vs Pidgeotto|Psychic vs Ekans",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 42,
+   "key": "b|360|Thunderbolt vs Weezing|Thunderbolt vs Rhyhorn",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 43,
+   "key": "b|360|Surf vs Weezing|Surf vs Rhyhorn",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 44,
+   "key": "b|362|Surf vs Omastar|Surf vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 45,
+   "key": "a|362|Surf|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 46,
+   "key": "a|362|Surf|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 47,
+   "key": "b|363|Flamethrower vs Spearow|Flamethrower vs Ekans",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 48,
+   "key": "a|363|Flamethrower|Earthquake",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 49,
+   "key": "a|363|Flamethrower|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 50,
+   "key": "b|364|Tri Attack vs Jigglypuff|Tri Attack vs Zubat",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 51,
+   "key": "b|367|Thunderbolt vs Grimer|Thunderbolt vs Shellder",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 52,
+   "key": "b|372|Earthquake vs Moltres|Earthquake vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 53,
+   "key": "b|372|Surf vs Moltres|Surf vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 54,
+   "key": "b|372|Strength vs Moltres|Strength vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 55,
+   "key": "b|373|Surf vs Ivysaur|Surf vs Charmander",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 56,
+   "key": "b|374|Psychic vs Dugtrio|Psychic vs Meowth",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 57,
+   "key": "a|374|Earthquake|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 58,
+   "key": "b|377|Psychic vs Nidoran-M|Psychic vs Clefairy",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 59,
+   "key": "b|388|Psychic vs Ekans|Psychic vs Sandshrew",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 60,
+   "key": "b|392|Mega Drain vs Nidorino|Mega Drain vs Clefairy",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 61,
+   "key": "b|393|Earthquake vs Marowak|Earthquake vs Hitmonlee",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 62,
+   "key": "b|393|Rock Slide vs Marowak|Rock Slide vs Hitmonlee",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 63,
+   "key": "b|393|Strength vs Marowak|Strength vs Hitmonlee",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 64,
+   "key": "b|395|Surf vs Dragonair|Surf vs Mewtwo",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 65,
+   "key": "a|395|Surf|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 66,
+   "key": "b|396|Earthquake vs Tangela|Earthquake vs Kangaskhan",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 67,
+   "key": "b|401|Surf vs Exeggutor|Surf vs Cubone",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 68,
+   "key": "b|401|Psychic vs Exeggutor|Psychic vs Cubone",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 69,
+   "key": "b|401|Thunderbolt vs Exeggutor|Thunderbolt vs Cubone",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 70,
+   "key": "b|404|Earthquake vs Exeggutor|Earthquake vs Cubone",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 71,
+   "key": "b|404|Rock Slide vs Exeggutor|Rock Slide vs Cubone",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 72,
+   "key": "b|404|Strength vs Exeggutor|Strength vs Cubone",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 73,
+   "key": "b|408|Mega Drain vs Golbat|Mega Drain vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 74,
+   "key": "a|408|Surf|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 75,
+   "key": "b|414|Earthquake vs Dratini|Earthquake vs Mewtwo",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 76,
+   "key": "b|415|Rock Slide vs Pidgey|Rock Slide vs Ekans",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 77,
+   "key": "b|419|Flamethrower vs Growlithe|Flamethrower vs Poliwag",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 78,
+   "key": "b|420|Thunderbolt vs Aerodactyl|Thunderbolt vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 79,
+   "key": "b|420|Psychic vs Aerodactyl|Psychic vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 80,
+   "key": "a|420|Thunderbolt|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 81,
+   "key": "b|428|Flamethrower vs Exeggcute|Flamethrower vs Cubone",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 82,
+   "key": "b|430|Rock Slide vs Weezing|Rock Slide vs Rhyhorn",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 83,
+   "key": "b|443|Earthquake vs Jigglypuff|Earthquake vs Zubat",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 84,
+   "key": "b|444|Mega Drain vs Ekans|Mega Drain vs Sandshrew",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 85,
+   "key": "b|452|Rock Slide vs Muk|Rock Slide vs Shellder",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 86,
+   "key": "b|452|Strength vs Muk|Strength vs Shellder",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 87,
+   "key": "b|453|Thunderbolt vs Diglett|Thunderbolt vs Meowth",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 88,
+   "key": "b|454|Earthquake vs Mankey|Earthquake vs Growlithe",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 89,
+   "key": "b|454|Rock Slide vs Mankey|Rock Slide vs Growlithe",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 90,
+   "key": "b|455|Earthquake vs Porygon|Earthquake vs Omanyte",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 91,
+   "key": "b|456|Mega Drain vs Grimer|Mega Drain vs Shellder",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 92,
+   "key": "b|462|Thunderbolt vs Dragonair|Thunderbolt vs Mewtwo",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 93,
+   "key": "a|462|Surf|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 94,
+   "key": "b|468|Psychic vs Mr. Mime|Psychic vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 95,
+   "key": "b|474|Rock Slide vs Porygon|Rock Slide vs Omanyte",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 96,
+   "key": "b|480|Mega Drain vs Gloom|Mega Drain vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 97,
+   "key": "b|481|Mega Drain vs Spearow|Mega Drain vs Ekans",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 98,
+   "key": "b|489|Flamethrower vs Oddish|Flamethrower vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 99,
+   "key": "b|490|Mega Drain vs Snorlax|Mega Drain vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 100,
+   "key": "b|490|Cut vs Snorlax|Cut vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 101,
+   "key": "b|492|Surf vs Cubone|Surf vs Hitmonlee",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 102,
+   "key": "b|492|Mega Drain vs Cubone|Mega Drain vs Hitmonlee",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 103,
+   "key": "b|493|Psychic vs Zubat|Psychic vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 104,
+   "key": "b|497|Rock Slide vs Venusaur|Rock Slide vs Charmander",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 105,
+   "key": "b|502|Surf vs Grimer|Surf vs Shellder",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 106,
+   "key": "b|504|Mega Drain vs Geodude|Mega Drain vs Ponyta",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 107,
+   "key": "b|505|Surf vs Dewgong|Surf vs Grimer",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 108,
+   "key": "b|505|Thunderbolt vs Dewgong|Thunderbolt vs Grimer",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 109,
+   "key": "b|506|Thunderbolt vs Rhydon|Thunderbolt vs Tangela",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 110,
+   "key": "b|506|Psychic vs Rhydon|Psychic vs Tangela",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 111,
+   "key": "b|511|Mega Drain vs Mr. Mime|Mega Drain vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 112,
+   "key": "b|513|Thunderbolt vs Ekans|Thunderbolt vs Sandshrew",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 113,
+   "key": "b|517|Earthquake vs Aerodactyl|Earthquake vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 114,
+   "key": "b|517|Surf vs Aerodactyl|Surf vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 115,
+   "key": "a|517|Earthquake|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 116,
+   "key": "a|517|Earthquake|Surf",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 117,
+   "key": "b|526|Psychic vs Marowak|Psychic vs Hitmonlee",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 118,
+   "key": "b|527|Surf vs Mr. Mime|Surf vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 119,
+   "key": "b|527|Earthquake vs Mr. Mime|Earthquake vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 120,
+   "key": "b|528|Thunderbolt vs Marowak|Thunderbolt vs Hitmonlee",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 121,
+   "key": "b|530|Earthquake vs Articuno|Earthquake vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 122,
+   "key": "b|530|Surf vs Articuno|Surf vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 123,
+   "key": "b|530|Strength vs Articuno|Strength vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 124,
+   "key": "b|532|Psychic vs Jynx|Psychic vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 125,
+   "key": "a|532|Psychic|Tri Attack",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 126,
+   "key": "b|533|Earthquake vs Omastar|Earthquake vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 127,
+   "key": "b|533|Surf vs Omastar|Surf vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 128,
+   "key": "b|533|Strength vs Omastar|Strength vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 129,
+   "key": "b|535|Thunderbolt vs Gyarados|Thunderbolt vs Ditto",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 130,
+   "key": "b|535|Psychic vs Gyarados|Psychic vs Ditto",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 131,
+   "key": "b|536|Mega Drain vs Jigglypuff|Mega Drain vs Zubat",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 132,
+   "key": "b|537|Flamethrower vs Squirtle|Flamethrower vs Pidgey",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 133,
+   "key": "b|539|Thunderbolt vs Slowbro|Thunderbolt vs Farfetch\u2019d",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 134,
+   "key": "b|545|Rock Slide vs Moltres|Rock Slide vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 135,
+   "key": "a|551|Mega Drain|Cut",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 136,
+   "key": "b|559|Thunderbolt vs Moltres|Thunderbolt vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 137,
+   "key": "b|566|Earthquake vs Gyarados|Earthquake vs Ditto",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 138,
+   "key": "b|566|Surf vs Gyarados|Surf vs Ditto",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 139,
+   "key": "b|566|Strength vs Gyarados|Strength vs Ditto",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 140,
+   "key": "a|566|Earthquake|Surf",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 141,
+   "key": "a|566|Earthquake|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 142,
+   "key": "a|566|Surf|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 143,
+   "key": "b|571|Surf vs Jynx|Surf vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 144,
+   "key": "a|571|Earthquake|Surf",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 145,
+   "key": "a|571|Surf|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 146,
+   "key": "a|573|Psychic|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 147,
+   "key": "a|587|Psychic|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 148,
+   "key": "a|588|Rock Slide|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 149,
+   "key": "b|590|Rock Slide vs Wartortle|Rock Slide vs Pidgey",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 150,
+   "key": "b|594|Mega Drain vs Articuno|Mega Drain vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 151,
+   "key": "a|594|Psychic|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 152,
+   "key": "b|612|Flamethrower vs Gyarados|Flamethrower vs Ditto",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 153,
+   "key": "a|612|Flamethrower|Earthquake",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 154,
+   "key": "a|612|Flamethrower|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 155,
+   "key": "b|617|Psychic vs Koffing|Psychic vs Rhyhorn",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 156,
+   "key": "a|618|Surf|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 157,
+   "key": "a|642|Surf|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 158,
+   "key": "a|642|Earthquake|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 159,
+   "key": "b|647|Flamethrower vs Moltres|Flamethrower vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 160,
+   "key": "b|661|Rock Slide vs Dugtrio|Rock Slide vs Meowth",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 161,
+   "key": "b|662|Flamethrower vs Omastar|Flamethrower vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 162,
+   "key": "a|662|Flamethrower|Earthquake",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 163,
+   "key": "a|662|Flamethrower|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 164,
+   "key": "b|681|Flamethrower vs Golem|Flamethrower vs Ponyta",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 165,
+   "key": "b|704|Strength vs Aerodactyl|Strength vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 166,
+   "key": "a|704|Earthquake|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 167,
+   "key": "a|704|Surf|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 168,
+   "key": "b|714|Mega Drain vs Slowpoke|Mega Drain vs Farfetch\u2019d",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 169,
+   "key": "b|719|Rock Slide vs Ninetales|Rock Slide vs Jigglypuff",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 170,
+   "key": "b|731|Mega Drain vs Exeggutor|Mega Drain vs Cubone",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 171,
+   "key": "a|734|Surf|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 172,
+   "key": "b|738|Mega Drain vs Jynx|Mega Drain vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 173,
+   "key": "a|738|Psychic|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 174,
+   "key": "b|757|Mega Drain vs Moltres|Mega Drain vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 175,
+   "key": "b|759|Psychic vs Gloom|Psychic vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 176,
+   "key": "b|778|Mega Drain vs Diglett|Mega Drain vs Meowth",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 177,
+   "key": "b|793|Thunderbolt vs Vileplume|Thunderbolt vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 178,
+   "key": "b|826|Flamethrower vs Golbat|Flamethrower vs Diglett",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 179,
+   "key": "a|826|Flamethrower|Earthquake",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 180,
+   "key": "a|826|Flamethrower|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 181,
+   "key": "b|841|Mega Drain vs Mankey|Mega Drain vs Growlithe",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 182,
+   "key": "a|950|Earthquake|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 183,
+   "key": "b|956|Psychic vs Snorlax|Psychic vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 184,
+   "key": "b|982|Psychic vs Dewgong|Psychic vs Grimer",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 185,
+   "key": "b|982|Mega Drain vs Dewgong|Mega Drain vs Grimer",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 186,
+   "key": "b|1008|Strength vs Dewgong|Strength vs Grimer",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 187,
+   "key": "b|1023|Flamethrower vs Sandshrew|Flamethrower vs Nidoran-F",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 188,
+   "key": "b|1054|Flamethrower vs Weezing|Flamethrower vs Rhyhorn",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 189,
+   "key": "a|1062|Earthquake|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 190,
+   "key": "a|1062|Thunderbolt|Surf",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 191,
+   "key": "a|1081|Earthquake|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 192,
+   "key": "b|1087|Flamethrower vs Nidoran-F|Flamethrower vs Clefairy",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 193,
+   "key": "a|1099|Surf|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 194,
+   "key": "b|1148|Flamethrower vs Vulpix|Flamethrower vs Jigglypuff",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 195,
+   "key": "b|1163|Mega Drain vs Aerodactyl|Mega Drain vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 196,
+   "key": "a|1163|Psychic|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 197,
+   "key": "b|1166|Earthquake vs Aerodactyl|Earthquake vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 198,
+   "key": "b|1166|Surf vs Aerodactyl|Surf vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 199,
+   "key": "b|1166|Strength vs Aerodactyl|Strength vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 200,
+   "key": "b|1181|Flamethrower vs Snorlax|Flamethrower vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 201,
+   "key": "b|1184|Flamethrower vs Muk|Flamethrower vs Shellder",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 202,
+   "key": "b|1220|Flamethrower vs Ponyta|Flamethrower vs Slowpoke",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 203,
+   "key": "b|1238|Rock Slide vs Aerodactyl|Rock Slide vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 204,
+   "key": "a|1238|Earthquake|Rock Slide",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 205,
+   "key": "a|1238|Rock Slide|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 206,
+   "key": "a|1256|Earthquake|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 207,
+   "key": "b|1258|Mega Drain vs Gyarados|Mega Drain vs Ditto",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 208,
+   "key": "a|1258|Surf|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 209,
+   "key": "a|1261|Thunderbolt|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 210,
+   "key": "a|1272|Psychic|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 211,
+   "key": "b|1278|Flamethrower vs Dratini|Flamethrower vs Mewtwo",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 212,
+   "key": "a|1278|Flamethrower|Earthquake",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 213,
+   "key": "a|1278|Flamethrower|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 214,
+   "key": "b|1290|Rock Slide vs Dratini|Rock Slide vs Mewtwo",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 215,
+   "key": "a|1294|Surf|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 216,
+   "key": "b|1296|Rock Slide vs Dewgong|Rock Slide vs Grimer",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 217,
+   "key": "a|1308|Mega Drain|Cut",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 218,
+   "key": "b|1363|Flamethrower vs Jigglypuff|Flamethrower vs Zubat",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 219,
+   "key": "a|1367|Mega Drain|Cut",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 220,
+   "key": "b|1372|Rock Slide vs Slowpoke|Rock Slide vs Farfetch\u2019d",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 221,
+   "key": "a|1414|Psychic|Tri Attack",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 222,
+   "key": "b|1419|Rock Slide vs Gyarados|Rock Slide vs Ditto",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 223,
+   "key": "a|1419|Earthquake|Rock Slide",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 224,
+   "key": "a|1419|Rock Slide|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 225,
+   "key": "a|1467|Surf|Mega Drain",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 226,
+   "key": "b|1498|Rock Slide vs Snorlax|Rock Slide vs Articuno",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 227,
+   "key": "a|1505|Earthquake|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 228,
+   "key": "b|1568|Flamethrower vs Aerodactyl|Flamethrower vs Snorlax",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 229,
+   "key": "a|1568|Flamethrower|Earthquake",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 230,
+   "key": "a|1568|Flamethrower|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 231,
+   "key": "a|1592|Psychic|Tri Attack",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 232,
+   "key": "b|1627|Rock Slide vs Mr. Mime|Rock Slide vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 233,
+   "key": "b|1643|Rock Slide vs Jigglypuff|Rock Slide vs Zubat",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 234,
+   "key": "b|1685|Rock Slide vs Articuno|Rock Slide vs Dratini",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 235,
+   "key": "a|1685|Earthquake|Rock Slide",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 236,
+   "key": "a|1685|Rock Slide|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 237,
+   "key": "a|1707|Earthquake|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 238,
+   "key": "b|1725|Flamethrower vs Jynx|Flamethrower vs Magmar",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 239,
+   "key": "a|1725|Flamethrower|Earthquake",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 240,
+   "key": "a|1725|Flamethrower|Strength",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 241,
+   "key": "a|1767|Earthquake|Thunderbolt",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 242,
+   "key": "a|1862|Mega Drain|Cut",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 243,
+   "key": "a|1895|Psychic|Tri Attack",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 244,
+   "key": "a|1916|Earthquake|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "b",
+   "c": 245,
+   "key": "b|1937|Flamethrower vs Dewgong|Flamethrower vs Grimer",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 246,
+   "key": "a|1941|Earthquake|Psychic",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 247,
+   "key": "a|1960|Mega Drain|Cut",
+   "state": "untouched"
+  },
+  {
+   "axis": "a",
+   "c": 248,
+   "key": "a|1967|Earthquake|Psychic",
+   "state": "untouched"
+  }
+ ],
+ "stage0": {
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/aa/stage0/aa/stage0.json",
+    "sha256": "a885b2140e642279779cdafd36b95fe340c52d8a8bd43251ae2e5f1e37c11623",
+    "src": "results/aa/stage0.json"
+   }
+  ],
+  "decision_files": {
+   "flymon/brain/aa_estimate.py": "d871ea95e79a5a1ba19bafcb5b9d29f4a75bee92536a5f36eb56960354784d69",
+   "flymon/brain/aa_rules.py": "e460107fdc8b756a8603f8e809f349b81e968d521effa49074e0e5fc7d206177",
+   "flymon/brain/aa_runner.py": "5976de82c6d6350062d0f7643b12a691414978ef6724db24fbebd1be5d00b6e7",
+   "flymon/brain/aa_spec.py": "20b97852b88b52ac8bc525c1802d49aa40e8ebd8d9c26aeec7dbf0da4f98f58d",
+   "flymon/brain/aa_store.py": "8a6a4e9590fe9c46ee041c1e84dcf86987d6467016f2f0686af2504493d19588",
+   "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+   "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+   "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+   "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+   "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+   "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+   "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+   "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+   "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+   "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+   "scripts/run_aa.py": "676cfd07d138f28c21dad2844d87478e544b81458b92bd9bba076c3e110c0f6e"
+  },
+  "detail_path": "results/aa/stage0.json",
+  "detail_sha256": "a885b2140e642279779cdafd36b95fe340c52d8a8bd43251ae2e5f1e37c11623",
+  "differential": {
+   "n_hits": 96,
+   "n_reasons": 0,
+   "n_units": 96,
+   "ok": true,
+   "pairs": {
+    "a|218|Earthquake|Strength": {
+     "admission_equal": true,
+     "counts_equal": true,
+     "gate_stats_equal": true,
+     "record_equal": true
+    },
+    "a|223|Surf|Earthquake": {
+     "admission_equal": true,
+     "counts_equal": true,
+     "gate_stats_equal": true,
+     "record_equal": true
+    },
+    "a|305|Earthquake|Rock Slide": {
+     "admission_equal": true,
+     "counts_equal": true,
+     "gate_stats_equal": true,
+     "record_equal": true
+    },
+    "b|17|Thunderbolt vs Nidoran-M|Thunderbolt vs Clefairy": {
+     "admission_equal": true,
+     "counts_equal": true,
+     "gate_stats_equal": true,
+     "record_equal": true
+    }
+   }
+  },
+  "env": {
+   "aa_files": {
+    "flymon/brain/aa_estimate.py": "d871ea95e79a5a1ba19bafcb5b9d29f4a75bee92536a5f36eb56960354784d69",
+    "flymon/brain/aa_rules.py": "e460107fdc8b756a8603f8e809f349b81e968d521effa49074e0e5fc7d206177",
+    "flymon/brain/aa_runner.py": "5976de82c6d6350062d0f7643b12a691414978ef6724db24fbebd1be5d00b6e7",
+    "flymon/brain/aa_spec.py": "20b97852b88b52ac8bc525c1802d49aa40e8ebd8d9c26aeec7dbf0da4f98f58d",
+    "flymon/brain/aa_store.py": "8a6a4e9590fe9c46ee041c1e84dcf86987d6467016f2f0686af2504493d19588",
+    "scripts/run_aa.py": "676cfd07d138f28c21dad2844d87478e544b81458b92bd9bba076c3e110c0f6e"
+   },
+   "numpy": "2.5.3",
+   "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+   "python": "3.13.13",
+   "scipy": "1.18.1",
+   "uv_lock_sha256": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e",
+   "yxw_files": {
+    "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+    "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+    "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+    "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+    "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+    "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+    "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+    "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+    "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+    "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+    "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+    "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+    "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+    "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+    "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+    "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+    "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+    "flymon/brain/y_runner.py": "0ba331d74fab000fd010284c5440721eb45a103bc61e3341e472a254133efbee",
+    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+    "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54",
+    "flymon/brain/z_split.py": "ca4a011f3ed736eca3ca730c96acde0e62c9718c172e39c826851e8a4472c7d3"
+   }
+  },
+  "git": {
+   "commit": "ffd498a3c72f82a78f410b65a4651063229e07f3",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "note": "AA.7 0a: \uc2dc\ud5d8 \ub85c\uadf8(sha256), \ud569\uc131 \uac80\uc99d(\uae30\ub85d), Y \ud30c\uc77c\ub7ff V 4\uc30d \ucc28\ub4f1 \uc2dc\ud5d8(\uce90\uc2dc \uc801\uc911\ub9cc, \ube44\ud2b8 \ub2e8\uc704), \uacb0\uc815 \ud30c\uc77c \ud574\uc2dc, \uc218\uce58 \ud45c, \ud658\uacbd \ud574\uc2dc(env \u2014 \uc774\ud6c4 \ubaa8\ub4e0 \ub2e8\uacc4 \uc2dc\uc791 \u00b7 \uc7ac\uac1c\uc5d0\uc11c \ub300\uc870).",
+  "numbers": {
+   "archive_root": "~/flymon-archive/aa",
+   "bar_ref": 1.0,
+   "boot_b": 10000,
+   "boot_chunk": 1000,
+   "boot_seed": 87000000,
+   "c7_declared": 1.1259,
+   "cache_dir": "results/aa/cache",
+   "ci_level": 0.95,
+   "cli_print_chars": 2000,
+   "compare_refs": [
+    0.0,
+    0.5,
+    -0.5,
+    1.0,
+    -1.0,
+    1.5,
+    -1.5
+   ],
+   "core_cap_h": 12.0,
+   "cost_margin": 1.3,
+   "cov_b": 2000,
+   "cov_bar": 0.9,
+   "cov_deltas": [
+    0.0,
+    1.0,
+    1.5
+   ],
+   "cov_het_sd": 0.5,
+   "cov_hets": [
+    "none",
+    "group",
+    "pair"
+   ],
+   "cov_methods": [
+    "two_stage",
+    "fly",
+    "pair",
+    "raw_two_stage",
+    "raw_fly"
+   ],
+   "cov_reps": 1000,
+   "cov_timing_reps": 20,
+   "d_false": 0.5,
+   "decl_commit": "c87f4df",
+   "flies": 8,
+   "floor_cut": 0.1,
+   "floor_qs": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+   ],
+   "g6_cap_h": 2.0,
+   "g6_design": [
+    0.5,
+    0.5,
+    16,
+    8,
+    [
+     4,
+     8
+    ]
+   ],
+   "g6_rows": [
+    "point",
+    "lo",
+    "hi"
+   ],
+   "g6_scales": [
+    "hedges",
+    "raw"
+   ],
+   "g6_seed": 87200000,
+   "hedges_j_declared": 0.8889,
+   "min_flies": 2,
+   "min_groups": 5,
+   "n_len": 31,
+   "n_len_axes": [
+    [
+     "b",
+     11
+    ],
+    [
+     "a",
+     20
+    ]
+   ],
+   "n_main": 249,
+   "noplast_flies": 2,
+   "noplast_pairs": 2,
+   "oracle_sha256": "fa4750ac80883bcdc571e8e5b6ba7cc3d25f320549988dc0c3ab8823f75768bb",
+   "pct": [
+    2.5,
+    97.5
+   ],
+   "pool_stages": [
+    "smoke",
+    "screen",
+    "learn",
+    "records"
+   ],
+   "pool_timeout_s": 3600.0,
+   "probes": 8,
+   "progress_dir": "results/aa/progress",
+   "raw_dir": "results/aa",
+   "records_cap_h": 4.0,
+   "records_stages": [
+    "records"
+   ],
+   "round_digits": 9,
+   "s_per_h": 3600.0,
+   "seal_files": [
+    "flymon/brain/aa_estimate.py",
+    "flymon/brain/aa_spec.py",
+    "flymon/brain/w_verdict.py",
+    "flymon/brain/y_rules.py",
+    "flymon/brain/y_oc.py",
+    "flymon/brain/x_oc.py",
+    "flymon/brain/x_verdict.py",
+    "flymon/brain/w_oc.py",
+    "flymon/brain/w_records.py",
+    "flymon/brain/y_spec.py",
+    "flymon/brain/w_spec.py",
+    "flymon/brain/w_rules.py"
+   ],
+   "seal_names": [
+    "winsor",
+    "min_flies",
+    "boot_b",
+    "boot_chunk",
+    "pct",
+    "ci_level",
+    "min_groups",
+    "boot_seed",
+    "synth_seed",
+    "set_flow",
+    "floor_cut",
+    "floor_qs",
+    "compare_refs",
+    "bar_ref",
+    "cov_deltas",
+    "cov_hets",
+    "cov_het_sd",
+    "cov_reps",
+    "cov_b",
+    "cov_bar",
+    "cov_methods",
+    "synth_pairs",
+    "synth_deltas",
+    "synth_sds",
+    "synth_reps",
+    "g6_rows",
+    "g6_scales",
+    "d_false",
+    "g6_design",
+    "g6_seed",
+    "g6_cap_h",
+    "flies",
+    "probes",
+    "c7_declared",
+    "hedges_j_declared"
+   ],
+   "sealed_stages": [
+    "coverage",
+    "estimate",
+    "records"
+   ],
+   "seed_blocks": [
+    [
+     87000000,
+     87100000
+    ],
+    [
+     87100000,
+     87200000
+    ],
+    [
+     87200000,
+     87300000
+    ],
+    [
+     87300000,
+     87400000
+    ]
+   ],
+   "set_flow": [
+    [
+     "S1",
+     "pool"
+    ],
+    [
+     "S31",
+     "pool31"
+    ],
+    [
+     "out",
+     "pool_out"
+    ],
+    [
+     "sens",
+     "sens_floor"
+    ]
+   ],
+   "smoke_cache_dir": "results/aa/smoke/cache",
+   "smoke_flies": 1,
+   "smoke_fly_span": 32,
+   "smoke_pair": 0,
+   "smoke_probe_seed0": 87100000,
+   "smoke_probe_span": 100,
+   "smoke_train_seed0": 87110000,
+   "stage_labels": [
+    [
+     "stage0",
+     "0a"
+    ],
+    [
+     "reuse",
+     "1"
+    ],
+    [
+     "smoke",
+     "2"
+    ],
+    [
+     "seal_code",
+     "3"
+    ],
+    [
+     "screen",
+     "4"
+    ],
+    [
+     "coverage",
+     "4b"
+    ],
+    [
+     "learn",
+     "5"
+    ],
+    [
+     "estimate",
+     "6"
+    ],
+    [
+     "records",
+     "7"
+    ]
+   ],
+   "stages": [
+    "stage0",
+    "reuse",
+    "smoke",
+    "seal_code",
+    "screen",
+    "coverage",
+    "learn",
+    "estimate",
+    "records"
+   ],
+   "summary": "results/summary/aa_learning.json",
+   "synth_deltas": [
+    0.0,
+    1.0,
+    1.5
+   ],
+   "synth_pairs": 20,
+   "synth_reps": 1000,
+   "synth_sds": [
+    0.0,
+    0.5
+   ],
+   "synth_seed": 87300000,
+   "tests_log": "results/aa/tests_0a.log",
+   "tests_ok_line": "exit 0",
+   "thread_env": [
+    "OMP_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS"
+   ],
+   "winsor": 10.0,
+   "workers": 16,
+   "y_absent_blocks": [
+    "gates",
+    "learn"
+   ],
+   "y_absent_files": [
+    "results/y/gates.json",
+    "results/y/learn.json",
+    "results/y/progress/gates.json",
+    "results/y/progress/learn.json"
+   ],
+   "y_blocks": [
+    [
+     "digest",
+     "36df057"
+    ],
+    [
+     "oracle",
+     "2a9425a"
+    ],
+    [
+     "stage0",
+     "b1279d2"
+    ],
+    [
+     "reuse",
+     "2b82a8f"
+    ],
+    [
+     "pilot",
+     "eaffc5a"
+    ],
+    [
+     "precheck",
+     "279e916"
+    ],
+    [
+     "oc",
+     "547c3b0"
+    ]
+   ],
+   "y_outcomes": [
+    [
+     "digest",
+     "PASS"
+    ],
+    [
+     "oracle",
+     "PASS"
+    ],
+    [
+     "stage0",
+     "PASS"
+    ],
+    [
+     "reuse",
+     "PASS"
+    ],
+    [
+     "pilot",
+     "PASS"
+    ],
+    [
+     "precheck",
+     "PASS"
+    ],
+    [
+     "oc",
+     "STOP_OC_UNREACHABLE"
+    ]
+   ],
+   "z_blocks": [
+    [
+     "stage0",
+     "94c6935"
+    ],
+    [
+     "ydiag",
+     "300938f"
+    ],
+    [
+     "reuse",
+     "2603508"
+    ],
+    [
+     "sens",
+     "403b4a3"
+    ]
+   ],
+   "z_outcomes": [
+    [
+     "stage0",
+     "PASS"
+    ],
+    [
+     "ydiag",
+     "PASS"
+    ],
+    [
+     "reuse",
+     "PASS"
+    ],
+    [
+     "sens",
+     "STOP_PLAN_UNREACHABLE"
+    ]
+   ],
+   "z_summary": "results/summary/z_learning.json"
+  },
+  "numbers_sha256": "8d94b93dfa8df43d669db3da2ab2a5c1d531789233a094657fd5fcbba1d5284f",
+  "order": "0a",
+  "outcome": "PASS",
+  "reasons": [],
+  "seal": {
+   "files": {
+    "flymon/brain/aa_estimate.py": "d871ea95e79a5a1ba19bafcb5b9d29f4a75bee92536a5f36eb56960354784d69",
+    "flymon/brain/aa_spec.py": "20b97852b88b52ac8bc525c1802d49aa40e8ebd8d9c26aeec7dbf0da4f98f58d",
+    "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+    "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+    "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+    "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+    "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+    "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+    "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+    "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+    "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9"
+   },
+   "key": "3811f859e043dbd0079aa3dfa845625805cef486b5410138fd1dc5c67d1c0726",
+   "numbers": {
+    "bar_ref": 1.0,
+    "boot_b": 10000,
+    "boot_chunk": 1000,
+    "boot_seed": 87000000,
+    "c7_declared": 1.1259,
+    "ci_level": 0.95,
+    "compare_refs": [
+     0.0,
+     0.5,
+     -0.5,
+     1.0,
+     -1.0,
+     1.5,
+     -1.5
+    ],
+    "cov_b": 2000,
+    "cov_bar": 0.9,
+    "cov_deltas": [
+     0.0,
+     1.0,
+     1.5
+    ],
+    "cov_het_sd": 0.5,
+    "cov_hets": [
+     "none",
+     "group",
+     "pair"
+    ],
+    "cov_methods": [
+     "two_stage",
+     "fly",
+     "pair",
+     "raw_two_stage",
+     "raw_fly"
+    ],
+    "cov_reps": 1000,
+    "d_false": 0.5,
+    "flies": 8,
+    "floor_cut": 0.1,
+    "floor_qs": [
+     0.0,
+     0.25,
+     0.5,
+     0.75,
+     1.0
+    ],
+    "g6_cap_h": 2.0,
+    "g6_design": [
+     0.5,
+     0.5,
+     16,
+     8,
+     [
+      4,
+      8
+     ]
+    ],
+    "g6_rows": [
+     "point",
+     "lo",
+     "hi"
+    ],
+    "g6_scales": [
+     "hedges",
+     "raw"
+    ],
+    "g6_seed": 87200000,
+    "hedges_j_declared": 0.8889,
+    "min_flies": 2,
+    "min_groups": 5,
+    "pct": [
+     2.5,
+     97.5
+    ],
+    "probes": 8,
+    "set_flow": [
+     [
+      "S1",
+      "pool"
+     ],
+     [
+      "S31",
+      "pool31"
+     ],
+     [
+      "out",
+      "pool_out"
+     ],
+     [
+      "sens",
+      "sens_floor"
+     ]
+    ],
+    "synth_deltas": [
+     0.0,
+     1.0,
+     1.5
+    ],
+    "synth_pairs": 20,
+    "synth_reps": 1000,
+    "synth_sds": [
+     0.0,
+     0.5
+    ],
+    "synth_seed": 87300000,
+    "winsor": 10.0
+   }
+  },
+  "stage": "stage0",
+  "synth": {
+   "cells": [
+    {
+     "delta": 0.0,
+     "sd": 0.0,
+     "share": 0.988
+    },
+    {
+     "delta": 0.0,
+     "sd": 0.5,
+     "share": 0.934
+    },
+    {
+     "delta": 1.0,
+     "sd": 0.0,
+     "share": 0.993
+    },
+    {
+     "delta": 1.0,
+     "sd": 0.5,
+     "share": 0.936
+    },
+    {
+     "delta": 1.5,
+     "sd": 0.0,
+     "share": 0.988
+    },
+    {
+     "delta": 1.5,
+     "sd": 0.5,
+     "share": 0.949
+    }
+   ],
+   "label": "\uae30\ub85d",
+   "method": "two_stage",
+   "note": "\uacb0\uacfc\ub85c \ubc29\ubc95\uc744 \ubc14\uafb8\uc9c0 \uc54a\ub294\ub2e4(AA.7 0); \uc2e4\uc81c \uad6c\uc870\uc758 \ud3ec\ud568 \ud655\ub960\uc740 \uc21c\uc11c 4b",
+   "pairs": 20
+  },
+  "tests": {
+   "last_line": "exit 0",
+   "log_sha256": "e2f59deeee9203ef19d3386f03a82b2553cc3640fac43d1c2aef7ec16627cc75",
+   "passed_line": "758 passed, 3 warnings in 724.83s (0:12:04)",
+   "path": "results/aa/tests_0a.log"
+  },
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-06T07:51:55.987732+00:00",
+  "yxw_files": {
+   "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+   "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+   "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+   "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+   "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+   "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+   "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+   "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+   "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+   "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+   "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+   "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+   "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+   "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+   "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+   "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+   "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+   "flymon/brain/y_runner.py": "0ba331d74fab000fd010284c5440721eb45a103bc61e3341e472a254133efbee",
+   "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+   "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54",
+   "flymon/brain/z_split.py": "ca4a011f3ed736eca3ca730c96acde0e62c9718c172e39c826851e8a4472c7d3"
+  }
+ }
+}
