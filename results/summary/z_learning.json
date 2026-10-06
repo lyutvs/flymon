@@ -15,6 +15,11 @@
     "at": "2026-10-06T02:19:54.523501+00:00",
     "stage": "reuse",
     "wall_s": 3.1247065829811618
+   },
+   {
+    "at": "2026-10-06T02:32:15.079750+00:00",
+    "stage": "sens",
+    "wall_s": 726.3162703330163
    }
   ],
   "records_ledger": [
@@ -80,6 +85,250 @@
   "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
   "written_at": "2026-10-06T02:19:54.523501+00:00",
   "yxw_decl": "7c4bde5"
+ },
+ "sens": {
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/sens/z/sens.json",
+    "sha256": "e64fb9edb59bae8d319086995926cd6ed17ace66b7f8ba87ef8f9f1df85b3777",
+    "src": "results/z/sens.json"
+   }
+  ],
+  "cells": {
+   "12|0": {
+    "base_only": 0.9097500000000001,
+    "by_k": [
+     0.5296250000000002,
+     0.7386250000000004,
+     0.8543750000000003,
+     0.7671250000000003,
+     0.8778750000000002
+    ],
+    "delta": 0.0,
+    "n": 12,
+    "n_below_bar": 8,
+    "n_cal_fail": 0,
+    "per_draw_worst_q": {
+     "10": 0.8465,
+     "5": 0.5277499999999999,
+     "50": 0.96375
+    },
+    "sim": 0.5296250000000002
+   },
+   "12|1": {
+    "base_only": 0.91,
+    "by_k": [
+     0.007375000000000011,
+     0.021875000000000058,
+     0.0363750000000001,
+     0.009500000000000047,
+     0.011875000000000059
+    ],
+    "delta": -2.41,
+    "n": 12,
+    "n_below_bar": 42,
+    "n_cal_fail": 0,
+    "per_draw_worst_q": {
+     "10": 0.0425,
+     "5": 0.007125000000000001,
+     "50": 0.86875
+    },
+    "sim": 0.007125000000000034
+   },
+   "12|2": {
+    "base_only": 0.895,
+    "by_k": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "delta": -4.82,
+    "n": 12,
+    "n_below_bar": 89,
+    "n_cal_fail": 0,
+    "per_draw_worst_q": {
+     "10": 0.0,
+     "5": 0.0,
+     "50": 0.036250000000000004
+    },
+    "sim": 0.0
+   },
+   "24|0": {
+    "base_only": 0.919375,
+    "by_k": [
+     0.9115000000000001,
+     0.9575,
+     0.975,
+     0.964875,
+     0.97475
+    ],
+    "delta": 0.0,
+    "n": 24,
+    "n_below_bar": 2,
+    "n_cal_fail": 0,
+    "per_draw_worst_q": {
+     "10": 0.90725,
+     "5": 0.8925,
+     "50": 0.97125
+    },
+    "sim": 0.9115000000000001
+   },
+   "24|1": {
+    "base_only": 0.9373750000000001,
+    "by_k": [
+     0.17812500000000017,
+     0.32375000000000037,
+     0.4567500000000003,
+     0.30862500000000037,
+     0.4126250000000004
+    ],
+    "delta": -2.41,
+    "n": 24,
+    "n_below_bar": 36,
+    "n_cal_fail": 0,
+    "per_draw_worst_q": {
+     "10": 0.32675000000000004,
+     "5": 0.178125,
+     "50": 0.905
+    },
+    "sim": 0.17812500000000017
+   },
+   "24|2": {
+    "base_only": 0.917375,
+    "by_k": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "delta": -4.82,
+    "n": 24,
+    "n_below_bar": 97,
+    "n_cal_fail": 0,
+    "per_draw_worst_q": {
+     "10": 0.0,
+     "5": 0.0,
+     "50": 0.037500000000000006
+    },
+    "sim": 0.0
+   }
+  },
+  "detail_path": "results/z/sens.json",
+  "detail_sha256": "e64fb9edb59bae8d319086995926cd6ed17ace66b7f8ba87ef8f9f1df85b3777",
+  "env": {
+   "numpy": "2.5.3",
+   "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+   "python": "3.13.13",
+   "scipy": "1.18.1",
+   "uv_lock_sha256": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e",
+   "yxw_files": {
+    "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+    "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+    "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+    "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+    "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+    "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+    "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+    "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+    "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+    "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+    "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+    "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+    "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+    "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+    "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+    "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+    "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+    "flymon/brain/y_runner.py": "0ba331d74fab000fd010284c5440721eb45a103bc61e3341e472a254133efbee",
+    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+    "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54"
+   },
+   "z_files": {
+    "flymon/brain/z_oc.py": "666915f4cd64c94a6705b5aeed987a3311a4f99a06ca10a769ac3dc7b27eedb4",
+    "flymon/brain/z_rules.py": "78de45e97fe4a9dcead8ea836edadcfd6c247b163611d6ec30f9cc9481b1b538",
+    "flymon/brain/z_runner.py": "a5bc8bca0cb98adb5196c8f35d55211a24c0c75c800e40130595212be6381fe8",
+    "flymon/brain/z_spec.py": "b784b2c4f523b2d20ad3740b7a92caed873b4d4d41cd0e7019501de810717724",
+    "flymon/brain/z_split.py": "ca4a011f3ed736eca3ca730c96acde0e62c9718c172e39c826851e8a4472c7d3",
+    "flymon/brain/z_store.py": "b90dd8c13e7a94fbf9742a038de9a5f7e08221da9f014eea20fa2affd2f70562",
+    "scripts/run_z.py": "7cd0fd25621444a3d3a23b15a92e7dc7804dba0516f3fd7c79e4a37c65835390"
+   }
+  },
+  "git": {
+   "commit": "2603508ceed5e89b7aa5f2f4edd20dbe04fff841",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "limits": [
+   {
+    "delta": 0.0,
+    "delta_index": 0,
+    "limit": 0.5296250000000002,
+    "n": 12
+   },
+   {
+    "delta": -2.41,
+    "delta_index": 1,
+    "limit": 0.007125000000000034,
+    "n": 12
+   },
+   {
+    "delta": -4.82,
+    "delta_index": 2,
+    "limit": 0.0,
+    "n": 12
+   },
+   {
+    "delta": 0.0,
+    "delta_index": 0,
+    "limit": 0.9115000000000001,
+    "n": 24
+   },
+   {
+    "delta": -2.41,
+    "delta_index": 1,
+    "limit": 0.17812500000000017,
+    "n": 24
+   },
+   {
+    "delta": -4.82,
+    "delta_index": 2,
+    "limit": 0.0,
+    "n": 24
+   }
+  ],
+  "note": "Z.9.2 P1-3 \ubbfc\uac10\ub3c4 \ubaa8\uc758(\ubd84\ud560 \uc804 \u00b7 \ud30c\uc77c\ub7ff \uc804) + \uacc4\uc18d \uaddc\uce59 (\uac00). \ucd94\ucd9c\ubcc4 \ubcf4\uc815 a\uc640 \ubf51\ud78c \ub4dc\ub9ac\ud504\ud2b8\ub294 \uc0c1\uc138.",
+  "order": "0c\u2032",
+  "outcome": "STOP_PLAN_UNREACHABLE",
+  "p314": {
+   "halves": {
+    "confirm": "\ubbf8\uc0ac\uc6a9",
+    "pilot": "\ubbf8\uc0ac\uc6a9"
+   },
+   "outputs": {
+    "gates": "\ubd88",
+    "learn_records": "\ubd88",
+    "oc_records": "\ubd88",
+    "pilot": "\ubd88",
+    "precheck_records": "\ubd88",
+    "sens": "\ud544",
+    "split": "\ubd88",
+    "ydiag": "\ud544"
+   }
+  },
+  "reasons": [
+   "\uacc4\uc18d \uaddc\uce59 (\uac00)"
+  ],
+  "records_reason": "OC \uc804 \uad00\ubb38 STOP(Z.9.2 P3-14)",
+  "records_unavailable": true,
+  "sentence": "Z \ubbfc\uac10\ub3c4 \ubaa8\uc758(Z.9.2 P1-3 \u2014 Y \u03b8\u0302\uc758 MBON13(X) \uc81c\uc2dc \ub4dc\ub9ac\ud504\ud2b8 \uc911\uc2ec\uc744 1 SE(2.41) \ub098\uc058\uac8c \uc62e\uae30\uace0 \uc30d \uc218\uc900 \ubc30\uc5f4\uc744 n\uc30d\uc73c\ub85c \ud0c0\uc77c\ub9c1, \ucd94\ucd9c 100\ud68c \u00d7 \uc2e4\ud5d8 400\ud68c, \ub300\uc0c1 \uc124\uacc4 p_set 0.5 \u00b7 q 0.5 \u00b7 K 16 \u00b7 F 8 \u00b7 k \ubc94\uc704 [4, 8], \uad70\uc9d1 \u00b7 \uc2dc\ub098\ub9ac\uc624 \ucd5c\uc545)\uc5d0\uc11c \ub3d9\uc2dc \uac80\uc815\ub825 \ud558\ud55c\uc774 n 12 0.007 \u00b7 n 24 0.178\ub85c 0.80\uc5d0 \ubabb \ubbf8\ucce4\ub2e4(2 SE 0.000 \u00b7 0.000, \uc62e\uae30\uc9c0 \uc54a\uc74c 0.530 \u00b7 0.912) \u2014 \ub4dc\ub9ac\ud504\ud2b8 \uc911\uc2ec\uc774 Y \ucd94\uc815\ubcf4\ub2e4 1 SE \ub098\uc058\uba74 \ud30c\uc77c\ub7ff\uc744 \ud0a4\uc6cc\ub3c4 \uacc4\ud68d\uc774 G.6 \ud55c\uacc4\uc5d0 \ub2ff\uc9c0 \uc54a\uc73c\ubbc0\ub85c, \ubd84\ud560 \uc804 \ud30c\uc77c\ub7ff \uce21\uc815 \uc5c6\uc774 \uba48\ucd98\ub2e4(\uc8fc \uc138\ud2b8 31\uc30d \ubaa8\ub450 \ud559\uc2b5 \ubbf8\uc0ac\uc6a9).",
+  "stage": "sens",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "where": "0c\u2032",
+  "written_at": "2026-10-06T02:32:15.079750+00:00"
  },
  "stage0": {
   "archive": [
