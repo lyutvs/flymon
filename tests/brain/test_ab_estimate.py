@@ -263,3 +263,48 @@ def test_fly_counts_and_floor_subset():
     assert 0.0 <= c["punish_drop"]["share_ge1"] <= 1.0
     fl = {k: dict(phi_R=0.05 if i % 2 else 0.2, phi_P=0.0) for i, k in enumerate(keys)}
     assert E.floor_subset(fl, keys, S) == [k for i, k in enumerate(keys) if i % 2]
+
+
+# ---------------------------------------------------------------- review minors (T5)
+def test_fail_uncal_cause_only_in_the_fail_row():
+    """AB.4 판정 3: with α_F not reached, the cause "FAIL 쪽 보정 미도달" is attached only when the result would sit
+    in the FAIL row (some gate's D short of the bar under both methods at f_grid[0]), never to every UNDECIDED."""
+    al = dict(AL, F=None)
+    lv = E.levels_for(al, S, fail_probe=True)
+    assert lv["D"] == [al["D"], S.f_grid[0]] and E.levels_for(al, S) == E.levels_for(al)
+    per, keys, tsets = world(eff=(-3.0, 3.0, -3.0, 3.0))                      # reversed: the FAIL row
+    v = E.verdict(E.set_limits(per, keys, tsets, lv, S), [], {}, al, S)
+    assert v["label"] == E.UNDECIDED and E.CAUSE_FAIL_UNCAL in v["causes"]
+    assert v["fail_uncal"]["alpha"] == S.f_grid[0] and v["fail_uncal"]["in_fail_row"]
+    per, keys, tsets = world(eff=(3.0, -3.0, 3.0, -1.15), k=12)               # straddles: UNDECIDED, not the FAIL row
+    v = E.verdict(E.set_limits(per, keys, tsets, lv, S), [], {}, al, S)
+    assert v["label"] == E.UNDECIDED and v["causes"] and E.CAUSE_FAIL_UNCAL not in v["causes"]
+    assert v["fail_uncal"] == dict(alpha=S.f_grid[0], gates=[], in_fail_row=False)
+
+
+@pytest.mark.parametrize("field", ["gt_fin", "gx_fin"])
+def test_dfin_group_floor_blocks_pass_with_enough_pairs(field):
+    per, keys, tsets = world()
+    lim = E.set_limits(per, keys, tsets, E.levels_for(AL), S)
+    assert E.verdict(lim, [], {}, AL, S)["label"] == E.PASS
+    assert lim["Dfin"]["k_fin"][1] >= S.k_min
+    lim["Dfin"][field][1] = S.g_min - 1                                     # pairs ≥ 8 but one grouping < 5
+    v = E.verdict(lim, [], {}, AL, S)
+    assert v["label"] == E.UNDECIDED and not v["gates"]["punish_drop"]["Dfin"]["fin_ok"]
+    assert any("하한 미달" in c for c in v["causes"])
+    lim["Dfin"][field][1] = S.g_min
+    assert E.verdict(lim, [], {}, AL, S)["label"] == E.PASS
+
+
+def test_cg_crossed_count_is_non_empty_cells_only():
+    gx = np.array([0, 0, 1, 1, 2, 2, 2])
+    gt = np.array([0, 1, 0, 1, 0, 0, 0])                                   # cell (2, 1) empty: 5 of 3 × 2
+    th = np.array([0.3, 2.0, -1.0, 4.0, 0.5, 1.5, -2.0])
+    e = th - th.mean()
+    k = th.size
+    cells = gx * 10 + gt
+    sums = [e[cells == c].sum() for c in sorted(set(cells.tolist()))]
+    p = E.cg_parts(th, gx, gt)
+    assert p["G_XT"] == 5 and p["G_X"] * p["G_T"] == 6
+    assert math.isclose(p["V_XT"], 5 / 4 * sum(x ** 2 for x in sums) / k ** 2)
+    assert not math.isclose(p["V_XT"], 6 / 5 * sum(x ** 2 for x in sums) / k ** 2)

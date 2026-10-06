@@ -172,6 +172,23 @@ def cg_limits(theta, gx, gt, levels) -> tuple:
     return p["mu"] - h, p["mu"] + h
 
 
+def limits(X, groups, gx, gt, levels, r, s=AB, B=None) -> tuple:
+    """The one code path of both interval methods, shared by the judgement (set_limits) and the calibration
+    (rep_misses) — AB.5 "판정과 같은 코드 경로". X [P, F, n] fly values (NaN = excluded fly); groups = the X-label
+    groups (index lists); gx, gt = per-pair labels; r = the stream (TS consumes it). Returns (θ̂ [P, n], TS reps
+    [B, n], TS lo, hi [L, n], CG lo, hi [L, n])."""
+    X = np.asarray(X, float)
+    lv = list(levels)
+    theta = AE._nanmean(X, 1)
+    reps = ts_reps(X, groups, r, s, B)
+    lo, hi = ts_limits(reps, lv, s)
+    n = X.shape[-1]
+    clo, chi = np.empty((len(lv), n)), np.empty((len(lv), n))
+    for g in range(n):
+        clo[:, g], chi[:, g] = cg_limits(theta[:, g], gx, gt, lv)
+    return theta, reps, lo, hi, clo, chi
+
+
 # ================================================================ the set (AB.4 · AB.5, judgement)
 def set_limits(per_pair: dict, keys: list, tsets: list, levels: dict, s=AB, B=None, rngs=None) -> dict:
     """per_pair = {key: pair_stats(...)}; keys in c order; levels = {stat: [α, …]} (D carries α_P^D then α_F).
@@ -184,15 +201,11 @@ def set_limits(per_pair: dict, keys: list, tsets: list, levels: dict, s=AB, B=No
     out = {}
     for name in STATS:
         X = np.stack([np.asarray(per_pair[k][name], float) for k in keys])           # [P, F, 4]
-        theta = AE._nanmean(X, 1)                                                    # [P, 4]
         lv = list(levels[name])
         r = rngs[name] if rngs is not None else AE.stream(s.boot_seed, FLOW[name], "S1")
-        reps = ts_reps(X, groups, r, s, B)
-        lo, hi = ts_limits(reps, lv, s)
-        clo, chi = np.empty((len(lv), 4)), np.empty((len(lv), 4))
+        theta, reps, lo, hi, clo, chi = limits(X, groups, gx, gt, lv, r, s, B)
         kf, gxf, gtf = [], [], []
         for g in range(4):
-            clo[:, g], chi[:, g] = cg_limits(theta[:, g], gx, gt, lv)
             fin = np.isfinite(theta[:, g])
             kf.append(int(fin.sum()))
             gxf.append(len(set(gx[fin].tolist())))
@@ -280,16 +293,41 @@ def verdict(lim: dict, machine: list, mech: dict, alpha: dict, s=AB) -> dict:
     ok = all(r[n]["ok_TS"] and r[n]["ok_CG"] and r[n]["fin_ok"] for r in gates.values() for n in STATS)
     if ok:
         return dict(label=PASS, causes=[], gates=gates)
-    if alpha.get("F") is None:
+    probe = fail_row_uncal(lim, alpha, s) if alpha.get("F") is None else None
+    if probe is not None and probe["in_fail_row"]:
         causes.append(CAUSE_FAIL_UNCAL)
-    return dict(label=UNDECIDED, causes=causes, gates=gates)
+    return dict(label=UNDECIDED, causes=causes, gates=gates, fail_uncal=probe)
+
+
+def fail_row_uncal(lim: dict, alpha: dict, s=AB) -> dict:
+    """AB.4 판정 3 (FAIL side not calibrated in 7b): would the result fall in the FAIL row? Read at the largest
+    FAIL-grid α among D's computed levels (levels_for(..., fail_probe=True) appends f_grid[0]): some gate whose D is
+    short of the bar under both methods there. No FAIL-grid level computed → undeterminable, counted as in the row
+    (the cause is disclosed rather than hidden). Never a FAIL: the label stays UNDECIDED."""
+    L = lim["D"]
+    have = [a for a in s.f_grid if a in L["levels"]]
+    if not have:
+        return dict(alpha=None, gates=None, in_fail_row=True)
+    a = max(have)
+    j = L["levels"].index(a)
+    short = []
+    for gi, g in enumerate(GATES):
+        end = "hi" if SIGNS[gi] > 0 else "lo"
+        if short_of(L["ts"][end][j][gi], SIGNS[gi], s) and short_of(L["cg"][end][j][gi], SIGNS[gi], s):
+            short.append(g)
+    return dict(alpha=a, gates=short, in_fail_row=bool(short))
 
 
 # ================================================================ judgement helpers and records (AB.4 기록, AB.6)
-def levels_for(alpha: dict) -> dict:
-    """set_limits' levels from the 7b block's α: D = [α_P^D] (+ [α_F] when reached), D_fin = [α_P^F], R = [α_P^R]."""
-    return dict(D=[alpha["D"]] + ([alpha["F"]] if alpha.get("F") is not None else []), Dfin=[alpha["Dfin"]],
-                R=[alpha["R"]])
+def levels_for(alpha: dict, s=AB, fail_probe: bool = False) -> dict:
+    """set_limits' levels from the 7b block's α: D = [α_P^D] (+ [α_F] when reached), D_fin = [α_P^F], R = [α_P^R].
+    fail_probe (the judgement, order 9): when α_F was not reached, D also carries f_grid[0] so the verdict can tell
+    whether the result falls in the FAIL row (AB.4 판정 3, cause "FAIL 쪽 보정 미도달"); the futility path (0f)
+    leaves it off."""
+    d = [alpha["D"]] + ([alpha["F"]] if alpha.get("F") is not None else [])
+    if fail_probe and alpha.get("F") is None:
+        d.append(s.f_grid[0])
+    return dict(D=d, Dfin=[alpha["Dfin"]], R=[alpha["R"]])
 
 
 def fly_counts(per_pair: dict, keys: list, s=AB) -> dict:
@@ -415,14 +453,11 @@ def rep_misses(st, cell, r, tru: dict, s=AB, B=None) -> dict:
     st3 = synth_stats(x, s)
     out = {}
     for name in STATS:
-        X = st3[name]
         lv = list(s.p_grid) + (list(s.f_grid) if name == "D" else [])
-        reps = ts_reps(X[..., None], groups, r, s, B)
-        lo, hi = ts_limits(reps, lv, s)
-        clo, chi = cg_limits(AE._nanmean(X, 1), gx, gt, lv)
+        _th, _reps, lo, hi, clo, chi = limits(st3[name][..., None], groups, gx, gt, lv, r, s, B)
         t = tru[name]
-        up_ts, up_cg = lo[:, 0] > t, clo > t
-        dn_ts, dn_cg = hi[:, 0] < t, chi < t
+        up_ts, up_cg = lo[:, 0] > t, clo[:, 0] > t
+        dn_ts, dn_cg = hi[:, 0] < t, chi[:, 0] < t
         n_p = len(s.p_grid)
         row = dict(P=(up_ts & up_cg)[:n_p], P_TS=up_ts[:n_p], P_CG=up_cg[:n_p])
         if name == "D":
@@ -458,6 +493,8 @@ def cal_run(st, tag: str, phase: str, ci: int, tru: dict, s=AB, n=None, resume=N
     if phase not in ("sel", "ver"):
         raise ValueError(phase)
     n = (s.n_sel if phase == "sel" else s.n_ver) if n is None else int(n)
+    if resume is not None and int(resume.get("n", -1)) != n:
+        raise ValueError(f"resume payload was for n = {resume.get('n')}, not the requested n = {n}")
     pay = dict(done=0, n=n, counts=_zero_counts(s), state=None) if resume is None else copy.deepcopy(resume)
     r = _gen_from(pay["state"], s, tag, phase, ci)
     cell = s.cell(ci)

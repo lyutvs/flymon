@@ -143,3 +143,99 @@ def test_bench_and_synth_rep():
     cfg = dict(E.synth_configs(S))
     assert list(cfg) == ["bar_one", "bar_all", "eff1.5", "eff2.5", "eff3.5"]
     assert cfg["bar_one"] == (E.delta(S), 3.0, 3.0, 3.0) and cfg["eff2.5"] == (2.5,) * 4
+
+
+# ---------------------------------------------------------------- review minors (T6)
+def test_set_limits_and_rep_misses_share_one_limits_path(monkeypatch):
+    """AB.5 "판정과 같은 코드 경로", structurally: both call ab_estimate.limits; for the same data on the same stream the
+    limits agree to 1e-12 (rep_misses runs one column, set_limits four: only the float summation order of the means
+    differs), and at set_limits' own layout they are bit-equal."""
+    calls, real = [], E.limits
+
+    def spy(X, groups, gx, gt, levels, r, s=E.AB, B=None):
+        state = r.bit_generator.state
+        out = real(X, groups, gx, gt, levels, r, s, B)
+        calls.append(dict(X=np.array(X), levels=list(levels), state=state, out=out))
+        return out
+    monkeypatch.setattr(E, "limits", spy)
+    st = E.rep_structure((3, 2, 2, 1, 1), S)
+    E.rep_misses(st, S.cell(14), AE.stream(S.cal_seed, "t", "share"), TR, S)
+    assert len(calls) == 3
+    gx, gt = E._labels(st)
+    keys = [f"a|{i}|X{int(gx[i])}|Y" for i in range(len(st))]
+    tsets = [f"T{int(gt[i])}" for i in range(len(st))]
+    assert E.structure(keys, tsets) == st
+    rep = dict(zip(E.STATS, calls))
+    r = np.random.Generator(np.random.PCG64())
+    r.bit_generator.state = rep["D"]["state"]                              # the stream where rep_misses' TS began
+    per = {kk: {n: np.repeat(rep[n]["X"][i], 4, axis=-1) for n in E.STATS} for i, kk in enumerate(keys)}
+    lim = E.set_limits(per, keys, tsets, {n: rep[n]["levels"] for n in E.STATS}, S, rngs={n: r for n in E.STATS})
+    assert len(calls) == 6
+    for n in E.STATS:
+        _th, _reps, lo, hi, clo, chi = rep[n]["out"]
+        L = lim[n]
+        for m, a, b in (("ts", "lo", lo), ("ts", "hi", hi), ("cg", "lo", clo), ("cg", "hi", chi)):
+            got = np.array(L[m][a])[:, 0]
+            # the same draws; the means differ only by float summation order over [.., 4] vs [.., 1]
+            assert np.allclose(got, b[:, 0], rtol=0, atol=1e-12, equal_nan=True), (n, m, a)
+    r.bit_generator.state = rep["D"]["state"]
+    lim2 = E.set_limits(per, keys, tsets, {n: rep[n]["levels"] for n in E.STATS}, S, rngs={n: r for n in E.STATS})
+    r2 = np.random.Generator(np.random.PCG64())
+    r2.bit_generator.state = rep["D"]["state"]
+    for n in E.STATS:
+        X4 = np.stack([per[kk][n] for kk in keys])
+        _t, _b, lo4, hi4, clo4, chi4 = real(X4, E.groups_of(gx), gx, gt, rep[n]["levels"], r2, S)
+        for m, a, b in (("ts", "lo", lo4), ("ts", "hi", hi4), ("cg", "lo", clo4), ("cg", "hi", chi4)):
+            assert np.array_equal(np.array(lim2[n][m][a]), b, equal_nan=True), (n, m, a)   # same layout: bit-equal
+
+
+def test_miss_sides_use_the_right_end():
+    """PASS-side miss = lower ends above the truth; FAIL-side miss = upper ends below it (not lower ends above)."""
+    hi_t = dict(D=100.0, Dfin=100.0, R=100.0)
+    lo_t = dict(D=-100.0, Dfin=-100.0, R=-100.0)
+    a = E.rep_misses(ST, S.cell(1), AE.stream(S.cal_seed, "t", "ends"), hi_t, S)
+    b = E.rep_misses(ST, S.cell(1), AE.stream(S.cal_seed, "t", "ends"), lo_t, S)
+    assert all(a["D"]["F"]) and all(a["D"]["F_TS"]) and all(a["D"]["F_CG"]) and not any(a["D"]["P"])
+    assert not any(b["D"]["F"]) and all(b["D"]["P"])
+    for n in E.STATS:
+        assert not any(a[n]["P"]) and all(b[n]["P"])
+
+
+def test_effects_follow_the_structure():
+    st = tuple((i % 6, (i * 5) % 9) for i in range(40))
+    gx, gt = E._labels(st)
+    for kind, lab in (("T", gt), ("X", gx)):
+        u = E.effects((kind, 1.0), gx, gt, AE.stream(1, "eff", kind), S)
+        for g in set(lab.tolist()):
+            assert np.unique(u[lab == g]).size == 1, (kind, g)
+        assert np.unique(u).size == len(set(lab.tolist()))
+
+
+def test_skew_cells_have_the_declared_tails():
+    st = tuple((i, i % 9) for i in range(4_000))
+    gx, gt = E._labels(st)
+    for ci, sign in ((18, 1), (19, -1), (20, 1), (21, -1)):
+        u = E.effects(S.cell(ci), gx, gt if ci < 20 else gx, AE.stream(2, "sk", ci), S)
+        m = E.marginal_effects(S.cell(ci), 40_000, AE.stream(3, "sk", ci), S)
+        for v in (u, m):
+            assert sign * stats.skew(v) > 1.0, (ci, stats.skew(v))
+            assert abs(v.mean()) < 0.2 and abs(v.std() - S.skew_sd) < 1.0
+
+
+def test_fly_cell_adds_between_fly_variance():
+    u = np.zeros(400)
+    v = {}
+    for ci in (1, 22):
+        x = E.probes(S.cell(ci), u, AE.stream(4, "fly", ci), 0.0, S)
+        v[ci] = float(x.mean(-1).var(axis=1, ddof=1).mean())               # between-fly variance of fly means
+    assert abs(v[1] - 1 / S.probes) < 0.03 and v[22] > v[1] + 0.7
+
+
+def test_cal_run_resume_must_match_n():
+    seen = []
+    E.cal_run(ST, "g5", "sel", 4, TR, S, n=10, on_chunk=lambda p: seen.append(p))
+    with pytest.raises(ValueError):
+        E.cal_run(ST, "g5", "sel", 4, TR, S, n=11, resume=seen[0])
+    with pytest.raises(ValueError):
+        E.cal_run(ST, "g5", "sel", 4, TR, S, resume=seen[0])               # default n_sel ≠ 10
+    assert E.cal_run(ST, "g5", "sel", 4, TR, S, n=10, resume=seen[0]) == E.cal_run(ST, "g5", "sel", 4, TR, S, n=10)
