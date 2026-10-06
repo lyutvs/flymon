@@ -2,7 +2,9 @@
 changes). Y's filter numbers and V's KC numbers are read from y_spec / v_spec and never restated; the facts AB checks
 against committed blocks (commits, digests, sha256, counts) are restated here because AB.2 / AB.3 declare them.
 - Seeds (AB.2): AB's own roots carry "seed" in their field names so the collectors in test_p_spec see them; V's KC
-  strength seeds (24_002_000 + i) are reused on purpose and come from v_spec.SPEC.kc_seeds().
+  strength seeds (24_002_000 + i) are reused on purpose and come from v_spec.SPEC.kc_seeds(); the AA differential
+  test's roots (aa_probe_seed0 / aa_train_seed0 = Y's main-set roots, aa_boot_seed = AA's boot root) are reused too
+  and are properties reading y_spec / aa_spec, not fields, so the collectors count them under their owners only.
 - Streams (AB.2 "흐름 만들기"): every stream is aa_estimate.stream(root, *tags); the five test vectors are sealed.
 - The futility gate (AB.7 0f, AB.9.3): its model constants, reps, threshold and grid are sealed (seal_names).
 - seal_fields(): the numbers the seal (AB.7 0d) hashes — AB.9.1's fixed list as far as ab_spec holds it (Y's filter
@@ -12,6 +14,9 @@ from __future__ import annotations
 
 import dataclasses
 from dataclasses import dataclass
+
+from .aa_spec import SPEC as _AA
+from .y_spec import SPEC as _Y
 
 SD4 = (0.5, 1.0, 2.0, 3.0)
 
@@ -219,9 +224,6 @@ class ABSpec:
     aa_records_detail: str = "results/aa/records.json"
     aa_estimate_detail: str = "results/aa/estimate.json"
     aa_cache_dir: str = "results/aa/cache"
-    aa_probe_seed0: int = 62_000_000                                         # Y's main-set seeds (AA's; diff test)
-    aa_train_seed0: int = 64_000_000
-    aa_boot_seed: int = 87_000_000                                           # AA's stream root (TS diff test)
     diff_pairs: int = 2
     cli_print_chars: int = 2000
     seal_files: tuple = ("flymon/brain/ab_estimate.py", "flymon/brain/ab_spec.py", "flymon/brain/ab_rules.py",
@@ -248,6 +250,19 @@ class ABSpec:
 
     def seal_fields(self) -> dict:
         return {k: getattr(self, k) for k in self.seal_names}
+
+    # ---- reused seeds (AA differential test): read from their owners, not declared here (AB.2 재사용) ---------------
+    @property
+    def aa_probe_seed0(self) -> int:
+        return _Y.probe_seed0                                                # Y's main-set probe root (AA's)
+
+    @property
+    def aa_train_seed0(self) -> int:
+        return _Y.train_seed0                                                # Y's main-set training root (AA's)
+
+    @property
+    def aa_boot_seed(self) -> int:
+        return _AA.boot_seed                                                 # AA's stream root (TS diff test)
 
     def stage_label(self, stage: str) -> str:
         return dict(self.stage_labels).get(stage, stage)

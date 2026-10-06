@@ -80,6 +80,11 @@ def test_ab_seed_blocks_collide_with_nothing_declared():
             _collect(m.smoke(m.SPEC), declared, seen)
     assert not any(lo <= x < hi for x in declared for lo, hi in SPEC.seed_blocks)
     assert set(V.kc_seeds()) == set(range(24_002_000, 24_002_008))       # reused on purpose (AB.2)
+    # the AA differential test's roots are reused from Y / AA (AB.2): read from their owners, never AB fields
+    from flymon.brain.aa_spec import SPEC as AA
+    assert (SPEC.aa_probe_seed0, SPEC.aa_train_seed0, SPEC.aa_boot_seed) == (Y.probe_seed0, Y.train_seed0, AA.boot_seed)
+    assert not {"aa_probe_seed0", "aa_train_seed0", "aa_boot_seed"} & {f.name for f in dataclasses.fields(ABSpec)}
+    assert not out & {Y.probe_seed0, Y.train_seed0, AA.boot_seed}
     assert not any(dataclasses.is_dataclass(getattr(SPEC, f.name)) for f in dataclasses.fields(ABSpec))
 
 
