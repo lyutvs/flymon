@@ -227,6 +227,7 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   **보상 연합 6.021 [95% CI 4.834, 7.485]**(Hedges × 0.8889: 5.352 [4.297, 6.653]), **처벌 연합 −4.517 [−5.893, −3.234]**(−4.015 [−5.238, −2.875]); 쌍별 범위 2.85–10.00 · −8.83 – −1.29, 16쌍 모두 쌍 CI가 기대 방향에서 0을 벗어남. 쌍 간 SD(DL)는 처벌 2.038이고, 보상은 a|408의 8마리가 모두 +10에 잘려 v_p = 0이라 null이다(잘라냄 천장 — 잘라내지 않은 판 6.483). ±∞ 마리 0, 가르친 세포 바닥 중앙 φ_R 0 · φ_P 0.125. 기록: S31 5.764 · −4.075, 거름 탈락 15쌍 5.490 · −3.604, 바닥 민감도 7쌍(적은 묶음) 6.945 · −6.301, 비표준화 대조 2.573 · −1.449(z), 가소성 끈 대조 R1 = pre(불일치 0).
   G.6 재계산(기록 전용, 이 지렛대의 다음 설계 입력이 아님): 네 관문 최솟값은 처벌 하락이 묶어 목표 Hedges 3.54 [2.69, 4.53](보정 없음 3.98 [3.02, 5.10]); Y θ̂에서는 여섯 행 모두 첫 설계 F 8 × K 8 · k [4, 8] · p_set 1.0 · q 0.75(1.56 h), 대상 설계 점 검정력 ≥ 0.99; θ_AA(이중 선택)에서는 Hedges 점 행과 두 하한끝 행이 p_set 0.625 / 0.75 · q 0.5이고 상한끝 두 행과 보정 없는 점 행은 `floor`다.
   비교표는 기술 전용이며 M2 상태(판정 없음)와 M3 차단은 그대로다. 주 세트는 이 지렛대 · 이 거름의 확인 출처로서 소비되었다(`untouched` 218 · `trained` 31). 예산 핵심 5.52 h / 12 h(학습 5.14 h — 추정 4.1 h를 넘음), records 0.32 h(G.6 956 s). 사용자 사전 승인(2026-10-06)에 따라 다음 선언 후보를 브레인스토밍 기록에 쓴다(자동 선언 없음).
+- **조합 지렛대 트랙 종료(2026-10-07, 사용자 결정)**: 조합 지렛대(APL→MBON05 2간선 + MBON05→MBON09 · MBON11 · MBON01 11간선 제거)의 트랙을 부록 V(오라클 시험 가능 SELECTED) → W · X · Y · Z(M2 학습 단위 판정, 네 번 모두 판정 전 STOP) → AA(효과 크기 추정, 판정 없음)로 닫는다. M2 상태(판정 없음)와 M3 차단은 그대로다. 다음은 부록 AB brainstorm이다(사용자 위임): M2 학습 단위 판정을 H.5 'POOL 안 확인'으로 다시 세우고, 판정 기준을 결과 전에 고정한 효과 크기 기준으로 바꾸는 스펙 개정을 검토한다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -458,6 +459,7 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   untouched, 31 trained). Budget 5.52 h core of 12 h (learning 5.14 h, above the 4.1 h estimate), 0.32 h records
   (G.6 956 s). Per the standing approval, next-declaration candidates go to the brainstorm record (no automatic
   declaration).
+- **Combined-lever track closed (2026-10-07, user decision).** The combined lever (APL->MBON05 2 edges + MBON05->MBON09 / MBON11 / MBON01 11 edges removed) is closed after appendix V (oracle-testable SELECTED), W / X / Y / Z (M2 learning-unit judgement, all four stopped before a judgement) and AA (effect-size estimate, no judgement). The M2 status (no judgement) and the M3 block are unchanged. Next is the appendix AB brainstorm (delegated by the user): re-establish the M2 learning-unit judgement as the H.5 'in-POOL confirmation', and review a spec amendment that replaces the G.6 bootstrap OC with an effect-size criterion fixed before results.
 
 ## 실행
 
