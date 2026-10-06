@@ -962,10 +962,33 @@ class Runner:
         """The measured core: the ledger so far + this stage's core progress (seconds of earlier killed runs too)."""
         return self._core_h(doc) + self._prog(stage)["core"] / self.s.s_per_h
 
+    def _reserve_path(self, stage: str) -> Path:
+        return Path(self.s.progress_dir) / f"{stage}.reserve.json"
+
+    def _reserve(self, doc: dict, stage: str, total_h: float) -> tuple:
+        """AB.7 0e / 0f "… 전" reservation, decided once — on the stage's FIRST start: core (ledger + this stage's
+        progress) + 2.0 × total ≤ 24 h. The decision is written to progress/<stage>.reserve.json (seal key, core,
+        total, ok). A resume after a kill (that file exists for the same seal key) does not re-reserve — re-adding
+        the full estimate on top of the killed run's seconds would double count; the measured cap (0e, which counts
+        the killed run's seconds) governs from then on. Returns (ok, core_h)."""
+        key = doc["seal_code"]["seal"]["key"]
+        p = self._reserve_path(stage)
+        if p.exists():
+            try:
+                d = json.loads(p.read_text())
+            except ValueError:
+                d = {}
+            if d.get("seal_key") == key and d.get("ok") is True:
+                return True, self._spent_core_h(doc, stage)
+        core = self._spent_core_h(doc, stage)
+        ok = bool(ab_rules.core_ok(core, total_h, self.s))
+        ab_store.write_json(str(p), dict(seal_key=key, core_h=core, total_h=total_h, ok=ok, at=_now()), self.plist)
+        return ok, core
+
     # ================================================================ 0e: cal_gate (AB.5, AB.7 0e)
     def stage_cal_gate(self) -> dict:
         """AB.7 0e 측정 전 보정 관문: the seal check (in _require), the reservation (core ledger + 2.0 × (0e + synthetic
-        validation + 0f + the remaining core) ≤ 24 h, else STOP_BUDGET〈0e 전〉), AB.5 on the representative structures
+        validation + 0f + the remaining core) ≤ 24 h, else STOP_BUDGET〈0e 전〉; first start only — _reserve), AB.5 on the representative structures
         g 5 · 6 · 7 through the pooled checkpointing executor (the measured cap between cells: STOP_BUDGET〈0e〉, the
         checkpoints stay), STOP_CALIBRATION〈0e〉 when any structure × statistic has no verified PASS-side α, the
         synthetic validation (record) when g 7's three PASS-side α are verified. No Gen-2 value is read or measured."""
@@ -973,9 +996,9 @@ class Runner:
         s = self.s
         tick = self._ticker("cal_gate")
         est = self._cal_est(doc)
-        core = self._spent_core_h(doc, "cal_gate")            # a killed 0e run's progress seconds count too
+        ok, core = self._reserve(doc, "cal_gate", est["total"])   # first start only; a resume relies on the cap
         cnt = self._counts(doc)
-        if not ab_rules.core_ok(core, est["total"], s):
+        if not ok:
             tick()
             return self._write("cal_gate", dict(
                 ab_rules.budget_stop(s.stage_label("cal_gate") + " 전", ab_rules.budget_text(core, est["total"], s),
@@ -1062,7 +1085,7 @@ class Runner:
     # ================================================================ 0f: futility (AB.7 0f, AB.9.3)
     def stage_futility(self) -> dict:
         """AB.7 0f 가망 관문: no Gen-2 value is read or measured. The reservation (core ledger + 2.0 × (0f + the
-        remaining core) ≤ 24 h, else STOP_BUDGET〈0f 전〉); the AA source must equal 0b's facts and reproduce AA bit for
+        remaining core) ≤ 24 h, else STOP_BUDGET〈0f 전〉; first start only — _reserve); the AA source must equal 0b's facts and reproduce AA bit for
         bit (else exit 2: a sealed-code defect → restart_preseal); the judgement row (fut_judge) decides on the point
         P̂; the record rows, CP intervals and blocked shares are records; the grid runs only on STOP_FUTILE (records
         ledger, the records cap before each scenario). No measured cap during 0f (AB.7 예산)."""
@@ -1070,10 +1093,10 @@ class Runner:
         s = self.s
         tick = self._ticker("futility")
         cal = self._eff(doc, "cal_gate")["structures"]
-        core = self._spent_core_h(doc, "futility")            # a killed 0f run's progress seconds count too
         fut_h, rest = self._fut_est_h(doc), self._rest_terms(doc)
         est = dict(futility=fut_h, rest=rest["total"], rest_terms=rest, total=fut_h + rest["total"])
-        if not ab_rules.core_ok(core, est["total"], s):
+        ok, core = self._reserve(doc, "futility", est["total"])   # first start only (AB.7 0f 전)
+        if not ok:
             tick()
             return self._write("futility", dict(
                 ab_rules.budget_stop(s.stage_label("futility") + " 전", ab_rules.budget_text(core, est["total"], s),

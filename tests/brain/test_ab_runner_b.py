@@ -297,9 +297,27 @@ def test_cal_gate_measured_cap(tmp_path, monkeypatch):
 
 
 def test_cal_gate_resumed_reservation_counts_killed_progress(tmp_path, monkeypatch):
-    """A killed 0e run's progress seconds (progress/cal_gate.json) count in the resumed run's reservation: the ledger
-    alone passes it, ledger + progress fails it → STOP_BUDGET〈0e 전〉, no new checkpoint."""
-    w = _w(tmp_path, monkeypatch, **OK)
+    """AB.7 0e: the reservation ("0e 전") is decided once, on the first start, and counts this stage's progress
+    seconds already there; it is written to progress/cal_gate.reserve.json. A resume after a kill does not re-reserve
+    (re-adding the full estimate on top of the killed run's seconds would stop a late resume spuriously); the
+    measured cap ("0e 실행 중", ledger + every run's progress) still stops it once the total passes 24 h."""
+    # (1) first start: earlier progress seconds count in the reservation → STOP_BUDGET〈0e 전〉, nothing measured
+    w = _w(tmp_path, monkeypatch, "first", **OK)
+    w.chain("seal_code")
+    r = w.runner()
+    est, core = r._cal_est(doc()), r._core_h(doc())
+    assert ab_rules.core_ok(core, est["total"], w.s)                           # the ledger alone passes
+    assert not ab_rules.core_ok(core + 23.5, est["total"], w.s) and core + 23.5 < w.s.core_cap_h
+    prog = Path(w.s.progress_dir) / "cal_gate.json"
+    ab_store.write_json(str(prog), dict(core=23.5 * H, records=0.0), [w.ctx["params"]()])
+    out = w.runner().run("cal_gate")
+    assert out["outcome"] == ab_rules.STOP_BUDGET and out["stop_stage"] == "0e 전" and run_ab.exit_code(out) == 3
+    assert not Path(w.s.cal_dir).exists()
+    res = json.loads((Path(w.s.progress_dir) / "cal_gate.reserve.json").read_text())
+    assert res["ok"] is False and res["seal_key"] == doc()["seal_code"]["seal"]["key"]
+
+    # (2) killed after the reservation; the killed run's spend makes a re-reservation fail, the measured cap not
+    w = _w(tmp_path, monkeypatch, "resume", **OK)
     w.chain("seal_code")
     real, n = E.truth, []
 
@@ -312,16 +330,36 @@ def test_cal_gate_resumed_reservation_counts_killed_progress(tmp_path, monkeypat
     with pytest.raises(_Kill):
         w.runner().run("cal_gate")
     monkeypatch.setattr(E, "truth", real)
+    rp = Path(w.s.progress_dir) / "cal_gate.reserve.json"
+    rbytes = rp.read_bytes()
+    assert json.loads(rbytes)["ok"] is True
     snap = {p: p.read_bytes() for p in Path(w.s.cal_dir).rglob("*.json")}
     assert len(snap) == 4
-    r = w.runner()
-    est, core = r._cal_est(doc()), r._core_h(doc())
-    assert ab_rules.core_ok(core, est["total"], w.s)                           # the ledger alone passes
     prog = Path(w.s.progress_dir) / "cal_gate.json"
     d = json.loads(prog.read_text())
     ab_store.write_json(str(prog), dict(d, core=d["core"] + 23.5 * H), [w.ctx["params"]()])   # the killed run's spend
+    r = w.runner()
+    est, spent = r._cal_est(doc()), r._spent_core_h(doc(), "cal_gate")
+    assert not ab_rules.core_ok(spent, est["total"], w.s) and ab_rules.spent_ok(spent, w.s)
     out = w.runner().run("cal_gate")
-    assert out["outcome"] == ab_rules.STOP_BUDGET and out["stop_stage"] == "0e 전" and run_ab.exit_code(out) == 3
+    assert out["outcome"] == ab_rules.PASS and run_ab.exit_code(out) == 0                # no re-reservation
+    assert rp.read_bytes() == rbytes
+    assert all(p.read_bytes() == v for p, v in snap.items())
+
+    # (3) killed after the reservation; the measured total past 24 h → STOP_BUDGET〈0e〉 on resume, no new checkpoint
+    w = _w(tmp_path, monkeypatch, "cap", **OK)
+    w.chain("seal_code")
+    n.clear()
+    monkeypatch.setattr(E, "truth", kill)
+    with pytest.raises(_Kill):
+        w.runner().run("cal_gate")
+    monkeypatch.setattr(E, "truth", real)
+    snap = {p: p.read_bytes() for p in Path(w.s.cal_dir).rglob("*.json")}
+    prog = Path(w.s.progress_dir) / "cal_gate.json"
+    d = json.loads(prog.read_text())
+    ab_store.write_json(str(prog), dict(d, core=d["core"] + 24.5 * H), [w.ctx["params"]()])
+    out = w.runner().run("cal_gate")
+    assert out["outcome"] == ab_rules.STOP_BUDGET and out["stop_stage"] == "0e" and run_ab.exit_code(out) == 3
     assert {p: p.read_bytes() for p in Path(w.s.cal_dir).rglob("*.json")} == snap
 
 
@@ -447,9 +485,24 @@ def test_futility_reservation_stop(tmp_path, monkeypatch):
 
 
 def test_futility_resumed_reservation_counts_killed_progress(tmp_path, monkeypatch):
-    """A killed 0f run's progress seconds (progress/futility.json) count in the resumed run's reservation: the ledger
-    alone passes it, ledger + progress fails it → STOP_BUDGET〈0f 전〉, no new checkpoint (T8a review)."""
-    w = _fut_world(tmp_path, monkeypatch, fut_threshold=0.0)
+    """AB.7 0f: the reservation ("0f 전") is decided once, on the first start, and counts this stage's progress
+    seconds already there (progress/futility.reserve.json); a resume after a kill does not re-reserve — the killed
+    run's seconds stay in the ledger (T8a review), and 0f has no measured cap (AB.7 예산)."""
+    # (1) first start: earlier progress seconds count → STOP_BUDGET〈0f 전〉, nothing measured
+    w = _fut_world(tmp_path, monkeypatch, "first", fut_threshold=0.0)
+    r = w.runner()
+    core = r._core_h(doc())
+    est = r._fut_est_h(doc()) + r._rest_terms(doc())["total"]
+    assert ab_rules.core_ok(core, est, w.s) and not ab_rules.core_ok(core + 23.5, est, w.s)
+    prog = Path(w.s.progress_dir) / "futility.json"
+    ab_store.write_json(str(prog), dict(core=23.5 * H, records=0.0), [w.ctx["params"]()])
+    out = w.runner().run("futility")
+    assert out["outcome"] == ab_rules.STOP_BUDGET and out["stop_stage"] == "0f 전" and run_ab.exit_code(out) == 3
+    assert not Path(w.s.fut_dir).exists()
+    assert json.loads((Path(w.s.progress_dir) / "futility.reserve.json").read_text())["ok"] is False
+
+    # (2) killed after the reservation; a re-reservation would fail, the resume does not re-reserve
+    w = _fut_world(tmp_path, monkeypatch, "resume", fut_threshold=0.0)
     real, calls = E.fut_run, []
 
     def kill(*a, **kw):
@@ -461,19 +514,22 @@ def test_futility_resumed_reservation_counts_killed_progress(tmp_path, monkeypat
     with pytest.raises(_Kill):
         w.runner().run("futility")
     monkeypatch.setattr(E, "fut_run", real)
+    rp = Path(w.s.progress_dir) / "futility.reserve.json"
+    rbytes = rp.read_bytes()
+    assert json.loads(rbytes)["ok"] is True
     snap = {p: p.read_bytes() for p in Path(w.s.fut_dir).glob("*.json")}
     assert len(snap) == 2 and "futility" not in doc()
-    r = w.runner()
-    core = r._core_h(doc())
-    est = r._fut_est_h(doc()) + r._rest_terms(doc())["total"]
-    assert ab_rules.core_ok(core, est, w.s)                                    # the ledger alone passes
     prog = Path(w.s.progress_dir) / "futility.json"
     d = json.loads(prog.read_text())
     assert d["core"] > 0.0                                                     # the killed run's seconds are there
     ab_store.write_json(str(prog), dict(d, core=d["core"] + 23.5 * H), [w.ctx["params"]()])
+    r = w.runner()
+    assert not ab_rules.core_ok(r._spent_core_h(doc(), "futility"), est, w.s)
     out = w.runner().run("futility")
-    assert out["outcome"] == ab_rules.STOP_BUDGET and out["stop_stage"] == "0f 전" and run_ab.exit_code(out) == 3
-    assert {p: p.read_bytes() for p in Path(w.s.fut_dir).glob("*.json")} == snap
+    assert out["outcome"] == ab_rules.PASS and run_ab.exit_code(out) == 0
+    assert rp.read_bytes() == rbytes
+    assert all(p.read_bytes() == v for p, v in snap.items())
+    assert [e for e in _ledger() if e["stage"] == "futility"][0]["wall_s"] > 23.5 * H   # the killed spend counts
 
 
 def test_futility_records_cap_nulls(tmp_path, monkeypatch):
