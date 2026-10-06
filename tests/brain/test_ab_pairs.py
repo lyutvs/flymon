@@ -78,3 +78,35 @@ def test_ab_set_and_c(real):
     assert t == sorted(t)
     rec = P.set_record(rows, P.kc_merge(real["kc"], new))
     assert rec["by_axis"] == {"a": 139, "b": 45}
+
+
+def test_set_record_dropped_only_pre_kc_odours(real):
+    gen = P.generate(real["base"], real["v_rows"], real["w_rows"], real["lv"]["odours"], real["kc"])
+    new = {e: {o: 0.05 for o in gen["new_odours"]} for e in ("none", "lever")}
+    kc = P.kc_merge(real["kc"], new)
+    rows = P.ab_set(gen["rows"], kc)
+    full = P.set_record(rows, kc)
+    rec = P.set_record(rows, kc, gen["rows"])
+    pre = set(gen["odour_ids"])
+    for e in ("none", "lever"):
+        assert set(rec["dropped"][e]) <= pre
+        assert rec["dropped"][e] == [o for o in full["dropped"][e] if o in pre]
+    # V's cache drop-outs outside the 209 rows are not recorded; the 8 V-cache KC drop-outs of the set are
+    assert any(set(full["dropped"][e]) - pre for e in ("none", "lever"))
+    assert set().union(*map(set, rec["dropped"].values())) == set(gen["v_cache_out"])
+    assert {k: v for k, v in rec.items() if k != "dropped"} == {k: v for k, v in full.items() if k != "dropped"}
+
+
+def test_key_set_does_not_depend_on_shuffle_seed(real):
+    # AB.3: no axis cap, in_set by key, the alternate fixed per opponent -> the seed moves only turns and c
+    _st, _mi, mon, _mv = h4_pairs.pool_vocabulary()
+    opp, _n = P.gen2_opponents(mon)
+    used = list(real["v_rows"]) + list(real["w_rows"])
+    walks = [P.Walker(real["base"], opp, s, used).walk(0, SPEC.n_combos - 1, real["lv"]["odours"])
+             for s in (SPEC.shuffle_seed, SPEC.shuffle_seed + 1)]
+    def key(r):   # the turn-free key: axis + the E-grid key (row_key carries the turn)
+        return (r["axis"], tuple(sorted(P.e_pairs.egrid_key(r))))
+    keys = [sorted(map(key, w["rows"])) for w in walks]
+    assert len(keys[0]) == 209 and len(set(keys[0])) == 209 and keys[0] == keys[1]
+    turns = [{key(r): r["turn"] for r in w["rows"]} for w in walks]
+    assert turns[0] != turns[1]

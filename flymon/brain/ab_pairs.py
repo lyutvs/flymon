@@ -291,13 +291,17 @@ def ab_set(pre_rows: list, kc: dict) -> list:
     return [dict(r, c=i) for i, r in enumerate(declared_order(keep))]
 
 
-def set_record(rows: list, kc: dict) -> dict:
-    """Order 4's block record: digest, counts by axis, both group tables, dropped odours per engine."""
+def set_record(rows: list, kc: dict, pre_rows=None) -> dict:
+    """Order 4's block record: digest, counts by axis, both group tables, dropped odours per engine. pre_rows = the
+    209 KC-pre rows: the dropped list then holds only the odours those rows carry (kc also holds V's whole cache, whose
+    other odours never met this set); None keeps every out-of-band odour of kc (the old form)."""
     lo, hi = V_SPEC.valid_band
+    seen = None if pre_rows is None else set(_odours(pre_rows))
     return dict(digest_keys=digest_keys(rows), n=len(rows), by_axis=_by_axis(rows),
                 x_groups=sorted(Counter(r["x"] for r in rows).items()),
                 t_groups=sorted(Counter(map(ts_key, rows)).items()),
-                dropped={e: sorted(o for o, v in kc[e].items() if not lo <= v <= hi) for e in v_pairs.ENGINES},
+                dropped={e: sorted(o for o, v in kc[e].items() if not lo <= v <= hi and (seen is None or o in seen))
+                         for e in v_pairs.ENGINES},
                 keys=[row_key(r) for r in rows])
 
 
