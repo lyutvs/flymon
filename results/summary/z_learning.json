@@ -1,0 +1,133 @@
+{
+ "budget": {
+  "ledger": [
+   {
+    "at": "2026-10-06T02:11:24.808626+00:00",
+    "stage": "stage0",
+    "wall_s": 0.04871916596312076
+   }
+  ]
+ },
+ "stage0": {
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/stage0/z/stage0.json",
+    "sha256": "a42790b5b45896fd439f4163da538821dea57511cf19c327ab3261bafaee0417",
+    "src": "results/z/stage0.json"
+   }
+  ],
+  "decision_files": {
+   "flymon/brain/z_oc.py": "666915f4cd64c94a6705b5aeed987a3311a4f99a06ca10a769ac3dc7b27eedb4",
+   "flymon/brain/z_rules.py": "78de45e97fe4a9dcead8ea836edadcfd6c247b163611d6ec30f9cc9481b1b538",
+   "flymon/brain/z_runner.py": "a5bc8bca0cb98adb5196c8f35d55211a24c0c75c800e40130595212be6381fe8",
+   "flymon/brain/z_spec.py": "b784b2c4f523b2d20ad3740b7a92caed873b4d4d41cd0e7019501de810717724",
+   "flymon/brain/z_split.py": "ca4a011f3ed736eca3ca730c96acde0e62c9718c172e39c826851e8a4472c7d3",
+   "flymon/brain/z_store.py": "b90dd8c13e7a94fbf9742a038de9a5f7e08221da9f014eea20fa2affd2f70562",
+   "scripts/run_z.py": "7cd0fd25621444a3d3a23b15a92e7dc7804dba0516f3fd7c79e4a37c65835390"
+  },
+  "detail_path": "results/z/stage0.json",
+  "detail_sha256": "a42790b5b45896fd439f4163da538821dea57511cf19c327ab3261bafaee0417",
+  "env": {
+   "numpy": "2.5.3",
+   "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+   "python": "3.13.13",
+   "scipy": "1.18.1",
+   "uv_lock_sha256": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e",
+   "yxw_files": {
+    "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+    "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+    "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+    "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+    "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+    "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+    "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+    "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+    "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+    "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+    "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+    "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+    "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+    "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+    "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+    "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+    "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+    "flymon/brain/y_runner.py": "0ba331d74fab000fd010284c5440721eb45a103bc61e3341e472a254133efbee",
+    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+    "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54"
+   },
+   "z_files": {
+    "flymon/brain/z_oc.py": "666915f4cd64c94a6705b5aeed987a3311a4f99a06ca10a769ac3dc7b27eedb4",
+    "flymon/brain/z_rules.py": "78de45e97fe4a9dcead8ea836edadcfd6c247b163611d6ec30f9cc9481b1b538",
+    "flymon/brain/z_runner.py": "a5bc8bca0cb98adb5196c8f35d55211a24c0c75c800e40130595212be6381fe8",
+    "flymon/brain/z_spec.py": "b784b2c4f523b2d20ad3740b7a92caed873b4d4d41cd0e7019501de810717724",
+    "flymon/brain/z_split.py": "ca4a011f3ed736eca3ca730c96acde0e62c9718c172e39c826851e8a4472c7d3",
+    "flymon/brain/z_store.py": "b90dd8c13e7a94fbf9742a038de9a5f7e08221da9f014eea20fa2affd2f70562",
+    "scripts/run_z.py": "7cd0fd25621444a3d3a23b15a92e7dc7804dba0516f3fd7c79e4a37c65835390"
+   }
+  },
+  "git": {
+   "commit": "e97282c22bfa1ce6ab4ddaa2d50e94ef315aeec5",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "note": "Z.7 0a: Z \ucf54\ub4dc\uc640 \uac80\uc99d(Z.6.4 + Z.9.2 P1-5 \uc2dc\ud5d8\uc740 pytest \u2014 \ub85c\uadf8 sha256), \uacb0\uc815 \ud30c\uc77c \ud574\uc2dc, \uc218\uce58 \ud45c(\uc0c1\uc138), \ud658\uacbd \ud574\uc2dc(env, Z.9.2 P2-11 \u2014 \uc774\ud6c4 \ubaa8\ub4e0 \ub2e8\uacc4 \uc2dc\uc791 \u00b7 \uc7ac\uac1c\uc5d0\uc11c \ub300\uc870), R-pre \ub2e8\uc704 \ube44\uc6a9(\uae30\ub85d).",
+  "numbers_sha256": "69886233a3826f1e16584ae293edca069ffabded68b0c8f222b79afb889f5ef0",
+  "order": "0a",
+  "outcome": "PASS",
+  "reasons": [],
+  "split_fixtures": {
+   "f1_same": true,
+   "f3_groups_whole": true,
+   "f4_bound": true,
+   "f5_forced_in_c": true,
+   "ok": true,
+   "t5_c_larger_without_forced": true
+  },
+  "stage": "stage0",
+  "test_files": {
+   "tests/brain/test_z_cli.py": "5c778bc76e0bd647b1af06bfc40b48a05b80701636c94cc34ba27ecfcb0ae424",
+   "tests/brain/test_z_oc.py": "282b40dee7c8993ee39eb09400f3fcf0954b9367ca0c6ed83f9365e8189d6e13",
+   "tests/brain/test_z_rules.py": "6d227dd7b112b9f3b02ca0cdab08feb9b3d6219666455f762b1ada21bcec027d",
+   "tests/brain/test_z_runner.py": "56138d0c0385b654512ca255ad87c81d62bc1d64dea61bddb784266a7809579c",
+   "tests/brain/test_z_spec.py": "a18e5cd1392a61f300769155c0a05dd61dff65841ae8ba62ba348fe978b70bb4",
+   "tests/brain/test_z_split.py": "1974e5463a40e537e34250e5b60525e6a411e410f2485c8985c6ec83c54d1e25",
+   "tests/brain/test_z_store.py": "b562b3581d91f878682a65ec6beca0cc22ffcc8aaa1157af2004eda3808f43e5"
+  },
+  "tests": {
+   "last": "exit 0",
+   "path": "results/z/tests_0a.log",
+   "sha256": "ef18487150783fdc62429d745d1ff9c571878bb5a9d88cd46e8afbccef1a40c9",
+   "summary": "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html"
+  },
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "unit_timing": {
+   "evaluate_pre_s_per_rep": 0.0003426416590809822,
+   "evaluate_y_s_per_rep": 0.00040864665992558003,
+   "rpre_reconfirm_s_per_design": 164.46799635887146
+  },
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-06T02:11:24.808626+00:00",
+  "yxw_files": {
+   "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+   "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+   "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+   "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+   "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+   "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+   "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+   "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+   "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+   "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+   "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+   "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+   "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+   "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+   "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+   "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+   "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+   "flymon/brain/y_runner.py": "0ba331d74fab000fd010284c5440721eb45a103bc61e3341e472a254133efbee",
+   "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+   "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54"
+  }
+ }
+}
