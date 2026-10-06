@@ -285,9 +285,10 @@ def test_estimate_small_k_paths(tmp_path, monkeypatch, k):
         assert pr["n_groups"] == 3 and set(pr["range"]) == set(aa_estimate.PRIMARY)
         assert pr["coverage"] == doc()["coverage"]["by_set"]["S1"]["fly"]["min"]
         s = out["sentence"]
-        assert "'적은 묶음' 표식" in s and "마리 단계(묶음 < 5, 쌍별 값 범위 " in s
-        lo = min(pr["range"][g][0] for g in aa_estimate.PRIMARY)
-        assert f"쌍별 값 범위 {aa_rules._n(lo)}–" in s
+        assert "'적은 묶음' 표식" in s and "마리 단계(묶음 < 5, 쌍별 값 범위 보상 " in s
+        (a0, a1), (p0, p1) = (pr["range"][g] for g in aa_estimate.PRIMARY)       # plan Reading 27
+        n = aa_rules._n
+        assert f"쌍별 값 범위 보상 {n(a0)}–{n(a1)} · 처벌 {n(p0)}–{n(p1)})" in s
 
 
 def test_s1_never_changes_with_learning_values(tmp_path, monkeypatch):

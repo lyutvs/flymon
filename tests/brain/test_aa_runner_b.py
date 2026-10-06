@@ -199,6 +199,7 @@ def test_screen_machine_checks(tmp_path, monkeypatch, case):
         monkeypatch.setattr(AR, "units", _units_mutant(case))
     out = w.runner().run("screen")
     assert out["outcome"] == aa_rules.STOP_MACHINE, (case, out.get("reasons"))
+    assert out["seeds_ok"] is (case not in ("seed", "k7", "pos"))      # from the seed comparison, not reason text
     assert "AA 순진 거름 측정에서 기계 검사가 맞지 않았다(" in out["sentence"]
     assert "학습 측정 없음, 31쌍 `screened`" in out["sentence"]
     assert out["sentence"].endswith("(후보 상태: untouched 218 · screened 31 · trained 0)")
@@ -206,6 +207,62 @@ def test_screen_machine_checks(tmp_path, monkeypatch, case):
     with pytest.raises(SystemExit) as e:
         w.runner().run("coverage")
     assert e.value.code == 2
+
+
+def test_seeds_match_direct():
+    want = {("p", 0): [1, 2], ("p", 1): [3, 4]}
+    ok = [dict(pair="p", fly=0, probe_seeds=[1, 2]), dict(pair="p", fly=1, probe_seeds=[3, 4])]
+    assert AR.seeds_match(ok, want) is True
+    assert AR.seeds_match([ok[0], dict(ok[1], probe_seeds=[3, 5])], want) is False
+    assert AR.seeds_match([ok[0], dict(ok[1], probe_seeds=[3])], want) is False
+    assert AR.seeds_match([dict(ok[0], fly=2)], want) is False                     # no formula list for the key
+
+
+@pytest.mark.parametrize("k0", [False, True])
+def test_screen_rereads_raw_right_after_block(tmp_path, monkeypatch, k0):
+    """AA.7 4 "블록 커밋 직후 한 번 더 읽어 같음": the screen stage itself re-reads its raw after the block is written,
+    so the k = 0 path (no coverage stage follows) is verified too."""
+    w = _world(tmp_path, monkeypatch)
+    w.chain("seal_code")
+    if k0:
+        for r in MAIN:
+            w.model.offset[row_key(r)] = 40.0
+    real_write, seen = AR.Runner._write, []
+
+    def write(self, stage, body, *a, **kw):
+        out = real_write(self, stage, body, *a, **kw)
+        if stage == "screen":                    # the raw changes between the block write and the re-read
+            f = Path(_screen_detail(w)["manifest"][7]["cache_file"])
+            f.write_text(json.dumps(json.loads(f.read_text()), indent=1))
+            seen.append(out["outcome"])
+        return out
+    monkeypatch.setattr(AR.Runner, "_write", write)
+    out = w.runner().run("screen")
+    assert seen == [aa_rules.STOP_NO_PAIRS if k0 else aa_rules.PASS]
+    assert out["outcome"] == aa_rules.STOP_MACHINE
+    assert "원자료 digest 재확인 불일치(블록 직후)" in out["sentence"] and "31쌍 `screened`" in out["sentence"]
+    assert out["sentence"].endswith("(후보 상태: untouched 218 · screened 31 · trained 0)")
+    blk = doc()["screen"]
+    assert blk["outcome"] == aa_rules.STOP_MACHINE and "pairs" not in blk and "k" not in blk
+    assert blk["raw_digest_now"] != blk["raw_digest"] and len(blk["archive"]) == 249
+    assert [x["stage"] for x in doc()["budget"]["ledger"]].count("screen") == 1
+    with pytest.raises(SystemExit) as e:
+        w.runner().run("coverage")
+    assert e.value.code == 2
+
+
+def test_screen_reread_runs_on_pass(tmp_path, monkeypatch):
+    w = _world(tmp_path, monkeypatch)
+    w.chain("seal_code")
+    real, n = AR.Runner._screen_raw, dict(i=0)
+
+    def spy(self, d):
+        n["i"] += 1
+        assert d["screen"]["outcome"] == aa_rules.PASS                # read after the block is written
+        return real(self, d)
+    monkeypatch.setattr(AR.Runner, "_screen_raw", spy)
+    assert w.runner().run("screen")["outcome"] == aa_rules.PASS
+    assert n["i"] == 1 and doc()["screen"]["outcome"] == aa_rules.PASS
 
 
 def test_screen_k0_stop_no_pairs(tmp_path, monkeypatch):
@@ -303,6 +360,22 @@ def test_coverage_rereads_screen_raw(tmp_path, monkeypatch):
     assert "원자료 digest" in out["sentence"] and "31쌍 `screened`" in out["sentence"]
     assert out["sentence"].endswith("(후보 상태: untouched 218 · screened 31 · trained 0)")
     assert "by_set" not in out
+
+
+@pytest.mark.parametrize("bad", [[2.0, 1], [0, 3], [True, 2], "ab", [2, 2]])
+def test_coverage_validates_sizes_before_cells(tmp_path, monkeypatch, bad):
+    """The group-size structure is validated (aa_estimate._groups + sum = n) before any coverage_cell call."""
+    w = _world(tmp_path, monkeypatch, workers=1)
+    w.chain("screen")
+    d = doc()
+    d["screen"]["groups"]["S1"] = dict(n=3, sizes=bad)
+    Path(AR.AA.summary).write_text(json.dumps(d))
+    calls = []
+    monkeypatch.setattr(aa_estimate, "coverage_cell", lambda *a, **k: calls.append(a))
+    monkeypatch.setattr(AR, "_cov_job", lambda *a: calls.append(a))
+    with pytest.raises(SystemExit) as e:
+        w.runner().run("coverage")
+    assert e.value.code == 2 and calls == [] and "coverage" not in doc()
 
 
 def test_coverage_resumes_cells(tmp_path, monkeypatch):

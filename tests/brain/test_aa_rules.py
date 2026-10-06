@@ -35,14 +35,16 @@ def test_reason_counts_use_y_rounding_and_overlap():
 
 def test_result_sentence_has_no_verdict_word_and_switches_at_k1():
     base = dict(k=12, g=6, few=False, mu_ra=0.8, lo_ra=0.2, hi_ra=1.4, mu_pa=-0.6, lo_pa=-1.1, hi_pa=-0.1,
-                method="two_stage", cov=0.93, under=False, tau_ra=0.4, tau_pa=0.3, phi_r=0.05, phi_p=0.2, rng_min=None, rng_max=None)
+                method="two_stage", cov=0.93, under=False, tau_ra=0.4, tau_pa=0.3, phi_r=0.05, phi_p=0.2, rng_ra=None, rng_pa=None)
     s = R.result_sentence(base)
     assert "0.8 [95% CI 0.2, 1.4]" in s and "-0.6 [-1.1, -0.1]" in s and "묶음-마리 두 단계" in s
     assert "쌍 간 SD 보상 0.4 · 처벌 0.3(DL)" in s                     # plan Reading 25
     assert "판정 문턱은 없고 M2 학습 단위의 PASS/FAIL이 아니다." in s
     assert not any(w in s.replace("PASS/FAIL이 아니다", "") for w in R.FORBIDDEN_RESULT_WORDS)
-    few = R.result_sentence(dict(base, k=3, g=2, few=True, method="fly", rng_min=0.1, rng_max=1.3, under=True))
-    assert "'적은 묶음' 표식" in few and "마리 단계(묶음 < 5, 쌍별 값 범위 0.1–1.3)" in few and "'명목 미달'" in few
+    few = R.result_sentence(dict(base, k=3, g=2, few=True, method="fly", rng_ra=(0.1, 1.3), rng_pa=(-0.9, 0.2),
+                                 under=True))
+    assert "'적은 묶음' 표식" in few and "마리 단계(묶음 < 5, 쌍별 값 범위 보상 0.1–1.3 · 처벌 -0.9–0.2)" in few
+    assert "'명목 미달'" in few
     one = R.result_sentence(dict(base, k=1, key="b|9|x|y"))
     assert one.startswith("쌍별 연구(k = 1) — 쌍 b|9|x|y의 쌍별 추정") and "통합" not in one
 
@@ -163,7 +165,7 @@ def test_no_pairs_stop_full_string():
 
 _RES = dict(k=12, g=6, few=False, mu_ra=0.8, lo_ra=0.2, hi_ra=1.4, mu_pa=-0.6, lo_pa=-1.1, hi_pa=-0.1,
             method="two_stage", cov=0.93, under=False, tau_ra=0.4, tau_pa=0.3, phi_r=0.05, phi_p=0.2,
-            rng_min=None, rng_max=None)
+            rng_ra=None, rng_pa=None)
 _HEAD = ("조합 지렛대 모델(C3, APL→MBON05 2간선 + MBON05→MBON09/MBON11/MBON01 11간선 제거, E-grid k2-norm s 1.0, z_V)에서 "
          "실제 학습 규칙(F.2 R · N + G.5 RN)의 ")
 _ASSOC = ("보상 연합 d′(ΔV_R1 − ΔV_N1)은 0.8 [95% CI 0.2, 1.4], 처벌 연합 d′((ΔV_R2 − ΔV_R1) − (ΔV_RN2 − ΔV_RN1))는 "
@@ -185,9 +187,12 @@ def test_result_sentence_full_string_two_stage():
 
 
 def test_result_sentence_full_string_fly_few_under():
-    r = dict(_RES, k=3, g=2, few=True, under=True, method="fly", rng_min=0.1, rng_max=1.3, phi_r=None)
+    # "쌍별 값 범위 보상 〈min_RA〉–〈max_RA〉 · 처벌 〈min_PA〉–〈max_PA〉" = plan Reading 27 (per association, no envelope)
+    r = dict(_RES, k=3, g=2, few=True, under=True, method="fly", rng_ra=(0.1, 1.3), rng_pa=(-1.25, -0.05),
+             phi_r=None)
     want = (_HEAD + _ASSOC + " — 주 세트 오라클 관대 통과 31쌍 중 " + _FILT + " 3쌍(X 냄새 묶음 2개, '적은 묶음' 표식), F 8 × "
-            "K 8, 쌍 추정 = 마리 d′(±10 잘라냄)의 마리 평균, 통합 = 쌍 평균 · 마리 단계(묶음 < 5, 쌍별 값 범위 0.1–1.3) "
+            "K 8, 쌍 추정 = 마리 d′(±10 잘라냄)의 마리 평균, 통합 = 쌍 평균 · 마리 단계(묶음 < 5, 쌍별 값 범위 보상 0.1–1.3 · 처벌 "
+            "-1.25–-0.05) "
             "부트스트랩 10 000회 백분위(구조 맞춤 포함 확률 0.93, '명목 미달'). 쌍 간 SD 보상 0.4 · 처벌 0.3(DL). "
             + _floor("null", "0.2"))
     assert R.result_sentence(r) == want

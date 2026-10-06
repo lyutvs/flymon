@@ -179,7 +179,8 @@ _FLOOR = ("가르친 세포 바닥 몫 중앙 φ_R {phi_r} · φ_P {phi_p} — �
 
 
 def result_sentence(r: dict) -> str:
-    """AA.8 (6278): the result sentence (not a verdict). k = 1: the pair-study opening, no pooled part."""
+    """AA.8 (6278): the result sentence (not a verdict). k = 1: the pair-study opening, no pooled part.
+    method "fly" also needs rng_ra / rng_pa = (min, max) of the S1 pair values per association (plan Reading 27)."""
     assoc = (f"보상 연합 d′(ΔV_R1 − ΔV_N1)은 {_n(r['mu_ra'])} [95% CI {_n(r['lo_ra'])}, {_n(r['hi_ra'])}], "
              f"처벌 연합 d′((ΔV_R2 − ΔV_R1) − (ΔV_RN2 − ΔV_RN1))는 {_n(r['mu_pa'])} [{_n(r['lo_pa'])}, {_n(r['hi_pa'])}]"
              "로 추정됐다")
@@ -192,7 +193,8 @@ def result_sentence(r: dict) -> str:
     if r["method"] == "two_stage":
         how = "묶음-마리 두 단계"
     else:
-        how = f"마리 단계(묶음 < 5, 쌍별 값 범위 {_n(r['rng_min'])}–{_n(r['rng_max'])})"
+        (a0, a1), (p0, p1) = r["rng_ra"], r["rng_pa"]                 # plan Reading 27: per association
+        how = f"마리 단계(묶음 < 5, 쌍별 값 범위 보상 {_n(a0)}–{_n(a1)} · 처벌 {_n(p0)}–{_n(p1)})"
     return (f"{_MODEL}{assoc} — 주 세트 오라클 관대 통과 31쌍 중 {_FILTER} {r['k']}쌍(X 냄새 묶음 {r['g']}개{few}), "
             f"F 8 × K 8, 쌍 추정 = 마리 d′(±10 잘라냄)의 마리 평균, 통합 = 쌍 평균 · {how} 부트스트랩 10 000회 백분위"
             f"(구조 맞춤 포함 확률 {_n(r.get('cov'))}{under}). 쌍 간 SD 보상 {_n(r.get('tau_ra'))} · 처벌 "

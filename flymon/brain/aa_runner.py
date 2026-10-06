@@ -179,6 +179,12 @@ def raw_digest(results: list) -> str:
     return hashlib.sha256("".join(x_oc.digest(a) for a in arrs).encode()).hexdigest()
 
 
+def seeds_match(units_: list, want: dict) -> bool:
+    """AA.7 4 seed check, computed directly: every unit's probe seeds equal the AA.2 formula list for its (pair, fly)."""
+    return all([int(x) for x in u["probe_seeds"]] == [int(x) for x in (want.get((u["pair"], u["fly"])) or [])]
+               for u in units_)
+
+
 def _cov_job(sizes, method, set_tag, ci, s) -> dict:
     """One coverage cell for Runner._pcells (module level: the spawn pool pickles it by name)."""
     return dict(arrays={}, meta=dict(share=aa_estimate.coverage_cell(tuple(sizes), method, set_tag, ci, s)))
@@ -822,7 +828,7 @@ class Runner:
         cnt = aa_rules.candidate_counts(self._cands(doc, "screen"))
         common = dict(raw_digest=digest, detail_path=self._detail("screen"), detail_sha256=sha256_file(p),
                       manifest_sha256=hashlib.sha256(canonical(man).encode()).hexdigest(), n_units=len(got),
-                      seeds_ok=not any("시드" in x for x in why))
+                      seeds_ok=seeds_match([g["unit"] for g in got], want))
         if why:
             body = aa_rules.machine_stop("순진 거름", "; ".join(why[:5]), f"학습 측정 없음, {s.n_len}쌍 `screened`", cnt)
             tick()
@@ -843,10 +849,29 @@ class Runner:
         k = len(sel["S1"])
         body = aa_rules.no_pairs_stop(rc, cnt) if k == 0 else dict(outcome=aa_rules.PASS, reasons=[])
         tick()
-        return self._write("screen", dict(
+        blk = self._write("screen", dict(
             body, **common, pairs=pairs, k=k, groups=groups, reasons_count=rc,
             note="AA.7 4: S1 매니페스트만(쌍별 키 · c · 축 · X 냄새 · 순진 d′ · L_A(X) · L_P(X) · 통과), k, 묶음 크기; "
-                 "원자료 digest는 다음 단계(coverage) 시작에서 다시 읽어 대조(plan Reading 7)."))
+                 "원자료 digest는 블록을 쓴 직후 한 번, 다음 단계(coverage) 시작에서 또 한 번 다시 읽어 대조"
+                 "(AA.7 4, plan Reading 7)."))
+        return self._screen_reread(blk, digest, common, cnt)
+
+    def _screen_reread(self, blk: dict, digest: str, common: dict, cnt: dict) -> dict:
+        """AA.7 4 "블록 커밋 직후 한 번 더 읽어 같음": right after the screen block is written (PASS or STOP_NO_PAIRS),
+        the raw is reloaded by manifest (sha-checked) and the digest recomputed. A difference replaces the block with
+        STOP_MACHINE〈4〉 in place (same archive and stamps; no second ledger line)."""
+        _pre, dig, bad = self._screen_raw(self._doc())
+        del _pre
+        if not bad and dig == digest:
+            return blk
+        why = f"원자료 digest 재확인 불일치(블록 직후){': ' + '; '.join(bad[:2]) if bad else ''}"
+        body = aa_rules.machine_stop("순진 거름", why, f"학습 측정 없음, {self.s.n_len}쌍 `screened`", cnt)
+        keep = {x: blk[x] for x in ("archive", "stage", "order", "env", "git", "written_at", "w_measure_key",
+                                    "u_measure_key") if x in blk}
+        out = aa_store.to_json(dict(body, **common, raw_digest_now=dig, **keep))
+        aa_store.write_summary_block(self.summary_path, "screen", out, self.plist,
+                                     candidates=self._cands(self._doc(), "screen"))
+        return out
 
     def _screen_raw(self, doc: dict) -> tuple:
         """The screen raw reloaded by its manifest (sha-checked): ({key: pre int [F, K, 2, 2]}, digest, reasons)."""
@@ -885,6 +910,12 @@ class Runner:
         jobs, plan, nul = [], {}, {}
         for st in SETS:
             g = doc["screen"]["groups"][st]
+            try:                                    # AA.5: the structure coverage_cell takes, validated up front
+                aa_estimate._groups(tuple(g["sizes"]))
+            except TypeError as e:
+                refuse(f"stage coverage: screen groups[{st}].sizes {g['sizes']!r}: {e}")
+            if sum(g["sizes"]) != g["n"]:
+                refuse(f"stage coverage: screen groups[{st}].sizes sum {sum(g['sizes'])} ≠ n {g['n']}")
             p = aa_estimate.ci_plan(int(g["n"]), len(g["sizes"]), s)
             if p["kind"] != "pooled":
                 nul[st] = "k < 2 — 통합 CI 없음"
@@ -1089,8 +1120,8 @@ class Runner:
             rng = a["range"]
             r = dict(k=a["k"], g=a["n_groups"], few=a["flag"] == "적은 묶음", method=a["plan"]["primary"],
                      cov=a.get("coverage"), under=bool(a.get("under")), tau_ra=a["tau_dl"][ra], tau_pa=a["tau_dl"][pa],
-                     # one range slot in AA.8's sentence: the envelope of the two associations' pair ranges
-                     rng_min=min(rng[ra][0], rng[pa][0]), rng_max=max(rng[ra][1], rng[pa][1]))
+                     # AA.8's one range slot holds both associations' pair ranges (plan Reading 27)
+                     rng_ra=tuple(rng[ra]), rng_pa=tuple(rng[pa]))
         r.update(mu_ra=pt[ra][0], lo_ra=pt[ra][1][0], hi_ra=pt[ra][1][1], mu_pa=pt[pa][0], lo_pa=pt[pa][1][0],
                  hi_pa=pt[pa][1][1], phi_r=a["phi_median"]["phi_R"], phi_p=a["phi_median"]["phi_P"])
         cmp_ = {g: aa_estimate.compare_table(pt[g][0], pt[g][1][0], pt[g][1][1], self.s) for g in (ra, pa)}
