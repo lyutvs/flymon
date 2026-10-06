@@ -973,7 +973,7 @@ class Runner:
         s = self.s
         tick = self._ticker("cal_gate")
         est = self._cal_est(doc)
-        core = self._core_h(doc)
+        core = self._spent_core_h(doc, "cal_gate")            # a killed 0e run's progress seconds count too
         cnt = self._counts(doc)
         if not ab_rules.core_ok(core, est["total"], s):
             tick()
@@ -1070,7 +1070,7 @@ class Runner:
         s = self.s
         tick = self._ticker("futility")
         cal = self._eff(doc, "cal_gate")["structures"]
-        core = self._core_h(doc)
+        core = self._spent_core_h(doc, "futility")            # a killed 0f run's progress seconds count too
         fut_h, rest = self._fut_est_h(doc), self._rest_terms(doc)
         est = dict(futility=fut_h, rest=rest["total"], rest_terms=rest, total=fut_h + rest["total"])
         if not ab_rules.core_ok(core, est["total"], s):
