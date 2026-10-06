@@ -30,7 +30,8 @@ from pathlib import Path
 import numpy as np
 
 from ..agent.e_runner import summary_git
-from . import aa_estimate, aa_rules, aa_store, w_records, w_verdict, y_rules, z_split
+from . import aa_estimate, aa_rules, aa_store, w_records, w_verdict, x_oc, y_rules, z_split
+from .r_store import load_manifest
 from .aa_spec import SPEC as AA
 from .h3_store import ROOT, canonical, sha256_file
 from .h3_store import git_state as _h3_git_state
@@ -153,6 +154,34 @@ def _js(o):
 def _same(a, b) -> bool:
     """Bit equality through the canonical JSON text (NaN / ±inf compare equal to themselves)."""
     return canonical(aa_store.to_json(a)) == canonical(aa_store.to_json(b))
+
+
+# ================================================================ raw counts of the screen (AA.7 4 6258)
+SETS = ("S1", "S31", "out")                   # AA.3: the primary set, all 31, the filter-dropped pairs
+
+
+def _num(v) -> float:
+    return float("nan") if v is None else float(v)
+
+
+def counts_f(stage: dict) -> np.ndarray:
+    """w_records.counts' [K, 2, 2] layout as float, so a non-finite stored count is seen (machine check), not a crash."""
+    return np.array([[[_num(x.get("A")), _num(y.get("A"))], [_num(x.get("P")), _num(y.get("P"))]]
+                     for x, y in zip(stage["x"], stage["y"])], float).reshape(-1, 2, 2)
+
+
+def raw_digest(results: list) -> str:
+    """AA.7 4: sha256 of the count arrays of every probe stage of every unit, in unit order (x_oc.digest form: int64
+    bytes with the shape prefixed); unequal shapes or non-finite counts (a machine-check case) hash per array."""
+    arrs = [counts_f(st) for r in results for st in r["stages"]]
+    if arrs and all(a.shape == arrs[0].shape for a in arrs) and all(np.isfinite(a).all() for a in arrs):
+        return x_oc.digest(np.stack(arrs).astype(np.int64))
+    return hashlib.sha256("".join(x_oc.digest(a) for a in arrs).encode()).hexdigest()
+
+
+def _cov_job(sizes, method, set_tag, ci, s) -> dict:
+    """One coverage cell for Runner._pcells (module level: the spawn pool pickles it by name)."""
+    return dict(arrays={}, meta=dict(share=aa_estimate.coverage_cell(tuple(sizes), method, set_tag, ci, s)))
 
 
 # ================================================================ the differential test (AA.7 0 6248)
@@ -405,7 +434,7 @@ class Runner:
         if stage in ("screen", "learn", "records"):
             d = json.loads(p.read_text())
             out += [m["cache_file"] for m in d.get("manifest") or []]
-        return out
+        return list(dict.fromkeys(out))              # a duplicated unit (machine-check case) is one file
 
     # ---- candidates (AA.3 6196, plan Reading 8) ----------------------------------------------------------------------
     def _cands_path(self, stage: str) -> Path:
@@ -630,3 +659,242 @@ class Runner:
         aa_store.write_json(self._detail("reuse"), body, self.plist)
         self._finish("reuse", t0)
         return self._write("reuse", body)
+
+    # ---- spend helpers for orders 2–4b ---------------------------------------------------------------------------
+    def _workers(self) -> int:
+        return max(1, int(self.workers or getattr(self.pool, "n_workers", 0) or self.s.workers))
+
+    def _core_h(self, doc: dict) -> float:
+        """The core ledger so far (AA.7 예산), hours."""
+        return sum(float(e.get("wall_s") or 0.0) for e in (doc.get("budget") or {}).get("ledger", [])) / self.s.s_per_h
+
+    def _ticker(self, stage: str):
+        """Y's tick form: every call adds the seconds since the previous call to progress/<stage>.json (they survive a
+        kill); the stage calls it once more in `finally` and before its block. No in-stage budget stop (AA.7 2 / 4)."""
+        mark = [time.perf_counter()]
+
+        def tick(*_a):
+            now = time.perf_counter()
+            self._add(stage, now - mark[0])
+            mark[0] = now
+        return tick
+
+    def _costs(self, learn: list, naive: list) -> dict:
+        lw = [float(g["result"]["wall_s"]) for g in learn]
+        nw = [float(g["result"]["wall_s"]) for g in naive]
+        return dict(w_records.unit_costs([g["result"] for g in learn], 2 * W_SPEC.trials, 0.0, self._workers()),
+                    learn_job_s=float(np.median(lw)), learn_job_max_s=float(max(lw)), naive_job_s=float(np.median(nw)))
+
+    def _estimates(self, costs: dict) -> dict:
+        """plan Reading 10, hours: the screen and learn from the smoke job walls; coverage from one timed cell on a
+        31-single-pair structure scaled to cells × sets × methods / workers; the estimate from one timed synthetic
+        estimate of a 31-pair set."""
+        s, w = self.s, self._workers()
+        rounds = lambda n: -(-int(n) // w)                                  # noqa: E731
+        t = time.perf_counter()
+        aa_estimate.coverage_cell((1,) * s.n_len, "two_stage", "smoke", 0, s, reps=s.cov_timing_reps)
+        cell_s = (time.perf_counter() - t) * s.cov_reps / s.cov_timing_reps
+        r = aa_estimate.stream(s.synth_seed, "smoke")
+        keys = [f"b|{i}|sx{i}|sy{i}" for i in range(s.n_len)]
+        G = len(w_verdict.GATES)
+        arrs = {k: dict(w=r.standard_normal((s.flies, G)), raw=r.standard_normal((s.flies, G)),
+                        rc=r.standard_normal((s.flies, len(aa_estimate.RAW)))) for k in keys}
+        t = time.perf_counter()
+        aa_estimate.estimate_set(arrs, keys, "S1", s)
+        est_s = time.perf_counter() - t
+        n_cov = len(aa_estimate.cov_cells(s)) * len(SETS) * len(s.cov_methods)
+        return {k: v / s.s_per_h for k, v in dict(
+            screen=rounds(s.n_len * s.flies) * costs["naive_job_s"],
+            coverage=cell_s * n_cov / w,
+            learn=rounds(s.n_len * s.flies * len(BRAINS)) * costs["learn_job_max_s"],
+            estimate=est_s).items()}
+
+    # ================================================================ order 2: smoke (AA.7 2, 6253)
+    def stage_smoke(self) -> dict:
+        doc = self._require("smoke")
+        s = self.s
+        tick = self._ticker("smoke")
+        try:
+            row = self.ctx["pilot_rows"]()[s.smoke_pair]
+            wm = self.ctx["measurer"](self.pool, True)
+            lu = units([row], "smoke", s.probes, s.smoke_flies, V_SPEC.lever_edit)
+            nu = units([row], "smoke", s.probes, s.smoke_flies, V_SPEC.lever_edit, brains=("naive",))
+            learn, naive = wm.learn(lu, "smoke"), wm.learn(nu, "smoke_naive")
+        finally:
+            tick()
+        ws = aa_w_spec(s)
+        flies = list(range(s.smoke_flies))
+        seeds = {f: ws.smoke_probe_seeds(f, s.probes) for f in flies}
+        nv = {g["unit"]["fly"]: w_records.counts(g["result"]["stages"][0]) for g in naive}
+        problems = list(w_records.machine_reasons(learn, flies, declared(V_SPEC.lever_edit, seeds), naive=nv))
+        for g in naive:
+            if [int(x) for x in g["result"].get("probe_seeds") or []] != seeds[g["unit"]["fly"]]:
+                problems.append(f"fly {g['unit']['fly']}: 순진 잡 프로브 시드가 선언과 다름")
+        d = pair_counts(learn, flies)
+        if bool(w_verdict.rn1_mismatch({k: np.asarray(v)[None] for k, v in d.items()})[0]):
+            problems.append("RN1 ≠ R1")
+        lo, hi = s.seed_blocks[1]
+        used = [x for g in learn + naive for x in g["unit"]["probe_seeds"]] + \
+            [ws.smoke_train_base(0), ws.smoke_train_base(1)]
+        problems += [f"스모크 시드 {x}가 스모크 블록 밖" for x in used if not lo <= x < hi]
+        zv = {k: tuple(v) for k, v in self.ctx["y_doc"]()["pilot"]["z_V"].items()}
+        if {k: tuple(v) for k, v in self.ctx["y_z"]().items()} != zv:
+            problems.append("z_V ≠ Y 블록 pilot의 z_V")
+        costs = self._costs(learn, naive)
+        est = self._estimates(costs)
+        tick()
+        elapsed = self._core_h(doc) + self._prog("smoke")["core"] / s.s_per_h
+        rem = sum(est.values())
+        ok = aa_rules.core_ok(elapsed, rem, s)
+        cnt = aa_rules.candidate_counts(self._cands(doc, "smoke"))
+        if problems:
+            body = dict(outcome=aa_rules.INVALID, reasons=problems)      # a pipeline defect before the main set
+        elif not ok:
+            body = aa_rules.budget_stop(aa_rules.budget_text(elapsed, rem, s), s.stage_label("smoke"), "주 세트 미측정",
+                                        cnt)
+        else:
+            body = dict(outcome=aa_rules.PASS, reasons=[])
+        body.update(problems=problems, costs=costs, estimates_h=est, pair=row_key(row),
+                    budget=dict(ok=ok, elapsed_h=elapsed, remaining_h=rem, margin=s.cost_margin, cap_h=s.core_cap_h),
+                    seeds=dict(probe=seeds, train=[ws.smoke_train_base(0), ws.smoke_train_base(1)]),
+                    manifest=manifest(learn + naive),
+                    note="AA.7 2: 파일럿 b|17 · 마리 1 · AA 스모크 시드, R · N · RN + 순진 pre; 오라클 없음.")
+        return self._write("smoke", body)
+
+    # ================================================================ order 3: seal_code (AA.7 3, 6254)
+    def stage_seal_code(self) -> dict:
+        self._require("seal_code")
+        t0 = time.perf_counter()
+        seal = seal_now(self.s)
+        return self._write("seal_code", dict(outcome=aa_rules.PASS, reasons=[], seal=seal,
+                                             note="AA.7 3: 순진 거름 전에 봉인 — 주 세트 값은 아무것도 측정되지 않았다."),
+                           core_s=time.perf_counter() - t0)
+
+    # ================================================================ order 4: the naive screen (AA.7 4, 6257–6260)
+    def stage_screen(self) -> dict:
+        doc = self._require("screen")
+        s = self.s
+        tick = self._ticker("screen")
+        try:
+            items = self.ctx["lenient"]()                               # [(key, c, axis)] only
+        except z_split.LenientMismatch as e:
+            refuse(f"stage screen: {e}")
+        try:
+            rows = {int(r["c"]): r for r in self.ctx["main_rows"](self.ctx["y_doc"]()["digest"]["set"])}
+        except ValueError as e:
+            refuse(f"stage screen: the main set does not reproduce Y block digest: {e}")
+        wrong = [k for k, c, _a in items if c not in rows or row_key(rows[c]) != k]
+        if wrong:
+            refuse(f"stage screen: lenient key(s) {wrong[:3]} are not main-set row c")
+        z = self.ctx["y_z"]()
+        keys = [k for k, _c, _a in items]
+        prs = [rows[c] for _k, c, _a in items]
+        U = units(prs, "main", s.probes, s.flies, V_SPEC.lever_edit, brains=("naive",))
+        self._cands_set("screen", keys, aa_rules.STATES[1])                # before the first batch (plan Reading 8)
+        wm = self.ctx["measurer"](self.pool, False)
+        ins = [canonical(wm.inputs(u, "screen")) for u in U]
+        first = list(dict.fromkeys(ins))                                    # identical inputs are measured once
+        try:
+            got1 = wm.learn([U[ins.index(x)] for x in first], "screen", check=tick)
+        finally:
+            tick()
+        by_in = dict(zip(first, got1))
+        got = [dict(by_in[x], unit=u) for u, x in zip(U, ins)]
+        ws = aa_w_spec(s)
+        want = {(row_key(r), f): ws.probe_seeds(int(r["c"]), f, s.probes) for r in prs for f in range(s.flies)}
+        cnts = {(g["unit"]["pair"], g["unit"]["fly"]): counts_f(g["result"]["stages"][0]) for g in got}
+        why = aa_rules.screen_machine_reasons([g["unit"] for g in got], cnts, want, len(prs) * s.flies, s.probes)
+        man = manifest(got)
+        digest = raw_digest([g["result"] for g in got])
+        p = aa_store.write_json(self._detail("screen"), dict(
+            manifest=man, seeds={f"{k}|{f}": v for (k, f), v in want.items()}, raw_digest=digest), self.plist)
+        cnt = aa_rules.candidate_counts(self._cands(doc, "screen"))
+        common = dict(raw_digest=digest, detail_path=self._detail("screen"), detail_sha256=sha256_file(p),
+                      manifest_sha256=hashlib.sha256(canonical(man).encode()).hexdigest(), n_units=len(got),
+                      seeds_ok=not any("시드" in x for x in why))
+        if why:
+            body = aa_rules.machine_stop("순진 거름", "; ".join(why[:5]), f"학습 측정 없음, {s.n_len}쌍 `screened`", cnt)
+            tick()
+            return self._write("screen", dict(body, **common, n_reasons=len(why)))
+        bp = by_pair(got)
+        pairs = []
+        for k, c, ax in items:
+            pre = np.stack([w_records.counts(g["result"]["stages"][0])
+                            for g in sorted(bp[k], key=lambda g: g["unit"]["fly"])])
+            f = y_rules.final_filter(pre, z, Y_SPEC)                       # the only main-set final_filter call
+            pairs.append(dict(key=k, c=int(c), axis=ax, x_odour=y_rules.x_odour(k), naive_d=f["d"], L_A=f["L_A"],
+                              L_P=f["L_P"], passed=f["passed"]))
+        sel = dict(S1=[x["key"] for x in pairs if x["passed"]], S31=list(keys),
+                   out=[x["key"] for x in pairs if not x["passed"]])
+        groups = {st: dict(n=len(ks), sizes=sorted((len(g) for g in y_rules.merge_groups(ks)), reverse=True))
+                  for st, ks in sel.items()}
+        rc = aa_rules.reason_counts([dict(d=x["naive_d"], L_A=x["L_A"], L_P=x["L_P"]) for x in pairs], Y_SPEC)
+        k = len(sel["S1"])
+        body = aa_rules.no_pairs_stop(rc, cnt) if k == 0 else dict(outcome=aa_rules.PASS, reasons=[])
+        tick()
+        return self._write("screen", dict(
+            body, **common, pairs=pairs, k=k, groups=groups, reasons_count=rc,
+            note="AA.7 4: S1 매니페스트만(쌍별 키 · c · 축 · X 냄새 · 순진 d′ · L_A(X) · L_P(X) · 통과), k, 묶음 크기; "
+                 "원자료 digest는 다음 단계(coverage) 시작에서 다시 읽어 대조(plan Reading 7)."))
+
+    def _screen_raw(self, doc: dict) -> tuple:
+        """The screen raw reloaded by its manifest (sha-checked): ({key: pre int [F, K, 2, 2]}, digest, reasons)."""
+        blk = doc.get("screen") or {}
+        p = Path(self._detail("screen"))
+        if not p.exists():
+            return {}, None, [f"{p} 없음"]
+        bad = [] if sha256_file(p) == blk.get("detail_sha256") else [f"{p} sha256 ≠ screen 블록"]
+        det = json.loads(p.read_text())
+        got, b2 = load_manifest(det.get("manifest") or [])
+        bad += b2
+        res = [g["result"] for g in got]
+        by = {}
+        for g in got:
+            pair, fly, _b = g["key"].rsplit("|", 2)
+            by.setdefault(pair, []).append((int(fly), g["result"]))
+        pre = {}
+        if not bad:
+            for k, v in by.items():
+                pre[k] = np.stack([w_records.counts(r["stages"][0]) for _f, r in sorted(v, key=lambda x: x[0])])
+        return pre, raw_digest(res), bad
+
+    # ================================================================ order 4b: coverage (AA.7 4b 6261, AA.5 6227–6231)
+    def stage_coverage(self) -> dict:
+        doc = self._require("coverage")
+        s, t0 = self.s, time.perf_counter()
+        _pre, dig, bad = self._screen_raw(doc)
+        del _pre
+        cnt = aa_rules.candidate_counts(self._cands(doc, "coverage"))
+        if bad or dig != doc["screen"]["raw_digest"]:
+            self._finish("coverage", t0)
+            why = f"원자료 digest 재확인 불일치{': ' + '; '.join(bad[:2]) if bad else ''}"
+            return self._write("coverage", dict(aa_rules.machine_stop(
+                "순진 거름", why, f"학습 측정 없음, {s.n_len}쌍 `screened`", cnt), raw_digest_now=dig))
+        seal = seal_now(s)["key"]
+        jobs, plan, nul = [], {}, {}
+        for st in SETS:
+            g = doc["screen"]["groups"][st]
+            p = aa_estimate.ci_plan(int(g["n"]), len(g["sizes"]), s)
+            if p["kind"] != "pooled":
+                nul[st] = "k < 2 — 통합 CI 없음"
+                continue
+            plan[st] = [p["primary"]] + list(p["records"]) + [f"raw_{p['primary']}"]
+            for m in plan[st]:
+                for ci in range(len(aa_estimate.cov_cells(s))):
+                    jobs.append((f"{st}_{m}_{ci}", dict(sizes=g["sizes"], m=m, st=st, ci=ci, seal=seal),
+                                 _cov_job, (tuple(int(x) for x in g["sizes"]), m, st, ci, s)))
+        vals = self._pcells("coverage", jobs, log=_log)
+        it = iter(v["meta"]["share"] for v in vals)
+        by_set = {}
+        for st in SETS:
+            if st not in plan:
+                by_set[st] = None
+                continue
+            sizes = [int(x) for x in doc["screen"]["groups"][st]["sizes"]]
+            by_set[st] = {m: dict(aa_estimate.coverage_summary([next(it) for _ in aa_estimate.cov_cells(s)], s),
+                                  sizes=sizes, method=m) for m in plan[st]}
+        self._finish("coverage", t0)
+        return self._write("coverage", dict(
+            outcome=aa_rules.PASS, reasons=[], by_set=by_set, null_reason=nul, seal_key=seal, raw_digest_now=dig,
+            note="AA.5 · AA.7 4b: 묶음 크기 구조만 입력(결과값 없음); 집합별 1차 · 기록 방식 + 1차의 비표준화 판. ±∞ 제외판은 "
+                 "같은 방식의 포함 확률을 쓴다(plan Reading 6); 바닥 민감도는 records."))

@@ -25,7 +25,7 @@ from pathlib import Path
 NPZ = "data/malecns.npz"
 EXIT_STOP, EXIT_INVALID = 3, 5
 ARCHIVE = "archive"
-QUIET = ("archive", "env", "git", "decision_files", "numbers", "synth", "candidates", "differential")
+QUIET = ("archive", "env", "git", "decision_files", "numbers", "synth", "candidates", "differential", "pairs", "manifest")
 
 
 def exit_code(out: dict) -> int:
