@@ -65,7 +65,7 @@ def test_z_seed_blocks_collide_with_nothing_declared():
         if hasattr(m, "smoke"):
             _collect(m.smoke(m.SPEC), declared, seen)
     assert not any(lo <= s < hi for s in declared for lo, hi in blocks)
-    assert SPEC.pilot_train_seed0 + (SPEC.pilot_j_max - 1) * 40_000 + 31 * 1_000 + 39 < 83_000_000   # Z.9.1 해석 3
+    assert SPEC.pilot_train_seed0 + (SPEC.pilot_j_max - 1) * 40_000 + 7 * 1_000 + 39 < 83_000_000   # Z.9.1 해석 3 (f ≤ 7, t < 40)
     assert not any(dataclasses.is_dataclass(getattr(SPEC, f.name)) for f in dataclasses.fields(ZSpec))
 
 

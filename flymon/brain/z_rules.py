@@ -47,12 +47,12 @@ def sentences(zs, ys=Y_SPEC) -> dict:
                     "상세(`oracle.json`) · W · X · V 블록을 다시 재거나 고치는 경로를 갖지 않으므로 확인 반 학습 측정 "
                     "없이 멈춘다 — 사용자 몫.",
         (STOP_PLAN_UNREACHABLE, "0c′"): sim + f"에서 동시 검정력 하한이 n {zs.sens_ns[0]} {{l12}} · n {zs.sens_ns[1]} "
-                                              f"{{l24}}로 {_g(zs.plan_bar)}에 못 미쳤다(2 SE {{two}}, 옮기지 않음 "
+                                              f"{{l24}}로 {zs.plan_bar:.2f}에 못 미쳤다(2 SE {{two}}, 옮기지 않음 "
                                               f"{{zero}}) — 드리프트 중심이 Y 추정보다 1 SE 나쁘면 파일럿을 키워도 계획이 "
                                               f"G.6 한계에 닿지 않으므로, 분할 전 파일럿 측정 없이 멈춘다(주 세트 "
                                               f"{zs.n_len}쌍 모두 학습 미사용).",
         (STOP_PLAN_UNREACHABLE, "0d"): sim + f"에서 동시 검정력 하한이 키로 낸 최대 J {{j_max}} → n {{n_star}}에서 "
-                                             f"{{value}}로 {_g(zs.plan_bar)}에 못 미쳤다(2 SE {{two}}, 옮기지 않음 "
+                                             f"{{value}}로 {zs.plan_bar:.2f}에 못 미쳤다(2 SE {{two}}, 옮기지 않음 "
                                              f"{{zero}}) — 드리프트 중심이 Y 추정보다 1 SE 나쁘면 파일럿을 키워도 계획이 "
                                              f"G.6 한계에 닿지 않으므로, 분할 뒤 파일럿 측정 없이 멈춘다(주 세트 "
                                              f"{zs.n_len}쌍 모두 학습 미사용).",

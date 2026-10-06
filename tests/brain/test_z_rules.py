@@ -1,10 +1,14 @@
 """Z's order-0 rules (Z.9.2 P1-3 (가) / (나), P0-1 key pre-check, P2-11 env, Z.7 0b compare, Z.8 / P3-14 sentences)."""
 import dataclasses
+import re
+from pathlib import Path
 
 import pytest
 
 from flymon.brain import z_rules as R
 from flymon.brain.z_spec import SPEC as Z
+
+SPEC_MD = Path(__file__).resolve().parents[2] / "docs/superpowers/specs/2026-09-14-flymon-design.md"
 
 
 def _L(v12, v24, other=0.9):
@@ -20,6 +24,7 @@ def test_rule_a_needs_both_n_below_the_bar():
     out = R.plan_rule_a(_L(0.79, 0.799), Z)
     assert out["outcome"] == R.STOP_PLAN_UNREACHABLE and out["where"] == "0c′" and out["records_unavailable"]
     assert "n 12 0.790 · n 24 0.799" in out["sentence"] and "분할 전" in out["sentence"]
+    assert "n 24 0.799로 0.80에 못 미쳤다" in out["sentence"] and "1 SE(2.41)" in out["sentence"]
     assert out["p314"]["halves"] == dict(pilot="미사용", confirm="미사용")
 
 
@@ -55,6 +60,8 @@ def test_rule_b_uses_n_star_and_minus_one_se():
     out = R.plan_rule_b(L, 20, Z)                                       # n* 12 → 0.79
     assert out["outcome"] == R.STOP_PLAN_UNREACHABLE and out["n_star"] == 12 and out["where"] == "0d"
     assert "최대 J 20 → n 12에서 0.790" in out["sentence"] and "분할 뒤" in out["sentence"]
+    assert "0.790로 0.80에 못 미쳤다" in out["sentence"] and "1 SE(2.41)" in out["sentence"]
+    assert out["records_unavailable"] is True and out["records_reason"] == R.RECORDS_REASON
     assert R.plan_rule_b(_L(0.80, 0.0), 13, Z)["outcome"] == R.PASS
 
 
@@ -72,6 +79,8 @@ def test_env_rules():
     assert R.env_diff(old, dict(numpy="3", z_files={"a.py": "1"}, yxw_files={"y.py": "2"})) == ["numpy"]
     assert R.env_diff(old, dict(numpy="2", z_files={}, yxw_files={"y.py": "2"})) == ["z_files:a.py"]
     assert R.env_reasons([("stage0", old)], dict(old, numpy="3")) == ["stage0 대비 numpy"]
+    later = dict(old, numpy="3")                     # only the earlier block differs from now
+    assert R.env_reasons([("stage0", old), ("split", later)], later) == ["stage0 대비 numpy"]
 
 
 def test_reuse_stop_rows():
@@ -79,6 +88,35 @@ def test_reuse_stop_rows():
         out = R.reuse_stop(["x"], where, Z)
         assert out["outcome"] == R.STOP_REUSE and out["p314"]["outputs"]["ydiag"] == first
         assert f"Z.7 {where}" in out["sentence"] and out["records_unavailable"]
+
+
+def _p314_spec_rows() -> dict:
+    """P3-14's table as printed in the spec: {(label, 단계): (①…⑧, ⑨)} for every label of every row."""
+    text = SPEC_MD.read_text()
+    tab = text[text.index("**P3-14 STOP 표식별 산출물"):]
+    rows = {}
+    lines = tab.splitlines()
+    start = lines.index("|---|---|---|---|---|---|---|---|---|---|") + 1
+    for line in lines[start:]:
+        if not line.startswith("| `"):
+            break
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        for label, where in re.findall(r"`(\w+)`〈([^〉]+)〉", cells[0]):
+            rows[(label, where)] = (tuple(cells[1:9]), cells[9])
+    return rows
+
+
+def test_p314_rows_match_the_spec_table():
+    rows = _p314_spec_rows()
+    assert len(R.P314) == 5
+    for (outcome, where), got in R.P314.items():
+        want, halves = rows[(outcome, where)]
+        assert got == want, (outcome, where)
+        out = R.p314(outcome, where)
+        assert tuple(out["outputs"].values()) == want
+        assert f"{out['halves']['pilot']} / {out['halves']['confirm']}" == halves
+    assert rows[("STOP_REUSE", "0b")][0] == ("부",) + ("불",) * 7                      # the parse itself is pinned
+    assert rows[("STOP_PLAN_UNREACHABLE", "0d")][0] == ("필",) * 3 + ("불",) * 5
 
 
 @pytest.mark.parametrize("mut", ["delta_zero", "always_24"])
