@@ -214,6 +214,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   사전 점검에서 750 설계 어디서도 k 4–8 모두 점 검정력 ≥ 0.80에 닿지 않았다 — 최대 p_set 0.5 · q 0.5 · K 16 · F 8의 **0.608 / 0.730 / 0.795 / 0.735 / 0.790**(군집 최악 g 1.0; g 0에서는 0.827–0.991), 거짓 통과는 모든 곳에서 0.000.
   기록 전용 진단: 쌍당 PASS는 F 8–64에서 평평(천장 0.68–0.82)이고, g 1.0 실패는 보상 수준의 순진 쌍 효과 약 42%, 처벌 단계 기계 대조 약 40%, 처벌 바닥 약 12%, 잡음 약 2%다; 균형 쌍 θ(F1, 파일럿 3쌍뿐이라 낙관적일 수 있음)는 0.974–0.993, 순진 반응 하한 거름(F2)은 수용률 0.95 → 0.13에서도 ≤ 0.889, 최소 변경 순위 1은 F1 하나(k 4–8, F 8).
   주 세트(턴 306–1985)는 쓰지 않아 남아 있다. 사용자 사전 승인(2026-10-06)에 따라 다음은 순진 측정 기반 관문 쌍 거름(부록 Y) 선언이다.
+- **관문 STOP(F v4 학습 시험, 순진 측정 거름, 2026-10-06, 부록 Y.10 — STOP_OC_UNREACHABLE(순서 6 부트스트랩), 판정 없음)**: 관문 쌍을 순진 관찰 지표(F.5 균형 |d′| < 0.5 + 순진 MBON13(X) ≥ 20 · MBON05(X) ≥ 43, 오라클 관대 사전 거름 포함)로 결과 전에 거르고, 거름 통과 파일럿으로 잡음 모형을 다시 추정하고, 보정을 계단 응답 규칙(첫 교차 · 손잡이 이분 · 두 계단 혼합)으로 바꾼 Y를 선언했다.
+  주 세트 오라클 개수(쌍별 값은 읽지 않음): 시험 가능 179, 균형 16, 엄격 10, 관대 31 → k 범위 [4, 8] · [6, 10] 둘 다 남음. 순서 0(합성 검증 · 픽스처 · 비트 동일, 문턱 재현 19.25 / 42.0, Y 보정이 W 실패 추출 29/29 회복), 재사용, 파일럿(입장 6/7 — a|223 탈락, Earthquake 묶기 뒤 n_Σ 5; H6 보상 · 처벌 1.0; 탐색 6/6 PASS), 점 θ 사전 점검(517 / 1,500 설계 통과, 최대 0.990–0.993)은 모두 통과했다.
+  부트스트랩 작동 특성(200회 × 400, 보정 200/200 성공)에서는 자격 설계가 없었다 — 검정력 하한은 k별 최대 **0.159**, 동시 최대 **0.047**(p_set 0.5 · q 0.5 · K 16 · F 8 · [4, 8]; 같은 설계의 점 검정력 0.96–0.99), F 32에서 ≤ 0.044; 거짓 통과 상한은 모든 곳에서 0.000. 해석: θ의 쌍 수준 성분이 5쌍에서 왔고 쌍 부트스트랩이 그것을 크게 흔든다(추출별 분포는 저장되지 않아 확인은 못 함).
+  기록 전용 비교에서 사용자 한쪽 + 31 거름은 점 검정력 0.904 / 0.961(Y 거름 0.810 / 0.893), 수용률 약 8배였다. 주 세트는 학습에 쓰지 않았다(오라클 개수 표는 보았으므로 다음 선언이 공개해야 한다). 예산 4.84 h / 24 h. 사용자 사전 승인(2026-10-06)에 따라 다음 선언(더 큰 균형 파일럿 · 한쪽 + 31 거름 · 수축 θ 후보)으로 간다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -386,6 +390,23 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   likely optimistic) gives 0.974-0.993, naive-response floors (F2) stay <= 0.889 even at acceptance 0.95 -> 0.13, and
   the minimum-change rank 1 is F1 alone (k 4-8, F 8). The main set (turns 306-1985) was not used and stays available.
   Per the user's standing approval (2026-10-06), next is a naive-measurement pair-filter declaration (appendix Y).
+- **F v4 learning test (naive-measurement filter): gate stop STOP_OC_UNREACHABLE at order 6 (bootstrap), no
+  judgement (2026-10-06, appendix Y.10).** Y filtered gate pairs before any result on naive observables only (F.5
+  balance |d'| < 0.5 plus naive MBON13(X) >= 20 and MBON05(X) >= 43, with a lenient oracle pre-filter), re-estimated
+  the noise model from filter-passing pilot pairs and replaced calibration with a step-response rule (first crossing,
+  knob bisection, two-stair mixture). Main-set oracle counts (no per-pair values read): testable 179, balanced 16,
+  strict 10, lenient 31, so both k ranges [4,8] and [6,10] stayed. Stage 0 (synthetic checks, fixtures, bit identity,
+  thresholds reproduced at 19.25 / 42.0, Y's calibration recovers all 29 failed W draws), reuse, the pilot (6/7
+  admitted, a|223 out; n_Sigma 5 after the Earthquake merge; H6 reward and punishment 1.0; exploratory 6/6 PASS) and
+  the point-theta precheck (517 of 1,500 designs pass, best 0.990-0.993) all passed. In the bootstrap OC (200 draws x
+  400, all 200 calibrations succeeded) no design qualified: the power lower limit is at most **0.159** k-wise and
+  **0.047** simultaneous (p_set 0.5 q 0.5 K 16 F 8 [4,8], whose point power is 0.96-0.99), <= 0.044 at F 32; the
+  false-pass upper limit is 0.000 everywhere. Reading: the pair-level part of theta comes from 5 pairs and the pair
+  bootstrap shakes it hard (per-draw values were not stored, so this is not confirmed). In the record-only comparison
+  the user's one-sided + 31 filter gave point power 0.904 / 0.961 (Y filter 0.810 / 0.893) at about 8x the
+  acceptance. The main set was not used for learning (its oracle count table was seen and must be disclosed by the
+  next declaration). Budget 4.84 h of 24 h. Per the standing approval, next is a new declaration (candidates: a larger
+  balanced pilot, the one-sided + 31 filter, shrinkage theta).
 
 ## 실행
 
