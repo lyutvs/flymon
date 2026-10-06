@@ -35,6 +35,11 @@
     "at": "2026-10-06T14:21:26.342766+00:00",
     "stage": "learn",
     "wall_s": 18504.834922125097
+   },
+   {
+    "at": "2026-10-06T14:22:20.851192+00:00",
+    "stage": "estimate",
+    "wall_s": 5.063840041053481
    }
   ]
  },
@@ -2406,6 +2411,759 @@
   "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
   "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
   "written_at": "2026-10-06T08:15:52.517024+00:00"
+ },
+ "estimate": {
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/aa/estimate/aa/estimate.json",
+    "sha256": "f017245da5d69be5135a18190a37efcb8b9601bda19147d03c65e17ce80779c2",
+    "src": "results/aa/estimate.json"
+   }
+  ],
+  "compare": {
+   "punish_assoc": [
+    {
+     "ci": "\uc544\ub798",
+     "hi": -3.2338509792941013,
+     "lo": -5.892646974166884,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.517283107716306,
+     "ref": 0.0,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -2.8745342038169786,
+     "lo": -5.2379084214816745,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.015362762414494,
+     "ref": 0.0,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -3.2338509792941013,
+     "lo": -5.892646974166884,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.517283107716306,
+     "ref": 0.5,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -2.8745342038169786,
+     "lo": -5.2379084214816745,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.015362762414494,
+     "ref": 0.5,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -3.2338509792941013,
+     "lo": -5.892646974166884,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.517283107716306,
+     "ref": -0.5,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -2.8745342038169786,
+     "lo": -5.2379084214816745,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.015362762414494,
+     "ref": -0.5,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -3.2338509792941013,
+     "lo": -5.892646974166884,
+     "note": "\ub9c8\ub9ac \uad00\ubb38 \ub9c9\ub300\uc774\uba70 \uc30d \ud3c9\uade0 \uae30\uc900\uc774 \uc544\ub2d8",
+     "point": "\uc544\ub798",
+     "point_value": -4.517283107716306,
+     "ref": 1.0,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -2.8745342038169786,
+     "lo": -5.2379084214816745,
+     "note": "\ub9c8\ub9ac \uad00\ubb38 \ub9c9\ub300\uc774\uba70 \uc30d \ud3c9\uade0 \uae30\uc900\uc774 \uc544\ub2d8",
+     "point": "\uc544\ub798",
+     "point_value": -4.015362762414494,
+     "ref": 1.0,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -3.2338509792941013,
+     "lo": -5.892646974166884,
+     "note": "\ub9c8\ub9ac \uad00\ubb38 \ub9c9\ub300\uc774\uba70 \uc30d \ud3c9\uade0 \uae30\uc900\uc774 \uc544\ub2d8",
+     "point": "\uc544\ub798",
+     "point_value": -4.517283107716306,
+     "ref": -1.0,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -2.8745342038169786,
+     "lo": -5.2379084214816745,
+     "note": "\ub9c8\ub9ac \uad00\ubb38 \ub9c9\ub300\uc774\uba70 \uc30d \ud3c9\uade0 \uae30\uc900\uc774 \uc544\ub2d8",
+     "point": "\uc544\ub798",
+     "point_value": -4.015362762414494,
+     "ref": -1.0,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -3.2338509792941013,
+     "lo": -5.892646974166884,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.517283107716306,
+     "ref": 1.5,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -2.8745342038169786,
+     "lo": -5.2379084214816745,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.015362762414494,
+     "ref": 1.5,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -3.2338509792941013,
+     "lo": -5.892646974166884,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.517283107716306,
+     "ref": -1.5,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc544\ub798",
+     "hi": -2.8745342038169786,
+     "lo": -5.2379084214816745,
+     "note": "",
+     "point": "\uc544\ub798",
+     "point_value": -4.015362762414494,
+     "ref": -1.5,
+     "scale": "hedges"
+    }
+   ],
+   "reward_assoc": [
+    {
+     "ci": "\uc704",
+     "hi": 7.485138924979126,
+     "lo": 4.834313751120874,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 6.021166545389523,
+     "ref": 0.0,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 6.653456822203667,
+     "lo": 4.29716777877411,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 5.3521480403462425,
+     "ref": 0.0,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 7.485138924979126,
+     "lo": 4.834313751120874,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 6.021166545389523,
+     "ref": 0.5,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 6.653456822203667,
+     "lo": 4.29716777877411,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 5.3521480403462425,
+     "ref": 0.5,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 7.485138924979126,
+     "lo": 4.834313751120874,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 6.021166545389523,
+     "ref": -0.5,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 6.653456822203667,
+     "lo": 4.29716777877411,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 5.3521480403462425,
+     "ref": -0.5,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 7.485138924979126,
+     "lo": 4.834313751120874,
+     "note": "\ub9c8\ub9ac \uad00\ubb38 \ub9c9\ub300\uc774\uba70 \uc30d \ud3c9\uade0 \uae30\uc900\uc774 \uc544\ub2d8",
+     "point": "\uc704",
+     "point_value": 6.021166545389523,
+     "ref": 1.0,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 6.653456822203667,
+     "lo": 4.29716777877411,
+     "note": "\ub9c8\ub9ac \uad00\ubb38 \ub9c9\ub300\uc774\uba70 \uc30d \ud3c9\uade0 \uae30\uc900\uc774 \uc544\ub2d8",
+     "point": "\uc704",
+     "point_value": 5.3521480403462425,
+     "ref": 1.0,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 7.485138924979126,
+     "lo": 4.834313751120874,
+     "note": "\ub9c8\ub9ac \uad00\ubb38 \ub9c9\ub300\uc774\uba70 \uc30d \ud3c9\uade0 \uae30\uc900\uc774 \uc544\ub2d8",
+     "point": "\uc704",
+     "point_value": 6.021166545389523,
+     "ref": -1.0,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 6.653456822203667,
+     "lo": 4.29716777877411,
+     "note": "\ub9c8\ub9ac \uad00\ubb38 \ub9c9\ub300\uc774\uba70 \uc30d \ud3c9\uade0 \uae30\uc900\uc774 \uc544\ub2d8",
+     "point": "\uc704",
+     "point_value": 5.3521480403462425,
+     "ref": -1.0,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 7.485138924979126,
+     "lo": 4.834313751120874,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 6.021166545389523,
+     "ref": 1.5,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 6.653456822203667,
+     "lo": 4.29716777877411,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 5.3521480403462425,
+     "ref": 1.5,
+     "scale": "hedges"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 7.485138924979126,
+     "lo": 4.834313751120874,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 6.021166545389523,
+     "ref": -1.5,
+     "scale": "raw"
+    },
+    {
+     "ci": "\uc704",
+     "hi": 6.653456822203667,
+     "lo": 4.29716777877411,
+     "note": "",
+     "point": "\uc704",
+     "point_value": 5.3521480403462425,
+     "ref": -1.5,
+     "scale": "hedges"
+    }
+   ]
+  },
+  "coverage_block": "coverage",
+  "detail_path": "results/aa/estimate.json",
+  "detail_sha256": "f017245da5d69be5135a18190a37efcb8b9601bda19147d03c65e17ce80779c2",
+  "env": {
+   "aa_files": {
+    "flymon/brain/aa_estimate.py": "d871ea95e79a5a1ba19bafcb5b9d29f4a75bee92536a5f36eb56960354784d69",
+    "flymon/brain/aa_rules.py": "e460107fdc8b756a8603f8e809f349b81e968d521effa49074e0e5fc7d206177",
+    "flymon/brain/aa_runner.py": "5976de82c6d6350062d0f7643b12a691414978ef6724db24fbebd1be5d00b6e7",
+    "flymon/brain/aa_spec.py": "20b97852b88b52ac8bc525c1802d49aa40e8ebd8d9c26aeec7dbf0da4f98f58d",
+    "flymon/brain/aa_store.py": "8a6a4e9590fe9c46ee041c1e84dcf86987d6467016f2f0686af2504493d19588",
+    "scripts/run_aa.py": "676cfd07d138f28c21dad2844d87478e544b81458b92bd9bba076c3e110c0f6e"
+   },
+   "numpy": "2.5.3",
+   "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+   "python": "3.13.13",
+   "scipy": "1.18.1",
+   "uv_lock_sha256": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e",
+   "yxw_files": {
+    "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+    "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+    "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+    "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+    "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+    "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+    "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+    "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+    "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+    "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+    "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+    "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+    "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+    "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+    "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+    "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+    "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+    "flymon/brain/y_runner.py": "0ba331d74fab000fd010284c5440721eb45a103bc61e3341e472a254133efbee",
+    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+    "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54",
+    "flymon/brain/z_split.py": "ca4a011f3ed736eca3ca730c96acde0e62c9718c172e39c826851e8a4472c7d3"
+   }
+  },
+  "git": {
+   "commit": "621e220dff6bea3e766da9e192f81465c91bcf8c",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "note": "AA.7 6 \u00b7 AA.5 \u00b7 AA.8 \u00b7 AA.9: 1\ucc28 = S1(\uc21c\uc9c4 \uac70\ub984 \ud1b5\uacfc, screen \ube14\ub85d \uadf8\ub300\ub85c) \ub450 \uc5f0\ud569 d\u2032\uc758 \uc30d\ubcc4 \u00b7 \ud1b5\ud569 \ucd94\uc815\uacfc \uc791\uc740-k \uaddc\uce59\uc758 1\ucc28 CI, \uad6c\uc870 \ub9de\ucda4 \ud3ec\ud568 \ud655\ub960(coverage \ube14\ub85d); \ub450 \ubc88 \uacc4\uc0b0\ud574 \ube44\ud2b8 \uac19\uc74c. \ube44\uad50 \ud45c\ub294 \uae30\uc220 \uc804\uc6a9(\ud310\uc815 \uc544\ub2d8). \ud559\uc2b5 \ud1b5\uacc4\ub294 \uc774 \ube14\ub85d\uc5d0\uc11c \ucc98\uc74c \uc77d\ub294\ub2e4.",
+  "order": "6",
+  "outcome": "PASS",
+  "primary": {
+   "coverage": 0.855,
+   "flag": null,
+   "k": 16,
+   "kind": "pooled",
+   "n_groups": 7,
+   "pairs": [
+    {
+     "L_A": 25.0,
+     "L_P": 87.0,
+     "c": 7,
+     "key": "a|310|Earthquake|Thunderbolt",
+     "naive_d": -0.10417264544254393,
+     "punish_assoc": {
+      "ci": [
+       -7.627079522392786,
+       -4.844683261524343
+      ],
+      "mean": -6.205848310575592
+     },
+     "reward_assoc": {
+      "ci": [
+       4.305558255182816,
+       6.14074730989169
+      ],
+      "mean": 5.136372708740742
+     }
+    },
+    {
+     "L_A": 22.0,
+     "L_P": 95.0,
+     "c": 32,
+     "key": "a|339|Rock Slide|Strength",
+     "naive_d": 0.11632564546259443,
+     "punish_assoc": {
+      "ci": [
+       -1.8276119920606289,
+       -0.8496282101183704
+      ],
+      "mean": -1.2876294286617034
+     },
+     "reward_assoc": {
+      "ci": [
+       2.347784774234417,
+       3.3742677141739974
+      ],
+      "mean": 2.851767603583274
+     }
+    },
+    {
+     "L_A": 39.0,
+     "L_P": 106.0,
+     "c": 48,
+     "key": "a|363|Flamethrower|Earthquake",
+     "naive_d": 0.11327324617121318,
+     "punish_assoc": {
+      "ci": [
+       -4.897348930099735,
+       -3.164282937905471
+      ],
+      "mean": -4.016622771878929
+     },
+     "reward_assoc": {
+      "ci": [
+       7.379378731432934,
+       9.171950625729433
+      ],
+      "mean": 8.20630960505348
+     }
+    },
+    {
+     "L_A": 41.0,
+     "L_P": 132.0,
+     "c": 57,
+     "key": "a|374|Earthquake|Psychic",
+     "naive_d": 0.371115245938426,
+     "punish_assoc": {
+      "ci": [
+       -9.727192423135783,
+       -7.876149232888918
+      ],
+      "mean": -8.830868849674713
+     },
+     "reward_assoc": {
+      "ci": [
+       4.2978639529689895,
+       8.477032902251707
+      ],
+      "mean": 6.27992059277513
+     }
+    },
+    {
+     "L_A": 45.0,
+     "L_P": 151.0,
+     "c": 74,
+     "key": "a|408|Surf|Mega Drain",
+     "naive_d": -0.4533291025724055,
+     "punish_assoc": {
+      "ci": [
+       -9.695817084022494,
+       -7.655616128187642
+      ],
+      "mean": -8.726654921527615
+     },
+     "reward_assoc": {
+      "ci": [
+       10.0,
+       10.0
+      ],
+      "mean": 10.0
+     }
+    },
+    {
+     "L_A": 29.0,
+     "L_P": 95.0,
+     "c": 125,
+     "key": "a|532|Psychic|Tri Attack",
+     "naive_d": -0.00706758733376719,
+     "punish_assoc": {
+      "ci": [
+       -2.507953965157379,
+       -1.8076570126380924
+      ],
+      "mean": -2.1313192346836822
+     },
+     "reward_assoc": {
+      "ci": [
+       4.92468467542974,
+       7.426780158324343
+      ],
+      "mean": 6.065899678917333
+     }
+    },
+    {
+     "L_A": 38.0,
+     "L_P": 95.0,
+     "c": 135,
+     "key": "a|551|Mega Drain|Cut",
+     "naive_d": 0.24139965062667976,
+     "punish_assoc": {
+      "ci": [
+       -2.0356817562423766,
+       -1.1199280904636204
+      ],
+      "mean": -1.550749412190584
+     },
+     "reward_assoc": {
+      "ci": [
+       3.136868871523771,
+       4.660151799176212
+      ],
+      "mean": 3.8022528296477955
+     }
+    },
+    {
+     "L_A": 38.0,
+     "L_P": 96.0,
+     "c": 148,
+     "key": "a|588|Rock Slide|Strength",
+     "naive_d": -0.22069165327776277,
+     "punish_assoc": {
+      "ci": [
+       -5.858385707607373,
+       -4.926681216442172
+      ],
+      "mean": -5.3898368313800535
+     },
+     "reward_assoc": {
+      "ci": [
+       3.005449984353764,
+       6.448655267898385
+      ],
+      "mean": 4.565670477119033
+     }
+    },
+    {
+     "L_A": 28.0,
+     "L_P": 122.0,
+     "c": 154,
+     "key": "a|612|Flamethrower|Strength",
+     "naive_d": -0.27986320053559594,
+     "punish_assoc": {
+      "ci": [
+       -3.5340427428178143,
+       -2.5788580033943247
+      ],
+      "mean": -3.0490025588927185
+     },
+     "reward_assoc": {
+      "ci": [
+       8.03215918665865,
+       9.679485060762952
+      ],
+      "mean": 8.975527330904143
+     }
+    },
+    {
+     "L_A": 47.0,
+     "L_P": 152.5,
+     "c": 156,
+     "key": "a|618|Surf|Strength",
+     "naive_d": -0.17047577855730717,
+     "punish_assoc": {
+      "ci": [
+       -9.508941935597836,
+       -6.862039653360352
+      ],
+      "mean": -8.289312274253852
+     },
+     "reward_assoc": {
+      "ci": [
+       7.269589885800522,
+       8.254887083031548
+      ],
+      "mean": 7.78362124539101
+     }
+    },
+    {
+     "L_A": 33.0,
+     "L_P": 111.0,
+     "c": 158,
+     "key": "a|642|Earthquake|Psychic",
+     "naive_d": -0.48880671088180727,
+     "punish_assoc": {
+      "ci": [
+       -2.461054748876276,
+       -1.5503558740037118
+      ],
+      "mean": -1.945097511581768
+     },
+     "reward_assoc": {
+      "ci": [
+       4.118402170374683,
+       6.597422112846775
+      ],
+      "mean": 5.087543382874764
+     }
+    },
+    {
+     "L_A": 30.0,
+     "L_P": 95.5,
+     "c": 173,
+     "key": "a|738|Psychic|Mega Drain",
+     "naive_d": 0.38325945016525514,
+     "punish_assoc": {
+      "ci": [
+       -3.6625898469191704,
+       -2.4263358692069454
+      ],
+      "mean": -3.0142873776239045
+     },
+     "reward_assoc": {
+      "ci": [
+       4.2290418519005595,
+       5.567824111825924
+      ],
+      "mean": 4.854631016738425
+     }
+    },
+    {
+     "L_A": 42.0,
+     "L_P": 114.0,
+     "c": 206,
+     "key": "a|1256|Earthquake|Thunderbolt",
+     "naive_d": -0.4341976654182905,
+     "punish_assoc": {
+      "ci": [
+       -6.610199650925151,
+       -3.782395496642596
+      ],
+      "mean": -4.9687367693933595
+     },
+     "reward_assoc": {
+      "ci": [
+       5.360247561698599,
+       7.6886327715289955
+      ],
+      "mean": 6.5538726749906155
+     }
+    },
+    {
+     "L_A": 50.0,
+     "L_P": 149.0,
+     "c": 219,
+     "key": "a|1367|Mega Drain|Cut",
+     "naive_d": -0.3065045251646526,
+     "punish_assoc": {
+      "ci": [
+       -7.258100785353957,
+       -5.077180904283115
+      ],
+      "mean": -5.955659952370193
+     },
+     "reward_assoc": {
+      "ci": [
+       7.135748150758099,
+       9.44682684243265
+      ],
+      "mean": 8.346714992293442
+     }
+    },
+    {
+     "L_A": 27.0,
+     "L_P": 85.0,
+     "c": 222,
+     "key": "b|1419|Rock Slide vs Gyarados|Rock Slide vs Ditto",
+     "naive_d": 0.2796663277430178,
+     "punish_assoc": {
+      "ci": [
+       -4.833751334695485,
+       -2.7054734971664653
+      ],
+      "mean": -3.765228887854842
+     },
+     "reward_assoc": {
+      "ci": [
+       2.7362606767593722,
+       5.300991577978933
+      ],
+      "mean": 3.722115200806063
+     }
+    },
+    {
+     "L_A": 25.0,
+     "L_P": 83.0,
+     "c": 248,
+     "key": "a|1967|Earthquake|Psychic",
+     "naive_d": 0.29684954377582373,
+     "punish_assoc": {
+      "ci": [
+       -3.696190219680139,
+       -2.47378662337328
+      ],
+      "mean": -3.1496746309173824
+     },
+     "reward_assoc": {
+      "ci": [
+       3.4702400118815726,
+       4.79520227818346
+      ],
+      "mean": 4.106445386397116
+     }
+    }
+   ],
+   "phi_median": {
+    "phi_P": 0.125,
+    "phi_R": 0.0
+   },
+   "plan": {
+    "flag": null,
+    "kind": "pooled",
+    "primary": "two_stage",
+    "records": [
+     "fly",
+     "pair"
+    ]
+   },
+   "pooled": {
+    "punish_assoc": {
+     "ci": [
+      -5.892646974166884,
+      -3.2338509792941013
+     ],
+     "method": "two_stage",
+     "point": -4.517283107716306
+    },
+    "reward_assoc": {
+     "ci": [
+      4.834313751120874,
+      7.485138924979126
+     ],
+     "method": "two_stage",
+     "point": 6.021166545389523
+    }
+   },
+   "range": {
+    "punish_assoc": [
+     -8.830868849674713,
+     -1.2876294286617034
+    ],
+    "reward_assoc": [
+     2.8517676035832737,
+     10.0
+    ]
+   },
+   "set": "S1",
+   "sizes": [
+    5,
+    2,
+    2,
+    2,
+    2,
+    2,
+    1
+   ],
+   "tau_dl": {
+    "punish_assoc": 2.038064337912289,
+    "reward_assoc": null
+   },
+   "under": true
+  },
+  "reasons": [],
+  "repeat_equal": true,
+  "seal_key": "3811f859e043dbd0079aa3dfa845625805cef486b5410138fd1dc5c67d1c0726",
+  "sentence": "\uc870\ud569 \uc9c0\ub81b\ub300 \ubaa8\ub378(C3, APL\u2192MBON05 2\uac04\uc120 + MBON05\u2192MBON09/MBON11/MBON01 11\uac04\uc120 \uc81c\uac70, E-grid k2-norm s 1.0, z_V)\uc5d0\uc11c \uc2e4\uc81c \ud559\uc2b5 \uaddc\uce59(F.2 R \u00b7 N + G.5 RN)\uc758 \ubcf4\uc0c1 \uc5f0\ud569 d\u2032(\u0394V_R1 \u2212 \u0394V_N1)\uc740 6.021 [95% CI 4.834, 7.485], \ucc98\ubc8c \uc5f0\ud569 d\u2032((\u0394V_R2 \u2212 \u0394V_R1) \u2212 (\u0394V_RN2 \u2212 \u0394V_RN1))\ub294 -4.517 [-5.893, -3.234]\ub85c \ucd94\uc815\ub410\ub2e4 \u2014 \uc8fc \uc138\ud2b8 \uc624\ub77c\ud074 \uad00\ub300 \ud1b5\uacfc 31\uc30d \uc911 \ud310\uc815 \uc2dc\ub4dc \uc21c\uc9c4 \uac70\ub984(|d\u2032| < 0.5 \u2227 MBON13(X) \u2265 20 \u2227 MBON05(X) \u2265 43)\uc744 \ud1b5\uacfc\ud55c 16\uc30d(X \ub0c4\uc0c8 \ubb36\uc74c 7\uac1c), F 8 \u00d7 K 8, \uc30d \ucd94\uc815 = \ub9c8\ub9ac d\u2032(\u00b110 \uc798\ub77c\ub0c4)\uc758 \ub9c8\ub9ac \ud3c9\uade0, \ud1b5\ud569 = \uc30d \ud3c9\uade0 \u00b7 \ubb36\uc74c-\ub9c8\ub9ac \ub450 \ub2e8\uacc4 \ubd80\ud2b8\uc2a4\ud2b8\ub7a9 10 000\ud68c \ubc31\ubd84\uc704(\uad6c\uc870 \ub9de\ucda4 \ud3ec\ud568 \ud655\ub960 0.855, '\uba85\ubaa9 \ubbf8\ub2ec'). \uc30d \uac04 SD \ubcf4\uc0c1 null \u00b7 \ucc98\ubc8c 2.038(DL). \uac00\ub974\uce5c \uc138\ud3ec \ubc14\ub2e5 \ubaab \uc911\uc559 \u03c6_R 0 \u00b7 \u03c6_P 0.125 \u2014 \ubc14\ub2e5 \uc808\ub2e8\uc744 \ud3ec\ud568\ud55c \uac12\uc774\uba70(\ud3b8\ud5a5 \ubd80\ud638 \ubbf8\uc815) Y \uac70\ub984 \ud1b5\uacfc(\uac19\uc740 \ud504\ub85c\ube0c \uc2e4\ud604\uac12\uc5d0\uc11c) \uc30d \uc870\uac74\ubd80\ub2e4. \ud310\uc815 \ubb38\ud131\uc740 \uc5c6\uace0 M2 \ud559\uc2b5 \ub2e8\uc704\uc758 PASS/FAIL\uc774 \uc544\ub2c8\ub2e4.",
+  "stage": "estimate",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-06T14:22:20.851192+00:00"
  },
  "learn": {
   "archive": [
