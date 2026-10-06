@@ -11,7 +11,11 @@ through y_store / z_store / w_store and nothing assigns to a W / X / Y / Z modul
 - Seal (AA.7 3): coverage / estimate / records compare seal_now() with block seal_code (or the latest reseal_<n>);
   a difference → exit EXIT_SEAL (plan Reading 15).
 - Candidates (AA.3 6196, plan Reading 8): the tracked block is rewritten at every block write from
-  progress/<stage>.candidates.json (states change at batch start inside a stage)."""
+  progress/<stage>.candidates.json (states change at batch start inside a stage).
+- Records (AA.7 7): the records ledger (4 h, null + "records 상한" past it, never a STOP); G.6 (AA.9.1) inside it
+  under its own measured 2 h cap, one resumable JSON cell per row (plan Readings 12–14, 20, 23, 29).
+- Defect procedure (AA.7 3, plan Reading 19): defect_<n> → patch → reseal_<n> → recompute <stage> → <stage>_v<n>
+  (cache hits only), the replaced block listed in `invalid`; later stages read the newest <stage>_v<n> (_eff)."""
 from __future__ import annotations
 
 import concurrent.futures as cf
@@ -30,7 +34,7 @@ from pathlib import Path
 import numpy as np
 
 from ..agent.e_runner import summary_git
-from . import aa_estimate, aa_rules, aa_store, w_records, w_verdict, x_oc, y_rules, z_split
+from . import aa_estimate, aa_rules, aa_store, w_records, w_verdict, x_oc, y_oc, y_rules, z_split
 from .r_store import load_manifest
 from .aa_spec import SPEC as AA
 from .h3_store import ROOT, canonical, sha256_file
@@ -267,6 +271,11 @@ def _safe(tag: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]", "_", tag)
 
 
+def _base(stage: str) -> str:
+    """`estimate_v1` → `estimate` (a defect-procedure block follows its stage's ledger and files)."""
+    return re.sub(r"_v\d+$", "", stage)
+
+
 # ================================================================ the engine context (plan Reading 3; read only)
 def build_ctx(npz: str, s=AA) -> dict:
     """W's context (w_runner.build_ctx, built once, lazily) for main_rows / params / readout / the V jm:L rows of Y's four
@@ -362,6 +371,7 @@ class Runner:
         self.summary_path = str(summary_path or s.summary)
         self.workers = None
         self._s = dict(core=0.0, records=0.0)
+        self._cache_only, self._recompute = False, None          # the defect procedure's recompute (AA.7 3 ④)
 
     @property
     def plist(self) -> list:
@@ -388,7 +398,7 @@ class Runner:
         doc = self._doc()
         order = list(s.stages)
         i = order.index(stage)
-        missing = [b for b in order[:i] if b not in doc]
+        missing = [b for b in order[:i] if self._eff(doc, b) is None]
         if missing:
             refuse(f"stage {stage} needs block(s) {missing}")
         later = [b for b in order[i + 1:] if b in doc]
@@ -396,9 +406,10 @@ class Runner:
             refuse(f"stage {stage}: later block(s) {later} exist; AA never rewrites an earlier block")
         if stage in doc:
             refuse(f"stage {stage}: block {stage} exists; AA never rewrites a recorded block")
-        stopped = [b for b in order[:i] if doc[b].get("outcome") != aa_rules.PASS]
+        stopped = [b for b in order[:i] if self._eff(doc, b).get("outcome") != aa_rules.PASS]
         if stopped:
-            refuse(f"stage {stage}: {stopped[0]} outcome {doc[stopped[0]].get('outcome')} — AA stops there")
+            refuse(f"stage {stage}: {self._eff_name(doc, stopped[0])} outcome "
+                   f"{self._eff(doc, stopped[0]).get('outcome')} — AA stops there")
         if i > order.index("reuse"):
             k = self.ctx["keys"]()
             bad = [n for n in ("w_measure_key", "u_measure_key") if k.get(n) != getattr(Y_SPEC, n)]
@@ -418,13 +429,40 @@ class Runner:
             refuse(f"the sealed code differs from {rs[-1][1] if rs else 'seal_code'} (AA.7 3); defect procedure "
                    "first", EXIT_SEAL)
 
-    def _env(self, stage: str, doc: dict) -> dict:
-        """AA.7 0a (Z.9.2 P2-11 form) at the start and at every resume (module docstring)."""
+    @staticmethod
+    def _latest(doc: dict, prefix: str) -> tuple:
+        """(n, name) of the newest `<prefix>_<n>` block, or (0, None)."""
+        got = sorted((int(m.group(1)), k) for k in doc if (m := re.fullmatch(rf"{prefix}_(\d+)", k)))
+        return got[-1] if got else (0, None)
+
+    @staticmethod
+    def _eff_name(doc: dict, stage: str) -> str:
+        """The block that stands for `stage`: the newest `<stage>_v<n>` (defect procedure, AA.7 3) or `stage`."""
+        got = sorted((int(m.group(1)), k) for k in doc if (m := re.fullmatch(rf"{stage}_v(\d+)", k)))
+        return got[-1][1] if got else stage
+
+    def _eff(self, doc: dict, stage: str):
+        return doc.get(self._eff_name(doc, stage))
+
+    def _env(self, stage: str, doc: dict, drop_aa: bool = False) -> dict:
+        """AA.7 0a (Z.9.2 P2-11 form) at the start and at every resume (module docstring). Defect procedure (AA.7 3):
+        a patch changes the aa_* file hashes by design, so once a reseal_<n> exists the blocks (and first-start
+        records) written before the newest reseal are compared without `aa_files`; the reseal block and everything
+        after it are compared in full. `drop_aa` (the reseal itself) drops `aa_files` everywhere; every other field
+        (uv.lock, versions, platform, y/x/w · z_split hashes) is always compared."""
         now = env_now()
-        blocks = [(b, doc[b]["env"]) for b in self.s.stages if b in doc and "env" in doc[b]]
+        _n, rs = self._latest(doc, "reseal")
+        cut = doc[rs].get("written_at") if rs else None
+
+        def base(env: dict, at) -> dict:
+            if drop_aa or (cut is not None and (at is None or at < cut)):
+                return {k: v for k, v in env.items() if k != "aa_files"}
+            return env
+        blocks = [(b, base(v["env"], v.get("written_at"))) for b, v in doc.items()
+                  if isinstance(v, dict) and isinstance(v.get("env"), dict)]
         p = Path(self.s.progress_dir) / f"{stage}.env.json"
         if p.exists():
-            blocks.append((f"{stage} 첫 시작", json.loads(p.read_text())))
+            blocks.append((f"{stage} 첫 시작", base(json.loads(p.read_text()), None)))
         why = aa_rules.env_reasons(blocks, now)
         if why:
             aa_store.append_ledger(self.summary_path, dict(stage=stage, env_mismatch=why, at=_now(), wall_s=0.0),
@@ -443,7 +481,7 @@ class Runner:
         if not p.exists():
             return []
         out = [str(p)]
-        if stage in ("screen", "learn", "records"):
+        if _base(stage) in ("screen", "learn", "records"):
             d = json.loads(p.read_text())
             out += [m["cache_file"] for m in d.get("manifest") or []]
         return list(dict.fromkeys(out))              # a duplicated unit (machine-check case) is one file
@@ -472,8 +510,16 @@ class Runner:
         return cur
 
     # ---- blocks ------------------------------------------------------------------------------------------------------
-    def _write(self, stage: str, body: dict, core_s=None, records_s=None) -> dict:
+    def _write(self, stage: str, body: dict, core_s=None, records_s=None, ledger: bool = True,
+               top: dict | None = None) -> dict:
+        """`stage` may be a `<stage>_v<n>` block (its ledger follows the stage's), a defect_<n> / reseal_<n> block
+        (ledger=False: no spend line), with `top` further summary keys in the same write (`invalid`)."""
         s, extra = self.s, {}
+        rc = self._recompute if (self._recompute or {}).get("name") == stage else None
+        if rc is not None:                   # the defect procedure's block: what it replaces; `invalid` unless INVALID
+            body = dict(body, **rc["body"])
+            if body.get("outcome") != aa_rules.INVALID:
+                top = dict(top or {}, **rc["top"])
         if body.get("outcome") != aa_rules.INVALID:
             extra["archive"] = aa_store.archive(self._files(stage), stage, s)
         k = self.ctx["keys"]()
@@ -484,13 +530,15 @@ class Runner:
         core = float(prog["core"] if core_s is None else core_s)
         rec = float(prog["records"] if records_s is None else records_s)
         at = block["written_at"]
-        if stage in s.records_stages:
+        if not ledger:
+            led = rled = None
+        elif _base(stage) in s.records_stages:
             led, rled = None, dict(stage=stage, wall_s=rec, at=at)
         else:
             led, rled = dict(stage=stage, wall_s=core, at=at), (dict(stage=stage, wall_s=rec, at=at) if rec else None)
         doc = self._doc()
         aa_store.write_summary_block(self.summary_path, stage, block, self.plist, led, rled,
-                                     candidates=self._cands(doc, stage))
+                                     candidates=self._cands(doc, stage), extra=top)
         return block
 
     def archive(self, stage: str) -> list:
@@ -516,7 +564,7 @@ class Runner:
     def _prog(self, stage: str) -> dict:
         p = self._prog_path(stage)
         d = json.loads(p.read_text()) if p.exists() else {}
-        return dict(core=float(d.get("core", 0.0)), records=float(d.get("records", 0.0)))
+        return dict(core=float(d.get("core", 0.0)), records=float(d.get("records", 0.0)), g6=float(d.get("g6", 0.0)))
 
     def _add(self, stage: str, sec: float, which: str = "core") -> None:
         d = self._prog(stage)
@@ -525,7 +573,7 @@ class Runner:
 
     def _finish(self, stage: str, t0: float) -> None:
         """The stage's own (non-cell) seconds go to its ledger."""
-        which = "records" if stage in self.s.records_stages else "core"
+        which = "records" if _base(stage) in self.s.records_stages else "core"
         self._add(stage, (time.perf_counter() - t0) - self._s["core"] - self._s["records"], which)
 
     def _key(self, tag: str, key_obj) -> str:
@@ -617,19 +665,7 @@ class Runner:
     def stage_stage0(self) -> dict:
         self._require("stage0")
         s, t0 = self.s, time.perf_counter()
-        bad = []
-        log = Path(s.tests_log)
-        lines = log.read_text().strip().splitlines() if log.exists() else []
-        passed = [ln for ln in lines if re.search(r"\d+ passed", ln)]
-        tests = dict(path=s.tests_log, log_sha256=sha256_file(log) if log.exists() else None,
-                     last_line=lines[-1] if lines else None, passed_line=passed[-1] if passed else None)
-        if tests["last_line"] != s.tests_ok_line:
-            bad.append(f"시험 로그 {s.tests_log}의 마지막 줄 {tests['last_line']!r} ≠ {s.tests_ok_line!r}")
-        if tests["passed_line"] is None:           # AA.7 0a records the passed-count line; -qq hides it → INVALID
-            bad.append(f"시험 로그 {s.tests_log}에 통과 개수 줄(\"N passed\")이 없음")
-        fails = [ln for ln in lines if re.search(r"\b\d+ (failed|errors?)\b", ln)]
-        if fails:
-            bad.append(f"시험 로그 {s.tests_log}에 실패 · 오류 요약 줄: {fails[-1]!r}")
+        tests, bad = self._tests_log()
         diff = differential(self.ctx, s)
         if not diff["ok"]:
             bad += [f"차등 시험: {x}" for x in diff["reasons"]]
@@ -685,15 +721,17 @@ class Runner:
         """The core ledger so far (AA.7 예산), hours."""
         return sum(float(e.get("wall_s") or 0.0) for e in (doc.get("budget") or {}).get("ledger", [])) / self.s.s_per_h
 
-    def _ticker(self, stage: str):
+    def _ticker(self, stage: str, which: str = "core"):
         """Y's tick form: every call adds the seconds since the previous call to progress/<stage>.json (they survive a
-        kill); the stage calls it once more in `finally` and before its block. No in-stage budget stop (AA.7 2 / 4)."""
-        mark = [time.perf_counter()]
+        kill); the stage calls it once more in `finally` and before its block. Seconds that _cell / _pcells already
+        added to the same ledger since the previous call are left out (no double count)."""
+        mark = [time.perf_counter(), self._s[which]]
 
         def tick(*_a):
             now = time.perf_counter()
-            self._add(stage, now - mark[0])
-            mark[0] = now
+            cells = self._s[which] - mark[1]
+            self._add(stage, max(0.0, now - mark[0] - cells), which)
+            mark[0], mark[1] = now, self._s[which]
         return tick
 
     def _costs(self, learn: list, naive: list) -> dict:
@@ -896,15 +934,33 @@ class Runner:
 
     # ================================================================ order 4b: coverage (AA.7 4b 6261, AA.5 6227–6231)
     def stage_coverage(self) -> dict:
-        doc = self._require("coverage")
+        return self._coverage(self._require("coverage"), "coverage")
+
+    @staticmethod
+    def _cov_methods(plan: dict) -> list:
+        """The coverage a pooled set carries: primary + record methods + the primary's raw-contrast form (AA.5)."""
+        return [plan["primary"]] + list(plan["records"]) + [f"raw_{plan['primary']}"]
+
+    def _cov_jobs(self, sizes, set_tag: str, methods: list, seal: str) -> list:
+        sz = tuple(int(x) for x in sizes)
+        return [(f"{set_tag}_{m}_{ci}", dict(sizes=list(sz), m=m, st=set_tag, ci=ci, seal=seal), _cov_job,
+                 (sz, m, set_tag, ci, self.s)) for m in methods for ci in range(len(aa_estimate.cov_cells(self.s)))]
+
+    def _cov_summaries(self, vals: list, sizes, methods: list) -> dict:
+        it = iter(v["meta"]["share"] for v in vals)
+        return {m: dict(aa_estimate.coverage_summary([next(it) for _ in aa_estimate.cov_cells(self.s)], self.s),
+                        sizes=[int(x) for x in sizes], method=m) for m in methods}
+
+    def _coverage(self, doc: dict, name: str) -> dict:
+        """Order 4b (`name` = coverage, or coverage_v<n> in the defect procedure's recompute)."""
         s, t0 = self.s, time.perf_counter()
         _pre, dig, bad = self._screen_raw(doc)
         del _pre
         cnt = aa_rules.candidate_counts(self._cands(doc, "coverage"))
         if bad or dig != doc["screen"]["raw_digest"]:
-            self._finish("coverage", t0)
+            self._finish(name, t0)
             why = f"원자료 digest 재확인 불일치{': ' + '; '.join(bad[:2]) if bad else ''}"
-            return self._write("coverage", dict(aa_rules.machine_stop(
+            return self._write(name, dict(aa_rules.machine_stop(
                 "순진 거름", why, f"학습 측정 없음, {s.n_len}쌍 `screened`", cnt), raw_digest_now=dig))
         seal = seal_now(s)["key"]
         jobs, plan, nul = [], {}, {}
@@ -920,26 +976,24 @@ class Runner:
             if p["kind"] != "pooled":
                 nul[st] = "k < 2 — 통합 CI 없음"
                 continue
-            plan[st] = [p["primary"]] + list(p["records"]) + [f"raw_{p['primary']}"]
-            for m in plan[st]:
-                for ci in range(len(aa_estimate.cov_cells(s))):
-                    jobs.append((f"{st}_{m}_{ci}", dict(sizes=g["sizes"], m=m, st=st, ci=ci, seal=seal),
-                                 _cov_job, (tuple(int(x) for x in g["sizes"]), m, st, ci, s)))
-        vals = self._pcells("coverage", jobs, log=_log)
-        it = iter(v["meta"]["share"] for v in vals)
-        by_set = {}
+            plan[st] = self._cov_methods(p)
+            jobs += self._cov_jobs(g["sizes"], st, plan[st], seal)
+        vals = self._pcells(name, jobs, log=_log)
+        by_set, pos = {}, 0
         for st in SETS:
             if st not in plan:
                 by_set[st] = None
                 continue
-            sizes = [int(x) for x in doc["screen"]["groups"][st]["sizes"]]
-            by_set[st] = {m: dict(aa_estimate.coverage_summary([next(it) for _ in aa_estimate.cov_cells(s)], s),
-                                  sizes=sizes, method=m) for m in plan[st]}
-        self._finish("coverage", t0)
-        return self._write("coverage", dict(
-            outcome=aa_rules.PASS, reasons=[], by_set=by_set, null_reason=nul, seal_key=seal, raw_digest_now=dig,
-            note="AA.5 · AA.7 4b: 묶음 크기 구조만 입력(결과값 없음); 집합별 1차 · 기록 방식 + 1차의 비표준화 판. ±∞ 제외판은 "
-                 "같은 방식의 포함 확률을 쓴다(plan Reading 6); 바닥 민감도는 records."))
+            n = len(plan[st]) * len(aa_estimate.cov_cells(s))
+            by_set[st] = self._cov_summaries(vals[pos:pos + n], doc["screen"]["groups"][st]["sizes"], plan[st])
+            pos += n
+        body = dict(outcome=aa_rules.PASS, reasons=[], by_set=by_set, null_reason=nul, seal_key=seal,
+                    raw_digest_now=dig,
+                    note="AA.5 · AA.7 4b: 묶음 크기 구조만 입력(결과값 없음); 집합별 1차 · 기록 방식 + 1차의 비표준화 판. "
+                         "±∞ 제외판은 같은 방식의 포함 확률을 쓴다(plan Reading 6); 바닥 민감도는 records.")
+        p = aa_store.write_json(self._detail(name), body, self.plist)          # the archived copy (AA.7 3 "둘 다 보관")
+        self._finish(name, t0)
+        return self._write(name, dict(body, detail_path=self._detail(name), detail_sha256=sha256_file(p)))
 
     # ================================================================ order 5: learn (AA.7 5 6262, AA.3 6191–6192)
     def _learn_units(self, doc: dict) -> tuple:
@@ -1023,21 +1077,25 @@ class Runner:
 
         def check(a, _n):
             """Before each measurer round (plan Readings 9, 21): seconds to progress, the measured cap, then the
-            round's pairs turn `trained` (states move forward only)."""
+            round's pairs turn `trained` (states move forward only). The cap is checked only here, so a last round
+            that crosses 12 h still ends PASS (W / Y form; plan Reading 28)."""
             tick()
             if not aa_rules.spent_ok(base + self._prog("learn")["core"] / s.s_per_h, s):
                 raise _BudgetStop()
             self._cands_set("learn", sorted({u["pair"] for u in todo[a:a + n_w]}), aa_rules.STATES[2])
+        stopped = False
         try:
             got1 = wm.learn(UU, "learn", check=check)
         except _BudgetStop:
+            stopped = True
+        finally:
             tick()
+        if stopped:                                  # the block is written after the last tick: every second is in it
             n = self._pairs_complete(U, wm)
+            tick()
             return self._write("learn", aa_rules.budget_stop(
                 aa_rules.budget_text(base + self._prog("learn")["core"] / s.s_per_h, 0.0, s), s.stage_label("learn"),
                 f"학습 {n}쌍 완료", cnt()))
-        finally:
-            tick()
         self._cands_set("learn", [row_key(r) for r in prs], aa_rules.STATES[2])   # every pair is measured by now
         by_in = dict(zip(first, got1))
         got = [dict(by_in[x], unit=u) for u, x in zip(U, ins)]
@@ -1100,7 +1158,7 @@ class Runner:
                                    phi_P=float(np.median([f["phi_P"] for f in fl]))))
         if est["plan"]["kind"] == "pooled":
             m = est["plan"]["primary"]
-            cov = ((doc["coverage"].get("by_set") or {}).get("S1") or {}).get(m) or {}
+            cov = ((self._eff(doc, "coverage").get("by_set") or {}).get("S1") or {}).get(m) or {}
             out.update(pooled={g: dict(point=est["point"][g], ci=est["ci"][m][g], method=m)
                                for g in aa_estimate.PRIMARY},
                        range={g: est["range"][g] for g in aa_estimate.PRIMARY}, coverage=cov.get("min"),
@@ -1128,24 +1186,480 @@ class Runner:
         return aa_rules.result_sentence(r), cmp_
 
     def stage_estimate(self) -> dict:
-        doc = self._require("estimate")                  # the seal check comes first (sealed stage)
+        return self._estimate(self._require("estimate"), "estimate")    # the seal check comes first (sealed stage)
+
+    def _estimate(self, doc: dict, name: str) -> dict:
+        """Order 6 (`name` = estimate, or estimate_v<n> in the defect procedure's recompute — same cache, no
+        measurement). The body is also written to results/aa/<name>.json, the archived copy (AA.7 3 "둘 다 보관")."""
         t0 = time.perf_counter()
         a = self._primary(doc)
         b = self._primary(doc)                           # AA.7 6: the same raw and code once more, bit for bit
         seal = seal_now(self.s)["key"]
         if canonical(a) != canonical(b):
-            self._finish("estimate", t0)
-            return self._write("estimate", dict(
+            self._finish(name, t0)
+            return self._write(name, dict(
                 outcome=aa_rules.INVALID, reasons=["추정 재계산이 비트 단위로 같지 않음(AA.7 6)"], repeat_equal=False,
                 seal_key=seal))
         sentence, cmp_ = self._sentence_and_compare(a)
-        self._finish("estimate", t0)
-        return self._write("estimate", dict(
+        body = dict(
             outcome=aa_rules.PASS, reasons=[], primary=a, sentence=sentence, compare=cmp_, repeat_equal=True,
-            seal_key=seal,
+            seal_key=seal, coverage_block=self._eff_name(doc, "coverage"),
             note="AA.7 6 · AA.5 · AA.8 · AA.9: 1차 = S1(순진 거름 통과, screen 블록 그대로) 두 연합 d′의 쌍별 · 통합 추정과 "
                  "작은-k 규칙의 1차 CI, 구조 맞춤 포함 확률(coverage 블록); 두 번 계산해 비트 같음. 비교 표는 기술 "
-                 "전용(판정 아님). 학습 통계는 이 블록에서 처음 읽는다."))
+                 "전용(판정 아님). 학습 통계는 이 블록에서 처음 읽는다.")
+        p = aa_store.write_json(self._detail(name), body, self.plist)
+        self._finish(name, t0)
+        return self._write(name, dict(body, detail_path=self._detail(name), detail_sha256=sha256_file(p)))
+
+
+    # ================================================================ order 7: records (AA.7 7 6264, AA.9.1 6299–6310)
+    def stage_records(self) -> dict:
+        return self._records(self._require("records"), "records")
+
+    def _measure(self, wm, U: list, block: str) -> list:
+        """wm.learn, or — inside the defect procedure's recompute — cache hits only: a miss refuses (exit 2), nothing
+        is measured (AA.7 3 ④, 6256)."""
+        if not self._cache_only:
+            return wm.learn(U, block)
+        out = []
+        for u in U:
+            ins = wm.inputs(u, block)
+            got = wm.cache.get(KIND, ins)
+            if got is None:
+                refuse(f"recompute: 캐시 적중 실패 {u['pair']} fly {u['fly']} {u['brain']} (block {block}); the "
+                       "defect procedure never measures (AA.7 3)")
+            out.append(dict(unit=u, result=got, cache_key=wm.cache.key(KIND, ins),
+                            cache_file=str(wm.cache._path(KIND, ins))))
+        return out
+
+    def _rec_spent_h(self, doc: dict, name: str) -> float:
+        prev = sum(float(e.get("wall_s") or 0.0) for e in (doc.get("budget") or {}).get("records_ledger", []))
+        return (prev + self._prog(name)["records"]) / self.s.s_per_h
+
+    def _records(self, doc: dict, name: str) -> dict:
+        """AA.7 7 on the records ledger (4 h): before every item the measured records spend is checked; past the cap
+        the item is null with "records 상한" (never a STOP, AA.7 예산 / Z.9.2 P2-10 form). Items in order: s1, pairs,
+        S31, out, phi, sens, noplast, g6. The stage outcome is PASS (every item is a record)."""
+        s = self.s
+        tick = self._ticker(name, "records")
+        nulls = []
+
+        def ok(item: str) -> bool:
+            tick()
+            if round(self._rec_spent_h(doc, name) - s.records_cap_h, s.round_digits) < 0:
+                return True
+            nulls.append(dict(item=item, reason=aa_rules.RECORDS_REASON))
+            return False
+        try:
+            body, det = self._records_body(doc, name, ok, nulls, tick)
+        finally:
+            tick()
+        p = aa_store.write_json(self._detail(name), dict(det, block=body), self.plist)
+        tick()
+        return self._write(name, dict(body, detail_path=self._detail(name), detail_sha256=sha256_file(p)))
+
+    def _records_body(self, doc: dict, name: str, ok, nulls: list, tick) -> tuple:
+        s, z = self.s, self.ctx["y_z"]()
+        cov = self._eff(doc, "coverage")
+        by_set = cov.get("by_set") or {}
+        data = self._learn_data(doc)
+        sc = list(doc["screen"]["pairs"])                                   # c order (screen)
+        S1 = [p for p in sc if p["passed"]]
+        k1, k31 = [p["key"] for p in S1], [p["key"] for p in sc]
+        kout = [p["key"] for p in sc if not p["passed"]]
+        arrs = {k: aa_estimate.pair_arrays(data[k], z, s) for k in k31}
+        fl = {k: aa_estimate.floors(data[k]) for k in k31}
+        R = dict(outcome=aa_rules.PASS, reasons=[], primary_block=self._eff_name(doc, "estimate"),
+                 coverage_block=self._eff_name(doc, "coverage"), sets={}, nulls=nulls)
+        det, s1 = {}, None
+        if ok("s1"):                     # the record estimators, non-primary CIs, raw, drop, pair-level, DL / HK
+            s1 = aa_estimate.estimate_set(arrs, k1, "S1", s)
+            R["s1_records"] = dict(_strip(s1), coverage=by_set.get("S1"))
+        else:
+            R["s1_records"] = None
+        if ok("pairs"):                  # AA.4 쌍별 기록, all 31 learned pairs (naive values from the screen block)
+            pr = w_records.pilot_record({k: data[k] for k in k31}, z, {}, W_SPEC)["pairs"]
+            R["pairs"] = {p["key"]: dict(
+                aa_estimate.pair_record(data[p["key"]], z, s), ci=aa_estimate.pair_ci(arrs[p["key"]], int(p["c"]), s)["ci"],
+                c=int(p["c"]), axis=p["axis"], x_odour=p["x_odour"], naive_d=p["naive_d"], L_A=p["L_A"], L_P=p["L_P"],
+                passed=p["passed"], **{x: pr[p["key"]][x] for x in PILOT_ITEMS}) for p in sc}
+        else:
+            R["pairs"] = None
+        for tag, ks in (("S31", k31), ("out", kout)):
+            if ok(tag):
+                R["sets"][tag] = dict(_strip(aa_estimate.estimate_set(arrs, ks, tag, s)), coverage=by_set.get(tag),
+                                      coverage_null=(cov.get("null_reason") or {}).get(tag))
+            else:
+                R["sets"][tag] = None
+        if ok("phi"):                    # AA.6: quantiles of the S1 pairs' taught-cell floor shares
+            R["phi_quantiles"] = dict(qs=list(s.floor_qs), phi_R=aa_estimate.phi_quantiles([fl[k]["phi_R"] for k in k1], s),
+                                      phi_P=aa_estimate.phi_quantiles([fl[k]["phi_P"] for k in k1], s))
+        else:
+            R["phi_quantiles"] = None
+        R["sets"]["sens"] = self._sens(name, arrs, fl, k1, nulls) if ok("sens") else None
+        if ok("noplast"):
+            R["noplast"], det["manifest"] = self._noplast(doc, sc, S1)
+        else:
+            R["noplast"] = None
+        if self.pool is not None and hasattr(self.pool, "close"):      # the FlyPool goes before G.6's own processes
+            self.pool.close()
+        self.pool = None                         # G.6's worker count is then --workers / s.workers, not the FlyPool's
+        if ok("g6") and s1 is not None:
+            R["g6"], det["g6"] = self._g6(doc, name, data, arrs, S1, s1, z, nulls, tick)
+        else:
+            R["g6"] = None
+        R["note"] = ("AA.7 7: records 원장(4 h) — 상한을 넘은 항목은 null과 사유 \"records 상한\"(STOP 아님). S31 · 탈락 "
+                     "집합, 기록 추정량 · 비표준화 대조 · ±∞ 제외판 · 쌍 단위 1단계 판 · 1차 아닌 CI · 쌍별 값 범위 · t 구간 "
+                     "(쌍별) · DL / HK, 쌍별 기록(31쌍, 순진 값은 screen 블록), φ 분위수, 바닥 민감도(결과 의존 선택 — "
+                     "1차 아님)와 그 포함 확률, 가소성 끈 대조(기록만), G.6 재계산(기록 전용, 2 h 상한).")
+        return R, det
+
+    def _sens(self, name: str, arrs: dict, fl: dict, k1: list, nulls: list):
+        """AA.6 6240: S1 pairs with φ_R < 0.10 ∧ φ_P < 0.10 (rounded), flow "sens_floor", the small-k rule; k = 0 →
+        null "k = 0" (never a STOP); coverage of every pooled method from the sealed function on its group sizes."""
+        s, rd = self.s, self.s.round_digits
+        sub = [k for k in k1 if round(fl[k]["phi_R"] - s.floor_cut, rd) < 0 and round(fl[k]["phi_P"] - s.floor_cut, rd) < 0]
+        if not sub:
+            nulls.append(dict(item="sens", reason="k = 0"))
+            return None
+        e = aa_estimate.estimate_set(arrs, sub, "sens", s)
+        cov = None
+        if e["plan"]["kind"] == "pooled":
+            ms = self._cov_methods(e["plan"])
+            vals = self._pcells(name, self._cov_jobs(e["sizes"], "sens", ms, seal_now(s)["key"]), "records", log=_log)
+            cov = self._cov_summaries(vals, e["sizes"], ms)
+        return dict(_strip(e), coverage=cov, flow=s.flow("sens"),
+                    note="학습 값(바닥 몫)으로 고른 부분집합 — 결과 의존 선택이며 1차가 아니다(AA.6).")
+
+    def _noplast(self, doc: dict, sc: list, S1: list) -> tuple:
+        """AA.7 7 (plan Reading 24): S1's first two pairs in c order (S31's when k < 2) × 2 flies, R brain with
+        plasticity off, main-set seeds, brain "noplast", block "records"; R1 = pre bit for bit is recorded only."""
+        s = self.s
+        src = S1 if len(S1) >= s.noplast_pairs else sc
+        first = src[:s.noplast_pairs]
+        try:
+            rows = {int(r["c"]): r for r in self.ctx["main_rows"](self.ctx["y_doc"]()["digest"]["set"])}
+        except ValueError as e:
+            refuse(f"stage records: the main set does not reproduce Y block digest: {e}")
+        U = units([rows[int(p["c"])] for p in first], "main", s.probes, s.noplast_flies, V_SPEC.lever_edit,
+                  brains=("R",), plastic=False)
+        for u in U:
+            u["brain"] = "noplast"
+        wm = self.ctx["measurer"](self.pool, False)
+        got = self._measure(wm, U, "records")
+        mism = [dict(pair=g["unit"]["pair"], fly=g["unit"]["fly"]) for g in got
+                if not np.array_equal(counts_f(g["result"]["stages"][1]), counts_f(g["result"]["stages"][0]),
+                                      equal_nan=True)]
+        return dict(pairs=[p["key"] for p in first], source="S1" if src is S1 else "S31", flies=s.noplast_flies,
+                    n_units=len(got), r1_equals_pre=not mism, mismatches=mism,
+                    note="기록만 — 어긋나도 1차 추정은 바꾸지 않는다(AA.7 7)."), manifest(got)
+
+    # ---- G.6 recompute record (AA.9.1; plan Readings 12–14, 20, 23) --------------------------------------------------
+    def _g6(self, doc: dict, name: str, data: dict, arrs: dict, S1: list, s1: dict, z: dict, nulls: list, tick) -> tuple:
+        """Inputs from the primary resample (S1's estimate_set reps, or the pair bootstrap when k = 1); θ = Y θ̂ and
+        θ_AA (fit_y on the S1 learn raw; null when k < 2 or θ_W is unavailable); rows point / lo / hi × Hedges / raw
+        through aa_estimate.g6_row, skipped with status "목표 ≤ 거짓 통과 효과" when the input says so (AA.9.3 P2-10);
+        then the heterogeneity rows (point rows only, ref = that point row). Every job is a resumable JSON cell
+        progress/<name>/g6_*.json — g6_hetero has no inner cells, so a killed hetero row is recomputed whole on resume
+        (finished rows are read back). The 2 h G.6 cap (and the 4 h records cap) is enforced with measured seconds:
+        checked before every job and as jobs finish; past it the pool is terminated and the remaining rows get status
+        "G.6 상한" (record only, never a STOP)."""
+        s = self.s
+        k1 = [p["key"] for p in S1]
+        if len(S1) >= 2:
+            reps4, point4 = s1["_reps"][:, :len(GATES)], [s1["point"][g] for g in GATES]
+            src = f"S1 {s1['plan']['primary']} (흐름 {s.flow('S1') if s1['plan']['primary'] == 'two_stage' else 'pool_fly'})"
+        else:
+            p = S1[0]
+            reps4 = aa_estimate.pair_ci(arrs[p["key"]], int(p["c"]), s)["reps"][:, :len(GATES)]
+            point4 = arrs[p["key"]]["w"].mean(0)[:len(GATES)]
+            src = f"쌍 {p['key']} 마리 부트스트랩(흐름 pair, c {int(p['c'])})"
+        mog = aa_estimate.min_of_gates(point4, reps4, s)
+        inputs = aa_estimate.g6_inputs(mog, s)
+        yt = self.ctx["y_theta"]("7(G.6 재계산)")
+        why_y = "; ".join(str(x) for x in (yt.get("why") or []))
+        th = {"Y": (None, why_y) if why_y else (yt["theta"], None)}
+        r = yt.get("r")
+        if r is None and yt.get("theta_w") is not None:
+            r = y_oc.r_v0(yt["theta_w"])
+        if len(S1) < 2:
+            th["AA"] = (None, "k < 2")
+        elif r is None:
+            th["AA"] = (None, "θ_W 없음")
+        else:
+            th["AA"] = (y_oc.fit_y([data[k] for k in k1], k1, r), None)
+        costs = dict(doc["smoke"]["costs"])
+        t_g6 = [time.perf_counter()]
+
+        def left() -> tuple:
+            tick()
+            now = time.perf_counter()
+            self._add(name, now - t_g6[0], "g6")
+            t_g6[0] = now
+            g = s.g6_cap_h - self._prog(name)["g6"] / s.s_per_h
+            rc = s.records_cap_h - self._rec_spent_h(doc, name)
+            return (g * s.s_per_h, aa_rules.G6_REASON) if g <= rc else (rc * s.s_per_h, aa_rules.RECORDS_REASON)
+        rows, full, jobs = [], {}, []
+        for tn in ("Y", "AA"):
+            theta, why = th[tn]
+            tsha = None if theta is None else hashlib.sha256(canonical(aa_store.to_json(theta)).encode()).hexdigest()
+            for inp in inputs:
+                row = dict(theta=tn, row=inp["row"], scale=inp["scale"], target=inp["target"])
+                if inp["status"] == aa_estimate.TARGET_LOW:
+                    row["status"] = aa_estimate.TARGET_LOW
+                elif theta is None:
+                    row["status"] = why
+                else:
+                    tag = f"g6_row_{tn}_{inp['row']}_{inp['scale']}"
+                    row["status"], row["_tag"] = None, tag
+                    jobs.append((tag, dict(kind="row", theta=tsha, target=inp["target"], costs=costs, z=z, n=s.n_len),
+                                 ("row", theta, z, inp["target"], None, costs, s.n_len, s, None)))
+                rows.append(row)
+        got, cap = self._g6_run(name, jobs, left)
+        for row in rows:
+            tag = row.pop("_tag", None)
+            if tag is None:
+                continue
+            res = got.get(tag)
+            if res is None:
+                row["status"] = cap
+                nulls.append(dict(item=f"g6 {row['theta']} {row['row']} {row['scale']}", reason=cap))
+                continue
+            full[tag] = res
+            row.update({x: res[x] for x in G6_KEEP if x in res})
+        het, jobs = [], []
+        dl = (s1.get("dl") or {}).get(mog["gate"]) or dict(available=False, reason="k < 2")
+        for tn in ("Y", "AA"):
+            theta, why = th[tn]
+            for scale in s.g6_scales:
+                f = aa_estimate.hedges_j(s.probes) if scale == "hedges" else 1.0
+                pt = next(x for x in rows if x["theta"] == tn and x["row"] == "point" and x["scale"] == scale)
+                h = dict(theta=tn, scale=scale, gate=mog["gate"], mu=pt["target"])
+                if pt["status"] == aa_estimate.TARGET_LOW:
+                    h["status"] = aa_estimate.TARGET_LOW
+                elif theta is None:
+                    h["status"] = why
+                elif not dl.get("available"):
+                    h["status"] = f"DL τ̂ 없음({dl.get('reason')})"
+                elif pt["status"] in (aa_rules.G6_REASON, aa_rules.RECORDS_REASON):
+                    h["status"] = pt["status"]
+                elif pt["status"] != "ok":
+                    h["status"] = f"점 행 상태 {pt['status']} — 계산 안 함"
+                else:
+                    ref = full[f"g6_row_{tn}_point_{scale}"]
+                    ref = dict(false=ref["false"], fill_bad=ref["fill_bad"])
+                    h["tau"] = f * float(dl["tau"])
+                    tag = f"g6_het_{tn}_{scale}"
+                    h["status"], h["_tag"] = None, tag
+                    tsha = hashlib.sha256(canonical(aa_store.to_json(theta)).encode()).hexdigest()
+                    rsha = hashlib.sha256(canonical(aa_store.to_json(ref)).encode()).hexdigest()
+                    jobs.append((tag, dict(kind="hetero", theta=tsha, mu=h["mu"], tau=h["tau"], ref=rsha, costs=costs,
+                                           z=z, n=s.n_len),
+                                 ("hetero", theta, z, h["mu"], h["tau"], costs, s.n_len, s, ref)))
+                het.append(h)
+        got, cap2 = self._g6_run(name, jobs, left)
+        for h in het:
+            tag = h.pop("_tag", None)
+            if tag is None:
+                continue
+            res = got.get(tag)
+            if res is None:
+                h["status"] = cap2
+                nulls.append(dict(item=f"g6 hetero {h['theta']} {h['scale']}", reason=cap2))
+                continue
+            full[tag] = res
+            h.update({x: res[x] for x in ("status", "n_pass", "first", "odd_k_low_extra") if x in res})
+        left()
+        out = dict(mog=mog, resample=src, inputs=inputs, rows=rows, hetero=het, seconds=self._prog(name)["g6"],
+                   capped=bool(cap or cap2), cap_reason=cap or cap2, theta_status={k: v[1] for k, v in th.items()},
+                   n_naive=s.n_len, costs=costs, disclosures=list(G6_DISCLOSURES))
+        return out, {k: {x: v for x, v in r_.items() if x not in ("false", "fill_bad")} for k, r_ in full.items()}
+
+    def _g6_run(self, name: str, jobs: list, left) -> tuple:
+        """jobs = [(tag, key_obj, args)] → ({tag: result}, cap reason or None). Finished jobs are read back from their
+        cells; the rest run in-process (workers 1) or in a spawn Pool that is terminated once `left()` (measured
+        seconds left under the G.6 / records caps) reaches 0. A row cut by the cap is never partially recorded."""
+        s = self.s
+        root = Path(s.progress_dir) / name
+        out, todo = {}, []
+        for tag, key_obj, args in jobs:
+            key, p = self._key(tag, key_obj), root / (_safe(tag) + ".json")
+            try:
+                d = json.loads(p.read_text()) if p.exists() else {}
+            except ValueError:
+                d = {}
+            if d.get("key") == key:
+                out[tag] = d["value"]
+            else:
+                todo.append((tag, key, p, args))
+        if not todo:
+            return out, None
+
+        def gone(sec_why) -> bool:
+            return round(sec_why[0] / s.s_per_h, s.round_digits) <= 0
+
+        def save(tag, key, p, res):
+            v = aa_store.to_json(res)
+            aa_store.write_json(str(p), dict(key=key, value=v, at=_now()), self.plist)
+            out[tag] = v
+        lw = left()
+        if gone(lw):
+            return out, lw[1]
+        if self._workers() == 1:
+            for tag, key, p, args in todo:
+                lw = left()
+                if gone(lw):
+                    return out, lw[1]
+                save(tag, key, p, _g6_job(*args))
+                _log(f"aa {name}: G.6 {len(out)}/{len(jobs)}")
+            return out, None
+        for v in s.thread_env:
+            os.environ.setdefault(v, "1")
+        with mp.get_context("spawn").Pool(min(self._workers(), len(todo))) as pool:
+            it = pool.imap_unordered(_g6_star, list(enumerate(a for _t, _k, _p, a in todo)))
+            n = 0
+            while n < len(todo):
+                lw = left()
+                if gone(lw):
+                    pool.terminate()
+                    return out, lw[1]
+                try:
+                    i, res = it.next(timeout=lw[0])
+                except mp.TimeoutError:
+                    continue
+                tag, key, p, _a = todo[i]
+                save(tag, key, p, res)
+                n += 1
+                _log(f"aa {name}: G.6 {len(out)}/{len(jobs)}")
+        return out, None
+
+    # ================================================================ defect procedure (AA.7 3 6255, plan Reading 19)
+    def defect(self, note_path: str) -> dict:
+        """① `defect_<n>` (symptom, AA clause, cause, affected outputs) before any patch; only the summary changes.
+        No env check (a seal / env mismatch is often the very symptom)."""
+        self._clean("defect")
+        doc = self._doc()
+        if (doc.get("seal_code") or {}).get("outcome") != aa_rules.PASS:
+            refuse("defect: the defect procedure starts after block seal_code (AA.7 3)")
+        try:
+            note = json.loads(Path(note_path).read_text())
+        except (OSError, ValueError) as e:
+            refuse(f"defect: cannot read the note {note_path}: {e}")
+        need = ("symptom", "clause", "cause", "affected")
+        bad = [k for k in need if not isinstance(note, dict) or not note.get(k)]
+        if bad:
+            refuse(f"defect: the note needs non-empty {list(need)}; missing {bad}")
+        n = self._latest(doc, "defect")[0] + 1
+        name = f"defect_{n}"
+        p = aa_store.write_json(self._detail(name), {k: note[k] for k in need}, self.plist)
+        return self._write(name, dict(outcome=aa_rules.PASS, reasons=[], n=n, **{k: note[k] for k in need},
+                                      detail_path=self._detail(name), detail_sha256=sha256_file(p),
+                                      note="AA.7 3 ①: 결함 보고 — 패치 전에 커밋한다."), ledger=False)
+
+    def reseal(self, n: int) -> dict:
+        """③ after the patch: the order-0 tests log ends `exit 0` with a "N passed" line and no failure line, and it is
+        a NEW log (sha256 ≠ stage0's and every earlier reseal's — §2 was rerun after the patch); then reseal_<n> holds
+        the new seal. The env check drops aa_files (the patch), every other field must match."""
+        self._clean("reseal")
+        doc = self._doc()
+        name = f"reseal_{int(n)}"
+        if f"defect_{int(n)}" not in doc:
+            refuse(f"reseal: no block defect_{int(n)}")
+        if name in doc:
+            refuse(f"reseal: block {name} exists")
+        tests, bad = self._tests_log()
+        old = [doc["stage0"].get("tests", {}).get("log_sha256")] + \
+            [v.get("tests", {}).get("log_sha256") for k, v in doc.items() if re.fullmatch(r"reseal_\d+", k)]
+        if tests["log_sha256"] in old:
+            bad.append("시험 로그가 이전 실행과 같다 — 패치 뒤 순서 0의 시험(§2)을 다시 돌린 로그가 아니다")
+        if bad:
+            refuse(f"reseal: {'; '.join(bad)}")
+        self._env(name, doc, drop_aa=True)
+        return self._write(name, dict(outcome=aa_rules.PASS, reasons=[], defect=int(n), seal=seal_now(self.s),
+                                      tests=tests, note="AA.7 3 ③: 패치 · 회귀 시험 · 순서 0 시험 통과 뒤 새 봉인 해시."),
+                           ledger=False)
+
+    def recompute(self, stage: str) -> dict:
+        """④–⑤: `<stage>_v<n>` from the same immutable cache (cache hits only), n = the newest defect, which needs its
+        reseal; the block it replaces (the stage's current block, if any) is listed in `invalid` and its files are
+        archived again (idempotent) next to the new block's (AA.7 3 "둘 다 보관")."""
+        s = self.s
+        self._clean("recompute")
+        doc = self._doc()
+        if stage not in s.sealed_stages:
+            refuse(f"recompute: {stage} is not a sealed stage {list(s.sealed_stages)}")
+        n, dname = self._latest(doc, "defect")
+        if dname is None or f"reseal_{n}" not in doc:
+            refuse(f"recompute: needs defect_<n> and its reseal_<n> (newest defect {dname})")
+        name = f"{stage}_v{n}"
+        if name in doc:
+            refuse(f"recompute: block {name} exists")
+        order = list(s.stages)
+        before = order[:order.index(stage)]
+        bad = [b for b in before if (self._eff(doc, b) or {}).get("outcome") != aa_rules.PASS]
+        if bad:
+            refuse(f"recompute {stage}: block(s) {bad} missing or not PASS")
+        self._seal_check(doc)
+        self._env(name, doc)
+        old = self._eff_name(doc, stage) if self._eff(doc, stage) is not None else None
+        if old is not None:
+            aa_store.archive(self._files(old), old, s)            # the original's copy (idempotent; AA.7 3 ⑤)
+        self._cache_only = True
+        self._recompute = dict(name=name, body=dict(replaces=old, defect=n),
+                               top=dict(invalid=list(doc.get("invalid") or []) + ([old] if old else [])))
+        try:
+            return getattr(self, f"_{stage}")(doc, name)
+        finally:
+            self._cache_only, self._recompute = False, None
+
+    def _tests_log(self) -> tuple:
+        """The order-0 tests log (stage0's checks, AA.7 0a): (record, reasons)."""
+        s = self.s
+        log = Path(s.tests_log)
+        lines = log.read_text().strip().splitlines() if log.exists() else []
+        passed = [ln for ln in lines if re.search(r"\d+ passed", ln)]
+        tests = dict(path=s.tests_log, log_sha256=sha256_file(log) if log.exists() else None,
+                     last_line=lines[-1] if lines else None, passed_line=passed[-1] if passed else None)
+        bad = []
+        if tests["last_line"] != s.tests_ok_line:
+            bad.append(f"시험 로그 {s.tests_log}의 마지막 줄 {tests['last_line']!r} ≠ {s.tests_ok_line!r}")
+        if tests["passed_line"] is None:
+            bad.append(f"시험 로그 {s.tests_log}에 통과 개수 줄(\"N passed\")이 없음")
+        fails = [ln for ln in lines if re.search(r"\b\d+ (failed|errors?)\b", ln)]
+        if fails:
+            bad.append(f"시험 로그 {s.tests_log}에 실패 · 오류 요약 줄: {fails[-1]!r}")
+        return tests, bad
+
+
+GATES = w_verdict.GATES
+PILOT_ITEMS = ("mech", "spill", "suppression", "brain_noise_corr", "gate_corr")   # AA.4: pilot_record's rest
+G6_KEEP = ("status", "n_pass", "counts", "first", "n_pass_base_only", "base_minus_all", "target_design_power")
+G6_DISCLOSURES = (
+    "기록 전용 — 어떤 선언 · 선택 · STOP도 이 값에서 나오지 않는다; 이 지렛대의 다음 설계 입력이 아니다(AA.9.1).",
+    "점 값이며 부트스트랩 한계는 내지 않는다 — Y에서 점 값이 부트스트랩 하한보다 크게 낙관적이었다(AA.9.1).",
+    "θ_AA는 이중 선택을 거친다(Y 거름으로 고른 S1에서 적합, precheck_y가 거름 수용을 다시 적용; AA.9.3 P3-14).",
+    "이질성 행: 홀수 k에서 혼합은 낮은 쪽(μ − τ̂)에 쌍 하나를 더 둔다(슬롯 0이 μ − τ̂) — 보수적.",
+    "기본 단독 설계 수는 모든 시나리오(기본 · 근-문턱)의 채움 제외를 그대로 쓴다 — 보수적.",
+    "목표 ≤ 거짓 통과 효과 0.5인 행은 계산하지 않는다(AA.9.3 P2-10); G.6 2 h 상한은 실측 초로 지키고, 닿으면 남은 행은 "
+    "\"G.6 상한\"(STOP 아님).",
+)
+
+
+def _strip(est: dict) -> dict:
+    """estimate_set's output without the internal resample matrix."""
+    return {k: v for k, v in est.items() if not k.startswith("_")}
+
+
+def _g6_job(kind, theta, z, a, b, costs, n_naive, s, ref) -> dict:
+    """One G.6 row (module level: the spawn pool pickles it by name); aa_estimate is looked up at call time."""
+    if kind == "row":
+        return aa_estimate.g6_row(theta, z, a, costs, n_naive, s)
+    return aa_estimate.g6_hetero(theta, z, a, b, ref, costs, n_naive, s)
+
+
+def _g6_star(item) -> tuple:
+    i, args = item
+    return i, aa_store.to_json(_g6_job(*args))
 
 
 class _BudgetStop(Exception):

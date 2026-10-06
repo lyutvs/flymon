@@ -12,6 +12,12 @@
     .venv/bin/python scripts/run_aa.py --stage records --workers 16    # 7: records + G.6 recompute record
     .venv/bin/python scripts/run_aa.py --stage archive --name screen   # re-archive a committed block (idempotent)
 
+Defect procedure (AA.7 3, plan Reading 19), only for a sealed stage (coverage / estimate / records):
+    .venv/bin/python scripts/run_aa.py --stage defect --note note.json  # ① defect_<n> {symptom, clause, cause, affected}
+    (② patch + regression test, merge, rerun the order-0 tests log — Operator §2)
+    .venv/bin/python scripts/run_aa.py --stage reseal --name <n>        # ③ reseal_<n>: new seal hashes, new tests log
+    .venv/bin/python scripts/run_aa.py --stage recompute --name estimate --workers 16   # ④ estimate_v<n> (cache only)
+
 Exit 0 PASS, 3 STOP (recorded, AA stops), 5 INVALID (do not commit), 6 environment mismatch (the ledger entry is
 written, the user decides), 7 seal mismatch (defect procedure first), 2 a refusal (arguments, cwd, connectome sha256,
 chain, dirty files). Output: the outcome line, the sentence and the block minus QUIET fields (no main-set pair value)."""
@@ -25,6 +31,7 @@ from pathlib import Path
 NPZ = "data/malecns.npz"
 EXIT_STOP, EXIT_INVALID = 3, 5
 ARCHIVE = "archive"
+DEFECT, RESEAL, RECOMPUTE = "defect", "reseal", "recompute"
 QUIET = ("archive", "env", "git", "decision_files", "numbers", "synth", "candidates", "differential", "pairs", "manifest")
 
 
@@ -43,15 +50,37 @@ def report_lines(stage: str, out: dict, limit: int) -> list:
     return lines
 
 
+def arg_reasons(a, spec) -> list:
+    """--name / --note by stage: archive <stage or stage_v<n>>, defect --note, reseal <n>, recompute <sealed stage>."""
+    import re
+    why = []
+    if (a.stage == DEFECT) != (a.note is not None):
+        why.append("--note goes with --stage defect only (and it needs one)")
+    if a.stage == ARCHIVE:
+        if a.name is None or not re.fullmatch(rf"({'|'.join(spec.stages)})(_v\d+)?", a.name):
+            why.append("--stage archive needs --name <stage> (or <stage>_v<n>)")
+    elif a.stage == RESEAL:
+        if a.name is None or not a.name.isdigit():
+            why.append("--stage reseal needs --name <n> (the defect number)")
+    elif a.stage == RECOMPUTE:
+        if a.name not in spec.sealed_stages:
+            why.append(f"--stage recompute needs --name one of {list(spec.sealed_stages)}")
+    elif a.name is not None:
+        why.append("--name goes with --stage archive / reseal / recompute only")
+    return why
+
+
 def main(argv=None) -> int:
     from flymon.brain.aa_spec import SPEC
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--stage", choices=SPEC.stages + (ARCHIVE,), required=True)
-    ap.add_argument("--name", choices=SPEC.stages, help="the stage to archive (with --stage archive)")
+    ap.add_argument("--stage", choices=SPEC.stages + (ARCHIVE, DEFECT, RESEAL, RECOMPUTE), required=True)
+    ap.add_argument("--name", help="archive: the block; reseal: the defect number; recompute: the sealed stage")
+    ap.add_argument("--note", help="defect: a JSON file {symptom, clause, cause, affected}")
     ap.add_argument("--workers", type=int)
     a = ap.parse_args(argv)
-    if (a.stage == ARCHIVE) != (a.name is not None):
-        print("refusing: --name goes with --stage archive only (and it needs one)", file=sys.stderr)
+    why = arg_reasons(a, SPEC)
+    if why:
+        print(f"refusing: {'; '.join(why)}", file=sys.stderr)
         return 2
     from flymon.brain.h3_spec import SPEC as H3
     from flymon.brain.h3_store import ROOT, sha256_file
@@ -73,6 +102,13 @@ def main(argv=None) -> int:
                 print(f"archived {e['dst']} sha256 {e['sha256']}")
             print(f"stage archive {a.name}: {len(man)} file(s) (exit 0)")
             return 0
+        if a.stage in (DEFECT, RESEAL, RECOMPUTE):         # no FlyPool: the defect procedure never measures
+            runner.workers = a.workers or SPEC.workers
+            out = (runner.defect(a.note) if a.stage == DEFECT else runner.reseal(int(a.name)) if a.stage == RESEAL
+                   else runner.recompute(a.name))
+            for ln in report_lines(a.stage, out, SPEC.cli_print_chars):
+                print(ln)
+            return exit_code(out)
         if a.stage in SPEC.pool_stages:
             from flymon.brain.fly_pool import FlyPool
             from flymon.brain.w_spec import SPEC as W

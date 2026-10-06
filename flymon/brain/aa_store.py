@@ -102,9 +102,13 @@ def append_ledger(path, entry: dict, params_list, which: str = "ledger") -> Path
 
 
 def write_summary_block(path, block: str, obj, params_list, ledger: dict | None = None,
-                        records_ledger: dict | None = None, candidates: list | None = None) -> Path:
+                        records_ledger: dict | None = None, candidates: list | None = None,
+                        extra: dict | None = None) -> Path:
+    """`extra`: further top-level keys written in the same atomic write (the defect procedure's `invalid` list)."""
     doc = read_summary(path)
     doc[block] = obj
+    for k, v in (extra or {}).items():
+        doc[k] = v
     if candidates is not None:
         doc["candidates"] = candidates
     b = dict(doc.get("budget") or {})

@@ -47,3 +47,20 @@ def test_unknown_stage_is_an_argparse_error():
 def test_cwd_refusal(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     assert run_aa.main(["--stage", "stage0"]) == 2
+
+
+@pytest.mark.parametrize("argv", [["--stage", "defect"], ["--stage", "reseal"], ["--stage", "reseal", "--name", "x"],
+                                  ["--stage", "recompute", "--name", "learn"], ["--stage", "recompute"],
+                                  ["--stage", "records", "--note", "n.json"], ["--stage", "archive", "--name", "judge"],
+                                  ["--stage", "defect", "--note", "n.json", "--name", "1"]])
+def test_defect_procedure_argument_refusals(argv):
+    assert run_aa.main(argv) == 2
+
+
+def test_defect_procedure_arguments_accepted():
+    import argparse
+    ok = [dict(stage="defect", note="n.json", name=None), dict(stage="reseal", note=None, name="1"),
+          dict(stage="recompute", note=None, name="estimate"), dict(stage="archive", note=None, name="estimate_v1"),
+          dict(stage="records", note=None, name=None)]
+    for kw in ok:
+        assert run_aa.arg_reasons(argparse.Namespace(**kw), SPEC) == [], kw

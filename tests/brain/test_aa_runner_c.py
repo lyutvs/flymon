@@ -93,9 +93,13 @@ def test_learn_measures_all_31_in_c_order_and_marks_trained(tmp_path, monkeypatc
     assert len(det["manifest"]) == 744
     assert blk["manifest_sha256"] == AR.hashlib.sha256(canonical(det["manifest"]).encode()).hexdigest()
     brains = {}
+    cs = {row_key(r): r["c"] for r in MAIN}
     for m in det["manifest"]:
         ins = json.loads(Path(m["cache_file"]).read_text())["inputs"]
         assert ins["block"] == "learn"
+        c = cs[ins["pair"]]                                           # Y's training seeds on the candidate number c
+        assert ins["phases"][0][2] == 64_000_000 + c * 40_000 and ins["phases"][1][2] == ins["phases"][0][2] + 20
+        assert ins["probe_seeds"] == [62_000_000 + c * 4_000 + ins["fly"] * 100 + k for k in range(8)]
         brains.setdefault(ins["pair"], set()).add((ins["fly"], ins["brain"]))
     assert set(brains) == set(LKEYS)
     assert all(v == {(f, b) for f in range(8) for b in ("R", "N", "RN")} for v in brains.values())
@@ -181,6 +185,8 @@ def test_learn_measured_cap_stop(tmp_path, monkeypatch):
     tr = _counts(doc()["candidates"])["trained"]
     assert tr >= 1 and out["sentence"].endswith(f"(후보 상태: untouched 218 · screened {31 - tr} · trained {tr})")
     assert "manifest_sha256" not in out
+    led = doc()["budget"]["ledger"][-1]                              # every second of the stopped run is in the ledger
+    assert led["stage"] == "learn" and led["wall_s"] == json.loads(Path(w.s.progress_dir, "learn.json").read_text())["core"]
     with pytest.raises(SystemExit) as e:                             # no partial estimate (AA.9.2 해석 12)
         w.runner().run("estimate")
     assert e.value.code == 2
@@ -208,8 +214,14 @@ def test_learn_resumes_and_keeps_trained_marks(tmp_path, monkeypatch):
     assert json.loads(Path(w.s.progress_dir, "learn.json").read_text())["core"] > 0
     w.model.job = real
     j0 = w.pool.jobs
+    p0 = json.loads(Path(w.s.progress_dir, "learn.json").read_text())["core"]
+    base = sum(e["wall_s"] for e in doc()["budget"]["ledger"]) / 3600
+    seen = []
+    real_ok = aa_rules.core_ok
+    monkeypatch.setattr(aa_rules, "core_ok", lambda e, r, s: seen.append(e) or real_ok(e, r, s))
     out = w.runner().run("learn")
     assert out["outcome"] == "PASS"
+    assert seen == [base + p0 / 3600]                                # the reservation counts the killed run's seconds
     assert w.pool.jobs - j0 == 744 - cached
     assert _counts(doc()["candidates"]) == dict(untouched=218, screened=0, trained=31)
 
