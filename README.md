@@ -218,6 +218,10 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   주 세트 오라클 개수(쌍별 값은 읽지 않음): 시험 가능 179, 균형 16, 엄격 10, 관대 31 → k 범위 [4, 8] · [6, 10] 둘 다 남음. 순서 0(합성 검증 · 픽스처 · 비트 동일, 문턱 재현 19.25 / 42.0, Y 보정이 W 실패 추출 29/29 회복), 재사용, 파일럿(입장 6/7 — a|223 탈락, Earthquake 묶기 뒤 n_Σ 5; H6 보상 · 처벌 1.0; 탐색 6/6 PASS), 점 θ 사전 점검(517 / 1,500 설계 통과, 최대 0.990–0.993)은 모두 통과했다.
   부트스트랩 작동 특성(200회 × 400, 보정 200/200 성공)에서는 자격 설계가 없었다 — 검정력 하한은 k별 최대 **0.159**, 동시 최대 **0.047**(p_set 0.5 · q 0.5 · K 16 · F 8 · [4, 8]; 같은 설계의 점 검정력 0.96–0.99), F 32에서 ≤ 0.044; 거짓 통과 상한은 모든 곳에서 0.000. 해석: θ의 쌍 수준 성분이 5쌍에서 왔고 쌍 부트스트랩이 그것을 크게 흔든다(추출별 분포는 저장되지 않아 확인은 못 함).
   기록 전용 비교에서 사용자 한쪽 + 31 거름은 점 검정력 0.904 / 0.961(Y 거름 0.810 / 0.893), 수용률 약 8배였다. 주 세트는 학습에 쓰지 않았다(오라클 개수 표는 보았으므로 다음 선언이 공개해야 한다). 예산 4.84 h / 24 h. 사용자 사전 승인(2026-10-06)에 따라 다음 선언(더 큰 균형 파일럿 · 한쪽 + 31 거름 · 수축 θ 후보)으로 간다.
+- **관문 STOP(F v4 학습 시험, 관대 31쌍 사전 분할 파일럿 확대, 2026-10-06, 부록 Z.10 — STOP_PLAN_UNREACHABLE〈0c′〉, 판정 없음)**: Y의 거름 · 근-문턱 시나리오 · G.6을 그대로 두고, 주 세트 관대 통과 31쌍을 쌍별 값을 보지 않는 규칙으로 파일럿 반과 확인 반으로 나눠 파일럿을 키우는 Z를 선언했고, 레드팀 뒤 분할 전에 민감도 모의와 계속 규칙 (가)를 두었다.
+  순서 0a(시험 `exit 0`, 분할 픽스처, 환경 해시), 0b(Y 진단 코드 경로 관문 (i)–(iii) 통과 — 칸 한계 = `oc.json`, 추출 50개 비트 동일, θ̂ 재적합 같음; Z.0 진단 수치 99/101 재현, 다른 둘 `near_td_q10` 0.965 대 0.97 · `low_gate_punish_assoc` 1.195 대 1.20은 마지막 자리 반올림이라 Z.0 정정으로 공개), 0c 재사용은 통과했다.
+  민감도 모의(Y θ̂ 타일링, 추출 100회 × 400, 대상 설계 p_set 0.5 · q 0.5 · K 16 · F 8 · [4, 8], g × 시나리오 최악)의 동시 하한 L(δ, n)은 δ 0 **0.530**(n 12) · **0.912**(n 24), 드리프트 중심 −1 SE(2.41) **0.007** · **0.178**, −2 SE 0.000 · 0.000 — 두 n 모두 −1 SE에서 0.80 미만이라 규칙 (가)로 멈췄다. 기본 시나리오 단독 한계는 모든 칸 0.895–0.937이라, 막은 것은 근-문턱 강건성 가드와 드리프트 중심 불확실성의 결합이다. δ 0 · n 12의 0.530은 Z.0 사후 모의(40회)의 0.837과 다르다(시드 · 추출 수 차이, 관찰).
+  분할은 돌지 않았다 — 31쌍 모두 학습 미사용, 파일럿 측정 없음; 주 세트는 거름 정의를 바꾸지 않는 조건(Z.9.2 P2-9)에서 다음 확인 출처로 남는다. 예산 핵심 0.24 h · records 0.09 h. 사용자 사전 승인(2026-10-06)에 따라 다음 선언(한쪽 + 31 거름과 새 확인 세트 · 새 생성원 · R-lvl / 계층 θ 모형 변경 후보)으로 간다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -407,6 +411,23 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   acceptance. The main set was not used for learning (its oracle count table was seen and must be disclosed by the
   next declaration). Budget 4.84 h of 24 h. Per the standing approval, next is a new declaration (candidates: a larger
   balanced pilot, the one-sided + 31 filter, shrinkage theta).
+- **F v4 learning test (pre-split pilot enlargement): gate stop STOP_PLAN_UNREACHABLE at 0c′, no judgement
+  (2026-10-06, appendix Z.10).** Z kept Y's filter, near-threshold scenario and G.6, and planned to enlarge the pilot
+  by splitting the 31 lenient main-set pairs into a pilot half and a confirmation half with a value-blind rule; after
+  the red team a sensitivity simulation with a continue rule (가) was put before the split. Order 0a (tests exit 0,
+  split fixtures, environment hash), 0b (Y diagnosis code-path gates (i)-(iii) pass: cell limits = `oc.json`, 50 draws
+  bit-identical, theta refit equal; Z.0 diagnosis numbers reproduced 99/101, the two others `near_td_q10` 0.965 vs
+  0.97 and `low_gate_punish_assoc` 1.195 vs 1.20 are last-digit rounding, disclosed as Z.0 corrections) and 0c reuse
+  passed. The sensitivity simulation (Y theta tiled, 100 draws x 400, target design p_set 0.5 q 0.5 K 16 F 8 [4,8],
+  worst g x scenario) gives the simultaneous lower limit L(delta, n) **0.530** (n 12) / **0.912** (n 24) at delta 0,
+  **0.007** / **0.178** with the drift centre 1 SE (2.41) worse, and 0.000 / 0.000 at 2 SE, so both n miss 0.80 at
+  -1 SE and rule (가) stops Z. The base scenario alone stays at 0.895-0.937 in every cell: what blocks the claim on
+  this lever is the near-threshold robustness guard combined with drift-centre uncertainty. The 0.530 at delta 0 n 12
+  differs from the 0.837 of the Z.0 post-hoc simulation (40 draws, other seeds; an observation). The split never ran:
+  all 31 pairs are unused for learning and there was no pilot measurement; the main set stays available as a
+  confirmation source on condition that the filter definition is unchanged (Z.9.2 P2-9). Budget 0.24 h core, 0.09 h
+  records. Per the standing approval, next is a new declaration (candidates: the one-sided + 31 filter with a new
+  confirmation set, a new pair generator, a level-proportional-drift or hierarchical-theta model change).
 
 ## 실행
 
