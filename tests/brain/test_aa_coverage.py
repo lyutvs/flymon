@@ -60,3 +60,43 @@ def test_synth_validation_record():
     v = E.synth_validation(S)
     assert len(v["cells"]) == 6 and v["pairs"] == 20 and v["method"] == "two_stage" and v["label"] == "기록"
     assert v == E.synth_validation(S)
+
+
+def test_flag_boundary_equal_to_bar_is_not_flagged():
+    """Spec AA.5 6230: "최솟값 < 0.90이면 … 명목 미달" — strictly below; a minimum exactly at the bar is not flagged."""
+    assert E.coverage_summary([0.95] * 8 + [0.90], S)["under"] is False
+    assert E.coverage_summary([0.95] * 8 + [0.899], S)["under"] is True
+    a = E.coverage((1, 1), "fly", "S1", S)
+    assert E.coverage((1, 1), "fly", "S1", dataclasses.replace(S, cov_bar=a["min"]))["under"] is False
+
+
+class _SignRng:
+    """normal() returns scale × (+1, −1, +1, …) and standard_normal() zeros; integers() is a real draw."""
+
+    def __init__(self):
+        self.r = np.random.default_rng(0)
+
+    def normal(self, loc, scale, size):
+        return loc + scale * np.where(np.arange(size) % 2 == 0, 1.0, -1.0)
+
+    def standard_normal(self, size):
+        return np.zeros(size)
+
+    def integers(self, *a, **k):
+        return self.r.integers(*a, **k)
+
+
+@pytest.mark.parametrize("het,u", [("group", [0.5, 0.5, 0.5, -0.5]), ("pair", [0.5, -0.5, 0.5, -0.5]),
+                                   ("none", [0.0, 0.0, 0.0, 0.0])])
+def test_group_and_pair_heterogeneity_are_distinct(het, u, monkeypatch):
+    """Groups (3, 1), δ 0, raw (no probe noise) so the data the bootstrap sees are δ + u exactly: group-level u is
+    shared inside a group (+, +, +, −), pair-level u is one draw per pair (+, −, +, −). Swapping or dropping either
+    branch changes the captured data."""
+    seen = []
+
+    def spy(D, groups, r, B, chunk):
+        seen.append(np.asarray(D)[..., 0].copy())
+        return np.zeros((B, 1))
+    monkeypatch.setitem(E.BOOT, "fly", spy)
+    E._share(E._groups((3, 1)), "raw_fly", _SignRng(), 0.0, het, 0.5, 2, 5, S)
+    assert len(seen) == 2 and all(np.array_equal(d, np.tile(np.asarray(u)[:, None], (1, S.flies))) for d in seen)

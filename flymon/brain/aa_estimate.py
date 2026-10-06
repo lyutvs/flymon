@@ -271,7 +271,8 @@ def dl_hk(theta, v, s=AA) -> dict:
 
 def min_of_gates(point4, reps4, s=AA) -> dict:
     """AA.9.1 6304: signs (+, −, +, −) = w_verdict.SIGNS on GATES first, then the minimum; the CI from the per-
-    replicate minimum of the primary resample (never the minimum of marginal CI ends)."""
+    replicate minimum of the primary resample (never the minimum of marginal CI ends). The sign tuple is in GATES
+    order (reward_level +, punish_drop −, reward_assoc +, punish_assoc −); point4 and reps4's last axis follow it."""
     sp = WV.SIGNS * np.asarray(point4, float)
     dist = (WV.SIGNS * np.asarray(reps4, float)).min(1)
     lo, hi = np.percentile(dist, s.pct)
@@ -415,6 +416,9 @@ def g6_summary(pc: dict, yd, costs: dict, n_naive: int, s=AA) -> dict:
     pt = {k: np.asarray(v, float) for k, v in pc["point"].items()}
     pb = np.min([pt[f"g{g}|min|base"] for g in yd.cluster_grid], 0)
     fb_ = np.max([pt[f"g{g}|max|base"] for g in yd.cluster_grid], 0)
+    # base-only record: power / false from the base scenario alone, but the fill exclusion `fb` is precheck_y's,
+    # taken over ALL scenarios (base and near) — a k excluded only by the near scenario's fill stays excluded here.
+    # Conservative (never more base-only passes than a base-only fill rule would give) and record-only (AA.9.1).
     base = _designs(pb, fb_, fb, yd)
     ps, q, K, F, kr = s.g6_design
     i = (yd.p_set_grid.index(ps), yd.q_grid.index(q), yd.k_grid.index(K), F - yd.f_min)
@@ -438,7 +442,9 @@ def g6_row(theta, z, tgt, costs, n_naive, s=AA, ys=Y_SPEC, cell=x_oc.run_cell) -
 def g6_hetero(theta, z, mu, tau, ref: dict, costs, n_naive, s=AA, ys=Y_SPEC) -> dict:
     """AA.9.1 6306 (plan Reading 13): half the pairs at μ − τ̂, half at μ + τ̂ (alternating over the k_cap slots),
     power on streams (g6_seed, "het" | "mix_het", g, scenario), false side and fill exclusion from `ref` (the same θ's
-    point-row precheck, whose false target 0.5 does not depend on d_power)."""
+    point-row precheck, whose false target 0.5 does not depend on d_power). Slot j takes μ − τ̂ when j is even and
+    μ + τ̂ when odd, so for an odd k the low (μ − τ̂) side gets one extra pair among the first k slots — conservative
+    (power at that k is computed on slightly more low pairs than half); disclosed as odd_k_low_extra in the result."""
     yd = g6_spec(mu, s, ys)
     idx = y_oc.rng(yd.precheck_seed, y_oc.TAG_CAL).integers(0, len(theta["resid"]), yd.cal_reps)
     cals = [y_oc.calibrate_y(theta, t, "min", idx, z, yd) for t in (mu - tau, mu + tau)]
@@ -456,4 +462,5 @@ def g6_hetero(theta, z, mu, tau, ref: dict, costs, n_naive, s=AA, ys=Y_SPEC) -> 
             pts.append(r["p"])
             fill_bad |= np.round(np.asarray(r["fill_by_k"]) - yd.fill_max, yd.round_digits) > 0
     rows = _rank(_designs(np.min(pts, 0), np.asarray(ref["false"], float), fill_bad, yd), costs, n_naive, yd)
-    return dict(status="ok", mu=float(mu), tau=float(tau), n_pass=len(rows), first=rows[0] if rows else None)
+    return dict(status="ok", mu=float(mu), tau=float(tau), n_pass=len(rows), first=rows[0] if rows else None,
+                odd_k_low_extra=True)                   # disclosure: slot 0 is μ − τ̂ (see the docstring)

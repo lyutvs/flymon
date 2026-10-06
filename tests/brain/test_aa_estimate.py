@@ -188,3 +188,69 @@ def test_g6_inputs_status_and_order():
 
 def test_constants():
     assert round(E.c_k(8), 4) == 1.1259 and round(E.hedges_j(8), 4) == 0.8889
+
+
+@pytest.mark.parametrize("method,groups,P", [("fly", [[0], [1]], 2), ("two_stage", [[0, 1]], 2), ("pair", [[0]], 1)])
+def test_fly_stage_actually_resamples(method, groups, P):
+    """Flies vary within a pair and the first stage cannot move (one group / one pair / fly-level), so every bit of
+    replicate spread comes from the fly draw; a fixed-fly mutant (fi = arange(F)) gives SD 0."""
+    D = np.zeros((P, 4, 1))
+    D[0, :, 0] = [0.0, 1.0, 2.0, 3.0]
+    reps = E.BOOT[method](D, groups, E.stream(1, "fly_stage"), 300, 70)[:, 0]
+    assert reps.std() > 0 and len(set(np.round(reps, 12))) > 3
+    assert np.allclose(reps * 4 * P, np.rint(reps * 4 * P), atol=1e-9)       # means of resampled fly values
+    assert reps.min() >= 0.0 and reps.max() <= 3.0 / P
+
+
+def test_pool_raw_uses_primary_method_and_its_stream():
+    keys, arrs = _arrs(12, ["E1", "E2", "E3", "E4", "E5", "E6"])
+    for ks, primary, groups in ((keys, "two_stage", [[0, 6], [1, 7], [2, 8], [3, 9], [4, 10], [5, 11]]),
+                                (keys[:3], "fly", [[0], [1], [2]])):
+        out = E.estimate_set(arrs, ks, "S1", S)
+        RC = np.stack([arrs[k]["rc"] for k in ks])
+        rr = E.BOOT[primary](RC, groups, E.stream(S.boot_seed, "pool_raw", "S1"), S.boot_b, S.boot_chunk)
+        assert out["raw"]["method"] == primary
+        for j, g in enumerate(E.RAW):
+            assert out["raw"]["ci"][g] == [float(v) for v in np.percentile(rr[:, j], S.pct)]
+            assert out["raw"]["point"][g] == float(RC.mean(1)[:, j].mean())
+
+
+def test_pool_drop_excludes_pairs_below_two_finite_flies_and_uses_gate_stream():
+    keys, arrs = _arrs(12, ["E1", "E2", "E3", "E4", "E5", "E6"])
+    i = E.GI["reward_assoc"]
+    arrs = {k: dict(v, raw=v["raw"].copy()) for k, v in arrs.items()}
+    arrs[keys[0]]["raw"][1:, i] = np.inf                            # 1 finite fly → excluded
+    arrs[keys[1]]["raw"][2:, i] = -np.inf                           # exactly 2 finite flies → kept
+    out = E.estimate_set(arrs, keys, "S1", S)
+    row = out["drop"]["reward_assoc"]
+    assert row["k"] == 11 and row["n_excluded_pairs"] == 1 and row["plan"]["primary"] == "two_stage"
+    sub = keys[1:]
+    R_ = np.stack([arrs[k]["raw"][:, i] for k in sub])
+    Dd = np.where(np.isfinite(R_), R_, np.nan)[..., None]
+    reps = E.boot_two_stage(Dd, [[0, 6], [1, 7], [2, 8], [3, 9], [4, 10], [5]],
+                            E.stream(S.boot_seed, "pool_drop", "S1", i), S.boot_b, S.boot_chunk)
+    assert row["ci"] == [float(v) for v in np.nanpercentile(reps[:, 0], S.pct)]
+    assert row["point"] == float(np.nanmean(np.nanmean(Dd, 1), 0)[0])
+    assert out["drop"]["reward_level"]["k"] == 12 and out["drop"]["reward_level"]["n_excluded_pairs"] == 0
+
+
+def test_dl_pair_variance_is_winsorized_var_ddof1_over_F():
+    """v_p = var(w, ddof 1) / F on the winsorized fly d′ (AA.5 기록): raw carries +∞ where w carries 10, so a raw /
+    ddof 0 / no-÷F mutant moves the pinned DL numbers."""
+    vals = [[0.0, 1.0, 2.0, 3.0], [1.0, 1.0, 2.0, 4.0], [10.0, 2.0, 2.0, 2.0], [0.5, 0.5, 1.5, 3.5], [3.0, 1.0, 0.0, 0.0]]
+    keys, arrs = [], {}
+    for j, v in enumerate(vals):
+        k = f"a|{200 + j}|O{j}|y{j}"
+        w = np.tile(np.asarray(v)[:, None], (1, 4))
+        raw = w.copy()
+        raw[w == 10.0] = np.inf
+        keys.append(k)
+        arrs[k] = dict(w=w, raw=raw, rc=np.zeros((4, 2)))
+    out = E.estimate_set(arrs, keys, "S1", dataclasses.replace(S, boot_b=20, boot_chunk=20))
+    th = np.array([np.mean(v) for v in vals])
+    vp = np.array([np.var(v, ddof=1) for v in vals]) / 4
+    assert vp.tolist() == pytest.approx([5 / 12, 0.5, 4.0, 0.5, 0.5])
+    want = E.dl_hk(th, vp, S)
+    dl = out["dl"]["reward_level"]
+    assert dl["Q"] == pytest.approx(want["Q"], abs=1e-12) and dl["tau2"] == pytest.approx(want["tau2"], abs=1e-12)
+    assert dl["Q"] == pytest.approx(2.5173410404624272, abs=1e-9) and dl["mu"] == pytest.approx(1.5722543352601155, abs=1e-9)

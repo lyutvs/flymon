@@ -5,7 +5,7 @@ import dataclasses
 import numpy as np
 
 from flymon.brain import aa_estimate as E
-from flymon.brain import w_oc, y_oc
+from flymon.brain import w_oc, x_oc, y_oc
 from flymon.brain.aa_spec import SPEC
 from flymon.brain.y_spec import SPEC as Y
 
@@ -51,3 +51,56 @@ def test_g6_hetero_deterministic():
         return
     a = E.g6_hetero(th, Z, 1.5, 0.3, ref, COSTS, 31, SPEC, YS)
     assert a == E.g6_hetero(th, Z, 1.5, 0.3, ref, COSTS, 31, SPEC, YS) and "n_pass" in a
+
+
+def _fake_hetero(monkeypatch, fill_by_k=None):
+    calls = dict(cal=[], mix=[])
+
+    def cal(theta, t, mode, idx, z, yd):
+        calls["cal"].append((round(t, 12), mode))
+        return dict(ok=True, corners=("corner", round(t, 12)))
+
+    def ev(theta, rng_, mix_rng, n_rep, pair_mix, fly_a, fly_b, g, z, yd, sc="base", accept=None):
+        calls["mix"].append(list(pair_mix))
+        fb = [0.0] * (yd.k_cap - yd.k_min + 1) if fill_by_k is None else fill_by_k
+        return dict(p=np.ones(x_oc.grid_shape(yd)), fill_by_k=fb)
+    monkeypatch.setattr(y_oc, "calibrate_y", cal)
+    monkeypatch.setattr(y_oc, "evaluate_y", ev)
+    return calls
+
+
+def _ref(yd, bad_ks=(), false=0.0):
+    fb = np.zeros(yd.k_cap - yd.k_min + 1, bool)
+    for k in bad_ks:
+        fb[k - yd.k_min] = True
+    return dict(fill_bad=fb.tolist(), false=np.full(x_oc.grid_shape(yd), false).tolist())
+
+
+def test_g6_hetero_mix_alternates_the_two_calibrations(monkeypatch):
+    calls = _fake_hetero(monkeypatch)
+    yd = E.g6_spec(1.5, SPEC, YS)
+    out = E.g6_hetero({"resid": [0.0] * 5}, Z, 1.5, 0.3, _ref(yd), COSTS, 31, SPEC, YS)
+    assert calls["cal"] == [(1.2, "min"), (1.8, "min")]
+    lo, hi = ("corner", 1.2), ("corner", 1.8)
+    assert len(calls["mix"]) == len(YS.cluster_grid) * len(y_oc.SCENARIOS)
+    assert all(m == [lo if j % 2 == 0 else hi for j in range(YS.k_cap)] for m in calls["mix"])
+    assert out["odd_k_low_extra"] is True and out["n_pass"] > 0
+
+
+def test_g6_hetero_uses_ref_fill_exclusion_and_false(monkeypatch):
+    _fake_hetero(monkeypatch)
+    yd = E.g6_spec(1.5, SPEC, YS)
+    th = {"resid": [0.0] * 5}
+    full = E.g6_hetero(th, Z, 1.5, 0.3, _ref(yd), COSTS, 31, SPEC, YS)["n_pass"]
+    cut = E.g6_hetero(th, Z, 1.5, 0.3, _ref(yd, bad_ks=(9,)), COSTS, 31, SPEC, YS)
+    assert full > 0 and cut["n_pass"] == full // 2 and cut["first"]["k_range"] == [4, 8]   # ref's k 9 kills [6, 10]
+    assert E.g6_hetero(th, Z, 1.5, 0.3, _ref(yd, false=1.0), COSTS, 31, SPEC, YS)["n_pass"] == 0
+
+
+def test_g6_hetero_adds_its_own_fill_exclusion(monkeypatch):
+    yd = E.g6_spec(1.5, SPEC, YS)
+    fb = [0.0] * (yd.k_cap - yd.k_min + 1)
+    fb[5 - yd.k_min] = 0.5                                          # k 5 over fill_max → [4, 8] out
+    _fake_hetero(monkeypatch, fb)
+    out = E.g6_hetero({"resid": [0.0] * 5}, Z, 1.5, 0.3, _ref(yd), COSTS, 31, SPEC, YS)
+    assert out["n_pass"] > 0 and out["first"]["k_range"] == [6, 10]
