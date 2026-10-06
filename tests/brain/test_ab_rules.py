@@ -43,7 +43,7 @@ def test_futile_sentence_slots():
     t = R.futile_stop(_futile_fill(), C)
     assert t["outcome"] == R.STOP_FUTILE and t["stop_stage"] == "0f" and R.STOP_FUTILE in R.STOPS
     s = t["sentence"]
-    assert "(α_P^D 0.0005 · α_P^F 0.00025 · α_P^R 0.0005)" in s and "0.199(397/2 000, CP 95% [0.181, 0.217]) < 0.5다" in s
+    assert "(α_P^D 0.0005 · α_P^F 0.00025 · α_P^R 0.0005)" in s and "0.1985(397/2 000, CP 95% [0.181, 0.217]) < 0.5다" in s
     assert "쌍 배분 0.45 · 0.39 · 0.3, 묶음 배분 0.08 · 0.07 · 0.05; 가장 자주 막은 조건 처벌 하락 · D · CG 0.61" in s
     assert "AB를 바꾸지 않음): all (7, 28) · (9, 20); noskew (6, 24); sd2 없음; sd1 records 상한. 사용자 몫." in s
 
@@ -191,7 +191,7 @@ def test_stop_sentences_full_strings():
         (R.futile_stop(_futile_fill(), C), R.STOP_FUTILE, "0f",
          "측정 전 가망 관문(AB.7 0f, 사용자 지시 2026-10-07)에서 AA 수준 효과와 쌍 간 SD(AA S1 16쌍의 마리 자료를 옮겨 다시 "
          "표집, μ · τ · ρ · C는 `futility` 블록)와 0e가 g 6 대표 구조에서 고른 수준(α_P^D 0.0005 · α_P^F 0.00025 · α_P^R "
-         "0.0005)으로 낸 예상 P(PASS — 네 관문 × 세 통계 × 두 방식 동시)가 0.199(397/2 000, CP 95% [0.181, 0.217]) < 0.5다"
+         "0.0005)으로 낸 예상 P(PASS — 네 관문 × 세 통계 × 두 방식 동시)가 0.1985(397/2 000, CP 95% [0.181, 0.217]) < 0.5다"
          "(기록: g 5 0.25 · g 7 0.12; 쌍 배분 0.45 · 0.39 · 0.3, 묶음 배분 0.08 · 0.07 · 0.05; 가장 자주 막은 조건 처벌 하락 · "
          "D · CG 0.61). AA 크기의 효과가 2세대로 그대로 옮겨 가도 UNDECIDED가 PASS보다 흔하다고 예측되므로, UNDECIDED가 "
          "유력한 시험에 예산을 쓰지 않고 2세대 측정 없이 멈춘다(AB 세트 미사용). 학습 단위에 대한 증거가 아니다(측정이 없음). "
@@ -237,7 +237,7 @@ def test_verdict_sentences_full_strings():
         "연합 -2.5 < −1(점 5 · 5.5 · -4 · -3.9; 한쪽 α_P^D 0.0001), ±∞ 마리를 뺀 유한 마리판도 3 · 3.3 · -2.8 · -2.4로 "
         "막대를 넘었고(α_P^F 0.00025, 남은 쌍 20), 네 비표준화 대조가 1.2 · 1.5 · -0.9 · -0.8로 ±0.25 z를 넘었다(α_P^R "
         "0.0001). 두 방식 = X 라벨 묶음 두 단계 부트스트랩(B 10 000) · 두 방향 군집 강건 t(df 5). 관문별 S1 마리 가운데 "
-        "기대 방향 |d′| ≥ 1인 몫 0.8 · 0.7 · 0.8 · 0.6, ±10 마리 30 · 12 · 25 · 10(그 가운데 ±∞ 4 · 1 · 3 · 0) / "
+        "기대 방향 |d′| ≥ 1인 몫 0.8 · 0.8 · 0.7 · 0.6, ±10 마리 30 · 25 · 12 · 10(그 가운데 ±∞ 4 · 3 · 1 · 0) / "
         "160마리. 기계 대조 · noplast · RN1 = R1 통과. → **M2 학습 단위 PASS — 2세대 넓힌 영역(상대 · 대체 상대가 2세대 "
         "기본 종), L_V, S1 쌍 평균 한정.** 스펙 5의 '보상 20회 뒤 d′ ≥ 1, 처벌 20회 뒤 하락'을 부록 AB의 개정(쌍 평균 "
         "Hedges 척도의 보정 신뢰 한계, 연합 관문 · 유한 마리판 · 비표준화 최소 효과 포함)으로 판정했다 — 마리마다 d′ ≥ 1이라는 "
@@ -272,3 +272,119 @@ def test_labels_and_states():
                           "이 지렛대의 M2 판정 트랙은 닫힌다(AB.9 닫힘 규칙).")
     assert R.spent_ok(24.0, SPEC) and not R.spent_ok(24.000001, SPEC) and R.spent_text(3.456) == "실측 누적 3.46 h"
     assert R.env_diff is not None and R.env_reasons is not None
+
+
+# ---------------------------------------------------------------- review fixes (T3): seeds, precision, order, FAIL rule
+SEEDS = dict(act=[1, 2], select=[3, 4], report=[5, 6, 7])
+
+
+def _unit(key, seeds=None, val=0.5, n=3):
+    rep = {side: dict(A=[val] * n, P=[val] * n) for side in ("pre", "R1", "R2")}
+    return dict(key=key, seeds=dict(SEEDS) if seeds is None else seeds, result=dict(report=rep))
+
+
+def test_oracle_machine_reasons_each_check_breaks_alone():
+    rows = [dict(i=0), dict(i=1)]
+    ok = [_unit("a"), _unit("b")]
+    assert R.oracle_machine_reasons(ok, rows, SEEDS, 3) == []
+    assert R.oracle_machine_reasons(ok, rows, dict(a=SEEDS, b=SEEDS), 3) == []          # keyed form
+    assert R.oracle_machine_reasons(ok[:1], rows, SEEDS, 3) == ["오라클 단위 수 1 ≠ 2"]
+    assert R.oracle_machine_reasons([_unit("a"), _unit("a")], rows, SEEDS, 3) == ["오라클 키 중복 ['a']"]
+    bad = dict(SEEDS, report=[5, 6, 8])
+    assert R.oracle_machine_reasons([_unit("a"), _unit("b", bad)], rows, SEEDS, 3) == ["b: 시드 목록 ≠ 기대값"]
+    assert R.oracle_machine_reasons([_unit("a"), dict(_unit("b"), seeds=None)], rows, SEEDS, 3) == \
+        ["b: 시드 목록 ≠ 기대값"]
+    assert R.oracle_machine_reasons(ok, rows, dict(a=SEEDS, b=bad), 3) == ["b: 시드 목록 ≠ 기대값"]
+    assert R.oracle_machine_reasons(ok, rows, dict(a=SEEDS), 3) == ["b: 시드 목록 ≠ 기대값"]
+    assert R.oracle_machine_reasons([_unit("a"), _unit("b", val=float("nan"))], rows, SEEDS, 3) == \
+        ["b: report pre.A 모양 · 유한성", "b: report R1.A 모양 · 유한성", "b: report R2.A 모양 · 유한성"]
+    short = [_unit("a", n=2), _unit("b", n=2)]
+    two = dict(SEEDS, report=[5, 6])
+    assert R.oracle_machine_reasons(short, rows, two, 3) == [
+        f"{k}: {x}" for k in "ab" for x in ["시드 목록 ≠ 기대값"] + [f"report {s}.A 모양 · 유한성" for s in ("pre", "R1", "R2")]]
+    assert R.oracle_machine_reasons([_unit("a", two), _unit("b", two)], rows, two, 3) == \
+        ["a: 시드 목록 ≠ 기대값", "b: 시드 목록 ≠ 기대값"]                         # report seeds ≠ n_rep
+    g = _unit("b")
+    g["result"]["report"]["R2"]["P"] = [0.1, 0.2, float("inf")]
+    assert R.oracle_machine_reasons([_unit("a"), g], rows, SEEDS, 3) == ["b: report R2.P 모양 · 유한성"]
+
+
+def test_reuse_reasons_each_check_alone():
+    def one(**kw):
+        f = _facts()
+        f.update(kw)
+        return R.reuse_reasons(f, SPEC)
+    b0, c0 = SPEC.v_commits[0]
+    assert one(v_anc=dict(_facts()["v_anc"], **{c0: False})) == [f"V 블록 {b0} 커밋 {c0}가 HEAD 이력에 없음"]
+    b1, c1 = SPEC.aa_blocks[-1]
+    assert one(aa_anc=dict(_facts()["aa_anc"], **{c1: False})) == [f"AA 블록 {b1} 커밋 {c1}가 HEAD 이력에 없음"]
+    for k, v in (("digest_keys", "0" * 64), ("n_b", 166), ("n_a", 83), ("last_turn", 1966)):
+        wd = dict(_facts()["w_digest"], **{k: v})
+        want = dict(digest_keys=SPEC.w_digest_keys, n_b=SPEC.w_n_b, n_a=SPEC.w_n_a, last_turn=SPEC.w_last_turn)[k]
+        assert one(w_digest=wd) == [f"W 주 세트 {k} {v} ≠ {want}"], k
+    assert one(v_check=["64행 아님"]) == ["V 세트: 64행 아님"]
+    for k in ("w_measure_key", "u_measure_key"):
+        keys = dict(_facts()["keys"], **{k: "zz"})
+        assert one(keys=keys) == [f"{k} zz ≠ {_facts()['want_keys'][k]}"], k
+    assert one(keys={}) == [f"{k} None ≠ {_facts()['want_keys'][k]}" for k in ("w_measure_key", "u_measure_key")]
+
+
+def test_threshold_precision_never_contradicts_the_bar():
+    assert R.vs_bar(0.0250001, 0.025) == "0.0250001" and R.vs_bar(0.03123456, 0.025) == "0.03123"
+    assert R.vs_bar(1.00004, 1) == "1.00004" and R.vs_bar(-0.99996, -1) == "-0.99996" and R.vs_bar(0.99996, 1) == "0.99996"
+    assert R.vs_bar(0.25001, 0.25) == "0.25001" and R.vs_bar(3.14159, 1) == "3.142" and R.vs_bar(0.000738, 0.025) == "0.000738"
+    c = R.calibration_stop("g6", (6, 5), "D", "ver", 4, 0.02500004, 251, 10000, 0.0001, C)["sentence"]
+    assert "칸 4의 CP 상한 0.02500004 > 0.025(251/10 000)" in c
+    s = R.coverage_stop(20, (5,), (3,), "R", "sel", 2, 0.0251234, C)["sentence"]
+    assert "칸 2의 CP 97.5% 상한 0.02512 > 0.025 —" in s
+    f = R.futile_stop(dict(_futile_fill(), p_hat=0.4995, x=999), C)
+    assert f["reasons"] == ["P̂ 0.4995 < 0.5"] and "가 0.4995(999/2 000, CP 95%" in f["sentence"]
+    assert R.futile_stop(dict(_futile_fill(), p_hat=0.0005, x=1), C)["reasons"] == ["P̂ 0.0005 < 0.5"]
+    try:
+        R.futile_stop(dict(_futile_fill(), p_hat=0.2), C)
+        raise AssertionError("p_hat ≠ x/n accepted")
+    except ValueError:
+        pass
+    assert R.budget_text(0.004, 12.0, SPEC) == "0.004 h + 2.0 × 12.000 h = 24.004 h"
+    assert R.budget_text(0.0, 12.0002, SPEC) == "0.0000 h + 2.0 × 12.0002 h = 24.0004 h"
+    assert R.budget_text(0.0, 12.0, SPEC) == "0.00 h + 2.0 × 12.00 h = 24.00 h" and R.core_ok(0.0, 12.0, SPEC)
+    assert R.spent_text(24.001) == "실측 누적 24.001 h" and R.spent_text(24.0004, SPEC) == "실측 누적 24.0004 h"
+    assert R.protocol_stop("a", [0.74999, 0.9], C)["sentence"].startswith("AB S1 a에서 기계 대조(두 부호 비율의 마리 "
+                                                                          "중앙값 0.74999 · 0.9)가 0.75에 못 미친다")
+    p = R.pass_sentence(dict(_pass_fill(), D_lim=[1.00004, -1.00002, 1.23456, -1.5], Dfin_lim=[1.0001, -1.0001, 2, -2],
+                             R_lim=[0.25001, -0.2500001, 0.3, -0.3]))
+    assert "보상 수준 1.00004 · 보상 연합 1.235 > +1, 처벌 하락 -1.00002 · 처벌 연합 -1.5 < −1" in p
+    assert "유한 마리판도 1.0001 · 2 · -1.0001 · -2로" in p and "대조가 0.25001 · 0.3 · -0.2500001 · -0.3로" in p
+    fl = R.fail_sentence(dict(k=20, gx=6, gt=9, gate="reward_level", sign=1.0, vals=[0.99996, 0.5], aF=0.00025,
+                              past_zero=False))
+    assert "관문 보상 수준에서 두 방식 모두의 상한 0.99996 · 0.5 < +1" in fl
+    fl = R.fail_sentence(dict(k=20, gx=6, gt=9, gate="punish_assoc", sign=-1.0, vals=[-0.99996, -0.2], aF=0.00025,
+                              past_zero=False))
+    assert "관문 처벌 연합에서 두 방식 모두의 하한 -0.99996 · -0.2 > −1" in fl
+
+
+def test_pass_sentence_every_list_in_ab8_order():
+    p = R.pass_sentence(dict(_pass_fill(), D_lim=[1.1, -1.2, 1.3, -1.4], D_pt=[2.1, -2.2, 2.3, -2.4],
+                             Dfin_lim=[1.5, -1.6, 1.7, -1.8], R_lim=[0.31, -0.32, 0.33, -0.34],
+                             share=[0.1, 0.2, 0.3, 0.4], n10=[11, 12, 13, 14], ninf=[1, 2, 3, 4]))
+    assert "보상 수준 1.1 · 보상 연합 1.3 > +1, 처벌 하락 -1.2 · 처벌 연합 -1.4 < −1(점 2.1 · 2.3 · -2.2 · -2.4;" in p
+    assert "유한 마리판도 1.5 · 1.7 · -1.6 · -1.8로" in p and "대조가 0.31 · 0.33 · -0.32 · -0.34로" in p
+    assert "몫 0.1 · 0.3 · 0.2 · 0.4, ±10 마리 11 · 13 · 12 · 14(그 가운데 ±∞ 1 · 3 · 2 · 4) / 160마리." in p
+    assert R.AB8_ORDER == ("reward_level", "reward_assoc", "punish_drop", "punish_assoc")
+
+
+def test_fail_sentence_names_first_failing_gate_in_ab8_order():
+    assert R.first_failing(["punish_assoc", "punish_drop", "reward_assoc"]) == "reward_assoc"
+    assert R.first_failing(["punish_assoc", "punish_drop"]) == "punish_drop"
+    for bad in ([], ["x"]):
+        try:
+            R.first_failing(bad)
+            raise AssertionError(bad)
+        except ValueError:
+            pass
+    fails = dict(punish_drop=dict(sign=-1.0, vals=[-0.3, 0.2], past_zero=True),
+                 reward_assoc=dict(sign=1.0, vals=[0.4, 0.5], past_zero=False))
+    many = R.fail_sentence(dict(k=20, gx=6, gt=9, aF=0.00025, fails=fails))
+    one = R.fail_sentence(dict(k=20, gx=6, gt=9, aF=0.00025, gate="reward_assoc", sign=1.0, vals=[0.4, 0.5],
+                               past_zero=False))
+    assert many == one and "관문 보상 연합에서 두 방식 모두의 상한 0.4 · 0.5 < +1" in many
