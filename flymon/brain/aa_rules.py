@@ -88,6 +88,8 @@ def reuse_reasons(facts: dict, s, ys) -> list:
     elif dict(facts.get("axes") or {}) != dict(s.n_len_axes):
         why.append(f"관대 통과 축별 개수 {dict(facts.get('axes') or {})} ≠ {dict(s.n_len_axes)}")
     decl, now = facts.get("decl_sha") or {}, facts.get("now_sha") or {}
+    if not decl:                                         # fail closed: nothing recorded at the declaration commit
+        why.append(f"{s.decl_commit} 시점 y_* · x_* · w_* · z_split sha 목록이 비어 있음")
     diff = sorted(f for f in set(decl) | set(now) if decl.get(f) is None or decl.get(f) != now.get(f))
     if diff:
         why.append(f"y_* · x_* · w_* · z_split 가 {s.decl_commit} 이후 바뀜: {diff[:5]}")
@@ -166,7 +168,7 @@ def env_reasons(blocks: list, now: dict) -> list:
 
 
 def _n(x) -> str:
-    return "null" if x is None else f"{round(float(x), 3):g}"
+    return "null" if x is None else f"{round(float(x), 3) + 0.0:g}"     # + 0.0: no "-0"
 
 
 _MODEL = ("조합 지렛대 모델(C3, APL→MBON05 2간선 + MBON05→MBON09/MBON11/MBON01 11간선 제거, E-grid k2-norm s 1.0, "
