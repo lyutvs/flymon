@@ -1,0 +1,254 @@
+"""AB's only writer (AB.2 6651; Z.9.2 P1-5 code boundary — a copy of aa_store with AB's paths; aa_store / y_store /
+z_store / w_store are never called to write): results/ab/ and results/summary/ab_learning.json only (realpath-checked, so a symlink escape refuses),
+atomic writes (temporary file + rename, or + exclusive link for a
+write-once entry), anything else SystemExit 2. The engine-output guards of every writer in this
+repository run first. Two ledgers live in the summary's `budget` block: `ledger` (core, AB cap 24 h) and
+`records_ledger` (records, 4 h; AB.7 예산); an env mismatch is appended to `ledger` as an entry with
+`env_mismatch`. The `candidates` block (AB.3 6691) is replaced whenever a block is written with `candidates=`.
+- ABCache: r_store.RCache under results/ab/ with the W measurement key; a raw entry is written once and never
+  rewritten (AA.7 3 "원자료 캐시는 불변", AB.7 8).
+- ReadCache: a read-only RCache (the AA differential test reads results/aa/cache by cache hits only; AB.7 0).
+- archive(files, dest, s): one copy of a fixed file set under <s.archive_root>/<dest>/<parent>/<name>
+  (r_store.archive_copy, sha-checked; "사본은 블록마다 · STOP 문장 전에", AB.7 머리). Never overwritten: a repeat is a
+  no-op when the archive holds exactly that set byte-identically, anything else refuses (SystemExit 2).
+- restart_preseal (plan Reading 15; before the first measurement only): move_aside renames results/ab and the archive
+  root to <path>.invalid-<n> (nothing deleted), write_invalid writes the note / summary copy once into
+  results/ab.invalid-<n>/, remove_summary removes an untracked summary — the only writes outside results/ab/."""
+from __future__ import annotations
+
+import dataclasses
+import json
+import os
+import sys
+import uuid
+from pathlib import Path
+
+import numpy as np
+
+from .h3_store import canonical, canonical_pretty, sha256_file
+from .pool_bench import refuse_modified_engine_output, refuse_old_engine_output
+from .r_store import RCache, archive_copy
+
+ALLOWED_DIR = "results/ab/"
+SUMMARY = "results/summary/ab_learning.json"
+
+
+def refuse(msg: str, code: int = 2):
+    print(f"refusing: {msg}", file=sys.stderr)
+    raise SystemExit(code)
+
+
+def _plain(o):
+    if dataclasses.is_dataclass(o) and not isinstance(o, type):
+        return _plain(dataclasses.asdict(o))
+    if isinstance(o, dict):
+        return {str(k): _plain(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [_plain(v) for v in o]
+    if isinstance(o, np.ndarray):
+        return _plain(o.tolist())
+    if isinstance(o, np.generic):
+        return o.item()
+    return o
+
+
+def to_json(obj):
+    return json.loads(json.dumps(_plain(obj), sort_keys=True))
+
+
+def guard(path, params_list) -> None:
+    for p in params_list:
+        refuse_old_engine_output(str(path), p.kc_kc_scale)
+        refuse_modified_engine_output(str(path), p)
+    rel = os.path.relpath(os.path.realpath(str(path)), os.path.realpath(os.getcwd())).replace(os.sep, "/")
+    if not (rel.startswith(ALLOWED_DIR) or rel == SUMMARY):
+        refuse(f"AB writes only under {ALLOWED_DIR} and {SUMMARY}, not {path}")
+
+
+def write_bytes(path, data: bytes, params_list, exclusive: bool = False) -> Path:
+    """Temporary file, then os.replace (atomic). exclusive=True publishes with os.link instead, which fails when the
+    target exists, so a concurrent or earlier entry is refused (SystemExit 2) and never replaced; still atomic."""
+    guard(path, params_list)
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.parent / f".{p.name}.{uuid.uuid4().hex}.tmp"
+    try:
+        tmp.write_bytes(data)
+        if exclusive:
+            try:
+                os.link(tmp, p)
+            except FileExistsError:
+                refuse(f"{p} exists; this entry is written once and never rewritten")
+        else:
+            os.replace(tmp, p)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
+    return p
+
+
+def write_json(path, obj, params_list, exclusive: bool = False) -> Path:
+    return write_bytes(path, (canonical_pretty(to_json(obj)) + "\n").encode(), params_list, exclusive)
+
+
+def read_summary(path=SUMMARY) -> dict:
+    p = Path(path)
+    return json.loads(p.read_text()) if p.exists() else {}
+
+
+def append_ledger(path, entry: dict, params_list, which: str = "ledger") -> Path:
+    doc = read_summary(path)
+    b = dict(doc.get("budget") or {})
+    b[which] = list(b.get(which, [])) + [entry]
+    doc["budget"] = b
+    return write_json(path, doc, params_list)
+
+
+def write_summary_block(path, block: str, obj, params_list, ledger: dict | None = None,
+                        records_ledger: dict | None = None, candidates: list | None = None,
+                        extra: dict | None = None) -> Path:
+    """`extra`: further top-level keys written in the same atomic write (the defect procedure's `invalid` list)."""
+    doc = read_summary(path)
+    doc[block] = obj
+    for k, v in (extra or {}).items():
+        doc[k] = v
+    if candidates is not None:
+        doc["candidates"] = candidates
+    b = dict(doc.get("budget") or {})
+    if ledger is not None:
+        b["ledger"] = list(b.get("ledger", [])) + [ledger]
+    if records_ledger is not None:
+        b["records_ledger"] = list(b.get("records_ledger", [])) + [records_ledger]
+    if b:
+        doc["budget"] = b
+    return write_json(path, doc, params_list)
+
+
+def archive(files: list, dest: str, s) -> list:
+    """Copy `files` to <s.archive_root>/<dest>/; never overwrites (module docstring)."""
+    missing = [f for f in files if not Path(f).exists()]
+    if missing:
+        refuse(f"archive {dest}: source(s) missing: {missing[:3]}")
+    if not files:
+        return []
+    root = Path(os.path.expanduser(s.archive_root))
+    d = root / dest
+    root_r, d_r = root.resolve(), d.resolve()
+    if d_r == root_r or root_r not in d_r.parents:
+        refuse(f"the archive goes only under {root_r}, not {d_r}")
+    if not d.exists():
+        return archive_copy(list(files), d, root)
+    want = {d / Path(f).parent.name / Path(f).name: f for f in files}
+    have = {p for p in d.rglob("*") if p.is_file()}
+    if have != set(want):
+        refuse(f"archive {d} holds another file set; an archive is never overwritten")
+    out = []
+    for dst, f in want.items():
+        sha = sha256_file(f)
+        if sha256_file(dst) != sha:
+            refuse(f"archive {d} differs at {f}; an archive is never overwritten")
+        out.append(dict(src=str(f), dst=str(dst), sha256=sha))
+    return out
+
+
+class ABCache(RCache):
+    """RCache under results/ab/ (r_store's smoke-scope rule; put through this writer). A raw entry is written once — a
+    second put of the same key refuses (SystemExit 2) instead of replacing it (AB.7 8: atomic, never overwritten)."""
+
+    def __init__(self, root, code: dict, smoke_seeds=()):
+        super().__init__(root, code, smoke_seeds)
+
+    def put(self, kind, inputs, result, params_list) -> None:
+        p = self._path(kind, inputs)
+        if p.exists():
+            refuse(f"{p}: the AB raw cache is immutable (AB.7 8); an entry is never rewritten")
+        # exclusive publish: a concurrent put that lands between the check and the write is refused, not replaced
+        write_json(p, {"key": self.key(kind, inputs), "kind": kind, "inputs": json.loads(canonical(inputs)),
+                       "result": result}, params_list, exclusive=True)
+
+
+class ReadCache(RCache):
+    """A read-only RCache (the AA differential test reads results/aa/cache by W measurement key; AB.7 0)."""
+
+    def __init__(self, root, code: dict):
+        super().__init__(root, code, ())
+
+    def put(self, kind, inputs, result, params_list) -> None:
+        refuse(f"{self.root} is read-only for AB (cache hits only, AB.7 0)")
+
+
+# ---- restart_preseal (plan Reading 15, before the first measurement) -------------------------------------------------
+def _rel(p) -> str:
+    return os.path.relpath(os.path.realpath(str(p)), os.path.realpath(os.getcwd())).replace(os.sep, "/")
+
+
+def _raw_root(raw_dir) -> Path:
+    if _rel(raw_dir) != ALLOWED_DIR.rstrip("/"):
+        refuse(f"restart_preseal moves only {ALLOWED_DIR.rstrip('/')}, not {raw_dir}")
+    return Path(raw_dir)
+
+
+def _arch_root(archive_root) -> Path:
+    p = Path(os.path.expanduser(archive_root))
+    home = Path(os.path.expanduser("~")).resolve()
+    if not p.name or p.resolve() in (Path("/"), home) or p.is_symlink():
+        refuse(f"the pre-seal restart does not move the archive root {p}")
+    return p
+
+
+def invalid_slot(raw_dir, archive_root) -> int:
+    """The smallest n ≥ 1 with neither <raw_dir>.invalid-<n> nor <archive_root>.invalid-<n> present."""
+    raw, arch = _raw_root(raw_dir), _arch_root(archive_root)
+    n = 1
+    while raw.with_name(f"{raw.name}.invalid-{n}").exists() or arch.with_name(f"{arch.name}.invalid-{n}").exists():
+        n += 1
+    return n
+
+
+def move_aside(path, n: int, archive: bool = False):
+    """results/ab (or, archive=True, the AB archive root) → <path>.invalid-<n> (a rename, nothing deleted); None when
+    the source is absent. Any other source, a symlink, or an existing destination refuses (SystemExit 2)."""
+    import shutil
+    p = _arch_root(path) if archive else _raw_root(path)
+    if p.is_symlink():
+        refuse(f"{p} is a symlink; the pre-seal restart moves only a real directory")
+    if not p.exists():
+        return None
+    dst = p.with_name(f"{p.name}.invalid-{int(n)}")
+    if dst.exists():
+        refuse(f"{dst} exists; an invalid copy is never overwritten")
+    shutil.move(str(p), str(dst))
+    return dict(src=str(p), dst=str(dst))
+
+
+def write_invalid(raw_dir, n: int, name: str, data: bytes) -> Path:
+    """A write-once file directly in <raw_dir>.invalid-<n>/ (the restart note, the summary copy)."""
+    raw = _raw_root(raw_dir)
+    d = raw.with_name(f"{raw.name}.invalid-{int(n)}")
+    if "/" in name or name.startswith("."):
+        refuse(f"bad file name {name!r}")
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / name
+    tmp = d / f".{name}.{uuid.uuid4().hex}.tmp"
+    try:
+        tmp.write_bytes(data)
+        try:
+            os.link(tmp, p)
+        except FileExistsError:
+            refuse(f"{p} exists; this entry is written once and never rewritten")
+    finally:
+        if tmp.exists():
+            tmp.unlink()
+    return p
+
+
+def remove_summary(path, params_list) -> bool:
+    """Removes results/summary/ab_learning.json (an untracked summary at a restart); True if it existed."""
+    guard(path, params_list)
+    if _rel(path) != SUMMARY:
+        refuse(f"only {SUMMARY} is removed, not {path}")
+    p = Path(path)
+    if not p.exists():
+        return False
+    p.unlink()
+    return True
