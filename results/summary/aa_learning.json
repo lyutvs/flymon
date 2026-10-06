@@ -5,6 +5,11 @@
     "at": "2026-10-06T07:51:55.987732+00:00",
     "stage": "stage0",
     "wall_s": 14.657165250042453
+   },
+   {
+    "at": "2026-10-06T07:52:23.787042+00:00",
+    "stage": "reuse",
+    "wall_s": 0.8295341250486672
    }
   ]
  },
@@ -1504,6 +1509,72 @@
    "state": "untouched"
   }
  ],
+ "reuse": {
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/aa/reuse/aa/reuse.json",
+    "sha256": "48cf0a397a1f1d59c208343a4746562fc1274628e8e084042e9075135ecf041e",
+    "src": "results/aa/reuse.json"
+   }
+  ],
+  "env": {
+   "aa_files": {
+    "flymon/brain/aa_estimate.py": "d871ea95e79a5a1ba19bafcb5b9d29f4a75bee92536a5f36eb56960354784d69",
+    "flymon/brain/aa_rules.py": "e460107fdc8b756a8603f8e809f349b81e968d521effa49074e0e5fc7d206177",
+    "flymon/brain/aa_runner.py": "5976de82c6d6350062d0f7643b12a691414978ef6724db24fbebd1be5d00b6e7",
+    "flymon/brain/aa_spec.py": "20b97852b88b52ac8bc525c1802d49aa40e8ebd8d9c26aeec7dbf0da4f98f58d",
+    "flymon/brain/aa_store.py": "8a6a4e9590fe9c46ee041c1e84dcf86987d6467016f2f0686af2504493d19588",
+    "scripts/run_aa.py": "676cfd07d138f28c21dad2844d87478e544b81458b92bd9bba076c3e110c0f6e"
+   },
+   "numpy": "2.5.3",
+   "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+   "python": "3.13.13",
+   "scipy": "1.18.1",
+   "uv_lock_sha256": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e",
+   "yxw_files": {
+    "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+    "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+    "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+    "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+    "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+    "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+    "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+    "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+    "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+    "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+    "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+    "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+    "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+    "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+    "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+    "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+    "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+    "flymon/brain/y_runner.py": "0ba331d74fab000fd010284c5440721eb45a103bc61e3341e472a254133efbee",
+    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+    "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54",
+    "flymon/brain/z_split.py": "ca4a011f3ed736eca3ca730c96acde0e62c9718c172e39c826851e8a4472c7d3"
+   }
+  },
+  "git": {
+   "commit": "e7a1dd996955c0b2ef016faef48e83fd5e145ea5",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "lenient_axes": {
+   "a": 20,
+   "b": 11
+  },
+  "n_yxw": 21,
+  "note": "AA.7 1: Y \ube14\ub85d \uc77c\uacf1 \u00b7 Z \ube14\ub85d \ub137(\uacb0\uacfc \u00b7 \ucee4\ubc0b), W \u00b7 U \uce21\uc815 \ud0a4, \uc8fc \uc138\ud2b8 digest, oracle.json sha256 \u00b7 N_len 31(\ucd95\ubcc4 \uac1c\uc218\ub9cc), y/x/w \u00b7 z_split \ubd88\ubcc0, Y gates \u00b7 learn \ube14\ub85d\uacfc \uc9c4\ud589 \ud30c\uc77c \uc5c6\uc74c.",
+  "order": "1",
+  "outcome": "PASS",
+  "reasons": [],
+  "stage": "reuse",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-06T07:52:23.787042+00:00",
+  "yxw_decl": "c87f4df"
+ },
  "stage0": {
   "archive": [
    {
