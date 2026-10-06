@@ -13,6 +13,7 @@ sealed before the naive screen (AA.7 3). A pair's raw counts are {stage: int [F,
   primary + pair range + "적은 묶음" (two-stage a record when groups ≥ 2)."""
 from __future__ import annotations
 
+import dataclasses
 import math
 import warnings
 
@@ -20,8 +21,10 @@ import numpy as np
 from scipy import stats
 
 from . import w_verdict as WV
-from . import y_oc, y_rules
+from . import x_oc, y_oc, y_rules
 from .aa_spec import SPEC as AA
+from .w_spec import SPEC as W_SPEC
+from .y_spec import SPEC as Y_SPEC
 
 GATES = WV.GATES
 GI = {g: i for i, g in enumerate(GATES)}
@@ -308,3 +311,149 @@ def g6_inputs(mog: dict, s=AA) -> list:
             out.append(dict(row=row, scale=scale, target=t,
                             status=TARGET_LOW if round(t - s.d_false, s.round_digits) <= 0 else "compute"))
     return out
+
+
+# ================================================================ structure-matched coverage (AA.5 6227–6231)
+def cov_cells(s=AA) -> list:
+    return [(float(d), h) for d in s.cov_deltas for h in s.cov_hets]
+
+
+def target(delta: float, method: str, s=AA) -> float:
+    """The covered value: δ · c(K) for the d′ methods (K-probe fly d′ expectation), δ for the raw contrasts."""
+    return float(delta) if method.startswith("raw_") else float(delta) * c_k(s.probes)
+
+
+def _groups(sizes) -> list:
+    if not isinstance(sizes, tuple) or not all(type(n) is int and n >= 1 for n in sizes):
+        raise TypeError("coverage takes the group-size structure only: a tuple of positive ints (AA.5)")
+    out, pos = [], 0
+    for n in sizes:
+        out.append(list(range(pos, pos + n)))
+        pos += n
+    return out
+
+
+def _share(groups, method, r, delta, het, sd, reps, B, s) -> float:
+    P = sum(len(g) for g in groups)
+    gid = np.concatenate([[j] * len(g) for j, g in enumerate(groups)]).astype(int)
+    raw = method.startswith("raw_")
+    boot = BOOT[method[len("raw_"):] if raw else method]
+    tgt = target(delta, method, s)
+    hits = 0
+    for _ in range(reps):
+        if het == "group":
+            u = r.normal(0.0, sd, len(groups))[gid]
+        elif het == "pair":
+            u = r.normal(0.0, sd, P)
+        else:
+            u = np.zeros(P)
+        x = delta + u[:, None, None] + r.standard_normal((P, s.flies, s.probes))
+        D = (x.mean(-1) if raw else winsorize(WV.dprime(x), s))[..., None]
+        lo, hi = np.percentile(boot(D, groups, r, B, s.boot_chunk)[:, 0], s.pct)
+        hits += int(lo <= tgt <= hi)
+    return hits / reps
+
+
+def coverage_cell(sizes, method, set_tag, ci, s=AA, reps=None, B=None) -> float:
+    """One cell (δ, heterogeneity) on stream SeedSequence([synth_seed, "cov", set_tag, method, ci])."""
+    groups = _groups(sizes)
+    delta, het = cov_cells(s)[int(ci)]
+    return _share(groups, method, stream(s.synth_seed, "cov", set_tag, method, int(ci)), delta, het, s.cov_het_sd,
+                  s.cov_reps if reps is None else int(reps), s.cov_b if B is None else int(B), s)
+
+
+def coverage_summary(shares: list, s=AA) -> dict:
+    cells = [dict(delta=d, het=h, share=float(v)) for (d, h), v in zip(cov_cells(s), shares)]
+    m = min(c["share"] for c in cells)
+    return dict(cells=cells, min=m, under=bool(round(m - s.cov_bar, s.round_digits) < 0))
+
+
+def coverage(sizes, method, set_tag, s=AA, reps=None, B=None) -> dict:
+    _groups(sizes)
+    return dict(coverage_summary([coverage_cell(sizes, method, set_tag, i, s, reps, B)
+                                  for i in range(len(cov_cells(s)))], s), sizes=list(sizes), method=method)
+
+
+def synth_validation(s=AA, reps=None, B=None) -> dict:
+    """AA.7 0 6247 (record): 20 independent pairs × 8 × 8, δ {0, 1, 1.5} × pair SD {0, 0.5}, 1000 reps, the primary
+    two-stage CI (B = cov_b, plan Reading 6), stream (synth_seed, "synth", cell)."""
+    groups = _groups((1,) * s.synth_pairs)
+    cells = []
+    for i, (d, sd) in enumerate((d, sd) for d in s.synth_deltas for sd in s.synth_sds):
+        sh = _share(groups, "two_stage", stream(s.synth_seed, "synth", i), float(d), "pair" if sd else "none",
+                    float(sd), s.synth_reps if reps is None else int(reps), s.cov_b if B is None else int(B), s)
+        cells.append(dict(delta=float(d), sd=float(sd), share=sh))
+    return dict(cells=cells, pairs=s.synth_pairs, method="two_stage", label="기록",
+                note="결과로 방법을 바꾸지 않는다(AA.7 0); 실제 구조의 포함 확률은 순서 4b")
+
+
+# ================================================================ G.6 recompute (AA.9.1, record only)
+def g6_spec(tgt: float, s=AA, ys=Y_SPEC):
+    return dataclasses.replace(ys, d_power=float(tgt), precheck_seed=s.g6_seed)
+
+
+def _designs(power, false, fill_bad, yd) -> list:
+    fs = list(range(yd.f_min, yd.f_max + 1))
+    out = []
+    for kr in [tuple(int(v) for v in k) for k in yd.k_ranges]:
+        ok = y_oc.range_ok(power, false, fill_bad, yd, kr, False)
+        out += [dict(p_set=yd.p_set_grid[i[0]], q=yd.q_grid[i[1]], K=yd.k_grid[i[2]], F=fs[i[3]], k_range=list(kr))
+                for i in np.ndindex(ok.shape) if ok[i]]
+    return out
+
+
+def _rank(rows: list, costs: dict, n_naive: int, yd) -> list:
+    for r in rows:
+        r["cost_h"] = float(y_rules.design_cost_y(costs, r, yd, W_SPEC, n_naive, r["k_range"][1], False)["total_h"])
+    return sorted(rows, key=lambda r: (-r["p_set"], r["cost_h"], -r["q"], r["K"], r["F"], r["k_range"][0]))
+
+
+def g6_summary(pc: dict, yd, costs: dict, n_naive: int, s=AA) -> dict:
+    power, false = np.asarray(pc["power"], float), np.asarray(pc["false"], float)
+    fb = np.asarray(pc["fill_bad"], bool)
+    rows = _rank(_designs(power, false, fb, yd), costs, n_naive, yd)
+    pt = {k: np.asarray(v, float) for k, v in pc["point"].items()}
+    pb = np.min([pt[f"g{g}|min|base"] for g in yd.cluster_grid], 0)
+    fb_ = np.max([pt[f"g{g}|max|base"] for g in yd.cluster_grid], 0)
+    base = _designs(pb, fb_, fb, yd)
+    ps, q, K, F, kr = s.g6_design
+    i = (yd.p_set_grid.index(ps), yd.q_grid.index(q), yd.k_grid.index(K), F - yd.f_min)
+    counts = {f"{a}-{b}|{p}": sum(1 for r in rows if r["k_range"] == [a, b] and r["p_set"] == p)
+              for a, b in yd.k_ranges for p in yd.p_set_grid}
+    return dict(n_pass=len(rows), counts=counts, first=rows[0] if rows else None, designs=rows,
+                n_pass_base_only=len(base), base_minus_all=len(base) - len(rows),
+                target_design_power={k: float(power[i][k - yd.k_min]) for k in range(kr[0], kr[1] + 1)})
+
+
+def g6_row(theta, z, tgt, costs, n_naive, s=AA, ys=Y_SPEC, cell=x_oc.run_cell) -> dict:
+    yd = g6_spec(tgt, s, ys)
+    pc = y_oc.precheck_y(theta, z, yd, [tuple(int(v) for v in k) for k in ys.k_ranges], cell=cell)
+    c = pc["calibration"]["min"]
+    if not c["ok"]:
+        return dict(status=c["failure"]["status"], target=float(tgt))
+    return dict(status="ok", target=float(tgt), false=pc["false"], fill_bad=pc["fill_bad"],
+                **g6_summary(pc, yd, costs, n_naive, s))
+
+
+def g6_hetero(theta, z, mu, tau, ref: dict, costs, n_naive, s=AA, ys=Y_SPEC) -> dict:
+    """AA.9.1 6306 (plan Reading 13): half the pairs at μ − τ̂, half at μ + τ̂ (alternating over the k_cap slots),
+    power on streams (g6_seed, "het" | "mix_het", g, scenario), false side and fill exclusion from `ref` (the same θ's
+    point-row precheck, whose false target 0.5 does not depend on d_power)."""
+    yd = g6_spec(mu, s, ys)
+    idx = y_oc.rng(yd.precheck_seed, y_oc.TAG_CAL).integers(0, len(theta["resid"]), yd.cal_reps)
+    cals = [y_oc.calibrate_y(theta, t, "min", idx, z, yd) for t in (mu - tau, mu + tau)]
+    for c in cals:
+        if not c["ok"]:
+            return dict(status=c["failure"]["status"], mu=float(mu), tau=float(tau))
+    mix = [cals[j % 2]["corners"] for j in range(yd.k_cap)]
+    ones = [1.0] * yd.f_max
+    pts, fill_bad = [], np.asarray(ref["fill_bad"], bool).copy()
+    for gi, g in enumerate(yd.cluster_grid):
+        for si, sc in enumerate(y_oc.SCENARIOS):
+            r = y_oc.evaluate_y(theta, y_oc.rng(yd.precheck_seed, y_oc.tag("het"), gi, si),
+                                y_oc.rng(yd.precheck_seed, y_oc.tag("mix_het"), gi, si), yd.precheck_reps, mix, ones,
+                                ones, g, z, yd, sc)
+            pts.append(r["p"])
+            fill_bad |= np.round(np.asarray(r["fill_by_k"]) - yd.fill_max, yd.round_digits) > 0
+    rows = _rank(_designs(np.min(pts, 0), np.asarray(ref["false"], float), fill_bad, yd), costs, n_naive, yd)
+    return dict(status="ok", mu=float(mu), tau=float(tau), n_pass=len(rows), first=rows[0] if rows else None)
