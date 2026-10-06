@@ -222,6 +222,11 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   순서 0a(시험 `exit 0`, 분할 픽스처, 환경 해시), 0b(Y 진단 코드 경로 관문 (i)–(iii) 통과 — 칸 한계 = `oc.json`, 추출 50개 비트 동일, θ̂ 재적합 같음; Z.0 진단 수치 99/101 재현, 다른 둘 `near_td_q10` 0.965 대 0.97 · `low_gate_punish_assoc` 1.195 대 1.20은 마지막 자리 반올림이라 Z.0 정정으로 공개), 0c 재사용은 통과했다.
   민감도 모의(Y θ̂ 타일링, 추출 100회 × 400, 대상 설계 p_set 0.5 · q 0.5 · K 16 · F 8 · [4, 8], g × 시나리오 최악)의 동시 하한 L(δ, n)은 δ 0 **0.530**(n 12) · **0.912**(n 24), 드리프트 중심 −1 SE(2.41) **0.007** · **0.178**, −2 SE 0.000 · 0.000 — 두 n 모두 −1 SE에서 0.80 미만이라 규칙 (가)로 멈췄다. 기본 시나리오 단독 한계는 모든 칸 0.895–0.937이라, 막은 것은 근-문턱 강건성 가드와 드리프트 중심 불확실성의 결합이다. δ 0 · n 12의 0.530은 Z.0 사후 모의(40회)의 0.837과 다르다(시드 · 추출 수 차이, 관찰).
   분할은 돌지 않았다 — 31쌍 모두 학습 미사용, 파일럿 측정 없음; 주 세트는 거름 정의를 바꾸지 않는 조건(Z.9.2 P2-9)에서 다음 확인 출처로 남는다. 예산 핵심 0.24 h · records 0.09 h. 사용자 사전 승인(2026-10-06)에 따라 다음 선언(한쪽 + 31 거름과 새 확인 세트 · 새 생성원 · R-lvl / 계층 θ 모형 변경 후보)으로 간다.
+- **추정 완료(조합 지렛대의 보상 · 처벌 연합 d′, 문턱 없음, 2026-10-06, 부록 AA.10 — 판정 없음)**: 사용자 결정(D: 이 지렛대의 M2 판정 트랙을 닫음, E: 추정)에 따라, Y 거름을 그대로 두고 주 세트 관대 통과 31쌍에서 보상 연합 d′(ΔV_R1 − ΔV_N1)와 처벌 연합 d′((ΔV_R2 − ΔV_R1) − (ΔV_RN2 − ΔV_RN1))를 쌍별 · 통합으로 추정하는 AA를 선언했다(문턱 없음, M2 PASS/FAIL 아님). 레드팀 뒤 추정 대상(거름 통과 쌍 조건부 평균), X 냄새 묶음 → 마리 두 단계 부트스트랩, 마리 d′ ±10 잘라냄, 구조 맞춤 포함 확률('명목 미달' < 0.90), 순진 거름 전 봉인을 두었다.
+  순서 0a(시험 758 통과, Y 파일럿 차등 시험 96/96 비트 동일), 재사용, 스모크, 봉인(`3811f859`)을 거쳐 순진 거름에서 **k = 16/31**(X 냄새 묶음 7개, 5 · 2 · 2 · 2 · 2 · 2 · 1; 탈락 사유 균형 12 · MBON13(X) 바닥 4)이 남았고, 1차 CI는 두 단계 부트스트랩이며 그 포함 확률은 **0.855('명목 미달')**다. 31쌍 × 8마리 × R · N · RN 744 단위를 학습했다(학습 pre = 순진 pre, RN1 = R1 비트 동일).
+  **보상 연합 6.021 [95% CI 4.834, 7.485]**(Hedges × 0.8889: 5.352 [4.297, 6.653]), **처벌 연합 −4.517 [−5.893, −3.234]**(−4.015 [−5.238, −2.875]); 쌍별 범위 2.85–10.00 · −8.83 – −1.29, 16쌍 모두 쌍 CI가 기대 방향에서 0을 벗어남. 쌍 간 SD(DL)는 처벌 2.038이고, 보상은 a|408의 8마리가 모두 +10에 잘려 v_p = 0이라 null이다(잘라냄 천장 — 잘라내지 않은 판 6.483). ±∞ 마리 0, 가르친 세포 바닥 중앙 φ_R 0 · φ_P 0.125. 기록: S31 5.764 · −4.075, 거름 탈락 15쌍 5.490 · −3.604, 바닥 민감도 7쌍(적은 묶음) 6.945 · −6.301, 비표준화 대조 2.573 · −1.449(z), 가소성 끈 대조 R1 = pre(불일치 0).
+  G.6 재계산(기록 전용, 이 지렛대의 다음 설계 입력이 아님): 네 관문 최솟값은 처벌 하락이 묶어 목표 Hedges 3.54 [2.69, 4.53](보정 없음 3.98 [3.02, 5.10]); Y θ̂에서는 여섯 행 모두 첫 설계 F 8 × K 8 · k [4, 8] · p_set 1.0 · q 0.75(1.56 h), 대상 설계 점 검정력 ≥ 0.99; θ_AA(이중 선택)에서는 Hedges 점 행과 두 하한끝 행이 p_set 0.625 / 0.75 · q 0.5이고 상한끝 두 행과 보정 없는 점 행은 `floor`다.
+  비교표는 기술 전용이며 M2 상태(판정 없음)와 M3 차단은 그대로다. 주 세트는 이 지렛대 · 이 거름의 확인 출처로서 소비되었다(`untouched` 218 · `trained` 31). 예산 핵심 5.52 h / 12 h(학습 5.14 h — 추정 4.1 h를 넘음), records 0.32 h(G.6 956 s). 사용자 사전 승인(2026-10-06)에 따라 다음 선언 후보를 브레인스토밍 기록에 쓴다(자동 선언 없음).
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -428,6 +433,31 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   confirmation source on condition that the filter definition is unchanged (Z.9.2 P2-9). Budget 0.24 h core, 0.09 h
   records. Per the standing approval, next is a new declaration (candidates: the one-sided + 31 filter with a new
   confirmation set, a new pair generator, a level-proportional-drift or hierarchical-theta model change).
+- **Effect-size estimate (combined lever, reward / punishment association d', no threshold), estimate complete, no
+  judgement (2026-10-06, appendix AA.10).** After the user closed this lever's M2 judgement track (D) and chose an
+  estimate (E), AA kept Y's filter and estimated the reward association d' (dV_R1 - dV_N1) and the punishment
+  association d' ((dV_R2 - dV_R1) - (dV_RN2 - dV_RN1)) per pair and pooled on the 31 lenient main-set pairs, with no
+  threshold and no M2 PASS/FAIL. After the red team: a filter-conditional estimand, an X-odour-group then fly two-stage
+  bootstrap, fly d' winsorized at +/-10, structure-matched coverage (flag below 0.90) and the estimator sealed before
+  the naive screen. Order 0a (758 tests pass, Y-pilot differential test 96/96 bit-equal), reuse, smoke and the seal
+  (`3811f859`) passed; the naive screen kept **k = 16/31** (7 X-odour groups, 5-2-2-2-2-2-1; fail reasons balance 12,
+  MBON13(X) floor 4), so the primary CI is the two-stage bootstrap, with coverage **0.855 (below nominal)**. 744 units
+  were trained (31 pairs x 8 flies x R / N / RN; learn pre = naive pre, RN1 = R1 bit-equal). **Reward association
+  6.021 [95% CI 4.834, 7.485]** (Hedges x 0.8889: 5.352 [4.297, 6.653]), **punishment association -4.517 [-5.893,
+  -3.234]** (-4.015 [-5.238, -2.875]); pair ranges 2.85-10.00 and -8.83 to -1.29, and every one of the 16 pair CIs
+  excludes 0 in the expected direction. The DL between-pair SD is 2.038 for punishment and null for reward, because all
+  8 flies of a|408 are clipped at +10 (v_p = 0; the clip ceiling caps that pair, unclipped pooled 6.483). No +/-inf
+  flies; median taught-cell floor phi_R 0, phi_P 0.125. Records: S31 5.764 / -4.075, the 15 filtered-out pairs 5.490 /
+  -3.604, floor sensitivity (7 pairs, few groups) 6.945 / -6.301, unstandardized contrasts 2.573 / -1.449 (z), the
+  plasticity-off control R1 = pre (0 mismatches). G.6 recompute (record only, not a design input for this lever): the
+  min-of-gates target is bound by the punishment drop, Hedges 3.54 [2.69, 4.53] (raw 3.98 [3.02, 5.10]); under Y's
+  theta all six rows are ok, with first design F 8 x K 8, k [4,8], p_set 1.0, q 0.75 (1.56 h) and target-design point
+  power >= 0.99; under theta_AA (double selection) the Hedges point row and both lower rows give p_set 0.625 / 0.75
+  at q 0.5 and the two upper rows and the raw point row are `floor`. The comparison table is descriptive only; the M2 status (no judgement) and
+  the M3 block are unchanged. The main set is spent as a confirmation source for this lever and filter (218
+  untouched, 31 trained). Budget 5.52 h core of 12 h (learning 5.14 h, above the 4.1 h estimate), 0.32 h records
+  (G.6 956 s). Per the standing approval, next-declaration candidates go to the brainstorm record (no automatic
+  declaration).
 
 ## 실행
 
