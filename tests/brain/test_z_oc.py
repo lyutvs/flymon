@@ -79,14 +79,32 @@ def test_power_job_streams_with_a_calibration(theta, monkeypatch):
     assert out["meta"]["a"] == 5.0 and np.allclose(out["arrays"]["p"], 0.5)
 
 
+def test_sens_job_reps_come_from_sens_reps(theta, monkeypatch):
+    th, r = theta
+    reps = []
+    monkeypatch.setattr(O, "Z_SPEC", dataclasses.replace(Z, sens_reps=7))
+    monkeypatch.setattr(O.y_oc, "calibrate_y", lambda *a, **k: dict(ok=True, failure=None,
+                                                                     corners=[dict(a=5.0, b=1.0, w=1.0)]))
+    monkeypatch.setattr(O.y_oc, "evaluate_y", lambda tb, s, m, n_rep, *a, **k: (
+        reps.append(n_rep), dict(p=np.zeros(y_oc.x_oc.grid_shape(Y))))[1])
+    O.sens_job(th, r, ZV, 12, 0, 0.0, 0, Z.sens_seed, Z.sigma_share)
+    assert reps == [7] * (len(Y.cluster_grid) * len(y_oc.SCENARIOS))
+
+
 def test_sim_limit_and_sens_summary():
     rng = np.random.default_rng(0)
     a = rng.uniform(0.5, 1.0, (100, 3, 2, 5))
     lim = O.sim_limit(a)
     assert np.isclose(lim["sim"], min(np.percentile(a[:, g, s].min(-1), 5) for g in range(3) for s in range(2)))
     assert np.isclose(lim["base_only"], min(np.percentile(a[:, g, 0].min(-1), 5) for g in range(3)))
+    lo = np.percentile(a, 5, axis=0).reshape(-1, a.shape[-1]).min(0)
+    assert np.allclose(lim["by_k"], lo) and not np.allclose(lim["by_k"], np.median(a, 0).reshape(-1, 5).min(0))
     s = O.sens_summary(a, [dict(ok=True, a=1.0, drift_ax=-11.0)] * 100, Z)
     assert s["n_below_bar"] == int((a.min(axis=(1, 2, 3)) < 0.8).sum()) and s["n_cal_fail"] == 0
+    b = np.full((4, 3, 2, 5), 0.9)
+    b[0, 1, 1, 2] = Z.plan_bar                                    # worst exactly at the bar: not below (strict <)
+    b[1, 0, 0, 0] = 0.5
+    assert O.sens_summary(b, [dict(ok=True, a=1.0, drift_ax=0.0)] * 4, Z)["n_below_bar"] == 1
 
 
 def _draws(n, rng, n_rep=400):
@@ -111,6 +129,12 @@ def test_gate_limits_against_its_own_json(monkeypatch):
     det2 = dict(det, limits=dict(det["limits"], n_rep=1))
     assert not O.gate_limits(draws, det2, zs, z_store.to_json)["ok"]
     assert not O.gate_limits(draws, det, dataclasses.replace(zs, gate_sim=0.5), z_store.to_json)["ok"]
+    k0 = next(iter(det["sim"]))
+    det3 = dict(det, sim=dict(det["sim"], **{k0: dict(det["sim"][k0], power=[-1.0])}))
+    g3 = O.gate_limits(draws, det3, zs, z_store.to_json)
+    assert g3["equal_limits"] and not g3["equal_sim"] and g3["printed"] and not g3["ok"]
+    g4 = O.gate_limits(draws, det, dataclasses.replace(zs, gate_false=zs.gate_false + 0.5), z_store.to_json)
+    assert g4["equal_limits"] and g4["equal_sim"] and not g4["printed"] and not g4["ok"]
 
 
 def test_redraw_equal():
@@ -119,6 +143,24 @@ def test_redraw_equal():
     assert O.redraw_equal(same, d, z_store.to_json)["ok"]
     other = dict(same, arrays=dict(same["arrays"], hits=same["arrays"]["hits"] + 1))
     assert O.redraw_equal(other, d, z_store.to_json) == dict(hits=False, fills=True, meta=True, ok=False)
+    meta = dict(same, meta=dict(same["meta"], n_rep=d["meta"]["n_rep"] + 1))
+    assert O.redraw_equal(meta, d, z_store.to_json) == dict(hits=True, fills=True, meta=False, ok=False)
+    fn = d["arrays"]["fills"].copy()
+    fn[0, 0, 0, :2] = np.nan
+    a = dict(same, arrays=dict(same["arrays"], fills=fn.copy()))
+    b = dict(d, arrays=dict(d["arrays"], fills=fn.copy()))
+    assert O.redraw_equal(a, b, z_store.to_json) == dict(hits=True, fills=True, meta=True, ok=True)
+
+
+def test_draw_power_reads_the_power_side():
+    rng = np.random.default_rng(5)
+    draws = _draws(3, rng)
+    for d in draws:
+        d["arrays"]["hits"][:, 1] = 0                             # the other side: nothing
+    i, ks = O.design_index(Z)
+    pw = O.draw_power(draws, Z)
+    want = np.stack([d["arrays"]["hits"][:, 0][(slice(None), slice(None)) + i][..., ks] for d in draws]) / 400.0
+    assert pw.shape == (3, 3, 2, len(ks)) and np.allclose(pw, want) and pw.any()
 
 
 def test_rec_distribution_definitions():
@@ -129,6 +171,10 @@ def test_rec_distribution_definitions():
     assert np.isclose(out["draw_q5"], np.percentile(w, 5)) and out["n_below_0.8"] == int((w < 0.8).sum())
     assert np.isclose(out["near_q5"], np.percentile(pw[:, :, 1].min(axis=(1, 2)), 5))
     assert set(k for k in out if k.startswith("low_near_g")) == {"low_near_g0", "low_near_g0.5", "low_near_g1"}
+    low = w < Z.low_power
+    for gi, g in enumerate(Y.cluster_grid):
+        assert np.isclose(out[f"low_base_g{g:g}"], np.median(pw[low][:, gi, 0].min(-1)))
+        assert np.isclose(out[f"low_near_g{g:g}"], np.median(pw[low][:, gi, 1].min(-1)))
     printed = {n for n, _, _ in Z.printed}
     assert {"draw_q0", "draw_q75", "n_low", "low_base_g1"} <= set(out) & printed
 

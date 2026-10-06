@@ -32,6 +32,8 @@ def test_writes_allowed_atomically(cwd):
         S.write_json(p, dict(x=1), PL)
         assert json.loads(Path(p).read_text()) == {"x": 1}
     assert not list(Path("results/z/a").glob(".*.tmp"))
+    assert sorted(x.name for x in Path("results/z/a").iterdir()) == ["b.json"]          # nothing beside the file
+    assert sorted(x.name for x in Path("results/summary").iterdir()) == sorted(Path(q).name for q in (S.SUMMARY, S.DRAWS))
 
 
 def test_symlink_escape_refused(cwd, tmp_path):
@@ -64,3 +66,17 @@ def test_archive_never_overwrites(cwd, tmp_path):
     with pytest.raises(SystemExit):
         S.archive(["results/z/missing.json"], "other", zs)
     assert S.archive([], "empty", zs) == []
+
+
+def test_archive_refuses_another_file_set(cwd, tmp_path):
+    zs = dataclasses.replace(Z, archive_root=str(tmp_path / "arch"))
+    for n in ("a", "b"):
+        S.write_json(f"results/z/{n}.json", dict(n=n), PL)
+    S.archive(["results/z/a.json", "results/z/b.json"], "pair", zs)
+    with pytest.raises(SystemExit) as e:                          # a subset of the archived set
+        S.archive(["results/z/a.json"], "pair", zs)
+    assert e.value.code == 2
+    S.archive(["results/z/a.json"], "one", zs)
+    with pytest.raises(SystemExit) as e:                          # a superset of the archived set
+        S.archive(["results/z/a.json", "results/z/b.json"], "one", zs)
+    assert e.value.code == 2

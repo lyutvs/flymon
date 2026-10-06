@@ -29,6 +29,7 @@ from . import w_verdict as WV
 from . import y_oc
 from .h3_store import sha256_file
 from .y_spec import SPEC as Y_SPEC
+from .z_spec import SPEC as Z_SPEC
 
 
 # ================================================================ helpers
@@ -390,8 +391,8 @@ def tiled(theta, n: int, delta: float, share: tuple):
     return dict(t, pair_cov=theta["pair_cov"], n_sigma=int(round(n * share[0] / share[1])))
 
 
-def _power_job(t, r, z: dict, boot_rng, sim_rng, mix_rng, ys) -> dict:
-    """boot_y → calibrate_y (power, d′ 1.5) → evaluate_y per g × scenario; P(PASS) of the full grid's design axis
+def _power_job(t, r, z: dict, boot_rng, sim_rng, mix_rng, ys, n_rep: int) -> dict:
+    """boot_y → calibrate_y (power, d′ 1.5) → evaluate_y (n_rep experiments) per g × scenario; P(PASS) of the full grid's design axis
     is returned whole (the caller indexes the design). A failed calibration → zeros."""
     tb = y_oc.boot_y(t, boot_rng, r)
     ib = boot_rng.integers(0, len(tb["resid"]), ys.cal_reps)
@@ -404,7 +405,7 @@ def _power_job(t, r, z: dict, boot_rng, sim_rng, mix_rng, ys) -> dict:
     p = np.zeros(shp)
     for gi, g in enumerate(ys.cluster_grid):
         for si, sc in enumerate(y_oc.SCENARIOS):
-            e = y_oc.evaluate_y(tb, sim_rng(gi, si), mix_rng(gi, si), ys.boot_reps, [c["corners"]] * ys.k_cap, ones,
+            e = y_oc.evaluate_y(tb, sim_rng(gi, si), mix_rng(gi, si), n_rep, [c["corners"]] * ys.k_cap, ones,
                                 ones, g, z, ys, sc)
             p[gi, si] = e["p"]
     return dict(arrays=dict(p=p), meta=dict(meta, a=float(sum(k["a"] * k["w"] for k in c["corners"]))))
@@ -416,16 +417,17 @@ def psize_job(theta, r, z: dict, n: int, bi: int, root: int, share: tuple) -> di
     t = theta if n == len(theta["pair_means"]) else tiled(theta, n, 0.0, share)
     return _power_job(t, r, z, y_oc.rng(root, n, y_oc.TAG_BOOT, bi),
                       lambda gi, si: y_oc.rng(root, n, 1, bi, gi, si), lambda gi, si: y_oc.rng(root, n, 2, bi, gi, si),
-                      ys)
+                      ys, ys.boot_reps)
 
 
 def sens_job(theta, r, z: dict, n: int, di: int, delta: float, bi: int, root: int, share: tuple) -> dict:
-    """Z.9.2 P1-3's draw: streams SeedSequence([86_000_000, tag, n, δ index, draw, …])."""
+    """Z.9.2 P1-3's draw: streams SeedSequence([86_000_000, tag, n, δ index, draw, …]); z_spec.sens_reps experiments
+    per g × scenario."""
     ys = Y_SPEC
     t = tiled(theta, n, delta, share)
     return _power_job(t, r, z, y_oc.rng(root, y_oc.TAG_BOOT, n, di, bi),
                       lambda gi, si: y_oc.rng(root, y_oc.TAG_BOOT_SIM, n, di, bi, gi, si),
-                      lambda gi, si: y_oc.rng(root, y_oc.tag("mix"), n, di, bi, gi, si), ys)
+                      lambda gi, si: y_oc.rng(root, y_oc.tag("mix"), n, di, bi, gi, si), ys, Z_SPEC.sens_reps)
 
 
 def design_k(p: np.ndarray, zs, ys=Y_SPEC) -> np.ndarray:
