@@ -8,6 +8,10 @@ module (plan Global Constraints).
 - Part A (plan Task 7, Stage I): env, closure, seal, ctx, chain, cells, stage0 (bench and the AA differential), reuse,
   generate, seal_code, restart_preseal. A stage without a `stage_<name>` method refuses (exit 2, "not implemented
   yet"), so nothing past the built stages can start (plan section "Staged build").
+- Part B1 (plan Task 8a, Stage I): the pooled checkpointing cell executor (CalExec / _cal_job; spawn processes,
+  checkpoints under results/ab/cal/ and results/ab/fut/, plan Reading 9), cal_gate (0e: reservation incl. the 0f
+  estimate, AB.5 on g 5 · 6 · 7, measured cap between cells, STOP_CALIBRATION, the synthetic validation) and futility
+  (0f, AB.9.3: reservation, the AA source bit check, P̂ < 0.5 → STOP_FUTILE, the record grid on the records ledger).
 - Chain: refusals (exit 2); non-stage keys (budget, candidates, invalid, restart_preseal_<n>, defect_<n>, reseal_<n>,
   <stage>_v<n>) are not stages. Stages after reuse also refuse when ctx's measurement keys differ from Y's (W.8 form).
 - Env (AB.7 0a): env_now() at every start / resume vs every committed block and the stage's first start
@@ -24,6 +28,7 @@ import dataclasses
 import datetime as _dt
 import hashlib
 import json
+import multiprocessing as mp
 import os
 import platform
 import re
@@ -36,6 +41,7 @@ import numpy as np
 from ..agent.e_runner import summary_git
 from . import aa_estimate, aa_runner, ab_estimate, ab_pairs, ab_rules, ab_store, w_records, w_verdict, y_rules
 from .ab_spec import SPEC as AB
+from .ab_spec import ABSpec
 from .h3_store import ROOT, canonical, sha256_file
 from .h3_store import git_state as _h3_git_state
 from .r_store import load_manifest
@@ -899,3 +905,374 @@ class Runner:
                     sentence=f"사전 측정 재시작 {n}: 블록 {sorted(invalidated)} INVALID, {inv}로 옮김, 요약 {action}; "
                              "다음은 §2 시험 로그 → stage0.")
 
+
+    # ================================================================ budget terms (AB.7 예산, plan Reading 18)
+    def _bench_s(self, doc: dict) -> float:
+        """The sealed code's per-replicate cost (0a `bench`, g 7, seconds)."""
+        return float(doc["stage0"]["bench"]["max_s"])
+
+    def _rest_terms(self, doc: dict) -> dict:
+        """The remaining core estimate of orders 3–9 (AB.7 0e "남은 핵심 추정"; the same terms before 0e and before
+        0f), hours, from the AB.7 table's prior unit costs: KC (the declared new odours + the KC repro odours), the
+        fixed 0a / smoke share, the oracle on the KC-after maximum, the screen on the lenient 40, 7b at k = smoke_k
+        (bench × smoke_k / k of the g 7 bench structure), learn at k = smoke_k, the verdict."""
+        s, h = self.s, self.s.s_per_h
+        n_kc = dict(s.decl_odours)["new"] + len(s.kc_repro)
+        n_or = sum(dict(s.decl_post_kc_max).values())
+        k_bench = sum(s.rep_sizes("g7"))                         # ab_estimate.bench runs the g 7 structure
+        cal7b = (len(s.cells) * (s.n_sel + s.n_ver) * self._bench_s(doc) * s.smoke_k / k_bench / self._workers() / h)
+        out = dict(kc=n_kc * s.prior_kc_s_per_odour / h, fixed=float(s.prior_fixed_h),
+                   oracle=n_or * s.prior_oracle_s_per_row / h, screen=s.smoke_lenient * s.prior_screen_s_per_pair / h,
+                   calibrate=cal7b, learn=s.smoke_k * s.prior_learn_s_per_pair / h, verdict=float(s.prior_verdict_h))
+        return dict(out, total=sum(out.values()))
+
+    def _rest_core_h(self, doc: dict) -> float:
+        return self._rest_terms(doc)["total"]
+
+    def _fut_est_h(self, doc: dict) -> float:
+        """AB.7 0f "0f 추정은 bench 단가 × 회수": rows × fut_reps × bench / workers (the record grid is not in it)."""
+        s = self.s
+        return len(s.fut_tags) * len(s.fut_allocs) * s.fut_reps * self._bench_s(doc) / self._workers() / s.s_per_h
+
+    def _cal_est(self, doc: dict) -> dict:
+        """The 0e reservation terms (AB.7 0e 6818@248cd25): 0e (structures × cells × (n_sel + n_ver) × bench /
+        workers), the synthetic validation (configs × cells × synth_reps × statistics × bench / workers), the 0f
+        estimate, the remaining core; total = their sum (hours)."""
+        s, b, w, h = self.s, self._bench_s(doc), self._workers(), self.s.s_per_h
+        cal = len(s.rep_structures) * len(s.cells) * (s.n_sel + s.n_ver) * b / w / h
+        syn = (len(ab_estimate.synth_configs(s)) * len(s.synth_cells) * s.synth_reps * len(ab_estimate.STATS) * b
+               / w / h)
+        fut, rest = self._fut_est_h(doc), self._rest_terms(doc)
+        return dict(cal=cal, synth=syn, futility=fut, rest=rest["total"], rest_terms=rest,
+                    total=cal + syn + fut + rest["total"])
+
+    def _rec_spent_h(self, doc: dict, name: str) -> float:
+        """The records ledger so far + this stage's records progress, hours (aa_runner.Runner's form)."""
+        prev = sum(float(e.get("wall_s") or 0.0) for e in (doc.get("budget") or {}).get("records_ledger", []))
+        return (prev + self._prog(name)["records"]) / self.s.s_per_h
+
+    def _spent_core_h(self, doc: dict, stage: str) -> float:
+        """The measured core: the ledger so far + this stage's core progress (seconds of earlier killed runs too)."""
+        return self._core_h(doc) + self._prog(stage)["core"] / self.s.s_per_h
+
+    # ================================================================ 0e: cal_gate (AB.5, AB.7 0e)
+    def stage_cal_gate(self) -> dict:
+        """AB.7 0e 측정 전 보정 관문: the seal check (in _require), the reservation (core ledger + 2.0 × (0e + synthetic
+        validation + 0f + the remaining core) ≤ 24 h, else STOP_BUDGET〈0e 전〉), AB.5 on the representative structures
+        g 5 · 6 · 7 through the pooled checkpointing executor (the measured cap between cells: STOP_BUDGET〈0e〉, the
+        checkpoints stay), STOP_CALIBRATION〈0e〉 when any structure × statistic has no verified PASS-side α, the
+        synthetic validation (record) when g 7's three PASS-side α are verified. No Gen-2 value is read or measured."""
+        doc = self._require("cal_gate")
+        s = self.s
+        tick = self._ticker("cal_gate")
+        est = self._cal_est(doc)
+        core = self._core_h(doc)
+        cnt = self._counts(doc)
+        if not ab_rules.core_ok(core, est["total"], s):
+            tick()
+            return self._write("cal_gate", dict(
+                ab_rules.budget_stop(s.stage_label("cal_gate") + " 전", ab_rules.budget_text(core, est["total"], s),
+                                     "2세대 측정 없음", cnt), estimate_h=est))
+        items = [(ab_estimate.rep_structure(sizes, s), tag) for tag, sizes in s.rep_structures]
+        ex = CalExec(self, "cal_gate", s.cal_dir, tick=tick, cap=True)
+        synth, synth_reason = None, None
+        try:
+            out = ab_estimate.calibrate_many(items, s, ex)
+            summ = {o["tag"]: ab_store.to_json(o) for o in out}
+            g7 = summ.get(s.synth_struct)
+            if g7 is not None and g7["pass_ok"]:
+                synth = self._synth(next(st for st, t in items if t == s.synth_struct), g7, ex)
+            else:
+                synth_reason = (f"{s.synth_struct}의 PASS 쪽 α가 셋 모두 검증되지 않아 합성 검증을 하지 않음"
+                                "(AB.5, plan Reading 10)")
+        except _BudgetStop:
+            tick()
+            spent = self._spent_core_h(self._doc(), "cal_gate")
+            return self._write("cal_gate", dict(
+                ab_rules.budget_stop(s.stage_label("cal_gate"), ab_rules.spent_text(spent, s),
+                                     "2세대 측정 없음", cnt),
+                estimate_h=est, checkpoints=s.cal_dir))
+        for tag, sm in summ.items():
+            sm["sizes"] = list(s.rep_sizes(tag))
+            sm["fail_flag"] = None if sm["fail_ok"] else "FAIL 쪽 미도달 위험"
+            sm["streams"] = {ph: ["cal", tag, ph] for ph in ("truth", "sel", "ver")}
+        fails = [(tag, stat) for tag, _sz in s.rep_structures for stat in ab_estimate.STATS
+                 if summ[tag]["alpha"][stat]["P"] is None]
+        why = [self._cal_failure(summ[tag], stat) for tag, stat in fails]
+        p = ab_store.write_json(self._detail("cal_gate"), dict(structures=summ, synth=synth), self.plist)
+        common = dict(
+            structures=summ, synth=synth, synth_reason=synth_reason, estimate_h=est,
+            roots=dict(cal=s.cal_seed, synth=s.synth_seed), seal_key=doc["seal_code"]["seal"]["key"],
+            checkpoints=s.cal_dir, detail_path=self._detail("cal_gate"), detail_sha256=sha256_file(p),
+            note="AB.5 · AB.7 0e: 측정 전 보정 관문 — 대표 구조 g 5 · 6 · 7, 칸 24, 선택 · 검증 흐름 분리, CP 97.5% 상한; "
+                 "구조 · 통계 하나라도 PASS 쪽 α 미검증이면 STOP_CALIBRATION. FAIL 쪽 미도달은 기록(fail_flag). "
+                 "합성 검증은 기록 — 방법 · 수치를 바꾸지 않는다. 2세대 측정 없음.")
+        tick()
+        if not why:
+            return self._write("cal_gate", dict(common, outcome=ab_rules.PASS, reasons=[]))
+        first = why[0]
+        tag = first["tag"]
+        stop = ab_rules.calibration_stop(tag, s.rep_sizes(tag), first["stat"], first["phase"], first["cell"],
+                                         first["cp"], first["x"], first["n"], first["alpha"], cnt)
+        stop["reasons"] = [f"{w['tag']} {w['stat']} {w['phase']} 칸 {w['cell']}" for w in why]
+        return self._write("cal_gate", dict(common, **stop, failures=why))
+
+    def _cal_failure(self, sm: dict, stat: str) -> dict:
+        """The STOP_CALIBRATION slots of one (structure, statistic): "sel" when no grid level passes the selection
+        (the grid end p_grid[-1], the cell with the largest CP bound there — ties: the lowest cell number), else "ver"
+        (the chosen α's worst verification cell)."""
+        s = self.s
+        base = dict(tag=sm["tag"], stat=stat)
+        if sm["chosen"][stat]["P"] is None:
+            i = len(s.p_grid) - 1
+            cps = {int(ci): float(v[i]) for ci, v in sm["sel_cp"][stat]["P"].items()}
+            w = max(sorted(cps), key=lambda c: cps[c])
+            return dict(base, phase="sel", cell=w, cp=cps[w], x=int(sm["sel_counts"][str(w)][stat]["P"][i]),
+                        n=int(sm["n_sel"]), alpha=None)
+        v = sm["verified"][stat]["P"]["worst"]
+        return dict(base, phase="ver", cell=int(v["cell"]), cp=float(v["cp"]), x=int(v["x"]), n=int(sm["n_ver"]),
+                    alpha=sm["chosen"][stat]["P"])
+
+    def _synth(self, st, g7: dict, ex) -> dict:
+        """AB.5 합성 검증 (record): configs × synth_cells, synth_reps each on stream ("synth", config, ci) under the
+        synth root, g 7's verified levels (α_F only when reached)."""
+        s = self.s
+        a = g7["alpha"]
+        alpha = dict(D=a["D"]["P"], F=a["D"]["F"], Dfin=a["Dfin"]["P"], R=a["R"]["P"])
+        jobs, idx = [], []
+        for name, eff in ab_estimate.synth_configs(s):
+            for ci in s.synth_cells:
+                jobs.append(("synth", (st, name, int(ci), tuple(eff), alpha, s)))
+                idx.append((name, int(ci)))
+        got = ex.many(jobs)
+        out = {}
+        for (name, ci), v in zip(idx, got):
+            out.setdefault(name, {})[str(ci)] = v
+        return dict(structure=s.synth_struct, alpha=alpha, reps=s.synth_reps, cells=list(s.synth_cells),
+                    configs={n: list(e) for n, e in ab_estimate.synth_configs(s)}, results=out,
+                    stream=["synth", "<config>", "<cell>"], label="기록 — 방법 · 수치를 바꾸지 않는다")
+
+    # ================================================================ 0f: futility (AB.7 0f, AB.9.3)
+    def stage_futility(self) -> dict:
+        """AB.7 0f 가망 관문: no Gen-2 value is read or measured. The reservation (core ledger + 2.0 × (0f + the
+        remaining core) ≤ 24 h, else STOP_BUDGET〈0f 전〉); the AA source must equal 0b's facts and reproduce AA bit for
+        bit (else exit 2: a sealed-code defect → restart_preseal); the judgement row (fut_judge) decides on the point
+        P̂; the record rows, CP intervals and blocked shares are records; the grid runs only on STOP_FUTILE (records
+        ledger, the records cap before each scenario). No measured cap during 0f (AB.7 예산)."""
+        doc = self._require("futility")                       # sealed stage: the seal check first (exit 7)
+        s = self.s
+        tick = self._ticker("futility")
+        cal = self._eff(doc, "cal_gate")["structures"]
+        core = self._core_h(doc)
+        fut_h, rest = self._fut_est_h(doc), self._rest_terms(doc)
+        est = dict(futility=fut_h, rest=rest["total"], rest_terms=rest, total=fut_h + rest["total"])
+        if not ab_rules.core_ok(core, est["total"], s):
+            tick()
+            return self._write("futility", dict(
+                ab_rules.budget_stop(s.stage_label("futility") + " 전", ab_rules.budget_text(core, est["total"], s),
+                                     "2세대 측정 없음", self._counts(doc)), estimate_h=est))
+        src = self.ctx["fut_source"]()
+        facts = {k: src[k] for k in ("n_units", "n_pairs", "missing", "bad_sha")}
+        if not _same(facts, doc["reuse"]["fut_source"]):
+            tick()
+            refuse(f"stage futility: the AA source differs from the reuse block ({facts}) — the user's case")
+        try:
+            arr = ab_estimate.futility_inputs(src["by_pair"], src["keys"], src["z"], s)
+        except (KeyError, ValueError) as e:
+            tick()
+            refuse(f"stage futility: the AA source cannot be read through the judgement path ({type(e).__name__}: "
+                   f"{e}) — a sealed-code defect (AB.7 0f): restart_preseal")
+        why = ab_estimate.fut_check(arr, src["pairs"], src["s1"], s)
+        if why:
+            tick()
+            refuse(f"stage futility: the AA source is not bit-equal to AA ({why[:3]}) — a sealed-code defect "
+                   "(AB.7 0f): restart_preseal")
+        inp = ab_estimate.fut_model(arr, src["s1"], s)
+        alpha = {t: cal[t]["alpha"] for t in s.fut_tags}
+        out = ab_estimate.futility(inp, alpha, s, CalExec(self, "futility", s.fut_dir, tick=tick, cap=False))
+        rows, j = out["rows"], out["judge"]
+        grid = None
+        if j["futile"]:
+            tick()                                            # the core part ends here; the grid is records
+            rtick = self._ticker("futility", "records")
+            try:
+                grid = ab_estimate.futility_grid(
+                    inp, {t: cal[t]["sel_counts"] for t in s.fut_tags}, s,
+                    CalExec(self, "futility", s.fut_dir, tick=rtick, which="records", cap=False),
+                    stop=lambda: round(self._rec_spent_h(self._doc(), "futility") - s.records_cap_h,
+                                       s.round_digits) >= 0)
+            finally:
+                rtick()
+            tick = self._ticker("futility")                   # a fresh core mark: the grid's seconds stay records
+        model = {k: inp[k] for k in ("keys", "mu", "tau", "tau_src", "rho", "C", "x_sizes")}
+        p = ab_store.write_json(s.fut_detail, dict(model=model, rows=rows, judge=j, grid=grid), self.plist)
+        icc, pair, group = s.fut_allocs
+        common = dict(
+            source=dict(facts, keys=src["keys"]), model=model,
+            alpha={t: ab_estimate.fut_alpha(alpha[t]) for t in s.fut_tags}, rows=rows, judge=j,
+            grid=None if grid is None else {
+                sc: dict(pareto=v["pareto"], cells=len(v["cells"]), reason=v.get("reason"),
+                         done=sum(c.get("p_hat") is not None for c in v["cells"])) for sc, v in grid.items()},
+            grid_reason=None if j["futile"] else "STOP_FUTILE이 아니므로 계산하지 않음(AB.7 0f)",
+            streams=dict(rows=["fut", "<tag>", "<alloc>"], grid=["fut", "grid", "<scenario>", "<g>", "<k>"],
+                         root=s.synth_seed),
+            estimate_h=est, seal_key=doc["seal_code"]["seal"]["key"], checkpoints=s.fut_dir,
+            detail_path=s.fut_detail, detail_sha256=sha256_file(p),
+            note="AB.7 0f: 측정 없음 — 2세대 세트를 읽지도 재지도 않는다. 판단 = g 6 · ρ 배분 행의 점 추정 P̂ "
+                 "(CP · 기록 행 · 막힘 몫은 기록). 기록 격자는 STOP_FUTILE일 때만(records 원장), AB를 바꾸지 않는다.")
+        tick()
+        if not j["futile"]:
+            return self._write("futility", dict(common, outcome=ab_rules.PASS, reasons=[]))
+        jr, g6 = rows[j["row"]], alpha[s.fut_judge[0]]
+        fill = dict(aD=g6["D"]["P"], aF=g6["Dfin"]["P"], aR=g6["R"]["P"], p_hat=jr["p_hat"], x=jr["passed"], n=jr["n"],
+                    cp=jr["cp95"], g5=rows[f"{s.fut_tags[0]}|{icc}"]["p_hat"],
+                    g7=rows[f"{s.fut_tags[-1]}|{icc}"]["p_hat"],
+                    pair=[rows[f"{t}|{pair}"]["p_hat"] for t in s.fut_tags],
+                    group=[rows[f"{t}|{group}"]["p_hat"] for t in s.fut_tags], worst=jr["worst"],
+                    pareto={sc: v["pareto"] for sc, v in grid.items()})
+        return self._write("futility", dict(common, **ab_rules.futile_stop(fill, self._counts(doc))))
+
+
+# ================================================================ the pooled checkpointing cell executor (Reading 9)
+class _BudgetStop(Exception):
+    """The measured core cap was reached between cells (AB.7 0e); the checkpoints written so far stay."""
+
+
+def _synth_run(st, config: str, ci: int, eff: tuple, alpha: dict, s) -> dict:
+    """AB.5 합성 검증, one (config, cell): synth_reps × ab_estimate.synth_rep on stream ("synth", config, ci) under the
+    synth root; the label counts and P(PASS) · P(FAIL)."""
+    r = aa_estimate.stream(s.synth_seed, "synth", config, int(ci))
+    cnt = {lab: 0 for lab in (ab_rules.PASS, ab_rules.FAIL, ab_rules.UNDECIDED)}
+    for _ in range(s.synth_reps):
+        cnt[ab_estimate.synth_rep(st, s.cell(ci), eff, alpha, r, s)] += 1
+    n = int(s.synth_reps)
+    return dict(counts=cnt, n=n, p_pass=cnt[ab_rules.PASS] / n, p_fail=cnt[ab_rules.FAIL] / n)
+
+
+def _cal_job(kind: str, args: tuple, path: str, key: str, plist) -> dict:
+    """One calibration / synthetic / futility job (module level: a spawn worker pickles it by name). Resumes from its
+    checkpoint when the key matches; checkpoints after every chunk (ab_store atomic write)."""
+    p = Path(path)
+    try:
+        old = json.loads(p.read_text()) if p.exists() else None
+    except ValueError:
+        old = None
+    if old is not None and old.get("key") == key and old.get("final"):
+        return old["value"]
+    t = time.perf_counter()
+    if kind in ("truth", "synth"):
+        v = ab_estimate.truth(*args) if kind == "truth" else _synth_run(*args)
+        ab_store.write_json(path, dict(key=key, final=True, value=v, wall_s=time.perf_counter() - t), plist)
+        return ab_store.to_json(v)
+    resume = old["value"] if old is not None and old.get("key") == key else None
+
+    def save(pay):
+        ab_store.write_json(path, dict(key=key, final=pay["done"] >= pay["n"], value=pay,
+                                       wall_s=time.perf_counter() - t), plist)
+    if kind == "fut":                                         # 0f rows (6 args) and grid cells (11 args)
+        a = tuple(args) + (None,) * (len(_FUT_ARGS) - len(args))
+        v = ab_estimate.fut_run(*a[:_FUT_ARGS.index("resume")], resume=resume, on_chunk=save,
+                                B=a[_FUT_ARGS.index("B")], stream=a[_FUT_ARGS.index("stream")])
+    elif kind in ("sel", "ver"):
+        a = tuple(args) + (None,) * (len(_CAL_ARGS) - len(args))
+        v = ab_estimate.cal_run(*a[:_CAL_ARGS.index("resume")], resume=resume, on_chunk=save,
+                                B=a[_CAL_ARGS.index("B")], only=a[_CAL_ARGS.index("only")])
+    else:
+        raise ValueError(f"unknown job kind {kind!r}")
+    if v["done"] < v["n"] or not p.exists():                  # n = 0 never calls on_chunk
+        save(v)
+    return ab_store.to_json(v)
+
+
+_CAL_ARGS = ("st", "tag", "phase", "ci", "tru", "s", "n", "resume", "on_chunk", "B", "only")      # ab_estimate.cal_run
+_FUT_ARGS = ("st", "tag", "alloc", "inp", "alpha", "s", "n", "resume", "on_chunk", "B", "stream")  # ab_estimate.fut_run
+
+
+def _cal_star(item):
+    i, a = item
+    return i, _cal_job(*a)
+
+
+def job_path(root: str, kind: str, args: tuple) -> str:
+    """Calibration <root>/<tag>/<kind>_<ci>.json; synthetic <root>/synth/<config>_<ci>.json; futility
+    <root>/<"_".join(stream)>.json with stream = args[10] or ("fut", tag, alloc)."""
+    if kind == "fut":
+        a = tuple(args) + (None,) * (len(_FUT_ARGS) - len(args))
+        stream = a[_FUT_ARGS.index("stream")] or ("fut", a[_FUT_ARGS.index("tag")], a[_FUT_ARGS.index("alloc")])
+        return f"{root}/{_safe('_'.join(str(x) for x in stream))}.json"
+    if kind == "synth":
+        return f"{root}/synth/{_safe(str(args[1]))}_{int(args[2])}.json"
+    if kind == "truth":
+        return f"{root}/{_safe(str(args[1]))}/truth_{int(args[2])}.json"
+    return f"{root}/{_safe(str(args[1]))}/{kind}_{int(args[3])}.json"
+
+
+def job_key(kind: str, args: tuple, seal_key: str) -> str:
+    """sha256 of canonical(kind, the args without any ABSpec, the seal key)."""
+    a = [x for x in args if not isinstance(x, ABSpec)]
+    return hashlib.sha256(canonical(ab_store.to_json(dict(kind=kind, args=a, seal=seal_key))).encode()).hexdigest()
+
+
+class CalExec:
+    """The cell executor of ab_estimate.calibrate_many / futility / futility_grid: __call__(kind, args) and
+    many(jobs). Jobs whose checkpoint is final are read back; the rest run in a spawn process pool of the runner's
+    workers (in process when one worker or one job), each checkpointing after every chunk. After every finished job
+    the stage ticker `tick` adds the seconds to ledger `which`; with cap=True the measured core (ledger + this stage's
+    progress) is checked before the first job and after every job — past core_cap_h the pool is terminated and
+    _BudgetStop raised (the checkpoints stay)."""
+
+    def __init__(self, runner, stage: str, root: str, tick=None, which: str = "core", cap: bool = True):
+        self.r, self.stage, self.root, self.which, self.cap = runner, stage, root, which, cap
+        self.tick = tick or runner._ticker(stage, which)
+        self.seal_key = seal_now(runner.s)["key"]
+        self.ran = 0                                          # jobs computed (not read back) by this executor
+
+    def __call__(self, kind: str, args: tuple):
+        return self.many([(kind, args)])[0]
+
+    def _check(self) -> None:
+        self.tick()
+        if self.cap and not ab_rules.spent_ok(self.r._spent_core_h(self.r._doc(), self.stage), self.r.s):
+            raise _BudgetStop()
+
+    def many(self, jobs: list) -> list:
+        r = self.r
+        out, todo = [None] * len(jobs), []
+        for i, (kind, args) in enumerate(jobs):
+            path, key = job_path(self.root, kind, args), job_key(kind, args, self.seal_key)
+            p = Path(path)
+            try:
+                old = json.loads(p.read_text()) if p.exists() else None
+            except ValueError:
+                old = None
+            if old is not None and old.get("key") == key and old.get("final"):
+                out[i] = old["value"]
+            else:
+                todo.append((i, (kind, args, path, key, r.plist)))
+        self._check()
+        if not todo:
+            return out
+        n_done = len(jobs) - len(todo)
+        workers = r._workers()
+        if workers == 1 or len(todo) == 1:
+            for i, a in todo:
+                out[i] = _cal_job(*a)
+                self.ran += 1
+                n_done += 1
+                _log(f"ab {self.stage}: {n_done}/{len(jobs)} cells")
+                self._check()
+            return out
+        for v in r.s.thread_env:
+            os.environ.setdefault(v, "1")
+        with mp.get_context("spawn").Pool(min(workers, len(todo))) as pool:
+            try:
+                for i, v in pool.imap_unordered(_cal_star, todo):
+                    out[i] = v
+                    self.ran += 1
+                    n_done += 1
+                    _log(f"ab {self.stage}: {n_done}/{len(jobs)} cells")
+                    self._check()
+            except BaseException:
+                pool.terminate()
+                raise
+        return out
