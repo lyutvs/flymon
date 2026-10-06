@@ -333,3 +333,306 @@ def floor_subset(floors_by_pair: dict, keys: list, s=AB) -> list:
     """AB.6 바닥 민감도: S1 pairs with φ_R < 0.10 ∧ φ_P < 0.10 (records only, never the verdict)."""
     return [k for k in keys if _r(floors_by_pair[k]["phi_R"] - s.floor_cut, s) < 0
             and _r(floors_by_pair[k]["phi_P"] - s.floor_cut, s) < 0]
+
+
+# ================================================================ calibration (AB.5)
+def _skew(zv, sd):
+    return sd * (np.exp(zv) - math.exp(1 / 2)) / math.sqrt(math.e * (math.e - 1))
+
+
+def effects(cell: tuple, gx, gt, r, s=AB) -> np.ndarray:
+    """u_p of one replicate (structure-aware draws; draw order fixed by the cell kind)."""
+    kind, a = cell
+    P, Gx, Gt = len(gx), int(np.max(gx)) + 1, int(np.max(gt)) + 1
+    if kind == "X":
+        return r.normal(0.0, a, Gx)[gx]
+    if kind == "T":
+        return r.normal(0.0, a, Gt)[gt]
+    if kind == "pair":
+        return r.normal(0.0, a, P)
+    if kind == "XT":
+        return r.normal(0.0, a, Gx)[gx] + r.normal(0.0, a, Gt)[gt]
+    if kind == "Xpair":
+        return r.normal(0.0, a, Gx)[gx] + r.normal(0.0, a, P)
+    if kind == "skX":
+        return a * _skew(r.standard_normal(Gx), s.skew_sd)[gx]
+    if kind == "skT":
+        return a * _skew(r.standard_normal(Gt), s.skew_sd)[gt]
+    return np.zeros(P)
+
+
+def marginal_effects(cell: tuple, n: int, r, s=AB) -> np.ndarray:
+    """u for n independent pairs from the cell's marginal (the truth's superpopulation, plan Reading 8)."""
+    kind, a = cell
+    if kind in ("X", "T", "pair"):
+        return r.normal(0.0, a, n)
+    if kind in ("XT", "Xpair"):
+        return r.normal(0.0, a, n) + r.normal(0.0, a, n)
+    if kind in ("skX", "skT"):
+        return a * _skew(r.standard_normal(n), s.skew_sd)
+    return np.zeros(n)
+
+
+def probes(cell: tuple, u, r, dlt: float, s=AB) -> np.ndarray:
+    """[P, F, K] probe contrasts = δ + u_p + m_{p,f} + N(0, 1); cell (23)/(24): flies 0–1 constant ±0.05."""
+    u = np.asarray(u, float)
+    P = u.size
+    fe = r.standard_normal((P, s.flies, 1)) if cell[0] == "fly" else 0.0
+    x = dlt + u[:, None, None] + fe + r.standard_normal((P, s.flies, s.probes))
+    if cell[0] == "floor":
+        x[:, :s.floor_flies, :] = s.floor_const * cell[1]
+    return x
+
+
+def synth_stats(x, s=AB) -> dict:
+    return stats_from_dprime(WV.dprime(x), x.mean(-1), s)
+
+
+def truth(st, tag: str, ci: int, s=AB, n=None) -> dict:
+    """AB.5 참값: the mean pair statistic over n simulated pairs (stream ("cal", tag, "truth", ci))."""
+    check_structure(st)
+    n = s.truth_pairs if n is None else int(n)
+    r = AE.stream(s.cal_seed, "cal", tag, "truth", int(ci))
+    cell, dl = s.cell(ci), delta(s)
+    acc, cnt, m = dict(D=0.0, Dfin=0.0, R=0.0), dict(D=0, Dfin=0, R=0), 0
+    while m < n:
+        c = min(s.truth_chunk, n - m)
+        x = probes(cell, marginal_effects(cell, c, r, s), r, dl, s)
+        st3 = synth_stats(x, s)
+        for name in STATS:
+            th = AE._nanmean(st3[name], 1)                      # a pair without a finite fly leaves D_fin's mean
+            acc[name] += float(np.nansum(th))
+            cnt[name] += int(np.isfinite(th).sum())
+        m += c
+    return {k: acc[k] / cnt[k] for k in STATS}
+
+
+def rep_misses(st, cell, r, tru: dict, s=AB, B=None) -> dict:
+    """One replicate: {stat: {P: joint [Lp], P_TS, P_CG, (D) F: joint [Lf], F_TS, F_CG}} booleans."""
+    gx, gt = _labels(st)
+    groups = groups_of(gx)
+    x = probes(cell, effects(cell, gx, gt, r, s), r, delta(s), s)
+    st3 = synth_stats(x, s)
+    out = {}
+    for name in STATS:
+        X = st3[name]
+        lv = list(s.p_grid) + (list(s.f_grid) if name == "D" else [])
+        reps = ts_reps(X[..., None], groups, r, s, B)
+        lo, hi = ts_limits(reps, lv, s)
+        clo, chi = cg_limits(AE._nanmean(X, 1), gx, gt, lv)
+        t = tru[name]
+        up_ts, up_cg = lo[:, 0] > t, clo > t
+        dn_ts, dn_cg = hi[:, 0] < t, chi < t
+        n_p = len(s.p_grid)
+        row = dict(P=(up_ts & up_cg)[:n_p], P_TS=up_ts[:n_p], P_CG=up_cg[:n_p])
+        if name == "D":
+            row.update(F=(dn_ts & dn_cg)[n_p:], F_TS=dn_ts[n_p:], F_CG=dn_cg[n_p:])
+        out[name] = row
+    return out
+
+
+def _zero_counts(s) -> dict:
+    out = {}
+    for name in STATS:
+        out[name] = {k: [0] * len(s.p_grid) for k in ("P", "P_TS", "P_CG")}
+        if name == "D":
+            out[name].update({k: [0] * len(s.f_grid) for k in ("F", "F_TS", "F_CG")})
+    return out
+
+
+def _gen_from(state: dict | None, s, tag, phase, ci):
+    r = AE.stream(s.cal_seed, "cal", tag, phase, int(ci))
+    if state is not None:
+        r.bit_generator.state = state
+    return r
+
+
+def cal_run(st, tag: str, phase: str, ci: int, tru: dict, s=AB, n=None, resume=None, on_chunk=None,
+            B=None, only=None) -> dict:
+    """Reps of one (structure tag, phase, cell) on stream ("cal", tag, phase, ci), in chunks of cal_chunk. resume =
+    a previous payload {done, counts, state}; on_chunk(payload) is called after every chunk (the runner's atomic
+    checkpoint). only = {stat: {side: α}} (verification): only those levels are counted, so the verification stream
+    never informs the selection (AB.5 (나)). Returns the final payload. Bit-identical whether run at once or
+    resumed."""
+    check_structure(st)
+    if phase not in ("sel", "ver"):
+        raise ValueError(phase)
+    n = (s.n_sel if phase == "sel" else s.n_ver) if n is None else int(n)
+    pay = dict(done=0, n=n, counts=_zero_counts(s), state=None) if resume is None else copy.deepcopy(resume)
+    r = _gen_from(pay["state"], s, tag, phase, ci)
+    cell = s.cell(ci)
+    while pay["done"] < n:
+        m = min(s.cal_chunk, n - pay["done"])
+        for _ in range(m):
+            got = rep_misses(st, cell, r, tru, s, B)
+            for name, row in got.items():
+                for k, v in row.items():
+                    keep = None
+                    if only is not None:
+                        a = (only.get(name) or {}).get(k[0])
+                        keep = None if a is None else _grid(k[0], s).index(a)
+                        if keep is None:
+                            continue
+                    c = pay["counts"][name][k]
+                    for i, b in enumerate(np.asarray(v, bool).tolist()):
+                        if keep is None or i == keep:
+                            c[i] += int(b)
+        pay = dict(pay, done=pay["done"] + m, state=r.bit_generator.state)
+        if on_chunk is not None:
+            on_chunk(copy.deepcopy(pay))
+    return pay
+
+
+def cp_upper(x: int, n: int, s=AB) -> float:
+    """Clopper–Pearson one-sided upper bound at cp_level (scipy.stats.beta); x = n → 1."""
+    return 1.0 if x >= n else float(stats.beta.ppf(s.cp_level, x + 1, n - x))
+
+
+def _grid(side: str, s) -> tuple:
+    return s.p_grid if side == "P" else s.f_grid
+
+
+def _target(side: str, s) -> float:
+    return s.p_target if side == "P" else s.f_target
+
+
+def select(counts: dict, n: int, s=AB) -> dict:
+    """(가) per stat and side: the largest α (grids run large → small) whose CP upper bound ≤ target in every cell.
+    counts = {ci: payload counts}. Returns {stat: {P: α | None, (D) F: α | None}} + the per-cell bounds."""
+    out = {}
+    for name in STATS:
+        out[name] = {}
+        for side in (("P", "F") if name == "D" else ("P",)):
+            pick = None
+            for i, a in enumerate(_grid(side, s)):
+                if all(_r(cp_upper(c[name][side][i], n, s) - _target(side, s), s) <= 0 for c in counts.values()):
+                    pick = a
+                    break
+            out[name][side] = pick
+    return out
+
+
+def verify(counts: dict, chosen: dict, n: int, s=AB) -> dict:
+    """{stat: {side: {alpha, ok, worst: {cell, x, cp}}}} at the chosen α only (None = not reached)."""
+    out = {}
+    for name, sides in chosen.items():
+        out[name] = {}
+        for side, a in sides.items():
+            if a is None:
+                out[name][side] = dict(alpha=None, ok=False, worst=None)
+                continue
+            i = _grid(side, s).index(a)
+            cps = {ci: cp_upper(c[name][side][i], n, s) for ci, c in counts.items()}
+            w = max(cps, key=lambda k: cps[k])
+            out[name][side] = dict(alpha=a, ok=all(_r(v - _target(side, s), s) <= 0 for v in cps.values()),
+                                   worst=dict(cell=int(w), x=int(counts[w][name][side][i]), cp=float(cps[w])))
+    return out
+
+
+def _serial_cell(kind, args):
+    """The default cell executor (no checkpoint): kind "truth" → truth(*args), "sel"/"ver" → cal_run(*args)."""
+    if kind == "truth":
+        return truth(*args)
+    return cal_run(*args)
+
+
+def calibrate_many(items: list, s=AB, cell=None) -> list:
+    """AB.5 선택과 검증 on several structures at once: items = [(structure, tag)] (structures only — anything else
+    TypeError). cell(kind, args) runs one job (the runner passes a checkpointing, pooled executor with .many); each
+    phase runs across every item together: 24 truths per item, then 24 selection cells, then 24 verification cells
+    (only at the chosen α). Returns one summary per item, in order."""
+    if not isinstance(items, list) or not items:
+        raise TypeError("calibrate_many takes a non-empty list of (structure, tag)")
+    for st, tag in items:
+        check_structure(st)
+        if not isinstance(tag, str):
+            raise TypeError("the structure tag is a string")
+    run = cell or _serial_cell
+    cis = list(range(1, len(s.cells) + 1))
+    idx = [(i, ci) for i in range(len(items)) for ci in cis]
+    got = run_many(run, [("truth", (items[i][0], items[i][1], ci, s)) for i, ci in idx])
+    tr = [{} for _ in items]
+    for (i, ci), v in zip(idx, got):
+        tr[i][ci] = v
+    got = run_many(run, [("sel", (items[i][0], items[i][1], "sel", ci, tr[i][ci], s)) for i, ci in idx])
+    sel = [{} for _ in items]
+    for (i, ci), v in zip(idx, got):
+        sel[i][ci] = v["counts"]
+    chosen = [select(sel[i], s.n_sel, s) for i in range(len(items))]
+    only = [{n: {sd: a for sd, a in v.items() if a is not None} for n, v in ch.items()} for ch in chosen]
+    need = [i for i in range(len(items)) if any(a is not None for sd in chosen[i].values() for a in sd.values())]
+    vidx = [(i, ci) for i in need for ci in cis]
+    got = run_many(run, [("ver", (items[i][0], items[i][1], "ver", ci, tr[i][ci], s, None, None, None, None, only[i]))
+                         for i, ci in vidx])
+    ver = [{} for _ in items]
+    for (i, ci), v in zip(vidx, got):
+        ver[i][ci] = v["counts"]
+    out = []
+    for i, (st, tag) in enumerate(items):
+        checked = verify(ver[i], chosen[i], s.n_ver, s) if i in need else {
+            n: {sd: dict(alpha=None, ok=False, worst=None) for sd in v} for n, v in chosen[i].items()}
+        alpha = {n: {sd: (v["alpha"] if v["ok"] else None) for sd, v in sides.items()} for n, sides in checked.items()}
+        sel_cp = {n: {sd: {ci: [cp_upper(x, s.n_sel, s) for x in sel[i][ci][n][sd]] for ci in cis}
+                      for sd in (("P", "F") if n == "D" else ("P",))} for n in STATS}
+        out.append(dict(tag=tag, structure=[list(p) for p in st], k=len(st), groups=list(n_groups(st)), truth=tr[i],
+                        sel_counts=sel[i], ver_counts=ver[i], chosen=chosen[i], verified=checked, alpha=alpha,
+                        pass_ok=all(alpha[n]["P"] is not None for n in STATS), fail_ok=alpha["D"]["F"] is not None,
+                        sel_cp=sel_cp, n_sel=s.n_sel, n_ver=s.n_ver))
+    return out
+
+
+def calibrate(st, tag: str, s=AB, cell=None) -> dict:
+    """AB.5 on one structure (tuple of (X group, type-set group) int pairs only; anything else TypeError)."""
+    check_structure(st)
+    return calibrate_many([(st, tag)], s, cell)[0]
+
+
+def run_many(run, jobs: list) -> list:
+    """Jobs through the executor: a callable with .many(jobs) runs them together (the runner's pool), else one by
+    one."""
+    many = getattr(run, "many", None)
+    return many(jobs) if many is not None else [run(k, a) for k, a in jobs]
+
+
+# ================================================================ bench and the synthetic validation (AB.7 0, AB.5)
+def bench(s=AB) -> dict:
+    """AB.7 0 비용 측정: g 7 cells (17) · (23), bench_reps reps each, B = boot_b, seconds per rep (stream ("bench",
+    cell) under cal_seed; never a calibration count)."""
+    st = rep_structure(s.rep_sizes("g7"), s)
+    out = {}
+    for ci in s.bench_cells:
+        r = AE.stream(s.cal_seed, "bench", int(ci))
+        tru = dict(D=1.0, Dfin=1.0, R=1.0)
+        t = time.perf_counter()
+        for _ in range(s.bench_reps):
+            rep_misses(st, s.cell(ci), r, tru, s)
+        out[str(ci)] = (time.perf_counter() - t) / s.bench_reps
+    return dict(per_rep_s=out, max_s=max(out.values()), structure="g7", B=s.boot_b, reps=s.bench_reps)
+
+
+def synth_configs(s=AB) -> list:
+    """(name, per-gate effect in the expected direction) — AB.5 합성 검증 (1)–(3); (1) puts reward_level at the bar
+    (by the mirror, any gate gives the same distribution — plan Reading 10)."""
+    d0 = delta(s)
+    cfg = [("bar_one", (d0,) + (s.synth_other,) * 3), ("bar_all", (d0,) * 4)]
+    cfg += [(f"eff{e}", (float(e),) * 4) for e in s.synth_effects]
+    return cfg
+
+
+def synth_rep(st, cell, eff: tuple, alpha: dict, r, s=AB, B=None) -> str:
+    """One synthetic replicate of the whole verdict: four independent gates (sign × (effect + u + noise)), then
+    set_limits on stream r and verdict with no machine / mechanism problems; returns the label."""
+    gx, gt = _labels(st)
+    keys = [f"a|{i}|X{int(gx[i])}|Y" for i in range(len(gx))]
+    tsets = [f"T{int(gt[i])}" for i in range(len(gx))]
+    per = {k: dict(D=np.empty((s.flies, 4)), Dfin=np.empty((s.flies, 4)), R=np.empty((s.flies, 4))) for k in keys}
+    for g in range(4):
+        x = SIGNS[g] * probes(cell, effects(cell, gx, gt, r, s), r, float(eff[g]), s)
+        st3 = synth_stats(x, s)
+        for i, k in enumerate(keys):
+            for name in STATS:
+                per[k][name][:, g] = st3[name][i]
+    lv = dict(D=[alpha["D"]] + ([alpha["F"]] if alpha.get("F") is not None else []), Dfin=[alpha["Dfin"]],
+              R=[alpha["R"]])
+    lim = set_limits(per, keys, tsets, lv, s, B, rngs={name: r for name in STATS})
+    return verdict(lim, [], {}, alpha, s)["label"]
