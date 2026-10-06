@@ -401,11 +401,14 @@ class Runner:
         missing = [b for b in order[:i] if self._eff(doc, b) is None]
         if missing:
             refuse(f"stage {stage} needs block(s) {missing}")
-        later = [b for b in order[i + 1:] if b in doc]
+        later = [b for b in order[i + 1:] if self._eff(doc, b) is not None]
         if later:
             refuse(f"stage {stage}: later block(s) {later} exist; AA never rewrites an earlier block")
         if stage in doc:
             refuse(f"stage {stage}: block {stage} exists; AA never rewrites a recorded block")
+        if self._eff_name(doc, stage) != stage:
+            refuse(f"stage {stage}: block {self._eff_name(doc, stage)} exists (defect procedure, AA.7 3); run() never "
+                   f"writes a stage that has a recomputed block — only `recompute {stage}` after a new defect / reseal")
         stopped = [b for b in order[:i] if self._eff(doc, b).get("outcome") != aa_rules.PASS]
         if stopped:
             refuse(f"stage {stage}: {self._eff_name(doc, stopped[0])} outcome "
@@ -1358,13 +1361,14 @@ class Runner:
     def _g6(self, doc: dict, name: str, data: dict, arrs: dict, S1: list, s1: dict, z: dict, nulls: list, tick) -> tuple:
         """Inputs from the primary resample (S1's estimate_set reps, or the pair bootstrap when k = 1); θ = Y θ̂ and
         θ_AA (fit_y on the S1 learn raw; null when k < 2 or θ_W is unavailable); rows point / lo / hi × Hedges / raw
-        through aa_estimate.g6_row, skipped with status "목표 ≤ 거짓 통과 효과" when the input says so (AA.9.3 P2-10);
+        through aa_estimate.g6_row (the G.6 clock starts at entry, so θ_AA's fit_y counts toward the G.6 cap), skipped with status "목표 ≤ 거짓 통과 효과" when the input says so (AA.9.3 P2-10);
         then the heterogeneity rows (point rows only, ref = that point row). Every job is a resumable JSON cell
         progress/<name>/g6_*.json — g6_hetero has no inner cells, so a killed hetero row is recomputed whole on resume
         (finished rows are read back). The 2 h G.6 cap (and the 4 h records cap) is enforced with measured seconds:
         checked before every job and as jobs finish; past it the pool is terminated and the remaining rows get status
         "G.6 상한" (record only, never a STOP)."""
         s = self.s
+        t_g6 = [time.perf_counter()]          # the G.6 clock starts here: θ_AA's fit_y counts toward the 2 h G.6 cap
         k1 = [p["key"] for p in S1]
         if len(S1) >= 2:
             reps4, point4 = s1["_reps"][:, :len(GATES)], [s1["point"][g] for g in GATES]
@@ -1389,7 +1393,6 @@ class Runner:
         else:
             th["AA"] = (y_oc.fit_y([data[k] for k in k1], k1, r), None)
         costs = dict(doc["smoke"]["costs"])
-        t_g6 = [time.perf_counter()]
 
         def left() -> tuple:
             tick()
@@ -1559,7 +1562,8 @@ class Runner:
     def reseal(self, n: int) -> dict:
         """③ after the patch: the order-0 tests log ends `exit 0` with a "N passed" line and no failure line, and it is
         a NEW log (sha256 ≠ stage0's and every earlier reseal's — §2 was rerun after the patch); then reseal_<n> holds
-        the new seal. The env check drops aa_files (the patch), every other field must match."""
+        the new seal. The env check drops aa_files (the patch), every other field must match. `changed_aa_files`: the
+        aa_* files whose hash differs from (or is missing in) the env of the previous reseal_<n>, else seal_code."""
         self._clean("reseal")
         doc = self._doc()
         name = f"reseal_{int(n)}"
@@ -1574,9 +1578,14 @@ class Runner:
             bad.append("시험 로그가 이전 실행과 같다 — 패치 뒤 순서 0의 시험(§2)을 다시 돌린 로그가 아니다")
         if bad:
             refuse(f"reseal: {'; '.join(bad)}")
-        self._env(name, doc, drop_aa=True)
+        now = self._env(name, doc, drop_aa=True)
+        _p, prev = self._latest(doc, "reseal")
+        prev = prev or "seal_code"
+        was = ((doc.get(prev) or {}).get("env") or {}).get("aa_files") or {}
+        cur = now.get("aa_files") or {}
+        changed = sorted(f for f in set(was) | set(cur) if was.get(f) != cur.get(f))
         return self._write(name, dict(outcome=aa_rules.PASS, reasons=[], defect=int(n), seal=seal_now(self.s),
-                                      tests=tests, note="AA.7 3 ③: 패치 · 회귀 시험 · 순서 0 시험 통과 뒤 새 봉인 해시."),
+                                      tests=tests, changed_aa_files=changed, changed_against=prev, note="AA.7 3 ③: 패치 · 회귀 시험 · 순서 0 시험 통과 뒤 새 봉인 해시."),
                            ledger=False)
 
     def recompute(self, stage: str) -> dict:

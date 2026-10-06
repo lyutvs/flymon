@@ -379,3 +379,95 @@ def test_reseal_rebases_aa_files_env_only(tmp_path, monkeypatch):
     w.runner().reseal(1)
     out = w.runner().run("records")                                   # pre-reseal blocks compared without aa_files
     assert out["outcome"] == "PASS"
+
+
+def test_reseal_block_compared_in_full_and_changed_aa_files(tmp_path, monkeypatch):
+    """The reseal block (and later ones) keep aa_files: after reseal_1 any further aa_* change refuses (EXIT_ENV);
+    reseal_<n> records which aa_* files changed against the previous reseal (else seal_code)."""
+    w = _world(tmp_path, monkeypatch)
+    w.chain("estimate")
+    w.runner().defect(_note(tmp_path))
+    real_env, real_seal = AR.env_now, AR.seal_now
+    est, rules = "flymon/brain/aa_estimate.py", "flymon/brain/aa_rules.py"
+
+    def patched(**files):
+        return lambda: dict(real_env(), aa_files=dict(real_env()["aa_files"], **files))
+    monkeypatch.setattr(AR, "seal_now", lambda s=w.s: dict(real_seal(s), key="2" * 64))
+    monkeypatch.setattr(AR, "env_now", patched(**{est: "f" * 64}))
+    _new_log(w)
+    w.runner().reseal(1)
+    r1 = doc()["reseal_1"]
+    assert r1["changed_aa_files"] == [est] and r1["changed_against"] == "seal_code"
+    monkeypatch.setattr(AR, "env_now", patched(**{est: "f" * 64, rules: "e" * 64}))
+    with pytest.raises(SystemExit) as e:                             # reseal_1 itself is compared with aa_files
+        w.runner().run("records")
+    assert e.value.code == AR.EXIT_ENV
+    led = doc()["budget"]["ledger"][-1]
+    assert led["stage"] == "records" and any(x.startswith("reseal_1 대비") for x in led["env_mismatch"])
+    assert not any(x.startswith("estimate 대비") for x in led["env_mismatch"])
+    w.runner().defect(_note(tmp_path))                               # the procedure again: reseal_2 rebases
+    _new_log(w, 1236)
+    w.runner().reseal(2)
+    r2 = doc()["reseal_2"]
+    assert r2["changed_aa_files"] == [rules] and r2["changed_against"] == "reseal_1"
+    assert w.runner().run("records")["outcome"] == "PASS"
+
+
+def test_run_refuses_stage_with_recomputed_block(tmp_path, monkeypatch, capsys):
+    w = _world(tmp_path, monkeypatch)
+    w.chain("learn")
+    w.runner().defect(_note(tmp_path))
+    _new_log(w)
+    w.runner().reseal(1)
+    out = w.runner().recompute("estimate")                            # no estimate block: estimate_v1 replaces none
+    assert out["outcome"] == "PASS" and doc()["estimate_v1"]["replaces"] is None and "estimate" not in doc()
+    capsys.readouterr()
+    with pytest.raises(SystemExit) as e:
+        w.runner().run("estimate")
+    assert e.value.code == 2 and "estimate_v1 exists" in capsys.readouterr().err
+    assert "estimate" not in doc()
+    assert w.runner().run("records")["primary_block"] == "estimate_v1"
+
+
+def test_g6_clock_includes_theta_aa_fit(tmp_path, monkeypatch):
+    """θ_AA's fit_y runs on the G.6 clock: a fit longer than the cap leaves every computed row capped."""
+    import time
+    w = _world(tmp_path, monkeypatch, g6_cap_h=0.25 / 3600)
+    _with_theta(w)
+    calls = _fake_g6(monkeypatch)
+    real = y_oc.fit_y
+
+    def slow(*a, **k):
+        time.sleep(0.5)
+        return real(*a, **k)
+    monkeypatch.setattr(y_oc, "fit_y", slow)
+    w.chain("records")
+    g6 = doc()["records"]["g6"]
+    assert g6["theta_status"]["AA"] is None                           # θ_AA was fitted
+    assert calls["row"] == [] and g6["capped"] is True and g6["cap_reason"] == aa_rules.G6_REASON
+    assert g6["seconds"] >= 0.5
+    live = [r for r in g6["rows"] if r["status"] != aa_estimate.TARGET_LOW]
+    assert live and all(r["status"] == aa_rules.G6_REASON for r in live)
+
+
+def test_noplast_mismatch_recorded_outcome_pass(tmp_path, monkeypatch):
+    import copy
+    w = _world(tmp_path, monkeypatch)
+    real = AR.Runner._measure
+
+    def bump(self, wm, U, block):
+        got = real(self, wm, U, block)
+        if block != "records":
+            return got
+        got = copy.deepcopy(got)
+        st = got[0]["result"]["stages"][1]
+        st["x"][0]["A"] = float(st["x"][0]["A"]) + 1.0
+        return got
+    monkeypatch.setattr(AR.Runner, "_measure", bump)
+    w.chain("records")
+    out = doc()["records"]
+    np_ = out["noplast"]
+    assert out["outcome"] == "PASS" and out["reasons"] == []
+    assert np_["r1_equals_pre"] is False and len(np_["mismatches"]) == 1
+    assert np_["mismatches"][0]["fly"] in (0, 1) and np_["mismatches"][0]["pair"] in np_["pairs"]
+    assert "1차 추정은 바꾸지 않는다" in np_["note"]
