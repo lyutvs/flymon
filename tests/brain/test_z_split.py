@@ -29,6 +29,7 @@ def test_pinned_split_and_record():
     assert (sp["C_c"], sp["P_c"], sp["forced_n"]) == (WANT_C, WANT_P, 5)
     rec = S.record(sp, FORCED, Z.strata)
     assert rec["C"]["by_stratum"] == {"b": 6, "a": 10} and rec["P"]["by_stratum"] == {"b": 5, "a": 10}
+    assert rec["shared_with_y"] == 5
     assert rec["forced_pairs"] == 5 and set(rec) == {"C", "P", "forced_pairs", "shared_with_y", "sha256"}
     assert "|" not in json.dumps(rec)                               # no key in the tracked record
 
@@ -44,6 +45,13 @@ def test_fixture2_signature_carries_no_value():
         S.split([(k, c, a) for k, c, a in ITEMS] + [("a|99|X|Y", 99, "b")], FORCED, Z.split_seed)
 
 
+def test_split_axis_error_names_no_key():
+    with pytest.raises(ValueError) as e:
+        S.split([("a|99|Secret Odour|Other", 99, "b")], FORCED, Z.split_seed)
+    msg = str(e.value)
+    assert "|" not in msg and "Secret" not in msg and "a|99" not in msg
+
+
 def test_fixture3_groups_never_split_and_fixture5_forced_in_c():
     sp = S.split(ITEMS, FORCED, Z.split_seed)
     xc, xp = {y_rules.x_odour(k) for k in sp["C"]}, {y_rules.x_odour(k) for k in sp["P"]}
@@ -57,6 +65,19 @@ def test_fixture4_balance_bound():
                                   size=4, replace=False))
         items = S.synthetic_items(int(rng.integers(5, 15)), int(rng.integers(5, 25)), odours)
         assert S.bound_ok(S.split(items, FORCED, Z.split_seed), FORCED)
+
+
+def test_fixture4_bound_fails_on_an_unbalanced_split():
+    keys = [f"b|{i}|xb{i}|yb{i}" for i in range(4)]                # 4 free singletons, all in C
+    assert not S.bound_ok(dict(C=keys, P=[]), frozenset())
+    assert S.bound_ok(dict(C=keys[:2], P=keys[2:]), frozenset())
+
+
+def test_free_groups_sorted_by_smallest_c_not_size():
+    seq = ["X1", "X2", "X2", "X2", "X3", "X3", "X4", "X5", "X5"]   # sizes 1, 3, 2, 1, 2 — c order ≠ size order
+    items = [(f"a|{c}|{x}|y{c}", c, "a") for c, x in enumerate(seq)]
+    sp = S.split(items, frozenset(), Z.split_seed)
+    assert (sp["C_c"], sp["P_c"]) == ([1, 2, 3, 6], [0, 4, 5, 7, 8])
 
 
 def test_fixture6_order_and_sorting_decide():
@@ -94,6 +115,7 @@ def test_mutants_change_the_pinned_split(mut, monkeypatch):
 
 
 Y_ROOT = 77_000_000
+Z_Y = S.Y_SPEC
 
 
 def _oracle(tmp_path, recs):
@@ -111,6 +133,8 @@ def test_lenient_items_returns_keys_only_and_is_value_invariant(tmp_path):
     keys = [f"b|{i}|x{i}|y{i}" for i in range(4)] + [f"a|{10 + i}|Surf|y{i}" for i in range(3)]
     recs = [_rec(k, c, 0.1, 30.0, 60.0) for c, k in enumerate(keys)]
     recs[2] = _rec(keys[2], 2, 1.5, 30.0, 60.0)                    # not lenient (|d| ≥ 1.0)
+    recs[3] = _rec(keys[3], 3, 0.7, 17.0, 60.0)                    # lenient but not strict (d 0.7, L_A 17)
+    assert y_rules.passes(recs[3], Z_Y)["y_lenient"] and not y_rules.passes(recs[3], Z_Y)["y_strict"]
     p, sha = _oracle(tmp_path, recs)
     got = S.lenient_items(p, sha, 6)
     assert got == [(k, c, k[0]) for c, k in enumerate(keys) if c != 2]

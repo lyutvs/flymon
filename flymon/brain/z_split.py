@@ -48,9 +48,9 @@ def forced_odours(admitted) -> frozenset:
 
 
 def split(items: list, forced: frozenset, root: int, strata=("b", "a")) -> dict:
-    for key, _c, axis in items:
+    for key, c, axis in items:
         if key.split("|")[0] != axis:
-            raise ValueError(f"axis {axis!r} is not the key's first field: {key!r}")
+            raise ValueError(f"item c={int(c)}: the axis field is not the key's first field")
     by_c = {c: key for key, c, _a in items}
     C, P = [], []
     forced_n = 0
