@@ -1,6 +1,7 @@
 """AA's only writer (AA.2 6181; Z.9.2 P1-5 code boundary — reimplemented, y_store / z_store / w_store are never called
 to write): results/aa/ and results/summary/aa_learning.json only (realpath-checked, so a symlink escape refuses),
-atomic writes (temporary file + rename), anything else SystemExit 2. The engine-output guards of every writer in this
+atomic writes (temporary file + rename, or + exclusive link for a
+write-once entry), anything else SystemExit 2. The engine-output guards of every writer in this
 repository run first. Two ledgers live in the summary's `budget` block: `ledger` (core, AA cap 12 h) and
 `records_ledger` (records, 4 h; AA.7 6267–6270); an env mismatch is appended to `ledger` as an entry with
 `env_mismatch`. The `candidates` block (AA.3 6196) is replaced whenever a block is written with `candidates=`.
@@ -61,18 +62,30 @@ def guard(path, params_list) -> None:
         refuse(f"AA writes only under {ALLOWED_DIR} and {SUMMARY}, not {path}")
 
 
-def write_bytes(path, data: bytes, params_list) -> Path:
+def write_bytes(path, data: bytes, params_list, exclusive: bool = False) -> Path:
+    """Temporary file, then os.replace (atomic). exclusive=True publishes with os.link instead, which fails when the
+    target exists, so a concurrent or earlier entry is refused (SystemExit 2) and never replaced; still atomic."""
     guard(path, params_list)
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.parent / f".{p.name}.{uuid.uuid4().hex}.tmp"
-    tmp.write_bytes(data)
-    os.replace(tmp, p)
+    try:
+        tmp.write_bytes(data)
+        if exclusive:
+            try:
+                os.link(tmp, p)
+            except FileExistsError:
+                refuse(f"{p} exists; this entry is written once and never rewritten")
+        else:
+            os.replace(tmp, p)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
     return p
 
 
-def write_json(path, obj, params_list) -> Path:
-    return write_bytes(path, (canonical_pretty(to_json(obj)) + "\n").encode(), params_list)
+def write_json(path, obj, params_list, exclusive: bool = False) -> Path:
+    return write_bytes(path, (canonical_pretty(to_json(obj)) + "\n").encode(), params_list, exclusive)
 
 
 def read_summary(path=SUMMARY) -> dict:
@@ -113,6 +126,9 @@ def archive(files: list, dest: str, s) -> list:
         return []
     root = Path(os.path.expanduser(s.archive_root))
     d = root / dest
+    root_r, d_r = root.resolve(), d.resolve()
+    if d_r == root_r or root_r not in d_r.parents:
+        refuse(f"the archive goes only under {root_r}, not {d_r}")
     if not d.exists():
         return archive_copy(list(files), d, root)
     want = {d / Path(f).parent.name / Path(f).name: f for f in files}
@@ -139,8 +155,9 @@ class AACache(RCache):
         p = self._path(kind, inputs)
         if p.exists():
             refuse(f"{p}: the AA raw cache is immutable (AA.7 3); an entry is never rewritten")
+        # exclusive publish: a concurrent put that lands between the check and the write is refused, not replaced
         write_json(p, {"key": self.key(kind, inputs), "kind": kind, "inputs": json.loads(canonical(inputs)),
-                       "result": result}, params_list)
+                       "result": result}, params_list, exclusive=True)
 
 
 class ReadCache(RCache):
