@@ -79,6 +79,53 @@ def test_futility_inputs_reproduce_aa_records_bit_for_bit():
     assert E.fut_check(arr, bent, s1, SPEC)
 
 
+# AA-derived typed values (fut_model on the real AA source, 12 decimals): ρ [8] (one-way MoM over the X groups
+# 5·2·2·2·2·2·1), R τ = pair-mean SD ddof 1 (tau[4:]), level-gate μ (mu[4:6]), and C entries = Pearson correlation of
+# the 16 pair means (not of the 128 flies: fly-level C[0, 1] = −0.578, C[5, 7] = 0.967).
+AA_RHO = (0.509988092643, 0.036701679428, 0.556834148339, 0.178133529284, 0.352933555972, 0.284025548590,
+          0.780920588702, 0.302142554689)
+AA_TAU_R = (0.835763585911, 0.684853431909, 0.669685534754, 0.662871678825)        # ddof 0 would be 0.809 …
+AA_MU_LEVEL = (2.022410494829, -1.461302088053)
+AA_C = {(0, 1): -0.651366002896, (0, 4): 0.690457798564, (1, 5): 0.946346840226, (2, 6): 0.782873970922,
+        (5, 7): 0.996428327508}
+
+
+def test_icc_hand_unbalanced_example():
+    # groups {1, 3} {2, 4, 6} {5, 7, 9, 11}: N 9, G 3, means 2 · 4 · 8, grand 16/3.
+    # SSB = 2·(10/3)² + 3·(4/3)² + 4·(8/3)² = 56 → MSB = 56 / (G − 1) = 28; SSW = 2 + 8 + 20 = 30 → MSW = 30 / (N − G) = 5
+    # n₀ = (N − Σn²/N) / (G − 1) = (9 − 29/9) / 2 = 26/9; σ̂²_b = (28 − 5) / n₀ = 207/26; ICC = σ̂²_b/(σ̂²_b + 5) = 207/337
+    # (n₀ = mean n 3 → 23/38; MSW over N − 1 → 0.6834)
+    y = np.array([1, 3, 2, 4, 6, 5, 7, 9, 11], float)
+    groups = [[0, 1], [2, 3, 4], [5, 6, 7, 8]]
+    assert E._icc(y, groups) == pytest.approx(207 / 337, abs=1e-12)
+    # MSB < MSW → σ̂²_b clipped at 0: means all 2, within spread
+    assert E._icc(np.array([1, 3, 0, 2, 4, 2, 2]), [[0, 1], [2, 3, 4], [5, 6]]) == 0.0
+    # no within spread → 1
+    assert E._icc(np.array([1, 1, 2, 2, 2, 5]), [[0, 1], [2, 3, 4], [5]]) == 1.0
+
+
+@pytest.fixture(scope="module")
+def aa_model():
+    by, keys, z, s1, _pairs, _n, _bad = _aa_source()
+    return E.fut_model(E.futility_inputs(by, keys, z, SPEC), s1, SPEC)
+
+
+def test_aa_rho_values(aa_model):
+    assert aa_model["rho"] == pytest.approx(list(AA_RHO), abs=1e-11)
+
+
+def test_aa_r_tau_and_level_mu(aa_model):
+    assert aa_model["tau"][4:] == pytest.approx(list(AA_TAU_R), abs=1e-11)
+    assert aa_model["tau_src"][4:] == ["sd"] * 4
+    assert aa_model["mu"][4:6] == pytest.approx(list(AA_MU_LEVEL), abs=1e-11)
+
+
+def test_aa_c_is_pair_mean_pearson(aa_model):
+    C = np.asarray(aa_model["C"])
+    for (i, j), v in AA_C.items():
+        assert C[i, j] == pytest.approx(v, abs=1e-11) and C[j, i] == pytest.approx(v, abs=1e-11)
+
+
 # ---------------------------------------------------------------- signatures and the judgement path
 def test_signatures_take_no_measured_values():
     assert list(inspect.signature(E.futility).parameters) == ["inp", "alpha_by_tag", "s", "cell"]
