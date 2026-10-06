@@ -4,7 +4,9 @@ restated, except the facts AA checks against committed blocks (oracle sha256, N_
 - Seeds (AA.2 6174–6180): AA's own roots carry "seed" in their field names so the collectors in test_p_spec see them;
   the main-set judged probe / training roots (62_000_000 / 64_000_000) and the Y pilot roots of the differential test
   (60_000_000 / 61_000_000) are Y's (y_spec.SPEC) and are not declared here.
-- Streams (plan Reading 4): SeedSequence([boot_seed, *tags]); set_flow maps each set to its two-stage flow tag.
+- Streams (plan Reading 4): SeedSequence([boot_seed, *tags]); set_flow maps each set to its two-stage flow tag. The
+  other flow tags ("pair", "pool_fly", "pool_raw", "pool_drop", "pool_pair", "cov", "synth") are built in aa_estimate
+  (literals and f"pool_{method}"), not fields here; they are sealed through aa_estimate's source hash (seal_files), not seal_fields().
 - seal_fields(): the estimation numbers the seal (AA.7 3, 6254) hashes; seal_files: aa_estimate and every flymon file it
   imports (test_aa_spec checks the import closure)."""
 from __future__ import annotations
@@ -116,7 +118,8 @@ class AASpec:
                          "synth_seed", "set_flow", "floor_cut", "floor_qs", "compare_refs", "bar_ref", "cov_deltas", "cov_hets",
                          "cov_het_sd", "cov_reps", "cov_b", "cov_bar", "cov_methods", "synth_pairs", "synth_deltas",
                          "synth_sds", "synth_reps", "g6_rows", "g6_scales", "d_false", "g6_design", "g6_seed",
-                         "g6_cap_h", "flies", "probes")
+                         "g6_cap_h", "flies", "probes", "c7_declared",
+                         "hedges_j_declared")
 
     def seal_fields(self) -> dict:
         return {k: getattr(self, k) for k in self.seal_names}
