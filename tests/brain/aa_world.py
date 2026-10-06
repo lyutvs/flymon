@@ -60,6 +60,7 @@ class World:
             self.pool.pairs[json.dumps([r["odor_x"], r["odor_y"]], sort_keys=True)] = row_key(r)
         self.facts_ok = True
         self.z = {k: (float(v[0]), float(v[1])) for k, v in ZV.items()}
+        self.wz = dict(self.z)                                  # W block reuse z_V (AA.2)
         self._write_y()
         self._write_z()
         Path(self.s.tests_log).parent.mkdir(parents=True, exist_ok=True)
@@ -77,7 +78,8 @@ class World:
             z_doc=lambda: json.loads(Path(AA.z_summary).read_text()),
             git_facts=lambda path, commits: dict(last="x", ancestors={c: self.facts_ok for c in commits}),
             decl_sha=lambda files, commit: AR.files_sha(files),
-            lenient=lambda: z_split.lenient_items(Y.oracle_detail, self.s.oracle_sha256, self.s.n_len))
+            lenient=lambda: z_split.lenient_items(Y.oracle_detail, self.s.oracle_sha256, self.s.n_len),
+            w_z=lambda: {k: list(v) for k, v in self.wz.items()})
 
     # ---- ctx pieces ---------------------------------------------------------------------------------------------
     def main_rows(self, blk):

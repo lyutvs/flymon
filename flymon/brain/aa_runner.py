@@ -15,7 +15,11 @@ through y_store / z_store / w_store and nothing assigns to a W / X / Y / Z modul
 - Records (AA.7 7): the records ledger (4 h, null + "records 상한" past it, never a STOP); G.6 (AA.9.1) inside it
   under its own measured 2 h cap, one resumable JSON cell per row (plan Readings 12–14, 20, 23, 29).
 - Defect procedure (AA.7 3, plan Reading 19): defect_<n> → patch → reseal_<n> → recompute <stage> → <stage>_v<n>
-  (cache hits only), the replaced block listed in `invalid`; later stages read the newest <stage>_v<n> (_eff)."""
+  (cache hits only), the replaced block listed in `invalid`; later stages read the newest <stage>_v<n> (_eff).
+- Pre-seal restart (plan Operator, INVALID before seal_code): nothing of the main set is measured before seal_code, so
+  a pre-seal defect restarts from stage0 — restart_preseal moves results/aa and the archive aside (<path>.invalid-<n>),
+  removes an untracked summary or rewrites a tracked one to a `preseal_restarts` record (budget carried), and refuses
+  once seal_code (or anything later, or a STOP) exists."""
 from __future__ import annotations
 
 import concurrent.futures as cf
@@ -263,6 +267,13 @@ def _now() -> str:
     return _dt.datetime.now(_dt.timezone.utc).isoformat()
 
 
+def _head_summary(path):
+    """The summary as committed at HEAD (bytes), or None when HEAD does not track it (or there is no repository)."""
+    import subprocess
+    r = subprocess.run(["git", "show", f"HEAD:./{path}"], capture_output=True)
+    return r.stdout if r.returncode == 0 else None
+
+
 def _log(m: str) -> None:
     print(m, file=sys.stderr, flush=True)
 
@@ -360,6 +371,7 @@ def build_ctx(npz: str, s=AA) -> dict:
         y_z=lambda: yrun()._z_b(y_doc()), y_theta=y_theta,
         y_pilot_detail=lambda: json.loads(Path(Y_SPEC.pilot_detail).read_text()),
         y_pilot_back=lambda man: yctx()["pilot_back"](man),
+        w_z=lambda: aa_store.read_summary(W_SPEC.summary)["reuse"]["z_V"],
         z_doc=lambda: aa_store.read_summary(s.z_summary), git_facts=w_runner.git_facts, decl_sha=decl_sha,
         lenient=lambda: z_split.lenient_items(Y_SPEC.oracle_detail, s.oracle_sha256, s.n_len))
 
@@ -484,7 +496,7 @@ class Runner:
         if not p.exists():
             return []
         out = [str(p)]
-        if _base(stage) in ("screen", "learn", "records"):
+        if _base(stage) in ("smoke", "screen", "learn", "records"):
             d = json.loads(p.read_text())
             out += [m["cache_file"] for m in d.get("manifest") or []]
         return list(dict.fromkeys(out))              # a duplicated unit (machine-check case) is one file
@@ -795,9 +807,12 @@ class Runner:
         used = [x for g in learn + naive for x in g["unit"]["probe_seeds"]] + \
             [ws.smoke_train_base(0), ws.smoke_train_base(1)]
         problems += [f"스모크 시드 {x}가 스모크 블록 밖" for x in used if not lo <= x < hi]
-        zv = {k: tuple(v) for k, v in self.ctx["y_doc"]()["pilot"]["z_V"].items()}
-        if {k: tuple(v) for k, v in self.ctx["y_z"]().items()} != zv:
-            problems.append("z_V ≠ Y 블록 pilot의 z_V")
+        wz = {k: (float(v[0]), float(v[1])) for k, v in self.ctx["w_z"]().items()}      # AA.2: W reuse's z_V
+        zv = {k: (float(v[0]), float(v[1])) for k, v in self.ctx["y_doc"]()["pilot"]["z_V"].items()}
+        if zv != wz:
+            problems.append("Y 블록 pilot의 z_V ≠ W 블록 reuse의 z_V")
+        if {k: (float(v[0]), float(v[1])) for k, v in self.ctx["y_z"]().items()} != wz:
+            problems.append("AA가 쓰는 z(Y _z_b) ≠ W 블록 reuse의 z_V")
         costs = self._costs(learn, naive)
         est = self._estimates(costs)
         tick()
@@ -812,10 +827,13 @@ class Runner:
                                         cnt)
         else:
             body = dict(outcome=aa_rules.PASS, reasons=[])
+        man = manifest(learn + naive)
+        p = aa_store.write_json(self._detail("smoke"), dict(manifest=man), self.plist)   # archived with its raw
         body.update(problems=problems, costs=costs, estimates_h=est, pair=row_key(row),
+                    detail_path=self._detail("smoke"), detail_sha256=sha256_file(p),
                     budget=dict(ok=ok, elapsed_h=elapsed, remaining_h=rem, margin=s.cost_margin, cap_h=s.core_cap_h),
                     seeds=dict(probe=seeds, train=[ws.smoke_train_base(0), ws.smoke_train_base(1)]),
-                    manifest=manifest(learn + naive),
+                    manifest=man,
                     note="AA.7 2: 파일럿 b|17 · 마리 1 · AA 스모크 시드, R · N · RN + 순진 pre; 오라클 없음.")
         return self._write("smoke", body)
 
@@ -1391,7 +1409,10 @@ class Runner:
         elif r is None:
             th["AA"] = (None, "θ_W 없음")
         else:
-            th["AA"] = (y_oc.fit_y([data[k] for k in k1], k1, r), None)
+            try:                              # a numerical failure is a record-only status (records stays PASS)
+                th["AA"] = (y_oc.fit_y([data[k] for k in k1], k1, r), None)
+            except NUMERIC as e:
+                th["AA"] = (None, f"θ_AA 적합 실패 {type(e).__name__}: {e}")
         costs = dict(doc["smoke"]["costs"])
 
         def left() -> tuple:
@@ -1621,6 +1642,66 @@ class Runner:
         finally:
             self._cache_only, self._recompute = False, None
 
+    # ================================================================ pre-seal restart (plan Operator, INVALID)
+    def restart_preseal(self) -> dict:
+        """Before block seal_code nothing of the main set is measured, so a pre-seal defect (an INVALID stage0 / smoke,
+        or an aa_* fix after committed pre-seal blocks whose env.aa_files would refuse every later stage) restarts
+        from stage0: results/aa → results/aa.invalid-<n> (progress, env first-start records, smoke cache, tests log),
+        the archive root → <archive_root>.invalid-<n>, the summary copied into results/aa.invalid-<n>/ and then
+        removed when HEAD does not track it, else rewritten to {preseal_restarts, budget} (every earlier block dropped,
+        the core ledger carried so spent time still counts) for the operator to commit before stage0. A note
+        restart_preseal.json in results/aa.invalid-<n>/ records what was done. Refuses (exit 2) when the working or
+        HEAD summary holds seal_code or any later / defect / reseal block, a STOP block, or the main-set cache has an
+        entry; post-seal fixes go through defect / reseal / recompute."""
+        s = self.s
+        doc = self._doc()
+        head = _head_summary(self.summary_path)
+        try:
+            hdoc = json.loads(head) if head else {}
+        except ValueError:
+            refuse(f"restart_preseal: HEAD's {self.summary_path} is not JSON")
+        order = list(s.stages)
+        post = set(order[order.index("seal_code"):])
+        late = sorted({k for d in (doc, hdoc) for k in d
+                       if _base(k) in post or re.fullmatch(r"(defect|reseal)_\d+", k)})
+        if late:
+            refuse(f"restart_preseal: block(s) {late} exist — after seal_code a fix goes through defect / reseal / "
+                   "recompute (AA.7 3), never a restart")
+        stops = sorted({f"{k} {v.get('outcome')}" for d in (doc, hdoc) for k, v in d.items()
+                        if k in order and isinstance(v, dict) and v.get("outcome") not in (aa_rules.PASS, aa_rules.INVALID)})
+        if stops:
+            refuse(f"restart_preseal: {stops} — a STOP is final, AA stops there")
+        cache = Path(s.cache_dir)
+        if cache.exists() and any(p.is_file() for p in cache.rglob("*")):
+            refuse(f"restart_preseal: {cache} holds main-set raw; the main set was measured")
+        summ = Path(self.summary_path)
+        if not (Path(s.raw_dir).exists() or Path(os.path.expanduser(s.archive_root)).exists() or summ.exists()):
+            refuse("restart_preseal: nothing to restart (no results, archive or summary)")
+        n = aa_store.invalid_slot(s.raw_dir, s.archive_root)
+        raw = aa_store.move_aside(s.raw_dir, n)
+        arch = aa_store.move_aside(s.archive_root, n, archive=True)
+        inv = f"{s.raw_dir}.invalid-{n}"
+        copy = str(aa_store.write_invalid(s.raw_dir, n, Path(self.summary_path).name, summ.read_bytes())) \
+            if summ.exists() else None
+        dropped = sorted(k for d in (doc, hdoc) for k in d if k in order)
+        entry = dict(n=n, at=_now(), invalid_dir=inv, raw=raw, archive=arch, summary_copy=copy,
+                     dropped_blocks=sorted(set(dropped)), head_blocks=sorted(k for k in hdoc if k in order))
+        if head is None:
+            action = "removed (untracked at HEAD)" if aa_store.remove_summary(self.summary_path, self.plist) else \
+                "absent"
+        else:
+            budget = doc.get("budget") or hdoc.get("budget")
+            new = dict(preseal_restarts=list(hdoc.get("preseal_restarts") or []) + [dict(entry, summary="rewritten")])
+            if budget:
+                new["budget"] = budget
+            aa_store.write_json(self.summary_path, new, self.plist)
+            action = "rewritten to a preseal_restarts record (tracked at HEAD; commit it before stage0)"
+        entry["summary"] = action
+        note = aa_store.write_invalid(s.raw_dir, n, "restart_preseal.json",
+                                      (canonical(aa_store.to_json(entry)) + "\n").encode())
+        return dict(outcome=aa_rules.PASS, reasons=[], restart=entry, note_path=str(note),
+                    sentence=f"사전 봉인 재시작 {n}: {inv}로 옮김, 요약 {action}; 다음은 §2 시험 로그 → stage0.")
+
     def _tests_log(self) -> tuple:
         """The order-0 tests log (stage0's checks, AA.7 0a): (record, reasons)."""
         s = self.s
@@ -1641,6 +1722,7 @@ class Runner:
 
 
 GATES = w_verdict.GATES
+NUMERIC = (ArithmeticError, ValueError)        # FloatingPointError, ZeroDivisionError, np.linalg.LinAlgError, …
 PILOT_ITEMS = ("mech", "spill", "suppression", "brain_noise_corr", "gate_corr")   # AA.4: pilot_record's rest
 G6_KEEP = ("status", "n_pass", "counts", "first", "n_pass_base_only", "base_minus_all", "target_design_power")
 G6_DISCLOSURES = (
@@ -1660,10 +1742,14 @@ def _strip(est: dict) -> dict:
 
 
 def _g6_job(kind, theta, z, a, b, costs, n_naive, s, ref) -> dict:
-    """One G.6 row (module level: the spawn pool pickles it by name); aa_estimate is looked up at call time."""
-    if kind == "row":
-        return aa_estimate.g6_row(theta, z, a, costs, n_naive, s)
-    return aa_estimate.g6_hetero(theta, z, a, b, ref, costs, n_naive, s)
+    """One G.6 row (module level: the spawn pool pickles it by name); aa_estimate is looked up at call time. A
+    numerical failure (NUMERIC) is the row's record-only status, never an exception out of records."""
+    try:
+        if kind == "row":
+            return aa_estimate.g6_row(theta, z, a, costs, n_naive, s)
+        return aa_estimate.g6_hetero(theta, z, a, b, ref, costs, n_naive, s)
+    except NUMERIC as e:
+        return dict(status=f"계산 실패 {type(e).__name__}: {e}")
 
 
 def _g6_star(item) -> tuple:

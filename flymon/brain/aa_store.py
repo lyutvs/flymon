@@ -10,7 +10,10 @@ repository run first. Two ledgers live in the summary's `budget` block: `ledger`
 - ReadCache: a read-only RCache (the differential test reads results/y/cache by cache hits only; AA.7 0 6248).
 - archive(files, dest, s): one copy of a fixed file set under <s.archive_root>/<dest>/<parent>/<name>
   (r_store.archive_copy, sha-checked; "사본은 블록마다 · STOP 문장 전에", AA.7 6242). Never overwritten: a repeat is a
-  no-op when the archive holds exactly that set byte-identically, anything else refuses (SystemExit 2)."""
+  no-op when the archive holds exactly that set byte-identically, anything else refuses (SystemExit 2).
+- The pre-seal restart (plan Operator; before block seal_code only): move_aside renames results/aa and the archive
+  root to <path>.invalid-<n> (nothing deleted), write_invalid writes the note / summary copy once into
+  results/aa.invalid-<n>/, remove_summary removes an untracked summary — the only writes outside results/aa/."""
 from __future__ import annotations
 
 import dataclasses
@@ -172,3 +175,80 @@ class ReadCache(RCache):
 
     def put(self, kind, inputs, result, params_list) -> None:
         refuse(f"{self.root} is read-only for AA (cache hits only, AA.7 0)")
+
+
+# ---- the pre-seal restart (plan Operator, INVALID before seal_code) -------------------------------------------------
+def _rel(p) -> str:
+    return os.path.relpath(os.path.realpath(str(p)), os.path.realpath(os.getcwd())).replace(os.sep, "/")
+
+
+def _raw_root(raw_dir) -> Path:
+    if _rel(raw_dir) != ALLOWED_DIR.rstrip("/"):
+        refuse(f"the pre-seal restart moves only {ALLOWED_DIR.rstrip('/')}, not {raw_dir}")
+    return Path(raw_dir)
+
+
+def _arch_root(archive_root) -> Path:
+    p = Path(os.path.expanduser(archive_root))
+    home = Path(os.path.expanduser("~")).resolve()
+    if not p.name or p.resolve() in (Path("/"), home) or p.is_symlink():
+        refuse(f"the pre-seal restart does not move the archive root {p}")
+    return p
+
+
+def invalid_slot(raw_dir, archive_root) -> int:
+    """The smallest n ≥ 1 with neither <raw_dir>.invalid-<n> nor <archive_root>.invalid-<n> present."""
+    raw, arch = _raw_root(raw_dir), _arch_root(archive_root)
+    n = 1
+    while raw.with_name(f"{raw.name}.invalid-{n}").exists() or arch.with_name(f"{arch.name}.invalid-{n}").exists():
+        n += 1
+    return n
+
+
+def move_aside(path, n: int, archive: bool = False):
+    """results/aa (or, archive=True, the AA archive root) → <path>.invalid-<n> (a rename, nothing deleted); None when
+    the source is absent. Any other source, a symlink, or an existing destination refuses (SystemExit 2)."""
+    import shutil
+    p = _arch_root(path) if archive else _raw_root(path)
+    if p.is_symlink():
+        refuse(f"{p} is a symlink; the pre-seal restart moves only a real directory")
+    if not p.exists():
+        return None
+    dst = p.with_name(f"{p.name}.invalid-{int(n)}")
+    if dst.exists():
+        refuse(f"{dst} exists; an invalid copy is never overwritten")
+    shutil.move(str(p), str(dst))
+    return dict(src=str(p), dst=str(dst))
+
+
+def write_invalid(raw_dir, n: int, name: str, data: bytes) -> Path:
+    """A write-once file directly in <raw_dir>.invalid-<n>/ (the restart note, the summary copy)."""
+    raw = _raw_root(raw_dir)
+    d = raw.with_name(f"{raw.name}.invalid-{int(n)}")
+    if "/" in name or name.startswith("."):
+        refuse(f"bad file name {name!r}")
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / name
+    tmp = d / f".{name}.{uuid.uuid4().hex}.tmp"
+    try:
+        tmp.write_bytes(data)
+        try:
+            os.link(tmp, p)
+        except FileExistsError:
+            refuse(f"{p} exists; this entry is written once and never rewritten")
+    finally:
+        if tmp.exists():
+            tmp.unlink()
+    return p
+
+
+def remove_summary(path, params_list) -> bool:
+    """Removes results/summary/aa_learning.json (an untracked summary at a pre-seal restart); True if it existed."""
+    guard(path, params_list)
+    if _rel(path) != SUMMARY:
+        refuse(f"only {SUMMARY} is removed, not {path}")
+    p = Path(path)
+    if not p.exists():
+        return False
+    p.unlink()
+    return True

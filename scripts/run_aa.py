@@ -18,9 +18,16 @@ Defect procedure (AA.7 3, plan Reading 19), only for a sealed stage (coverage / 
     .venv/bin/python scripts/run_aa.py --stage reseal --name <n>        # ③ reseal_<n>: new seal hashes, new tests log
     .venv/bin/python scripts/run_aa.py --stage recompute --name estimate --workers 16   # ④ estimate_v<n> (cache only)
 
+Pre-seal restart (INVALID at stage0 / smoke, or any aa_* fix before seal_code; refused once seal_code exists):
+    .venv/bin/python scripts/run_aa.py --stage restart_preseal   # results/aa, the archive → *.invalid-<n>; summary
+    (removed if HEAD does not track it, else rewritten to a preseal_restarts record to commit); then §2 and stage0
+
 Exit 0 PASS, 3 STOP (recorded, AA stops), 5 INVALID (do not commit), 6 environment mismatch (the ledger entry is
 written, the user decides), 7 seal mismatch (defect procedure first), 2 a refusal (arguments, cwd, connectome sha256,
-chain, dirty files). Output: the outcome line, the sentence and the block minus QUIET fields (no main-set pair value)."""
+chain, dirty files). Output: the outcome line, the sentence and the block minus the top-level QUIET fields — bulky
+records (env, git, …) and every container that holds a per-pair main-set value: `pairs` (screen, records), `primary`
+(estimate: per-pair means / CIs and the pair range), `s1_records` and `sets` (records: pair ranges, drop-one rows,
+per-pair SD) — so nothing printed carries a main-set pair value beyond the AA.8 sentence itself."""
 from __future__ import annotations
 
 import argparse
@@ -31,8 +38,9 @@ from pathlib import Path
 NPZ = "data/malecns.npz"
 EXIT_STOP, EXIT_INVALID = 3, 5
 ARCHIVE = "archive"
-DEFECT, RESEAL, RECOMPUTE = "defect", "reseal", "recompute"
-QUIET = ("archive", "env", "git", "decision_files", "numbers", "synth", "candidates", "differential", "pairs", "manifest")
+DEFECT, RESEAL, RECOMPUTE, RESTART = "defect", "reseal", "recompute", "restart_preseal"
+QUIET = ("archive", "env", "git", "decision_files", "numbers", "synth", "candidates", "differential", "pairs", "manifest",
+         "primary", "s1_records", "sets")
 
 
 def exit_code(out: dict) -> int:
@@ -73,7 +81,7 @@ def arg_reasons(a, spec) -> list:
 def main(argv=None) -> int:
     from flymon.brain.aa_spec import SPEC
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--stage", choices=SPEC.stages + (ARCHIVE, DEFECT, RESEAL, RECOMPUTE), required=True)
+    ap.add_argument("--stage", choices=SPEC.stages + (ARCHIVE, DEFECT, RESEAL, RECOMPUTE, RESTART), required=True)
     ap.add_argument("--name", help="archive: the block; reseal: the defect number; recompute: the sealed stage")
     ap.add_argument("--note", help="defect: a JSON file {symptom, clause, cause, affected}")
     ap.add_argument("--workers", type=int)
@@ -102,10 +110,10 @@ def main(argv=None) -> int:
                 print(f"archived {e['dst']} sha256 {e['sha256']}")
             print(f"stage archive {a.name}: {len(man)} file(s) (exit 0)")
             return 0
-        if a.stage in (DEFECT, RESEAL, RECOMPUTE):         # no FlyPool: the defect procedure never measures
+        if a.stage in (DEFECT, RESEAL, RECOMPUTE, RESTART):   # no FlyPool: these never measure
             runner.workers = a.workers or SPEC.workers
             out = (runner.defect(a.note) if a.stage == DEFECT else runner.reseal(int(a.name)) if a.stage == RESEAL
-                   else runner.recompute(a.name))
+                   else runner.restart_preseal() if a.stage == RESTART else runner.recompute(a.name))
             for ln in report_lines(a.stage, out, SPEC.cli_print_chars):
                 print(ln)
             return exit_code(out)
