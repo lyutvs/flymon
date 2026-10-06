@@ -4,7 +4,10 @@
 - AA's learn raw: aa_runner.units on AA's main-set seeds → the REAL WMeasurer over aa_store.AACache with w_world's
   count Model / FakePool into results/aa/cache, results/aa/learn.json (manifest with real sha256), records.json /
   estimate.json / aa_learning `records` computed by aa_estimate from the same raw (AA's own path; min_groups 3 so the
-  six-pair S1 has a two-stage primary), so the differential test and the 0f source (fut_check) reproduce;
+  six-pair S1 has a two-stage primary), so the differential test and the 0f source (fut_check) reproduce; the AA
+  source is non-degenerate — per-pair effects on AA's learned pairs and NoisyModel's stage-dependent count noise, so
+  no gate is clipped at ±10 in every fly and the raw contrasts vary between pairs (fut_model's 8 × 8 C is a finite
+  correlation matrix; with 6 source pairs it has rank ≤ 5 and is PD only through fut_chol_eps — a world-scale fact);
 - AA S1 = 6 pairs over 3 X labels (sizes 3, 2, 1), plus 2 screened-out learned pairs (192 learn units, 144 in S1);
 - lv_sources is the REAL ab_pairs function over the world's rows; base / selftest / generate are scripted, the
   generated KC-pre set has 40 rows ((a) 30 over 7 X labels and 9 type sets, (b) 10), and every AB.3 declared value of
@@ -15,6 +18,8 @@ import hashlib
 import json
 from collections import Counter
 from pathlib import Path
+
+import numpy as np
 
 from flymon.brain import aa_estimate, aa_runner, aa_store, ab_pairs, w_records
 from flymon.brain import ab_runner as R
@@ -38,6 +43,17 @@ OUT_C = (5, 30)                                                # learned, screen
 A_X = ("Earthquake", "Surf", "Psychic", "Flamethrower", "Rock Slide", "Mega Drain", "Thunderbolt")
 TSETS = (("DRAGON", "WATER"), ("FIRE", "ROCK"), ("FLYING", "GRASS"), ("FLYING", "GROUND"), ("FLYING", "PSYCHIC"),
          ("GROUND", "ICE"), ("GROUND", "WATER"), ("NORMAL", "PSYCHIC"), ("ROCK",))
+
+
+class NoisyModel(Model):
+    """w_world's count model plus stage-dependent count noise (seeded by probe seed and stage), so the AA source's
+    gates are not all clipped at ±10 and its raw contrasts vary between pairs."""
+
+    def probe(self, pair, seed, edit, applied, plastic):
+        x, y = super().probe(pair, seed, edit, applied, plastic)
+        n = np.random.default_rng([int(seed), len(applied)]).normal(0.0, 4.0, 4)
+        add = lambda d, a, p: dict(d, A=int(max(0, d["A"] + round(a))), P=int(max(0, d["P"] + round(p))))  # noqa
+        return add(x, n[0], n[1]), add(y, n[2], n[3])
 
 
 def _row(axis, turn, x, y, mx, ox, my, oy, tag):
@@ -127,7 +143,7 @@ class World:
                      y_pilot_pairs=3, y_pilot_split=(("even", 2), ("v_set", 1)), v_set_rows=len(VROWS),
                      **decl_fields(self.gen))
         self.s = s or base
-        self.model = Model()
+        self.model = NoisyModel()
         self.pool = FakePool(self.model)
         for r in MAIN:
             self.pool.pairs[json.dumps([r["odor_x"], r["odor_y"]], sort_keys=True)] = row_key(r)
@@ -197,6 +213,8 @@ class World:
 
     def _write_aa(self):
         s = self.s
+        for i, r in enumerate(AA_ROWS):                          # per-pair effects (non-degenerate AA source)
+            self.model.effects[row_key(r)] = (1.0 + 0.6 * i, 1.0 + 0.5 * ((i * 3) % 5))
         U = aa_runner.units(AA_ROWS, "main", s.probes, s.flies, V.lever_edit, ws=aa_runner.aa_w_spec())
         wm = WM.WMeasurer(self.pool, aa_store.AACache(SPEC.aa_cache_dir, CODE), Params(), READOUT, "MBON05", "PAM08",
                           "PPL105", R.WINDOWS, R.TIMING)

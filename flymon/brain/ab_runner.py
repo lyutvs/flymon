@@ -176,6 +176,9 @@ def _same(a, b) -> bool:
     return canonical(ab_store.to_json(a)) == canonical(ab_store.to_json(b))
 
 
+_CSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")                    # ANSI CSI escape sequences (colours, cursor moves)
+
+
 # ================================================================ the differential test (AB.7 0 6783)
 def differential(ctx, s=AB) -> dict:
     """AA S1's first `diff_pairs` pairs in c order, assembled here with AA's main-set seeds (aa_runner.aa_w_spec():
@@ -195,6 +198,8 @@ def differential(ctx, s=AB) -> dict:
     rec = ctx["aa_detail"]("records")["block"]["pairs"]
     est = ctx["aa_detail"]("estimate")["primary"]
     why, per = [], {}
+    if len(first) != s.diff_pairs:
+        why.append(f"AA S1 쌍 {len(first)}개 < 차등 시험 쌍 수 {s.diff_pairs}")
     missing = [int(p["c"]) for p in first if int(p["c"]) not in rows]
     if missing:
         why.append(f"AA S1 c {missing}가 AA 주 세트 행에 없음")
@@ -713,10 +718,12 @@ class Runner:
         return tick
 
     def _tests_log(self) -> tuple:
-        """The order-0 tests log (AB.7 0a): the last line `exit 0`, an "N passed" line, no failed / error summary."""
+        """The order-0 tests log (AB.7 0a): the last line `exit 0`, an "N passed" line, no failed / error summary — all
+        read after stripping ANSI CSI escape sequences (pytest colours its summary line on a terminal)."""
         s = self.s
         log = Path(s.tests_log)
-        lines = log.read_text().strip().splitlines() if log.exists() else []
+        text = _CSI.sub("", log.read_text()) if log.exists() else ""
+        lines = text.strip().splitlines()
         passed = [ln for ln in lines if re.search(r"\d+ passed", ln)]
         tests = dict(path=s.tests_log, log_sha256=sha256_file(log) if log.exists() else None,
                      last_line=lines[-1] if lines else None, passed_line=passed[-1] if passed else None)

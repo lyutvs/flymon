@@ -7,6 +7,7 @@ import json
 import re
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from flymon.brain import aa_runner, ab_estimate, ab_rules, ab_store
@@ -147,6 +148,10 @@ def test_fut_source_reproduces_aa_records(tmp_path, monkeypatch):
     assert src["n_units"] == w.s.fut_src_units == 144 and src["n_pairs"] == 6 and not src["missing"] + src["bad_sha"]
     arr = ab_estimate.futility_inputs(src["by_pair"], src["keys"], src["z"], w.s)
     assert ab_estimate.fut_check(arr, src["pairs"], src["s1"], w.s) == []
+    m = ab_estimate.fut_model(arr, src["s1"], w.s)                      # non-degenerate source: C finite, unit diagonal
+    C = np.asarray(m["C"])
+    assert C.shape == (8, 8) and np.isfinite(C).all() and np.allclose(np.diag(C), 1.0)
+    assert np.isfinite(np.asarray(m["chol"])).all()
 
 
 # ================================================================ stage0
@@ -174,6 +179,8 @@ def test_stage0_pass_block(tmp_path, monkeypatch):
     ("1 failed, 1233 passed in 600.00s\nexit 0\n", "실패 · 오류 요약"),
     ("1233 passed, 2 errors in 600.00s\nexit 0\n", "실패 · 오류 요약"),
     ("1234 passed in 600.00s\nexit 1\n", "마지막 줄"),
+    ("\x1b[31m\x1b[1m1 failed\x1b[0m, \x1b[32m1233 passed\x1b[0m\x1b[31m in 600.00s\x1b[0m\nexit 0\n", "실패 · 오류 요약"),
+    ("\x1b[32m1233 passed\x1b[0m, \x1b[31m\x1b[1m2 errors\x1b[0m in 600.00s\nexit 0\n", "실패 · 오류 요약"),
 ])
 def test_stage0_requires_passed_line_and_no_failures(tmp_path, monkeypatch, text, why):
     w = World(tmp_path, monkeypatch)
@@ -181,6 +188,23 @@ def test_stage0_requires_passed_line_and_no_failures(tmp_path, monkeypatch, text
     out = w.runner().run("stage0")
     assert out["outcome"] == "INVALID" and any(why in r for r in out["reasons"]), out["reasons"]
     assert "archive" not in out
+
+
+def test_stage0_coloured_passed_line_is_found(tmp_path, monkeypatch):
+    """pytest colours the summary on a terminal: "\x1b[32m1234 passed\x1b[0m" is still the "N passed" line."""
+    w = World(tmp_path, monkeypatch)
+    w.write_log("\x1b[32m\x1b[1m1234\x1b[0m\x1b[32m passed\x1b[0m\x1b[32m in 600.00s\x1b[0m\nexit 0\n")
+    out = w.runner().run("stage0")
+    assert out["outcome"] == "PASS", out.get("reasons")
+    assert doc()["stage0"]["tests"]["passed_line"] == "1234 passed in 600.00s"
+
+
+def test_differential_needs_diff_pairs_pairs(tmp_path, monkeypatch):
+    """AA S1 shorter than diff_pairs is a failure (never a shorter differential test)."""
+    w = World(tmp_path, monkeypatch)
+    out = R.differential(w.ctx, dataclasses.replace(w.s, diff_pairs=len(S1_C) + 1))
+    assert out["ok"] is False and any("차등 시험 쌍 수" in r for r in out["reasons"]), out["reasons"]
+    assert w.pool.jobs == w.pool_jobs_after_aa
 
 
 def test_stage0_invalid_on_differential(tmp_path, monkeypatch):
