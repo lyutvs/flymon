@@ -636,3 +636,316 @@ def synth_rep(st, cell, eff: tuple, alpha: dict, r, s=AB, B=None) -> str:
               R=[alpha["R"]])
     lim = set_limits(per, keys, tsets, lv, s, B, rngs={name: r for name in STATS})
     return verdict(lim, [], {}, alpha, s)["label"]
+
+
+# ================================================================ the futility gate (AB.7 0f, AB.9.3)
+from . import w_records  # noqa: E402  (part C only: the AA source goes through the judgement path)
+
+RECORDS_REASON = "records 상한"                       # = ab_rules.RECORDS_REASON (AB.7 예산; ab_estimate imports no rules)
+
+
+def futility_inputs(by_pair: dict, keys: list, z: dict, s=AB) -> dict:
+    """AB.7 0f AA 원천: by_pair = {pair key: [{unit: {fly, brain}, result}]} (AA S1's 16 pairs × 8 flies × R · N · RN,
+    read from AA's learn cache by the runner); z = Y pilot's full-precision z_V (AA's). Per pair, through the judgement
+    path (w_records.pair_data → pair_stats): fly d′ [F, 4] (unclipped, ±∞ kept) and the four raw contrasts [F, 4].
+    JSON-able lists (the cell executor keys and pickles them)."""
+    dp, raw = [], []
+    for k in keys:
+        st = pair_stats(w_records.pair_data(by_pair[k], list(range(s.flies))), z, s)
+        dp.append(np.asarray(st["raw"], float).tolist())
+        raw.append(np.asarray(st["R"], float).tolist())
+    return dict(keys=list(keys), dp=dp, raw=raw)
+
+
+def _col_mean(x) -> float:
+    return float(np.ascontiguousarray(x, float).mean())
+
+
+def fut_check(arr: dict, pairs: dict, s1: dict, s=AB) -> list:
+    """AB.7 0f: the source must reproduce AA bit for bit — the winsorized fly mean of each gate = records.pairs[key]
+    .gates[g].mean, the two associations' fly contrasts = raw[g].fly; and (rounded 9) the pair means' mean = s1_records
+    .point / raw.point, the D pair SD (ddof 1) = sd_pairs. A difference is a sealed-code defect (restart_preseal)."""
+    why = []
+    if list(arr["keys"]) != list(s1["keys"]) or len(arr["keys"]) != s.fut_src_pairs:
+        why.append(f"원천 쌍 {len(arr['keys'])}개 · 순서 ≠ AA s1_records.keys")
+        return why
+    D = AE.winsorize(np.asarray(arr["dp"], float), s)
+    R = np.asarray(arr["raw"], float)
+    for i, k in enumerate(arr["keys"]):
+        for gi, g in enumerate(GATES):
+            if _col_mean(D[i, :, gi]) != pairs[k]["gates"][g]["mean"]:
+                why.append(f"{k} {g}: 잘라낸 마리 평균 ≠ AA records")
+        for g in AE.RAW:
+            if R[i, :, GATES.index(g)].tolist() != list(pairs[k]["raw"][g]["fly"]):
+                why.append(f"{k} {g}: 마리 비표준화 대조 ≠ AA records")
+    mD = D.mean(1)
+    for gi, g in enumerate(GATES):
+        if _r(mD[:, gi].mean() - s1["point"][g], s) != 0:
+            why.append(f"{g}: 쌍 추정 평균 ≠ s1_records.point")
+        if _r(np.std(mD[:, gi], ddof=1) - s1["sd_pairs"][g], s) != 0:
+            why.append(f"{g}: 쌍 추정 SD ≠ s1_records.sd_pairs")
+    for g in AE.RAW:
+        if _r(R.mean(1)[:, GATES.index(g)].mean() - s1["raw"]["point"][g], s) != 0:
+            why.append(f"{g}: 비표준화 대조 평균 ≠ s1_records.raw.point")
+    return why
+
+
+def _icc(y: np.ndarray, groups: list) -> float:
+    """One-way random-effects moment estimate (unbalanced n₀): clamp(σ̂²_b / (σ̂²_b + MSW), 0, 1)."""
+    N, G = y.size, len(groups)
+    n = np.array([len(g) for g in groups], float)
+    gm = np.array([y[g].mean() for g in groups])
+    msb = float((n * (gm - y.mean()) ** 2).sum()) / (G - 1)
+    msw = float(sum(((y[g] - gm[j]) ** 2).sum() for j, g in enumerate(groups))) / (N - G)
+    n0 = (N - float((n ** 2).sum()) / N) / (G - 1)
+    s2b = max(0.0, (msb - msw) / n0)
+    return float(min(1.0, s2b / (s2b + msw))) if s2b + msw > 0 else 0.0
+
+
+def fut_model(arr: dict, s1: dict, s=AB) -> dict:
+    """AB.7 0f model from the source: μ [8] (D pair means' mean on the uncorrected K 8 scale, then R), τ [8] (D: AA's
+    DL τ̂ where available, else the S1 pair-estimate SD — s1_records.sd_pairs; R: the pair-mean SD, ddof 1), its
+    source labels, ρ [8] (one-way MoM over AA's X-label groups), the 8 × 8 Pearson C of the pair means and its
+    Cholesky factor (C + eps·I). Returns the source arrays too (dp, raw, mD, mR) — the simulation's only input."""
+    D = AE.winsorize(np.asarray(arr["dp"], float), s)
+    R = np.asarray(arr["raw"], float)
+    mD, mR = D.mean(1), R.mean(1)
+    M = np.concatenate([mD, mR], 1)                                                    # [P, 8]
+    tau, src = [], []
+    for gi, g in enumerate(GATES):
+        dl = s1["dl"][g]
+        if dl.get("available"):
+            tau.append(float(dl["tau"]))
+            src.append("dl")
+        else:
+            tau.append(float(s1["sd_pairs"][g]))
+            src.append("sd")
+    tau += [float(v) for v in np.std(mR, axis=0, ddof=1)]
+    src += ["sd"] * 4
+    groups = y_rules.merge_groups(list(arr["keys"]))
+    rho = [_icc(M[:, j], groups) for j in range(M.shape[1])]
+    C = np.corrcoef(M.T)
+    L = np.linalg.cholesky(C + s.fut_chol_eps * np.eye(C.shape[0]))
+    return dict(keys=list(arr["keys"]), dp=arr["dp"], raw=arr["raw"], mD=mD.tolist(), mR=mR.tolist(),
+                mu=M.mean(0).tolist(), tau=tau, tau_src=src, rho=rho, C=C.tolist(), chol=L.tolist(),
+                x_sizes=[len(g) for g in groups])
+
+
+def fut_rho(inp: dict, alloc: str) -> np.ndarray:
+    rho = np.asarray(inp["rho"], float)
+    if alloc == "icc":
+        return rho
+    if alloc == "pair":
+        return np.zeros_like(rho)
+    if alloc == "group":
+        return np.ones_like(rho)
+    raise ValueError(alloc)
+
+
+def fut_alpha(alpha: dict) -> dict:
+    """The 0e levels of one structure (cal_gate alpha {D {P, F}, Dfin {P}, R {P}}) → verdict's α, FAIL side off."""
+    return dict(D=alpha["D"]["P"], Dfin=alpha["Dfin"]["P"], R=alpha["R"]["P"], F=None)
+
+
+def fut_draw(st, inp: dict, alloc: str, r, s=AB) -> tuple:
+    """Steps (1)–(2) of one replicate, in this draw order: a [G, 8], e [k, 8] (Cholesky of C × N(0, I₈), scaled by
+    τ√ρ and τ√(1 − ρ)), then the source pair q [k] and the flies f [k, F] (with replacement). θ = μ + a_X(p) + e_p."""
+    gx, _gt = _labels(st)
+    k, G = len(gx), int(gx.max()) + 1
+    L = np.asarray(inp["chol"], float)
+    tau, rho = np.asarray(inp["tau"], float), fut_rho(inp, alloc)
+    nd = L.shape[0]
+    a = (r.standard_normal((G, nd)) @ L.T) * (tau * np.sqrt(rho))
+    e = (r.standard_normal((k, nd)) @ L.T) * (tau * np.sqrt(1.0 - rho))
+    th = np.asarray(inp["mu"], float) + a[gx] + e                                      # [k, 8]
+    q = r.integers(0, len(inp["dp"]), k)
+    f = r.integers(0, s.flies, (k, s.flies))
+    return th, q, f
+
+
+def fut_flies(th, q, f, inp: dict, s=AB) -> tuple:
+    """Step (3): the fly values of the three statistics [k, F, 4] — D: θ + (clip(source, ±10) − the source pair's
+    winsorized mean), a ±∞ source fly kept (+10 / −10 in D, NaN in D_fin); R: θ^R + (source contrast − source pair
+    mean)."""
+    dp, raw = np.asarray(inp["dp"], float), np.asarray(inp["raw"], float)
+    mD, mR = np.asarray(inp["mD"], float), np.asarray(inp["mR"], float)
+    src = dp[q[:, None], f]                                                            # [k, F, 4]
+    inf = np.isinf(src)
+    new = np.where(inf, src, th[:, None, :4] + (AE.winsorize(src, s) - mD[q][:, None, :]))
+    D = AE.winsorize(new, s)
+    return D, np.where(inf, np.nan, D), th[:, None, 4:] + (raw[q[:, None], f] - mR[q][:, None, :])
+
+
+def fut_rep(st, inp: dict, alpha: dict, alloc: str, r, s=AB, B=None) -> tuple:
+    """One replicate (AB.7 0f 모의 한 회): (1) group and pair effects (Cholesky × N(0, I₈) ⊙ τ√ρ, ⊙ τ√(1 − ρ)), θ_p =
+    μ + a_X(p) + e_p; (2) per pair a source pair q (uniform over the source) and 8 of its flies with replacement;
+    (3) fly values — D: θ + (clip(source, ±10) − the source pair's winsorized mean), a ±∞ source fly kept as is; R:
+    θ^R + (source contrast − source pair mean); (4) set_limits + verdict on stream r (D, D_fin, R in that order) at
+    the structure's 0e levels, no machine / mechanism rows, FAIL off. Returns (PASS?, the verdict's gate rows)."""
+    gx, gt = _labels(st)
+    th, q, f = fut_draw(st, inp, alloc, r, s)
+    D, Dfin, Rf = fut_flies(th, q, f, inp, s)
+    keys = [f"a|{i}|X{int(gx[i])}|Y" for i in range(len(gx))]
+    tsets = [f"T{int(gt[i])}" for i in range(len(gx))]
+    per = {kk: dict(D=D[i], Dfin=Dfin[i], R=Rf[i]) for i, kk in enumerate(keys)}
+    al = fut_alpha(alpha)
+    lim = set_limits(per, keys, tsets, levels_for(al), s, B, rngs={name: r for name in STATS})
+    v = verdict(lim, [], {}, al, s)
+    return v["label"] == PASS, v["gates"]
+
+
+def _blocked_zero() -> dict:
+    return {g: {n: {"TS": 0, "CG": 0} for n in STATS} for g in GATES}
+
+
+def _fut_gen(state, s, stream):
+    r = AE.stream(s.synth_seed, *stream)
+    if state is not None:
+        r.bit_generator.state = state
+    return r
+
+
+def fut_run(st, tag: str, alloc: str, inp: dict, alpha: dict, s=AB, n=None, resume=None, on_chunk=None, B=None,
+            stream=None) -> dict:
+    """n replicates on stream ("fut", tag, alloc) (or `stream`, the grid's ("fut", "grid", scen, g, k)) under the
+    synth root 88_030_000, in chunks of cal_chunk with the PCG64 state checkpointed (cal_run's form, bit-identical when
+    resumed). Payload {done, n, passed, blocked {gate: {stat: {TS, CG}}}, state}: blocked counts a replicate where that
+    one condition (gate × statistic × method; a D_fin pair / group floor blocks both methods) did not clear its bar."""
+    check_structure(st)
+    n = s.fut_reps if n is None else int(n)
+    stream = ("fut", tag, alloc) if stream is None else tuple(stream)
+    pay = dict(done=0, n=n, passed=0, blocked=_blocked_zero(), state=None) if resume is None else copy.deepcopy(resume)
+    r = _fut_gen(pay["state"], s, stream)
+    while pay["done"] < n:
+        m = min(s.cal_chunk, n - pay["done"])
+        for _ in range(m):
+            ok, gates = fut_rep(st, inp, alpha, alloc, r, s, B)
+            pay["passed"] += int(ok)
+            for g, row in gates.items():
+                for name in STATS:
+                    c = row[name]
+                    for meth in ("TS", "CG"):
+                        pay["blocked"][g][name][meth] += int(not (c[f"ok_{meth}"] and c["fin_ok"]))
+        pay = dict(pay, done=pay["done"] + m, state=r.bit_generator.state)
+        if on_chunk is not None:
+            on_chunk(copy.deepcopy(pay))
+    return pay
+
+
+def cp_two(x: int, n: int, s=AB) -> list:
+    """Clopper–Pearson two-sided interval at fut_ci_tails (record only; the decision is the point P̂)."""
+    lo_t, hi_t = s.fut_ci_tails
+    lo = 0.0 if x <= 0 else float(stats.beta.ppf(lo_t, x, n - x + 1))
+    hi = 1.0 if x >= n else float(stats.beta.ppf(hi_t, x + 1, n - x))
+    return [lo, hi]
+
+
+def fut_row(pay: dict, s=AB) -> dict:
+    n = int(pay["n"])
+    x = int(pay["passed"])
+    share = {g: {nm: {m: pay["blocked"][g][nm][m] / n for m in ("TS", "CG")} for nm in STATS} for g in GATES}
+    worst = max(((g, nm, m) for g in GATES for nm in STATS for m in ("TS", "CG")),
+                key=lambda t: share[t[0]][t[1]][t[2]])
+    return dict(passed=x, n=n, p_hat=x / n, cp95=cp_two(x, n, s), blocked=share,
+                worst=dict(gate=worst[0], stat=worst[1], method=worst[2], share=share[worst[0]][worst[1]][worst[2]]))
+
+
+def _serial_fut(kind, args):
+    if kind != "fut":
+        raise ValueError(kind)
+    return fut_run(*args)
+
+
+def futility(inp: dict, alpha_by_tag: dict, s=AB, cell=None) -> dict:
+    """AB.7 0f 가망 관문: 9 rows (fut_tags × fut_allocs; structure = rep_structure of the 0e representative sizes, levels
+    = 0e's verified α of that structure), fut_reps replicates each, through cell(kind, args) (run_many). The decision
+    row is fut_judge = (g6, icc): P̂ = PASS / fut_reps, rounded 9, P̂ < fut_threshold → futile. Takes the AA-source
+    model and 0e's levels only — never a Gen-2 value."""
+    run = cell or _serial_fut
+    rows = [(t, a) for t in s.fut_tags for a in s.fut_allocs]
+    jobs = [("fut", (rep_structure(s.rep_sizes(t), s), t, a, inp, alpha_by_tag[t], s)) for t, a in rows]
+    got = run_many(run, jobs)
+    out = {f"{t}|{a}": dict(fut_row(p, s), tag=t, alloc=a, stream=["fut", t, a],
+                            alpha=fut_alpha(alpha_by_tag[t])) for (t, a), p in zip(rows, got)}
+    j = out["|".join(s.fut_judge)]
+    futile = _r(j["p_hat"] - s.fut_threshold, s) < 0
+    return dict(rows=out, judge=dict(row="|".join(s.fut_judge), p_hat=j["p_hat"], passed=j["passed"], n=j["n"],
+                                     threshold=s.fut_threshold, futile=bool(futile)))
+
+
+# ---------------------------------------------------------------- the record-only grid (STOP_FUTILE only)
+def even_sizes(k: int, g: int) -> tuple:
+    """k pairs in g groups as evenly as possible; the first k mod g groups get one more."""
+    q, m = divmod(int(k), int(g))
+    return tuple(q + 1 if j < m else q for j in range(int(g)))
+
+
+def grid_cells(s=AB) -> list:
+    return [(g, k) for g in s.fut_grid_g for k in s.fut_grid_k if k >= g]
+
+
+def nearest_tag(g: int, s=AB) -> str:
+    """g ≤ 5 → g5, g = 6 → g6, g ≥ 7 → g7: the representative structure whose stored 0e selection counts are used."""
+    sizes = {t: len(s.rep_sizes(t)) for t in s.fut_tags}
+    lo, hi = min(sizes.values()), max(sizes.values())
+    gg = min(max(int(g), lo), hi)
+    return next(t for t, n in sizes.items() if n == gg)
+
+
+def scenario_cells(tag: str, s=AB) -> list:
+    out = dict(s.fut_scenarios)[tag]
+    return [ci for ci in range(1, len(s.cells) + 1) if ci not in out]
+
+
+def reselect(sel_counts: dict, cells: list, s=AB) -> dict | None:
+    """AB.5 (가) on the scenario's cells only, PASS side, from 0e's stored selection counts ({ci: counts}; JSON keys may
+    be strings). Returns the fut_alpha form, or None when some statistic reaches no α."""
+    sub = {int(ci): c for ci, c in sel_counts.items() if int(ci) in cells}
+    ch = select(sub, s.n_sel, s)
+    if any(ch[n]["P"] is None for n in STATS):
+        return None
+    return {n: {"P": ch[n]["P"]} for n in STATS}
+
+
+def pareto_min(points: list) -> list:
+    """The (g, k) cells no other listed cell dominates (g′ ≤ g ∧ k′ ≤ k, not equal) — sorted."""
+    pts = sorted(set((int(g), int(k)) for g, k in points))
+    return [p for p in pts if not any(q != p and q[0] <= p[0] and q[1] <= p[1] for q in pts)]
+
+
+def futility_grid(inp: dict, sel_by_tag: dict, s=AB, cell=None, stop=None) -> dict:
+    """AB.7 0f 기록 격자 (STOP_FUTILE only; record, never changes AB): per scenario set, every (g, k) of grid_cells,
+    even group sizes (rep_structure: type sets by pair number mod 9), the α reselected from the nearest
+    representative structure's stored 0e selection counts on the scenario's cells, fut_grid_reps replicates on stream
+    ("fut", "grid", scen, g, k) with the fut_grid_alloc allocation. One run_many per scenario; stop() is checked
+    before each scenario (the records cap) — past it the remaining cells are null with RECORDS_REASON. Returns
+    {scen: {cells: [...], pareto: [[g, k], …]}}."""
+    run = cell or _serial_fut
+    out = {}
+    for scen, _ex in s.fut_scenarios:
+        cis = scenario_cells(scen, s)
+        cells, jobs, idx = [], [], []
+        for g, k in grid_cells(s):
+            tag = nearest_tag(g, s)
+            al = reselect(sel_by_tag[tag], cis, s)
+            row = dict(g=g, k=k, sizes=list(even_sizes(k, g)), alpha_from=tag,
+                       alpha=None if al is None else fut_alpha(al))
+            if al is not None:
+                idx.append(len(cells))
+                jobs.append(("fut", (rep_structure(even_sizes(k, g), s), tag, s.fut_grid_alloc, inp, al, s,
+                                     s.fut_grid_reps, None, None, None, ["fut", "grid", scen, g, k])))
+            else:
+                row.update(p_hat=None, reason="α 미도달")
+            cells.append(row)
+        if stop is not None and stop():
+            for row in cells:
+                row.update(p_hat=None, reason=RECORDS_REASON)
+            out[scen] = dict(cells=cells, pareto=None, reason=RECORDS_REASON)
+            continue
+        for i, p in zip(idx, run_many(run, jobs)):
+            r_ = fut_row(p, s)
+            cells[i].update(passed=r_["passed"], n=r_["n"], p_hat=r_["p_hat"], cp95=r_["cp95"])
+        ok = [(c["g"], c["k"]) for c in cells if c.get("p_hat") is not None
+              and _r(c["p_hat"] - s.fut_threshold, s) >= 0]
+        out[scen] = dict(cells=cells, pareto=[list(p) for p in pareto_min(ok)])
+    return out
