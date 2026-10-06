@@ -909,3 +909,213 @@ class Runner:
             outcome=aa_rules.PASS, reasons=[], by_set=by_set, null_reason=nul, seal_key=seal, raw_digest_now=dig,
             note="AA.5 · AA.7 4b: 묶음 크기 구조만 입력(결과값 없음); 집합별 1차 · 기록 방식 + 1차의 비표준화 판. ±∞ 제외판은 "
                  "같은 방식의 포함 확률을 쓴다(plan Reading 6); 바닥 민감도는 records."))
+
+    # ================================================================ order 5: learn (AA.7 5 6262, AA.3 6191–6192)
+    def _learn_units(self, doc: dict) -> tuple:
+        """All 31 screened pairs (pass or fail) in the screen block's c order, R · N · RN on Y's judged seeds."""
+        s = self.s
+        try:
+            rows = {int(r["c"]): r for r in self.ctx["main_rows"](self.ctx["y_doc"]()["digest"]["set"])}
+        except ValueError as e:
+            refuse(f"stage learn: the main set does not reproduce Y block digest: {e}")
+        prs = [rows[int(p["c"])] for p in doc["screen"]["pairs"]]
+        return prs, units(prs, "main", s.probes, s.flies, V_SPEC.lever_edit)
+
+    def _pairs_complete(self, U: list, wm) -> int:
+        """Pairs every unit of which has a cache entry for block "learn" (AA.8 "학습 〈n〉쌍 완료")."""
+        by = {}
+        for u in U:
+            by.setdefault(u["pair"], []).append(wm.cache.get(KIND, wm.inputs(u, "learn")) is not None)
+        return sum(all(v) for v in by.values())
+
+    def _learn_reasons(self, doc: dict, prs: list, got: list) -> list:
+        """AA.7 5: unit count / duplicate keys, RN1 = R1, learn pre = naive screen pre (bit for bit), every
+        w_records.machine_reasons item, w_verdict.data_reasons, no NaN fly (the gate value itself is discarded)."""
+        s, z = self.s, self.ctx["y_z"]()
+        why = []
+        want = len(prs) * s.flies * len(BRAINS)
+        if len(got) != want:
+            why.append(f"단위 수 {len(got)} ≠ {want}")
+        keys = [(g["unit"]["pair"], g["unit"]["fly"], g["unit"]["brain"]) for g in got]
+        dup = sorted({k for k in keys if keys.count(k) > 1})
+        if dup:
+            why.append(f"단위 키 중복 {len(dup)}개: {dup[:3]}")
+        pre, _dig, bad = self._screen_raw(doc)
+        why += [f"순진 거름 원자료 재확인 실패: {b}" for b in bad[:3]]
+        ws = aa_w_spec(s)
+        flies = list(range(s.flies))
+        bp = by_pair(got)
+        for r in prs:
+            k, c = row_key(r), int(r["c"])
+            rows_k = bp.get(k) or []
+            seeds = {f: ws.probe_seeds(c, f, s.probes) for f in flies}
+            naive = {f: pre[k][f] for f in flies} if k in pre else None
+            if naive is None and not bad:
+                why.append(f"{k}: 순진 거름 pre 없음")
+            try:
+                why += [f"{k}: {x}" for x in w_records.machine_reasons(rows_k, flies, declared(V_SPEC.lever_edit, seeds),
+                                                                         naive=naive)]
+                d = pair_counts(rows_k, flies)
+            except (KeyError, ValueError, TypeError) as e:
+                why.append(f"{k}: 자료 결함 {type(e).__name__}: {e}")
+                continue
+            why += [f"{k}: {x}" for x in w_verdict.data_reasons(d, s.flies, s.probes)]
+            if bool(w_verdict.rn1_mismatch({st: np.asarray(v)[None] for st, v in d.items()})[0]):
+                why.append(f"{k}: RN1 ≠ R1")
+            with np.errstate(all="ignore"):
+                if np.isnan(np.asarray(w_verdict.gate_stats(d, z), float)).any():
+                    why.append(f"{k}: NaN 마리")
+        return why
+
+    def stage_learn(self) -> dict:
+        doc = self._require("learn")
+        s = self.s
+        if doc["screen"].get("outcome") != aa_rules.PASS or int(doc["screen"].get("k") or 0) == 0:
+            refuse("stage learn: needs a PASS screen with k ≥ 1 (AA.3, STOP_NO_PAIRS)")
+        tick = self._ticker("learn")
+        prs, U = self._learn_units(doc)
+        wm = self.ctx["measurer"](self.pool, False)
+        ins = [canonical(wm.inputs(u, "learn")) for u in U]
+        first = list(dict.fromkeys(ins))                                    # identical inputs are measured once
+        UU = [U[ins.index(x)] for x in first]
+        todo = [u for u in UU if wm.cache.get(KIND, wm.inputs(u, "learn")) is None]
+        base = self._core_h(doc)
+        est = doc["smoke"]["estimates_h"]
+        cnt = lambda: aa_rules.candidate_counts(self._cands(self._doc(), "learn"))      # noqa: E731
+        left = float(est["learn"]) * len(todo) / max(len(UU), 1) + float(est["estimate"])
+        spent0 = base + self._prog("learn")["core"] / s.s_per_h
+        if not aa_rules.core_ok(spent0, left, s):                         # the reservation (AA.7 5 "시작 직전")
+            tick()
+            return self._write("learn", aa_rules.budget_stop(
+                aa_rules.budget_text(spent0, left, s), "5 전", "순진 거름만 측정(31쌍 `screened`, 학습 0)", cnt()))
+        n_w = max(1, int(getattr(self.pool, "n_workers", 0) or 1))
+
+        def check(a, _n):
+            """Before each measurer round (plan Readings 9, 21): seconds to progress, the measured cap, then the
+            round's pairs turn `trained` (states move forward only)."""
+            tick()
+            if not aa_rules.spent_ok(base + self._prog("learn")["core"] / s.s_per_h, s):
+                raise _BudgetStop()
+            self._cands_set("learn", sorted({u["pair"] for u in todo[a:a + n_w]}), aa_rules.STATES[2])
+        try:
+            got1 = wm.learn(UU, "learn", check=check)
+        except _BudgetStop:
+            tick()
+            n = self._pairs_complete(U, wm)
+            return self._write("learn", aa_rules.budget_stop(
+                aa_rules.budget_text(base + self._prog("learn")["core"] / s.s_per_h, 0.0, s), s.stage_label("learn"),
+                f"학습 {n}쌍 완료", cnt()))
+        finally:
+            tick()
+        self._cands_set("learn", [row_key(r) for r in prs], aa_rules.STATES[2])   # every pair is measured by now
+        by_in = dict(zip(first, got1))
+        got = [dict(by_in[x], unit=u) for u, x in zip(U, ins)]
+        why = self._learn_reasons(doc, prs, got)
+        man = manifest(got)
+        p = aa_store.write_json(self._detail("learn"), dict(manifest=man), self.plist)
+        n_tr = cnt()["trained"]
+        common = dict(manifest_sha256=hashlib.sha256(canonical(man).encode()).hexdigest(), n_units=len(got),
+                      n_trained=n_tr, detail_path=self._detail("learn"), detail_sha256=sha256_file(p))
+        if why:
+            body = aa_rules.machine_stop("학습", "; ".join(why[:5]), f"학습 {n_tr}쌍 `trained`", cnt())
+            tick()
+            return self._write("learn", dict(body, **common, n_reasons=len(why)))
+        tick()
+        return self._write("learn", dict(
+            outcome=aa_rules.PASS, reasons=[], **common,
+            note="AA.7 5: 매니페스트만(통계 없음) — 31쌍 × 8마리 × R · N · RN, c 오름차순 배치; 학습 pre = 순진 거름 pre "
+                 "비트 동일 · RN1 = R1 · 자료 결함 · NaN 마리 검사 통과. 결과는 estimate 블록에서 처음 읽는다."))
+
+    def _learn_data(self, doc: dict) -> dict:
+        """{key: {stage: [F, K, 2, 2]}} from the learn block's manifest (sha-checked; cache hits only — a missing or
+        changed raw file refuses, nothing is measured)."""
+        s = self.s
+        blk = doc.get("learn") or {}
+        p = Path(self._detail("learn"))
+        if not p.exists() or sha256_file(p) != blk.get("detail_sha256"):
+            refuse(f"learn raw: {p} is missing or its sha256 differs from block learn (캐시 적중 실패)")
+        got, bad = load_manifest(json.loads(p.read_text()).get("manifest") or [])
+        if bad:
+            refuse(f"learn raw: 캐시 적중 실패 {len(bad)}건: {bad[:3]}")
+        by = {}
+        for g in got:
+            pair, fly, brain = g["key"].rsplit("|", 2)
+            by.setdefault(pair, []).append(dict(unit=dict(pair=pair, fly=int(fly), brain=brain), result=g["result"]))
+        flies = list(range(s.flies))
+        return {k: pair_counts(v, flies) for k, v in by.items()}
+
+    # ================================================================ order 6: estimate (AA.7 6 6263, AA.5, AA.8 6278)
+    def _primary(self, doc: dict) -> dict:
+        """S1 = the screen block's passers (never learning values); the small-k rule picks the primary CI. Also
+        carries the DL τ̂ and the S1 φ medians the result sentence needs."""
+        s = self.s
+        z = self.ctx["y_z"]()
+        data = self._learn_data(doc)
+        S1 = [p for p in doc["screen"]["pairs"] if p["passed"]]
+        keys = [p["key"] for p in S1]
+        arrs = {k: aa_estimate.pair_arrays(data[k], z, s) for k in keys}
+        est = aa_estimate.estimate_set(arrs, keys, "S1", s)
+        pairs = []
+        for p in S1:
+            a = arrs[p["key"]]
+            ci = aa_estimate.pair_ci(a, int(p["c"]), s)["ci"]
+            pairs.append(dict(key=p["key"], c=int(p["c"]), naive_d=p["naive_d"], L_A=p["L_A"], L_P=p["L_P"],
+                              **{g: dict(mean=float(a["w"][:, aa_estimate.GI[g]].mean()), ci=ci[g])
+                                 for g in aa_estimate.PRIMARY}))
+        fl = [aa_estimate.floors(data[k]) for k in keys]
+        out = dict(set="S1", kind=est["plan"]["kind"], k=est["k"], n_groups=est["n_groups"], sizes=est["sizes"],
+                   plan=est["plan"], flag=est["plan"]["flag"], pairs=pairs,
+                   phi_median=dict(phi_R=float(np.median([f["phi_R"] for f in fl])),
+                                   phi_P=float(np.median([f["phi_P"] for f in fl]))))
+        if est["plan"]["kind"] == "pooled":
+            m = est["plan"]["primary"]
+            cov = ((doc["coverage"].get("by_set") or {}).get("S1") or {}).get(m) or {}
+            out.update(pooled={g: dict(point=est["point"][g], ci=est["ci"][m][g], method=m)
+                               for g in aa_estimate.PRIMARY},
+                       range={g: est["range"][g] for g in aa_estimate.PRIMARY}, coverage=cov.get("min"),
+                       under=cov.get("under"),
+                       tau_dl={g: (est["dl"][g].get("tau") if est["dl"][g].get("available") else None)
+                               for g in aa_estimate.PRIMARY})
+        return aa_store.to_json(out)
+
+    def _sentence_and_compare(self, a: dict) -> tuple:
+        ra, pa = aa_estimate.PRIMARY
+        if a["kind"] == "pair_study":
+            p = a["pairs"][0]
+            pt = {g: (p[g]["mean"], p[g]["ci"]) for g in (ra, pa)}
+            r = dict(k=1, key=p["key"])
+        else:
+            pt = {g: (a["pooled"][g]["point"], a["pooled"][g]["ci"]) for g in (ra, pa)}
+            rng = a["range"]
+            r = dict(k=a["k"], g=a["n_groups"], few=a["flag"] == "적은 묶음", method=a["plan"]["primary"],
+                     cov=a.get("coverage"), under=bool(a.get("under")), tau_ra=a["tau_dl"][ra], tau_pa=a["tau_dl"][pa],
+                     # one range slot in AA.8's sentence: the envelope of the two associations' pair ranges
+                     rng_min=min(rng[ra][0], rng[pa][0]), rng_max=max(rng[ra][1], rng[pa][1]))
+        r.update(mu_ra=pt[ra][0], lo_ra=pt[ra][1][0], hi_ra=pt[ra][1][1], mu_pa=pt[pa][0], lo_pa=pt[pa][1][0],
+                 hi_pa=pt[pa][1][1], phi_r=a["phi_median"]["phi_R"], phi_p=a["phi_median"]["phi_P"])
+        cmp_ = {g: aa_estimate.compare_table(pt[g][0], pt[g][1][0], pt[g][1][1], self.s) for g in (ra, pa)}
+        return aa_rules.result_sentence(r), cmp_
+
+    def stage_estimate(self) -> dict:
+        doc = self._require("estimate")                  # the seal check comes first (sealed stage)
+        t0 = time.perf_counter()
+        a = self._primary(doc)
+        b = self._primary(doc)                           # AA.7 6: the same raw and code once more, bit for bit
+        seal = seal_now(self.s)["key"]
+        if canonical(a) != canonical(b):
+            self._finish("estimate", t0)
+            return self._write("estimate", dict(
+                outcome=aa_rules.INVALID, reasons=["추정 재계산이 비트 단위로 같지 않음(AA.7 6)"], repeat_equal=False,
+                seal_key=seal))
+        sentence, cmp_ = self._sentence_and_compare(a)
+        self._finish("estimate", t0)
+        return self._write("estimate", dict(
+            outcome=aa_rules.PASS, reasons=[], primary=a, sentence=sentence, compare=cmp_, repeat_equal=True,
+            seal_key=seal,
+            note="AA.7 6 · AA.5 · AA.8 · AA.9: 1차 = S1(순진 거름 통과, screen 블록 그대로) 두 연합 d′의 쌍별 · 통합 추정과 "
+                 "작은-k 규칙의 1차 CI, 구조 맞춤 포함 확률(coverage 블록); 두 번 계산해 비트 같음. 비교 표는 기술 "
+                 "전용(판정 아님). 학습 통계는 이 블록에서 처음 읽는다."))
+
+
+class _BudgetStop(Exception):
+    """Raised from the learn round check when the measured core ledger passes the cap (AA.7 5)."""
