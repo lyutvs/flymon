@@ -5,8 +5,9 @@ against committed blocks (commits, digests, sha256, counts) are restated here be
   strength seeds (24_002_000 + i) are reused on purpose and come from v_spec.SPEC.kc_seeds().
 - Streams (AB.2 "흐름 만들기"): every stream is aa_estimate.stream(root, *tags); the five test vectors are sealed.
 - The futility gate (AB.7 0f, AB.9.3): its model constants, reps, threshold and grid are sealed (seal_names).
-- seal_fields(): the numbers the seal (AB.7 0d) hashes; seal_files: the AB rule files and every flymon file they
-  import (test_ab_spec checks the import closure)."""
+- seal_fields(): the numbers the seal (AB.7 0d) hashes — AB.9.1's fixed list as far as ab_spec holds it (Y's filter
+  and V's KC numbers are sealed through their own files); seal_files: the AB rule files and every flymon file they
+  import (the closure is added by ab_runner.seal_closure and checked by the runner tests)."""
 from __future__ import annotations
 
 import dataclasses
@@ -234,7 +235,16 @@ class ABSpec:
                          "floor_cut", "compare_refs", "noplast_pairs", "noplast_flies", "shuffle_seed", "pct", "pct_scale",
                          "fut_src_pairs", "fut_src_units", "fut_x_sizes", "fut_chol_eps", "fut_tags", "fut_allocs",
                          "fut_judge", "fut_reps", "fut_threshold", "fut_ci_tails", "fut_grid_g", "fut_grid_k",
-                         "fut_grid_reps", "fut_grid_alloc", "fut_scenarios", "fut_grid_cells")
+                         "fut_grid_reps", "fut_grid_alloc", "fut_scenarios", "fut_grid_cells",
+                         # AB.9.1 fixed list: the generator and its declared values (AB.3), the KC repro odours,
+                         # the budget (AB.7 예산), the seed blocks and every AB seed root (AB.2), the order (stages)
+                         "n_opp", "n_combos", "lv_odour_n", "decl_skips", "decl_lv", "decl_lv_kc_out", "decl_pre_kc",
+                         "decl_turns", "decl_last_turn", "decl_odours", "decl_vcache_drop", "decl_vcache_drop_odours",
+                         "decl_post_kc_max", "decl_needs_kc", "decl_vcache_pass", "decl_a_x_groups",
+                         "decl_a_t_groups", "decl_b_x_groups", "decl_b_t_groups", "decl_gen1_same_keys", "kc_repro",
+                         "core_cap_h", "records_cap_h", "cost_margin", "smoke_k", "smoke_lenient", "seed_blocks",
+                         "n_oracle_seeds", "oracle_act_seed0", "oracle_select_seed0", "oracle_report_seed0",
+                         "smoke_probe_seed0", "smoke_train_seed0", "smoke_oracle_seed0", "stages")
 
     def seal_fields(self) -> dict:
         return {k: getattr(self, k) for k in self.seal_names}

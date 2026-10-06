@@ -107,12 +107,55 @@ def test_futility_numbers():
     assert SPEC.stream_vectors[-1][0] == ("synth", "fut", "g6", "icc") and len(SPEC.stream_vectors) == 5
 
 
+# AB.5 칸 24개, typed from the spec text (not from ab_spec): (kind, value, SD of the heterogeneity it adds). The
+# value is the SD for the SD cells, the direction (+1 / −1) for the skew and floor cells, whose SD is skew_sd 2 / 0.
+AB5_CELLS = (
+    ("none", 0.0, 0.0),                                                                   # (1)
+    ("X", 0.5, 0.5), ("X", 1.0, 1.0), ("X", 2.0, 2.0), ("X", 3.0, 3.0),                   # (2)–(5)
+    ("T", 0.5, 0.5), ("T", 1.0, 1.0), ("T", 2.0, 2.0), ("T", 3.0, 3.0),                   # (6)–(9)
+    ("pair", 0.5, 0.5), ("pair", 1.0, 1.0), ("pair", 2.0, 2.0), ("pair", 3.0, 3.0),       # (10)–(13)
+    ("XT", 1.0, 1.0), ("XT", 2.0, 2.0), ("XT", 3.0, 3.0),                                 # (14)–(16)
+    ("Xpair", 2.0, 2.0),                                                                  # (17)
+    ("skX", 1.0, 2.0), ("skX", -1.0, 2.0),                                                # (18)–(19)
+    ("skT", 1.0, 2.0), ("skT", -1.0, 2.0),                                                # (20)–(21)
+    ("fly", 1.0, 1.0),                                                                    # (22)
+    ("floor", 1.0, 0.0), ("floor", -1.0, 0.0))                                            # (23)–(24)
+
+
+def test_cells_typed_from_ab5_and_the_futility_scenarios():
+    assert SPEC.cells == tuple((k, v) for k, v, _ in AB5_CELLS)
+    assert [SPEC.cell(i) for i in (1, 5, 17, 18, 24)] == [("none", 0.0), ("X", 3.0), ("Xpair", 2.0), ("skX", 1.0),
+                                                          ("floor", -1.0)]
+    # AB.7 0f 기록 격자: noskew drops the skew cells (18)–(21), sd2 the SD 3 cells, sd1 every cell with SD > 1
+    idx = range(1, len(AB5_CELLS) + 1)
+    want = dict(all=(), noskew=tuple(i for i in idx if AB5_CELLS[i - 1][0].startswith("sk")),
+                sd2=tuple(i for i in idx if AB5_CELLS[i - 1][2] > 2), sd1=tuple(i for i in idx if AB5_CELLS[i - 1][2] > 1))
+    assert want["noskew"] == (18, 19, 20, 21) and want["sd2"] == (5, 9, 13, 16)
+    assert want["sd1"] == (4, 5, 8, 9, 12, 13, 15, 16, 17, 18, 19, 20, 21)
+    assert SPEC.fut_scenarios == tuple(want.items())
+    assert SPEC.skew_sd == 2.0
+
+
+# AB.9.1 결과 전 고정 목록, as far as ab_spec holds it (Y's filter and V's KC numbers seal through their own files)
+AB91_FIXED = ("n_opp", "n_combos", "shuffle_seed", "lv_odour_n", "kc_repro", "flies", "probes", "winsor",
+              "hedges_j_declared", "bar", "raw_min", "boot_b", "p_grid", "p_target", "f_grid", "f_target", "cp_level",
+              "cells", "n_sel", "n_ver", "delta_declared", "truth_pairs", "rep_structures", "k_min", "g_min",
+              "core_cap_h", "records_cap_h", "cost_margin", "smoke_k", "smoke_lenient", "seed_blocks",
+              "stream_vectors", "stages", "fut_src_pairs", "fut_src_units", "fut_judge", "fut_allocs", "fut_reps",
+              "fut_threshold", "fut_tags", "fut_grid_g", "fut_grid_k", "fut_scenarios", "fut_grid_reps",
+              "fut_grid_alloc", "fut_grid_cells", "fut_chol_eps")
+
+
 def test_seal_fields():
     f = SPEC.seal_fields()
-    for k in ("bar", "raw_min", "k_min", "g_min", "p_grid", "f_grid", "cells", "n_sel", "n_ver", "stream_vectors",
-              "rep_structures", "boot_b", "delta_declared", "fut_reps", "fut_threshold", "fut_judge",
-              "fut_scenarios", "fut_grid_g", "fut_grid_k", "fut_grid_reps", "fut_chol_eps"):
+    assert len(set(SPEC.seal_names)) == len(SPEC.seal_names)
+    names = [x.name for x in dataclasses.fields(ABSpec)]
+    decl = [n for n in names if n.startswith("decl_") and n != "decl_commit"]          # the AB.3 declared values
+    roots = [n for n in names if "seed" in n and type(getattr(SPEC, n)) is int and not n.startswith("aa_")]
+    assert len(decl) == 17 and len(roots) == 13                                     # AB's roots (+ shuffle, n seeds)
+    for k in AB91_FIXED + tuple(decl) + tuple(roots):
         assert k in f, k
+    assert all(f[k] == getattr(SPEC, k) for k in f)
 
 
 def _numbers(path):

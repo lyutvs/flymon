@@ -40,6 +40,24 @@ def test_symlink_escape_refused(cwd, tmp_path):
     assert e.value.code == 2 and list(other.iterdir()) == []
 
 
+@pytest.mark.parametrize("name", ["aa", "y"])
+def test_symlinked_old_results_dirs_refused_by_resolution(cwd, tmp_path, name):
+    """results/<aa|y> are symlinks to directories outside the checkout, and results/ab/via_<name> links back to them:
+    the lexical path results/ab/via_<name>/x.json looks allowed, but the guard resolves it and refuses (exit 2); the
+    target directory is untouched."""
+    target = tmp_path / "outside" / name
+    target.mkdir(parents=True)
+    (target / "keep.json").write_text("{}")
+    (cwd / "results/ab").mkdir(parents=True)
+    (cwd / "results" / name).symlink_to(target)
+    (cwd / "results/ab" / f"via_{name}").symlink_to(Path("..") / name)
+    for path in (f"results/{name}/x.json", f"results/ab/via_{name}/x.json"):
+        with pytest.raises(SystemExit) as e:
+            S.write_json(path, {}, P)
+        assert e.value.code == 2, path
+    assert sorted(p.name for p in target.iterdir()) == ["keep.json"] and (target / "keep.json").read_text() == "{}"
+
+
 def test_write_is_atomic_on_failure(cwd, monkeypatch):
     S.write_json("results/ab/a.json", {"x": 1}, P)
     before = Path("results/ab/a.json").read_bytes()
@@ -146,7 +164,8 @@ def test_archive_different_file_set_refused(cwd, tmp_path):
     S.archive(["results/ab/a.json"], "screen", s)
     with pytest.raises(SystemExit) as e:
         S.archive(["results/ab/a.json", "results/ab/b.json"], "screen", s)
-    assert e.value.code == 2 and not (tmp_path / "arch/screen/aa/b.json").exists()
+    assert (tmp_path / "arch/screen/ab/a.json").exists()                      # the live layout <root>/<dest>/ab/
+    assert e.value.code == 2 and not (tmp_path / "arch/screen/ab/b.json").exists()
 
 
 @pytest.mark.parametrize("exists", [False, True])
