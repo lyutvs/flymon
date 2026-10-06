@@ -15,6 +15,11 @@
     "at": "2026-10-06T22:04:21.460871+00:00",
     "stage": "generate",
     "wall_s": 1.039729707990773
+   },
+   {
+    "at": "2026-10-06T22:04:25.434255+00:00",
+    "stage": "seal_code",
+    "wall_s": 0.13387195800896734
    }
   ]
  },
@@ -1191,6 +1196,997 @@
   },
   "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
   "written_at": "2026-10-06T22:04:16.561393+00:00"
+ },
+ "seal_code": {
+  "archive": [],
+  "env": {
+   "ab_files": {
+    "flymon/brain/ab_estimate.py": "a23fde8e2cedc3a68001c276e1a5785c531c93f05d282c014e50fd01aee93214",
+    "flymon/brain/ab_pairs.py": "4b09041806d7748a0f3b8a6dba361a8a04110b5b8c80b3f07f5b7ef6bf446d6e",
+    "flymon/brain/ab_rules.py": "852b7c666a4d9c8884f53475e67198b75f049ccaf71e3c48b22089473f0d2b1f",
+    "flymon/brain/ab_runner.py": "81aa240b038c7b713e2866645e0288bf548b3cca09cf8a8d6c916847efc9a44e",
+    "flymon/brain/ab_spec.py": "3e6be19919eeef13b0064574e358b345f4663babe47d24c20ca990eb276532fb",
+    "flymon/brain/ab_store.py": "18e8f619c7b5b645ca90f1ee096f8449f7e440313c29d592481a04123b0d2397",
+    "scripts/run_ab.py": "ddd4778dbdd196143a5a1fd8b1966a39ed312a3e329fe21d7c68a783e0f2e75a"
+   },
+   "imported": {
+    "flymon/agent/config.py": "cedd7fbdfd052942492df34fc1ded819cfc4f0a4de828b05c006a44f6b089141",
+    "flymon/agent/e_codebook.py": "7f8d62447b7073df2bc41480db57929f6cefb5865ad0dee2bcc6c5ceb9ecb21c",
+    "flymon/agent/e_measure.py": "918c3b820ad953f03b73285e8c82efc5db7639eaa4bd8fd6046396aa400b0711",
+    "flymon/agent/e_pairs.py": "428ff01c76aa36458882a9a5772dbd9899e6b4479332fe58b4e15dc86987b61e",
+    "flymon/agent/e_rules.py": "1feb1e59584a7c98f101b55e86254af74fdb439958c053ca3a3bdf7a4176dce9",
+    "flymon/agent/e_runner.py": "400d19a36a7028225bc466982b0fc98e34de4c278e4b814524f2dd0699bba6c5",
+    "flymon/agent/e_spec.py": "e553c9a3054d1caf0b9cd1137083c1f1653734b4906b739583d5dfac33aa6f84",
+    "flymon/agent/e_store.py": "bf81cb5d9fb64113ac7223a84f0ce5feff6d3e99eb0f35ec4516bc3ca1543c42",
+    "flymon/agent/encode_grid.py": "7d5785b5e8c6e9f054804d6d357f5810630a6e0e36aa91dd9dafc68232a04203",
+    "flymon/battle/pool.py": "ef1bc6e93844eb434ab11d2ba8fb684c4a3cba35e2c2fe76bc41e19c05cb044a",
+    "flymon/brain/aa_estimate.py": "d871ea95e79a5a1ba19bafcb5b9d29f4a75bee92536a5f36eb56960354784d69",
+    "flymon/brain/aa_rules.py": "e460107fdc8b756a8603f8e809f349b81e968d521effa49074e0e5fc7d206177",
+    "flymon/brain/aa_runner.py": "5976de82c6d6350062d0f7643b12a691414978ef6724db24fbebd1be5d00b6e7",
+    "flymon/brain/aa_spec.py": "20b97852b88b52ac8bc525c1802d49aa40e8ebd8d9c26aeec7dbf0da4f98f58d",
+    "flymon/brain/aa_store.py": "8a6a4e9590fe9c46ee041c1e84dcf86987d6467016f2f0686af2504493d19588",
+    "flymon/brain/circuits.py": "7b149d8195a06f7232097640fd790ef6c610eae41dd575e10ac0f2c12abf65b1",
+    "flymon/brain/conditioning.py": "44de4ce3384c2b7fa321bee121eca48e91f9076edbc41f20fe36ad38ea544552",
+    "flymon/brain/config.py": "613b8c660b8d94410d997835f183397a9caf3670d7dfe69aaccf8fdab6895077",
+    "flymon/brain/connectome.py": "670a4cfad683ddef89d04bb5c3b73441992592c97714af328325bf8f922d0f30",
+    "flymon/brain/d6a.py": "9303db489c7c9a001a31eba30b54705e3cc47c57c3bc54ac87858cb297788d51",
+    "flymon/brain/engine_cpu.py": "939d354ee1cb4c27f219223c5aabc89cb37dfa2ad978f6cd1cf5fc0c33535a5a",
+    "flymon/brain/fly_pool.py": "bed8e773df18cd172c2834f6cbfe1401584416aeb97cc636a88fbba2ad26e091",
+    "flymon/brain/h3_jobs.py": "0903032c18ec1615ea51f02acee135774904dd595c989a3cdb1b69653474930b",
+    "flymon/brain/h3_measure.py": "b68f72cf172b250a9bfb56245c087545c613151e5772fb65902b4c1e5565b1b7",
+    "flymon/brain/h3_rules.py": "6fe7b0b5e1558db25110e6701e66305fca26910b2315935dc93bb4e96abe437a",
+    "flymon/brain/h3_spec.py": "e9f9c0a50ea6f6f8f04715cf7b062e629d519de3e6d29be04b18fab1e1d6e740",
+    "flymon/brain/h3_store.py": "fdfea72e784293410a9b5ae048f39b8953390acef2d2283753c83c12221f3bee",
+    "flymon/brain/h4_formula.py": "20051be1e473981eeb3e9fc8c3ba49c3e1e03c6782c47ef82639fc6a0a6483ef",
+    "flymon/brain/h4_jobs.py": "1e5e09041b2913384a6bb38a86acf91ee0e443a40886d602f996218978edac30",
+    "flymon/brain/h4_measure.py": "664f9f281a6ad4bbd23b64db1bd7854efa883610a2980a23f4d487e8932619bf",
+    "flymon/brain/h4_pairs.py": "042149c73ff087c156586e1fd4b3d85c077c42f9121953b149205c568ace4c7c",
+    "flymon/brain/h4_rules.py": "d77da18a81ab0fdf6812ef5b12993d6a85efef3f0b7448f04e3ac5c858824753",
+    "flymon/brain/h4_spec.py": "65de724924e8bdccc2496dd5fa40c7aaba936f7c4761dc5de13a92df70f420ad",
+    "flymon/brain/j_jobs.py": "bb1ce1618e3b58d3d5b948298b44fd8a1d047c675744336d42e4f37a96487a65",
+    "flymon/brain/j_measure.py": "50fe0139c68a06038fac750020653bb896969a2b57a214319ad78bed4d606204",
+    "flymon/brain/j_params.py": "d18285bcbbf835ac4a455398d11086b224ff7e15c68e7296190544de89a7625e",
+    "flymon/brain/j_spec.py": "b24eadcd8996b29fcfcfb7758fa01098e462bc5f3ff899b11f091595ebed53ec",
+    "flymon/brain/j_store.py": "3f9b0d1618229b5071e97889c37d70f359d38ef4ed5c95e638b8ef776ec71748",
+    "flymon/brain/k_jobs.py": "6e52f790ff564ddc784827e79b0c3f0bf7a6d5ed5178c8535a99ef7b9fc7d1ad",
+    "flymon/brain/k_measure.py": "d51cc4890f89339a5e12e7e63112ce141b74f5dff078f91c8b53f6e434629be7",
+    "flymon/brain/k_pairs.py": "50bb21e85d673d76e3deb5a52fd1519db29b05b8951ddcb101de10244d1f9eec",
+    "flymon/brain/k_spec.py": "a52b4cc68c365360bb68276bc46a80f909e4e357c046aea0f2e4f8a28dff538a",
+    "flymon/brain/l_cli.py": "85a6d839833a714a803043f931499c0f623586ccb35f187b7107f8d81ef8ae1e",
+    "flymon/brain/l_jobs.py": "44b54dc02a86e77db51f94bf3f6329574fc4c7245569cc793b3dd3fc3575476f",
+    "flymon/brain/l_measure.py": "99df4d894b189db8d7be013dda4dcb92a4a6d9b0dec780b2db6600aa56ca381f",
+    "flymon/brain/l_pairs.py": "6da577dabee37eb4e03570ce1b48b5f7ce9c465e3a657f8c8f22c28606e757d5",
+    "flymon/brain/l_spec.py": "44b5a54814e8bfce721056c8b7187afe783f37c747ea370543a03ff632968f48",
+    "flymon/brain/l_store.py": "64b69af1a2a3fe0ed960b89d932add08390b32ee414a9e4ad486edff8812bf5e",
+    "flymon/brain/measure.py": "25a7cd321a54dfe8c96f076824f20efb39d83f34ec5a953aaaa89af40a8ad2f3",
+    "flymon/brain/n_cli.py": "6fcc960619e83d654a1f1d360b5f73a32e5e6faf3c01f2c3dab16b45eac64cbe",
+    "flymon/brain/n_jobs.py": "21529ffa8d40e2bc5189147617bd0b249771c58736acafc588111c260ada40b8",
+    "flymon/brain/n_measure.py": "fa9a0a236e7cde0fb4a13e7617eaf1a42a9202f1f98a1068e9e8111fcd32d669",
+    "flymon/brain/n_rules.py": "d2c22414e1697b034237798dfccfcd5549701cb7befbd4b4d6d5e72927ecb536",
+    "flymon/brain/n_spec.py": "2078763e96dd201e3ce9a79a8501e0ebce9a503f8dbec0028bb5e0ce50050260",
+    "flymon/brain/n_store.py": "1016c558b3940f52517dc6e798fa89ebbb8bac6761f07a38a44849d970b188b2",
+    "flymon/brain/o_cli.py": "38178397f8d8b348530b29a28ad32e0f43aab115d03ff096e09c8ea006814e7b",
+    "flymon/brain/o_jobs.py": "e5a7d854635ad1663666237b066cb0b3cb41922c3051d65be8eeef9b66b9c63a",
+    "flymon/brain/o_measure.py": "ada0d959bb7d82e974cffb7a1f7cde39634e079c703e885a1971a9403cc03c05",
+    "flymon/brain/o_rules.py": "bffcea55bec997f4b44384a3cbf9be48fcb5e82fca5bb070438dff83e73d99b7",
+    "flymon/brain/o_spec.py": "de4d9e0a5a769ebfd3c00b12e4db5293a3de9d6aa5098dd8fd64c94ef4325ad2",
+    "flymon/brain/odor_real.py": "47c355211b7104a4f59471b031e158238f6bee459e5bfa98a32eb200e0899945",
+    "flymon/brain/p_cli.py": "f12451a5e1060ac8bceca0fb48cfeb5d3f8be052c2a8adbd7c7039e4bb2fb0aa",
+    "flymon/brain/p_measure.py": "4ad30e0f5f2b709dd6bc84699845ba6fa57593c16e580d966df702e3360c0b5d",
+    "flymon/brain/p_rules.py": "459eb8e839049b02e1cdef14c75ddac723465013c4c60684165cdb54aac5319c",
+    "flymon/brain/p_spec.py": "0167a9f1e475efefef3fe7a487b7cc2c660071d934f95d53bc2177202c8f3f5a",
+    "flymon/brain/plasticity.py": "fed3ac2f62e97ec45c56a1d93c6ca98d970c5a4a15594d124b2b281eb1cc7ed0",
+    "flymon/brain/pool_bench.py": "668eb17087d57afac7f70ddd8c8db298fcf9b3a410504faec1c76f7410315373",
+    "flymon/brain/pool_jobs.py": "f6a770a7b8ac5b4557e6001169a16eff7ceb76f3460a919dc7323f4ecfee8b46",
+    "flymon/brain/presentation.py": "2eab2be0e33f26edd750fe33be47f070d41a026b4ad826c9eefdf1ce14b699a0",
+    "flymon/brain/q_jobs.py": "2c448062f6beb2954bb410cb1138349ba24e17d97eb59fba587eeaf0966b23c2",
+    "flymon/brain/q_measure.py": "21b4fc275cd1331e497b191b3c90a4f05e493e895472832c213f3ac34e3b2d9d",
+    "flymon/brain/q_pairs.py": "eefecbd6dca94964f8045557d4a0e199ff298bdd1e24c23ddb7f51a3d4f1b4a6",
+    "flymon/brain/q_spec.py": "39ddac81b69c63bebfb1abf5cdc8a11f651c2fe5ec1c2b9be99c45dd739418fc",
+    "flymon/brain/r_jobs.py": "29d329c7009d623ae3013a8c2f81b697098464d0a47ce21c558c754a7a74c082",
+    "flymon/brain/r_measure.py": "bf85971df4434503ce6fca7a32dcbe5340681f777927d8a1be71f2ce587d952a",
+    "flymon/brain/r_pairs.py": "5f1127d5b73639c95e11d80d6f212933f78b5ae2303fb9b765721207a0fc3134",
+    "flymon/brain/r_records.py": "e1c3ca924d7ba6bd1c96a0210f505449b2a2fc19304262f4d7e62a9dcb1ce1bc",
+    "flymon/brain/r_rules.py": "97016b3b42ddf1d0e2db2c08955df75dbaa8060ca44e07034b3f2d7a49171f56",
+    "flymon/brain/r_runner.py": "dff621bc9361bf92de0b99df53d5068f7f9c27cb02e706e0456993d7a46c507e",
+    "flymon/brain/r_spec.py": "95d3cc310fd715503e2a78dfdbcf9d37f5665954f644f0967b800ed6cbae5fb4",
+    "flymon/brain/r_store.py": "f810978624cccc18c216a72c0941943ff04a4605575b19f9962018884d202a92",
+    "flymon/brain/s_pairs.py": "5740fcbcbd816536e9cb28ed577b228cb9ecc76d1ef48f88a099a23f583dcc23",
+    "flymon/brain/s_records.py": "3270ad7c1bf296f55da27329fd32675c7fa578c2cc27377f8dce906b9c2dbea0",
+    "flymon/brain/s_rules.py": "e517e335959ecd9e97fb9fd350104c7dea53a21b814b500f48364802747ed25d",
+    "flymon/brain/s_runner.py": "40a0648a43a178c0c690161755a1668d2292d328c7c624a0734768e9d92e99ad",
+    "flymon/brain/s_spec.py": "06242a00739b5b05ce0ad0d948252ccbe12ace14f44218c94f373ecf5c3a26ba",
+    "flymon/brain/s_store.py": "22f428812d917688998042639e854a640cf380cb1ea46e3bb5bd05433f368ed0",
+    "flymon/brain/stimuli.py": "1cf05a7e2ceeee60c5b299065e30a3034199a7a92509227b98c95f763086c642",
+    "flymon/brain/t_measure.py": "02444a7ce261af2b74ae63bdf288492ad53f2bcf7d71fd46e25d1a90ef993573",
+    "flymon/brain/t_pairs.py": "77aadf1341c5d54532f3cdd4cf9f268b3f1e37781e663da30f649d3dfbbf708c",
+    "flymon/brain/t_records.py": "44218b84ffdcf5343d3774f82669bad0db066b93808b1284847cc37ca3af253c",
+    "flymon/brain/t_rules.py": "8b0e28eb44ff34f596e0e733aee2abda637a0c9a96c9414c1440ab33dc465352",
+    "flymon/brain/t_runner.py": "0775af67b0638f54e1dfbfffd759ae17a69ea5964e068c725aba8435270c79ea",
+    "flymon/brain/t_spec.py": "a01d2cfb1ebf653eb8d163cc1f4523b1fa59616b6562c7552aa80de5b7e08892",
+    "flymon/brain/t_store.py": "79724d5fc0f3b0b3c011ef993cfad8779d0518efc678ea1e3d2b552e4a1c3e84",
+    "flymon/brain/thresholds.py": "12916a2ebfb2aa43e2e3f3de001e480a475e60065ab404b445b07581e559352a",
+    "flymon/brain/u_measure.py": "f3fff54c21b7fe7d77544769bbd69f595ee396f85390abb4e42b5988b533ecf6",
+    "flymon/brain/u_records.py": "e1cb274dfc5cf90b102e5e1a67de25fc94880fc793204f283e01a70ced5705cc",
+    "flymon/brain/u_rules.py": "6228c7aa6e69a9cede48fd2ed2b278e03c0f12b890d6dd3399d549fc8cbc40bb",
+    "flymon/brain/u_runner.py": "33690024940517ec7432bd99dafd1949a0f9c5097e13d220375d08afd4d098ce",
+    "flymon/brain/u_spec.py": "6343130acd71ac82467f45245c3f51893b77164f5f3a498ce39eb9f5c6279f2c",
+    "flymon/brain/u_store.py": "8b39f48a6a7919dec51114dbd001f981b39aeb6b3c72c0cc30c97c5bb9dad4f5",
+    "flymon/brain/v_pairs.py": "c4a7d3bd979357df3a1cbca847509681c8abd481e53aaaa5e0bd67b65ae982c2",
+    "flymon/brain/v_records.py": "9ababf182d4076f884bc87d8239906b944638dc8a1887ba1904172ac6dd3409e",
+    "flymon/brain/v_rules.py": "58fac37645720ed0413da601a26e6fc4bf8d9e428dc1c2eac71a5b4dac3e0bbb",
+    "flymon/brain/v_runner.py": "2f363e3076a4db83d1b5b053f111ddabdbf5c75de9eec23dc467d5bf077a9077",
+    "flymon/brain/v_spec.py": "3094e4229c83a4af34b020a1eaf7b19e2637d736e4fce2d492a7b992b36ee850",
+    "flymon/brain/v_store.py": "7ca8efd66423f3f9215d81f49b650dd3cf68218bcb23f503c4f93cd2d96f85a0",
+    "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+    "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+    "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+    "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+    "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+    "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+    "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+    "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+    "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+    "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+    "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+    "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+    "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+    "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+    "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+    "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+    "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+    "flymon/brain/y_runner.py": "0ba331d74fab000fd010284c5440721eb45a103bc61e3341e472a254133efbee",
+    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+    "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54",
+    "flymon/brain/z_split.py": "ca4a011f3ed736eca3ca730c96acde0e62c9718c172e39c826851e8a4472c7d3"
+   },
+   "numpy": "2.5.3",
+   "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+   "poke_env": "0.16.1",
+   "python": "3.13.13",
+   "scipy": "1.18.1",
+   "uv_lock_sha256": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e"
+  },
+  "git": {
+   "commit": "a066014766bb64794bd1736145aedba4b57dfcd3",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "note": "AB.7 0d: 2\uc138\ub300 \uccab \uce21\uc815 \uc804 \ubd09\uc778 \u2014 ab_estimate(\uac00\ub9dd \uad00\ubb38 futility_inputs \u00b7 futility \u00b7 futility_grid \ud3ec\ud568) \u00b7 ab_rules \u00b7 ab_pairs + import \ub2eb\ud798 + ab_spec \uc218\uce58(0f \ubaa8\ud615 \u00b7 \ud68c\uc218 \u00b7 \ubb38\ud131 \u00b7 \uaca9\uc790 \ud3ec\ud568) + \ud750\ub984 \uc2dc\ud5d8 \ubca1\ud130 \ub2e4\uc12f.",
+  "order": "0d",
+  "outcome": "PASS",
+  "reasons": [],
+  "seal": {
+   "files": {
+    "flymon/agent/e_codebook.py": "7f8d62447b7073df2bc41480db57929f6cefb5865ad0dee2bcc6c5ceb9ecb21c",
+    "flymon/agent/e_measure.py": "918c3b820ad953f03b73285e8c82efc5db7639eaa4bd8fd6046396aa400b0711",
+    "flymon/agent/e_pairs.py": "428ff01c76aa36458882a9a5772dbd9899e6b4479332fe58b4e15dc86987b61e",
+    "flymon/agent/e_rules.py": "1feb1e59584a7c98f101b55e86254af74fdb439958c053ca3a3bdf7a4176dce9",
+    "flymon/agent/e_runner.py": "400d19a36a7028225bc466982b0fc98e34de4c278e4b814524f2dd0699bba6c5",
+    "flymon/agent/e_spec.py": "e553c9a3054d1caf0b9cd1137083c1f1653734b4906b739583d5dfac33aa6f84",
+    "flymon/agent/e_store.py": "bf81cb5d9fb64113ac7223a84f0ce5feff6d3e99eb0f35ec4516bc3ca1543c42",
+    "flymon/agent/encode_grid.py": "7d5785b5e8c6e9f054804d6d357f5810630a6e0e36aa91dd9dafc68232a04203",
+    "flymon/battle/pool.py": "ef1bc6e93844eb434ab11d2ba8fb684c4a3cba35e2c2fe76bc41e19c05cb044a",
+    "flymon/brain/aa_estimate.py": "d871ea95e79a5a1ba19bafcb5b9d29f4a75bee92536a5f36eb56960354784d69",
+    "flymon/brain/aa_rules.py": "e460107fdc8b756a8603f8e809f349b81e968d521effa49074e0e5fc7d206177",
+    "flymon/brain/aa_spec.py": "20b97852b88b52ac8bc525c1802d49aa40e8ebd8d9c26aeec7dbf0da4f98f58d",
+    "flymon/brain/ab_estimate.py": "a23fde8e2cedc3a68001c276e1a5785c531c93f05d282c014e50fd01aee93214",
+    "flymon/brain/ab_pairs.py": "4b09041806d7748a0f3b8a6dba361a8a04110b5b8c80b3f07f5b7ef6bf446d6e",
+    "flymon/brain/ab_rules.py": "852b7c666a4d9c8884f53475e67198b75f049ccaf71e3c48b22089473f0d2b1f",
+    "flymon/brain/ab_spec.py": "3e6be19919eeef13b0064574e358b345f4663babe47d24c20ca990eb276532fb",
+    "flymon/brain/circuits.py": "7b149d8195a06f7232097640fd790ef6c610eae41dd575e10ac0f2c12abf65b1",
+    "flymon/brain/conditioning.py": "44de4ce3384c2b7fa321bee121eca48e91f9076edbc41f20fe36ad38ea544552",
+    "flymon/brain/config.py": "613b8c660b8d94410d997835f183397a9caf3670d7dfe69aaccf8fdab6895077",
+    "flymon/brain/connectome.py": "670a4cfad683ddef89d04bb5c3b73441992592c97714af328325bf8f922d0f30",
+    "flymon/brain/d6a.py": "9303db489c7c9a001a31eba30b54705e3cc47c57c3bc54ac87858cb297788d51",
+    "flymon/brain/engine_cpu.py": "939d354ee1cb4c27f219223c5aabc89cb37dfa2ad978f6cd1cf5fc0c33535a5a",
+    "flymon/brain/h3_jobs.py": "0903032c18ec1615ea51f02acee135774904dd595c989a3cdb1b69653474930b",
+    "flymon/brain/h3_measure.py": "b68f72cf172b250a9bfb56245c087545c613151e5772fb65902b4c1e5565b1b7",
+    "flymon/brain/h3_spec.py": "e9f9c0a50ea6f6f8f04715cf7b062e629d519de3e6d29be04b18fab1e1d6e740",
+    "flymon/brain/h3_store.py": "fdfea72e784293410a9b5ae048f39b8953390acef2d2283753c83c12221f3bee",
+    "flymon/brain/h4_formula.py": "20051be1e473981eeb3e9fc8c3ba49c3e1e03c6782c47ef82639fc6a0a6483ef",
+    "flymon/brain/h4_jobs.py": "1e5e09041b2913384a6bb38a86acf91ee0e443a40886d602f996218978edac30",
+    "flymon/brain/h4_measure.py": "664f9f281a6ad4bbd23b64db1bd7854efa883610a2980a23f4d487e8932619bf",
+    "flymon/brain/h4_pairs.py": "042149c73ff087c156586e1fd4b3d85c077c42f9121953b149205c568ace4c7c",
+    "flymon/brain/h4_spec.py": "65de724924e8bdccc2496dd5fa40c7aaba936f7c4761dc5de13a92df70f420ad",
+    "flymon/brain/j_jobs.py": "bb1ce1618e3b58d3d5b948298b44fd8a1d047c675744336d42e4f37a96487a65",
+    "flymon/brain/j_measure.py": "50fe0139c68a06038fac750020653bb896969a2b57a214319ad78bed4d606204",
+    "flymon/brain/j_params.py": "d18285bcbbf835ac4a455398d11086b224ff7e15c68e7296190544de89a7625e",
+    "flymon/brain/j_spec.py": "b24eadcd8996b29fcfcfb7758fa01098e462bc5f3ff899b11f091595ebed53ec",
+    "flymon/brain/j_store.py": "3f9b0d1618229b5071e97889c37d70f359d38ef4ed5c95e638b8ef776ec71748",
+    "flymon/brain/k_jobs.py": "6e52f790ff564ddc784827e79b0c3f0bf7a6d5ed5178c8535a99ef7b9fc7d1ad",
+    "flymon/brain/k_measure.py": "d51cc4890f89339a5e12e7e63112ce141b74f5dff078f91c8b53f6e434629be7",
+    "flymon/brain/k_pairs.py": "50bb21e85d673d76e3deb5a52fd1519db29b05b8951ddcb101de10244d1f9eec",
+    "flymon/brain/k_spec.py": "a52b4cc68c365360bb68276bc46a80f909e4e357c046aea0f2e4f8a28dff538a",
+    "flymon/brain/l_cli.py": "85a6d839833a714a803043f931499c0f623586ccb35f187b7107f8d81ef8ae1e",
+    "flymon/brain/l_jobs.py": "44b54dc02a86e77db51f94bf3f6329574fc4c7245569cc793b3dd3fc3575476f",
+    "flymon/brain/l_measure.py": "99df4d894b189db8d7be013dda4dcb92a4a6d9b0dec780b2db6600aa56ca381f",
+    "flymon/brain/l_pairs.py": "6da577dabee37eb4e03570ce1b48b5f7ce9c465e3a657f8c8f22c28606e757d5",
+    "flymon/brain/l_spec.py": "44b5a54814e8bfce721056c8b7187afe783f37c747ea370543a03ff632968f48",
+    "flymon/brain/l_store.py": "64b69af1a2a3fe0ed960b89d932add08390b32ee414a9e4ad486edff8812bf5e",
+    "flymon/brain/measure.py": "25a7cd321a54dfe8c96f076824f20efb39d83f34ec5a953aaaa89af40a8ad2f3",
+    "flymon/brain/n_jobs.py": "21529ffa8d40e2bc5189147617bd0b249771c58736acafc588111c260ada40b8",
+    "flymon/brain/n_measure.py": "fa9a0a236e7cde0fb4a13e7617eaf1a42a9202f1f98a1068e9e8111fcd32d669",
+    "flymon/brain/n_spec.py": "2078763e96dd201e3ce9a79a8501e0ebce9a503f8dbec0028bb5e0ce50050260",
+    "flymon/brain/n_store.py": "1016c558b3940f52517dc6e798fa89ebbb8bac6761f07a38a44849d970b188b2",
+    "flymon/brain/o_jobs.py": "e5a7d854635ad1663666237b066cb0b3cb41922c3051d65be8eeef9b66b9c63a",
+    "flymon/brain/o_measure.py": "ada0d959bb7d82e974cffb7a1f7cde39634e079c703e885a1971a9403cc03c05",
+    "flymon/brain/o_spec.py": "de4d9e0a5a769ebfd3c00b12e4db5293a3de9d6aa5098dd8fd64c94ef4325ad2",
+    "flymon/brain/odor_real.py": "47c355211b7104a4f59471b031e158238f6bee459e5bfa98a32eb200e0899945",
+    "flymon/brain/p_measure.py": "4ad30e0f5f2b709dd6bc84699845ba6fa57593c16e580d966df702e3360c0b5d",
+    "flymon/brain/p_spec.py": "0167a9f1e475efefef3fe7a487b7cc2c660071d934f95d53bc2177202c8f3f5a",
+    "flymon/brain/plasticity.py": "fed3ac2f62e97ec45c56a1d93c6ca98d970c5a4a15594d124b2b281eb1cc7ed0",
+    "flymon/brain/pool_bench.py": "668eb17087d57afac7f70ddd8c8db298fcf9b3a410504faec1c76f7410315373",
+    "flymon/brain/pool_jobs.py": "f6a770a7b8ac5b4557e6001169a16eff7ceb76f3460a919dc7323f4ecfee8b46",
+    "flymon/brain/presentation.py": "2eab2be0e33f26edd750fe33be47f070d41a026b4ad826c9eefdf1ce14b699a0",
+    "flymon/brain/q_jobs.py": "2c448062f6beb2954bb410cb1138349ba24e17d97eb59fba587eeaf0966b23c2",
+    "flymon/brain/q_measure.py": "21b4fc275cd1331e497b191b3c90a4f05e493e895472832c213f3ac34e3b2d9d",
+    "flymon/brain/q_pairs.py": "eefecbd6dca94964f8045557d4a0e199ff298bdd1e24c23ddb7f51a3d4f1b4a6",
+    "flymon/brain/q_spec.py": "39ddac81b69c63bebfb1abf5cdc8a11f651c2fe5ec1c2b9be99c45dd739418fc",
+    "flymon/brain/r_jobs.py": "29d329c7009d623ae3013a8c2f81b697098464d0a47ce21c558c754a7a74c082",
+    "flymon/brain/r_measure.py": "bf85971df4434503ce6fca7a32dcbe5340681f777927d8a1be71f2ce587d952a",
+    "flymon/brain/r_pairs.py": "5f1127d5b73639c95e11d80d6f212933f78b5ae2303fb9b765721207a0fc3134",
+    "flymon/brain/r_spec.py": "95d3cc310fd715503e2a78dfdbcf9d37f5665954f644f0967b800ed6cbae5fb4",
+    "flymon/brain/s_pairs.py": "5740fcbcbd816536e9cb28ed577b228cb9ecc76d1ef48f88a099a23f583dcc23",
+    "flymon/brain/s_spec.py": "06242a00739b5b05ce0ad0d948252ccbe12ace14f44218c94f373ecf5c3a26ba",
+    "flymon/brain/stimuli.py": "1cf05a7e2ceeee60c5b299065e30a3034199a7a92509227b98c95f763086c642",
+    "flymon/brain/t_measure.py": "02444a7ce261af2b74ae63bdf288492ad53f2bcf7d71fd46e25d1a90ef993573",
+    "flymon/brain/t_pairs.py": "77aadf1341c5d54532f3cdd4cf9f268b3f1e37781e663da30f649d3dfbbf708c",
+    "flymon/brain/t_spec.py": "a01d2cfb1ebf653eb8d163cc1f4523b1fa59616b6562c7552aa80de5b7e08892",
+    "flymon/brain/thresholds.py": "12916a2ebfb2aa43e2e3f3de001e480a475e60065ab404b445b07581e559352a",
+    "flymon/brain/u_measure.py": "f3fff54c21b7fe7d77544769bbd69f595ee396f85390abb4e42b5988b533ecf6",
+    "flymon/brain/u_spec.py": "6343130acd71ac82467f45245c3f51893b77164f5f3a498ce39eb9f5c6279f2c",
+    "flymon/brain/v_pairs.py": "c4a7d3bd979357df3a1cbca847509681c8abd481e53aaaa5e0bd67b65ae982c2",
+    "flymon/brain/v_spec.py": "3094e4229c83a4af34b020a1eaf7b19e2637d736e4fce2d492a7b992b36ee850",
+    "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+    "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+    "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+    "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+    "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+    "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+    "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+    "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+    "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+    "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9"
+   },
+   "key": "dc23b394c61623c88bbe440828ad01617fe85877b444619c29456332b6d2a214",
+   "numbers": {
+    "bar": 1.0,
+    "boot_b": 10000,
+    "boot_chunk": 1000,
+    "boot_seed": 88010000,
+    "c7_declared": 1.1259,
+    "cal_chunk": 250,
+    "cal_seed": 88020000,
+    "cells": [
+     [
+      "none",
+      0.0
+     ],
+     [
+      "X",
+      0.5
+     ],
+     [
+      "X",
+      1.0
+     ],
+     [
+      "X",
+      2.0
+     ],
+     [
+      "X",
+      3.0
+     ],
+     [
+      "T",
+      0.5
+     ],
+     [
+      "T",
+      1.0
+     ],
+     [
+      "T",
+      2.0
+     ],
+     [
+      "T",
+      3.0
+     ],
+     [
+      "pair",
+      0.5
+     ],
+     [
+      "pair",
+      1.0
+     ],
+     [
+      "pair",
+      2.0
+     ],
+     [
+      "pair",
+      3.0
+     ],
+     [
+      "XT",
+      1.0
+     ],
+     [
+      "XT",
+      2.0
+     ],
+     [
+      "XT",
+      3.0
+     ],
+     [
+      "Xpair",
+      2.0
+     ],
+     [
+      "skX",
+      1.0
+     ],
+     [
+      "skX",
+      -1.0
+     ],
+     [
+      "skT",
+      1.0
+     ],
+     [
+      "skT",
+      -1.0
+     ],
+     [
+      "fly",
+      1.0
+     ],
+     [
+      "floor",
+      1.0
+     ],
+     [
+      "floor",
+      -1.0
+     ]
+    ],
+    "compare_refs": [
+     0.0,
+     0.5,
+     -0.5,
+     1.0,
+     -1.0,
+     1.5,
+     -1.5
+    ],
+    "core_cap_h": 24.0,
+    "cost_margin": 2.0,
+    "cp_level": 0.975,
+    "decl_a_t_groups": [
+     [
+      "DRAGON+WATER",
+      16
+     ],
+     [
+      "FIRE+ROCK",
+      16
+     ],
+     [
+      "FLYING+GRASS",
+      16
+     ],
+     [
+      "FLYING+GROUND",
+      16
+     ],
+     [
+      "FLYING+PSYCHIC",
+      16
+     ],
+     [
+      "GROUND+ICE",
+      16
+     ],
+     [
+      "GROUND+WATER",
+      16
+     ],
+     [
+      "NORMAL+PSYCHIC",
+      16
+     ],
+     [
+      "ROCK",
+      11
+     ]
+    ],
+    "decl_a_x_groups": [
+     [
+      "Earthquake",
+      39
+     ],
+     [
+      "Surf",
+      35
+     ],
+     [
+      "Psychic",
+      24
+     ],
+     [
+      "Flamethrower",
+      18
+     ],
+     [
+      "Rock Slide",
+      9
+     ],
+     [
+      "Mega Drain",
+      9
+     ],
+     [
+      "Thunderbolt",
+      5
+     ]
+    ],
+    "decl_b_t_groups": 13,
+    "decl_b_x_groups": 45,
+    "decl_gen1_same_keys": 23,
+    "decl_last_turn": [
+     [
+      "a",
+      1150
+     ],
+     [
+      "b",
+      972
+     ]
+    ],
+    "decl_lv": [
+     [
+      "a",
+      9
+     ],
+     [
+      "b",
+      118
+     ]
+    ],
+    "decl_lv_kc_out": [
+     [
+      "a",
+      9
+     ],
+     [
+      "b",
+      18
+     ]
+    ],
+    "decl_needs_kc": [
+     [
+      "a",
+      139
+     ],
+     [
+      "b",
+      40
+     ]
+    ],
+    "decl_odours": [
+     [
+      "all",
+      107
+     ],
+     [
+      "v_cache",
+      36
+     ],
+     [
+      "new",
+      71
+     ]
+    ],
+    "decl_post_kc_max": [
+     [
+      "a",
+      139
+     ],
+     [
+      "b",
+      45
+     ]
+    ],
+    "decl_pre_kc": [
+     [
+      "a",
+      143
+     ],
+     [
+      "b",
+      66
+     ]
+    ],
+    "decl_skips": [
+     [
+      "used",
+      2765
+     ],
+     [
+      "in_set",
+      1994
+     ],
+     [
+      "pool_only",
+      242
+     ],
+     [
+      "cap",
+      138
+     ],
+     [
+      "collision",
+      0
+     ],
+     [
+      "e1",
+      0
+     ],
+     [
+      "glom_dup",
+      0
+     ]
+    ],
+    "decl_turns": [
+     1,
+     1150
+    ],
+    "decl_vcache_drop": [
+     [
+      "a",
+      4
+     ],
+     [
+      "b",
+      21
+     ]
+    ],
+    "decl_vcache_drop_odours": 8,
+    "decl_vcache_pass": [
+     [
+      "a",
+      0
+     ],
+     [
+      "b",
+      5
+     ]
+    ],
+    "delta_declared": 0.999228,
+    "f_grid": [
+     0.00625,
+     0.0025,
+     0.001,
+     0.0005,
+     0.00025,
+     0.0001,
+     5e-05,
+     2e-05,
+     1e-05
+    ],
+    "f_target": 0.00625,
+    "flies": 8,
+    "floor_const": 0.05,
+    "floor_cut": 0.1,
+    "floor_flies": 2,
+    "fut_allocs": [
+     "icc",
+     "pair",
+     "group"
+    ],
+    "fut_chol_eps": 1e-09,
+    "fut_ci_tails": [
+     0.025,
+     0.975
+    ],
+    "fut_grid_alloc": "icc",
+    "fut_grid_cells": 272,
+    "fut_grid_g": [
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12
+    ],
+    "fut_grid_k": [
+     8,
+     12,
+     16,
+     20,
+     24,
+     28,
+     32,
+     36,
+     40
+    ],
+    "fut_grid_reps": 500,
+    "fut_judge": [
+     "g6",
+     "icc"
+    ],
+    "fut_reps": 2000,
+    "fut_scenarios": [
+     [
+      "all",
+      []
+     ],
+     [
+      "noskew",
+      [
+       18,
+       19,
+       20,
+       21
+      ]
+     ],
+     [
+      "sd2",
+      [
+       5,
+       9,
+       13,
+       16
+      ]
+     ],
+     [
+      "sd1",
+      [
+       4,
+       5,
+       8,
+       9,
+       12,
+       13,
+       15,
+       16,
+       17,
+       18,
+       19,
+       20,
+       21
+      ]
+     ]
+    ],
+    "fut_src_pairs": 16,
+    "fut_src_units": 384,
+    "fut_tags": [
+     "g5",
+     "g6",
+     "g7"
+    ],
+    "fut_threshold": 0.5,
+    "fut_x_sizes": [
+     5,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1
+    ],
+    "g_min": 5,
+    "hedges_j_declared": 0.8889,
+    "k_min": 8,
+    "kc_repro": [
+     "ELECTRIC|FIGHTING",
+     "ELECTRIC|FLYING+ICE",
+     "ELECTRIC|GROUND",
+     "ELECTRIC|GROUND+ROCK"
+    ],
+    "lv_odour_n": 108,
+    "mech_min": 0.75,
+    "n_combos": 1168,
+    "n_opp": 73,
+    "n_oracle_seeds": 8,
+    "n_sel": 5000,
+    "n_type_sets": 9,
+    "n_ver": 10000,
+    "noplast_flies": 2,
+    "noplast_pairs": 2,
+    "oracle_act_seed0": 88000000,
+    "oracle_report_seed0": 88000200,
+    "oracle_select_seed0": 88000100,
+    "p_grid": [
+     0.025,
+     0.0125,
+     0.005,
+     0.0025,
+     0.001,
+     0.0005,
+     0.00025,
+     0.0001
+    ],
+    "p_target": 0.025,
+    "pct": [
+     2.5,
+     97.5
+    ],
+    "pct_scale": 100.0,
+    "probe_seed0": 88100000,
+    "probes": 8,
+    "raw_min": 0.25,
+    "records_cap_h": 4.0,
+    "rep_structures": [
+     [
+      "g5",
+      [
+       5,
+       4,
+       3,
+       3,
+       2
+      ]
+     ],
+     [
+      "g6",
+      [
+       5,
+       4,
+       3,
+       3,
+       2,
+       1
+      ]
+     ],
+     [
+      "g7",
+      [
+       7,
+       6,
+       4,
+       3,
+       2,
+       2,
+       1
+      ]
+     ]
+    ],
+    "round_digits": 9,
+    "seed_blocks": [
+     [
+      88000000,
+      88010000
+     ],
+     [
+      88010000,
+      88020000
+     ],
+     [
+      88020000,
+      88030000
+     ],
+     [
+      88030000,
+      88040000
+     ],
+     [
+      88040000,
+      88050000
+     ],
+     [
+      88050000,
+      88060000
+     ],
+     [
+      88060000,
+      88070000
+     ],
+     [
+      88100000,
+      89300000
+     ],
+     [
+      89500000,
+      101500000
+     ]
+    ],
+    "shuffle_seed": 20261007,
+    "skew_sd": 2.0,
+    "smoke_k": 26,
+    "smoke_lenient": 40,
+    "smoke_oracle_seed0": 88060000,
+    "smoke_probe_seed0": 88040000,
+    "smoke_train_seed0": 88050000,
+    "stages": [
+     "stage0",
+     "reuse",
+     "generate",
+     "seal_code",
+     "cal_gate",
+     "futility",
+     "kc_input",
+     "set",
+     "smoke",
+     "oracle",
+     "screen",
+     "calibrate",
+     "learn",
+     "verdict",
+     "records"
+    ],
+    "stream_vectors": [
+     [
+      [
+       "boot",
+       "pool",
+       "S1"
+      ],
+      [
+       951363967822883318,
+       2182253266640778925,
+       736143899316884423
+      ]
+     ],
+     [
+      [
+       "cal",
+       "cal",
+       "g5",
+       "sel",
+       1
+      ],
+      [
+       7454298250045295999,
+       3533929901597276528,
+       5564414599299931819
+      ]
+     ],
+     [
+      [
+       "cal",
+       "cal",
+       "S1",
+       "ver",
+       24
+      ],
+      [
+       395433227751014368,
+       5991647161679921843,
+       5562313390102814311
+      ]
+     ],
+     [
+      [
+       "cal",
+       "cal",
+       "g7",
+       "truth",
+       23
+      ],
+      [
+       4163674912002594046,
+       7997771487875728230,
+       5231196438215320182
+      ]
+     ],
+     [
+      [
+       "synth",
+       "fut",
+       "g6",
+       "icc"
+      ],
+      [
+       4360801369187812025,
+       3076614880039035012,
+       6312001925096678629
+      ]
+     ]
+    ],
+    "synth_cells": [
+     1,
+     4,
+     12,
+     19
+    ],
+    "synth_effects": [
+     1.5,
+     2.5,
+     3.5
+    ],
+    "synth_other": 3.0,
+    "synth_reps": 1000,
+    "synth_seed": 88030000,
+    "synth_struct": "g7",
+    "train_seed0": 89500000,
+    "truth_chunk": 50000,
+    "truth_pairs": 1000000,
+    "winsor": 10.0
+   }
+  },
+  "stage": "seal_code",
+  "stream_vectors": [
+   [
+    [
+     "boot",
+     "pool",
+     "S1"
+    ],
+    [
+     951363967822883318,
+     2182253266640778925,
+     736143899316884423
+    ]
+   ],
+   [
+    [
+     "cal",
+     "cal",
+     "g5",
+     "sel",
+     1
+    ],
+    [
+     7454298250045295999,
+     3533929901597276528,
+     5564414599299931819
+    ]
+   ],
+   [
+    [
+     "cal",
+     "cal",
+     "S1",
+     "ver",
+     24
+    ],
+    [
+     395433227751014368,
+     5991647161679921843,
+     5562313390102814311
+    ]
+   ],
+   [
+    [
+     "cal",
+     "cal",
+     "g7",
+     "truth",
+     23
+    ],
+    [
+     4163674912002594046,
+     7997771487875728230,
+     5231196438215320182
+    ]
+   ],
+   [
+    [
+     "synth",
+     "fut",
+     "g6",
+     "icc"
+    ],
+    [
+     4360801369187812025,
+     3076614880039035012,
+     6312001925096678629
+    ]
+   ]
+  ],
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-06T22:04:25.434255+00:00"
  },
  "stage0": {
   "archive": [
