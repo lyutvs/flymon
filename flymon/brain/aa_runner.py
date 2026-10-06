@@ -192,11 +192,17 @@ def differential(ctx, s=AA, ys=Y_SPEC) -> dict:
     final_filter of pre = pilot.json admission."""
     det = ctx["y_pilot_detail"]()
     want = set(ys.pilot_v_pairs)
-    man = {m["key"]: m for m in det["manifest"] if m["key"].rsplit("|", 2)[0] in want}
+    mlist = [m for m in det["manifest"] if m["key"].rsplit("|", 2)[0] in want]
+    man = {m["key"]: m for m in mlist}
     wm = ctx["y_reader"]()
     z = ctx["y_z"]()
     U = units(ctx["pilot_rows"](), "pilot", ys.pilot_probes, ys.pilot_flies, V_SPEC.lever_edit)
     why, got = [], []
+    ukeys = [f"{u['pair']}|{u['fly']}|{u['brain']}" for u in U]
+    for name, ks in (("AA 단위", ukeys), ("Y 매니페스트", [m["key"] for m in mlist])):
+        dup = sorted({k for k in ks if ks.count(k) > 1})
+        if dup:
+            why.append(f"{name} 키 중복 {len(dup)}개: {dup[:3]}")
     if len(U) != len(man):
         why.append(f"단위 수 {len(U)} ≠ Y 매니페스트 {len(man)}")
     for u in U:
@@ -613,6 +619,11 @@ class Runner:
                      last_line=lines[-1] if lines else None, passed_line=passed[-1] if passed else None)
         if tests["last_line"] != s.tests_ok_line:
             bad.append(f"시험 로그 {s.tests_log}의 마지막 줄 {tests['last_line']!r} ≠ {s.tests_ok_line!r}")
+        if tests["passed_line"] is None:           # AA.7 0a records the passed-count line; -qq hides it → INVALID
+            bad.append(f"시험 로그 {s.tests_log}에 통과 개수 줄(\"N passed\")이 없음")
+        fails = [ln for ln in lines if re.search(r"\b\d+ (failed|errors?)\b", ln)]
+        if fails:
+            bad.append(f"시험 로그 {s.tests_log}에 실패 · 오류 요약 줄: {fails[-1]!r}")
         diff = differential(self.ctx, s)
         if not diff["ok"]:
             bad += [f"차등 시험: {x}" for x in diff["reasons"]]

@@ -162,6 +162,27 @@ def test_stage0_pass_block(tmp_path, monkeypatch):
     assert doc()["budget"]["ledger"][-1]["stage"] == "stage0"
 
 
+def test_differential_duplicate_unit_key_is_clean_failure(tmp_path, monkeypatch):
+    w = World(tmp_path, monkeypatch)
+    orig = AR.units
+    monkeypatch.setattr(AR, "units", lambda *a, **k: (lambda U: U + U[:1])(orig(*a, **k)))
+    out = AR.differential(w.ctx, w.s)
+    assert out["ok"] is False and any("AA 단위 키 중복 1개" in r for r in out["reasons"])
+
+
+@pytest.mark.parametrize("text,why", [
+    ("exit 0\n", "통과 개수 줄"),                                   # -qq: no "N passed" line, exit 0 alone
+    ("..........\nexit 0\n", "통과 개수 줄"),
+    ("1 failed, 1233 passed in 600.00s\nexit 0\n", "실패 · 오류 요약"),
+    ("1233 passed, 2 errors in 600.00s\nexit 0\n", "실패 · 오류 요약"),
+])
+def test_stage0_requires_passed_line_and_no_failures(tmp_path, monkeypatch, text, why):
+    w = World(tmp_path, monkeypatch)
+    Path(w.s.tests_log).write_text(text)
+    out = w.runner().run("stage0")
+    assert out["outcome"] == "INVALID" and any(why in r for r in out["reasons"]), out["reasons"]
+
+
 @pytest.mark.parametrize("case", ["no_log", "exit_1", "mutant"])
 def test_stage0_invalid_cases(tmp_path, monkeypatch, case):
     w = World(tmp_path, monkeypatch)
