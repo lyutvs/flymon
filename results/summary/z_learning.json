@@ -5,6 +5,18 @@
     "at": "2026-10-06T02:11:24.808626+00:00",
     "stage": "stage0",
     "wall_s": 0.04871916596312076
+   },
+   {
+    "at": "2026-10-06T02:19:36.710217+00:00",
+    "stage": "ydiag",
+    "wall_s": 136.57869045692496
+   }
+  ],
+  "records_ledger": [
+   {
+    "at": "2026-10-06T02:19:36.710217+00:00",
+    "stage": "ydiag",
+    "wall_s": 340.02408966817893
    }
   ]
  },
@@ -129,5 +141,1312 @@
    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
    "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54"
   }
+ },
+ "ydiag": {
+  "archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/ydiag/z/ydiag.json",
+    "sha256": "61f68c50764c17345c188c44cda3e3e02dc008b38a6d99db465254fe19bac35c",
+    "src": "results/z/ydiag.json"
+   }
+  ],
+  "cells_sha256": {
+   "results/y/progress/oc/boot_0.npz": "5da3781e5ebeb079b88142b599c4dcaf7b587aa638e503d34528dd6969d394b1",
+   "results/y/progress/oc/boot_1.npz": "f1e8557d58849009a9299eac3bc37d7121566cfb509b65b1357866820bf02cc0",
+   "results/y/progress/oc/boot_10.npz": "e7a0d1fc763d859b32d151c37a7f428f32dc3f78408061c4dac9bac0aae21248",
+   "results/y/progress/oc/boot_100.npz": "13981996e396b22be9bf42cd19d1e4017d9830c28c2316c608f23d6054fbad6f",
+   "results/y/progress/oc/boot_101.npz": "d5618f3b2b6b979ece12eab460fd60d0312c9c84614d14f097a811de59e4d9a7",
+   "results/y/progress/oc/boot_102.npz": "cf1d74fd7edfd1c198d8ce45799319395981a5e3930b36aa66f547f057f87280",
+   "results/y/progress/oc/boot_103.npz": "fab8d4084280c79ffadcd78d9574d21497cc6b639b2b3fa7a0e781c7f670e9ba",
+   "results/y/progress/oc/boot_104.npz": "48ce041f7bce8d22531635a89a38f732a7143f0d2d0ef3504971e1a58fb2ae47",
+   "results/y/progress/oc/boot_105.npz": "75f84b19780768957836f10bd4ee5ef3b1c4265bf4dd9355a2f6cd26bedacc7b",
+   "results/y/progress/oc/boot_106.npz": "d92a645665dd74be00bd9ba8a767ed410446b07fa8ec3510028855af4cdbc045",
+   "results/y/progress/oc/boot_107.npz": "3efd75b7234f38d311d8127dc126f7fa626e266cfe530a031a8420a9e76324b3",
+   "results/y/progress/oc/boot_108.npz": "daab1536669e1fce1bec4919792bf1174f90061ebfe2329aa204fe98f34b3c66",
+   "results/y/progress/oc/boot_109.npz": "71f3650681b87cce823224a4b173e0bdd9a203e63dee25c6d8d159d3476063d3",
+   "results/y/progress/oc/boot_11.npz": "3e4ed2855ced02490a5bb84f9a9968102f018dceb408c47b323f1ca1ed9fd7cf",
+   "results/y/progress/oc/boot_110.npz": "3d84cd4306e5e8f70d70aac70813edb4dbf8ac373acaaec1425b4cba24830c0a",
+   "results/y/progress/oc/boot_111.npz": "7de9c9a03158b0cab242081c04819593d4a209bed7e5987158046dcfeaff7347",
+   "results/y/progress/oc/boot_112.npz": "002724fb7f1f925e0ea8565ef9bb9d4387488e117169090993d180e7c5c7d3fb",
+   "results/y/progress/oc/boot_113.npz": "0da1762439d933d1eea4fc1739aff7976b5e316659b70d9607c051fd9274f4d2",
+   "results/y/progress/oc/boot_114.npz": "f3503424d14519947929a3d325a83ad80bbc49a4dbddcbad9a26d67f183d988f",
+   "results/y/progress/oc/boot_115.npz": "6a1a932fbe74602a743024caa34826f552153795aa2edf6523cd38dbe820cfbd",
+   "results/y/progress/oc/boot_116.npz": "846761fa8513734a48928793fb7ac4aeedecbb8d00c494aadf5bf1c90a82d9c4",
+   "results/y/progress/oc/boot_117.npz": "2659411711d2891e0c610f50119adca4b7b9252a986b338d03625d2793306ab7",
+   "results/y/progress/oc/boot_118.npz": "94de25b0bd31e5db99efc0e9f8fd37b4909cac85422efff1f31ac6adb5bf1828",
+   "results/y/progress/oc/boot_119.npz": "3d1515df9071ef28fa4383b88a9b66dd1e734a1e81ba1db5e865d8104d903666",
+   "results/y/progress/oc/boot_12.npz": "9d98ad083df944fba2100ae99d57c3f49cb1e7b1722a2c118c4c7855d167786b",
+   "results/y/progress/oc/boot_120.npz": "b3acd8044839621171fa9e1f51d1d0306b6114a79ca6ff83f29525434ec664ee",
+   "results/y/progress/oc/boot_121.npz": "4baf337774066ed4a0e9c2e58c83b3cdc127af8c8633f5f3990e4f1331cb195d",
+   "results/y/progress/oc/boot_122.npz": "a4bfd692c06217391fa56febbf51a7ee99026a7b8a231a7a505f6cf2f522a18d",
+   "results/y/progress/oc/boot_123.npz": "8d26eccfa48026029d416db6eedfdaefcaf4bdfcefdc1c2da42779c683bc4b6e",
+   "results/y/progress/oc/boot_124.npz": "bd452f0ff89e7a44bd37e47f7530f62480d8c76060d468118d64b450413d604a",
+   "results/y/progress/oc/boot_125.npz": "74b9632cdfa14e69a94f358c0871590091c920287e91967d338a1fa7575e3c5d",
+   "results/y/progress/oc/boot_126.npz": "bb2095d67f341256f0cbc367bee8639b1287e283ee581d13e5ade412897ddeab",
+   "results/y/progress/oc/boot_127.npz": "7ad579207cd17a9878325ddb83de0c0f262a9c1f59b1712b454df32cfcd150f0",
+   "results/y/progress/oc/boot_128.npz": "1e62464be2e9b8fe7e41bfc1425f014d6c8bcd58d017de94221807f55a97d123",
+   "results/y/progress/oc/boot_129.npz": "cd28d3c2440b2b54afb9cd66faead3d29e2dae4c0568b864ff51a56c21eee57f",
+   "results/y/progress/oc/boot_13.npz": "855f24a5309e3c143ecaa64f15ea2572264013d2250c51143ec37541742b2d24",
+   "results/y/progress/oc/boot_130.npz": "91fa579925eb55ff4c9f1529551199bb061cd0bb7066b4a498fea6235664cbd8",
+   "results/y/progress/oc/boot_131.npz": "f9025319f90273076a9301d0ecbb6607b2120757d3467ac627c9dc8dbab8bf7f",
+   "results/y/progress/oc/boot_132.npz": "fdb6b9da72c462c59301d5ae4c036c8899d59fc0484378945e09d4b80bb576e3",
+   "results/y/progress/oc/boot_133.npz": "1c22799c9f9ce1de029b28db0f55eb578e57004ada62ccc728809a88bae43a51",
+   "results/y/progress/oc/boot_134.npz": "ad44fad58c3b65f956e5194d77287d1e053ed3e446c67b6e47d60adda6ccbe6e",
+   "results/y/progress/oc/boot_135.npz": "8f800a0b4b2937f2c5808829fe2688a8f4e5491299f0f30d080d29698593921f",
+   "results/y/progress/oc/boot_136.npz": "809f3fb2685ae410c59cbdbf03d449e5d09bfed75c51bb974459f67190802031",
+   "results/y/progress/oc/boot_137.npz": "2a032d81de99c400dd41282fba5fb212ea7d353f0a3a4ac507cd04b1ccc9e044",
+   "results/y/progress/oc/boot_138.npz": "3402353a55f025de13a90da55b11bf53e8042a29110e2028be90487923249ef5",
+   "results/y/progress/oc/boot_139.npz": "f0fd7a0d664b3af5f67bd2fe2c746cafe8bad4e673e76038ff96363743b71575",
+   "results/y/progress/oc/boot_14.npz": "b4c8c6f348cb4268604b246a39b071344e25ca685f9699886feb023ef4c9bd30",
+   "results/y/progress/oc/boot_140.npz": "3be0c909bed5d53c6772ed9e2c48e0e80af989d558f70c8ece7800126244d231",
+   "results/y/progress/oc/boot_141.npz": "5340bc7b448f4a0cd5e0002cdbffad47d1314dc3911db7b279525a9982902982",
+   "results/y/progress/oc/boot_142.npz": "b4fb089699ae48869e64b3bebd499532faf5672714619dfa781aa3d9eea68b2f",
+   "results/y/progress/oc/boot_143.npz": "3aa728feedcac7a5d3020c4ad85c266416485a039a844aaa45a0b3760de49088",
+   "results/y/progress/oc/boot_144.npz": "88bf702568b19414e72abd6e5b6e188d2afa35f86fbae250075368bf1e378b26",
+   "results/y/progress/oc/boot_145.npz": "e1153b7ded39fa463f3ba8a254d453a75207ec1280a65e5e75848ebe5ed7d0f4",
+   "results/y/progress/oc/boot_146.npz": "ae80842f2fac2603ba881896c0c0968a8c7727c92fb898a87313e3e2115bf120",
+   "results/y/progress/oc/boot_147.npz": "53f8ceb27005428a0fb735fc2a0b8256563f68a92f683d4b3d964dd1d6a4b68b",
+   "results/y/progress/oc/boot_148.npz": "4f5d6adaafda99f2c810e546b9ff5b57ba59a76e38aaf6c615dfc509c2d54ac5",
+   "results/y/progress/oc/boot_149.npz": "f6a4121498944f1bf22b171b9570b98edd87ad46c6aba8131e0260e495f85ce5",
+   "results/y/progress/oc/boot_15.npz": "e8cc6bae7a06b5ecd483d0265e04afbd0e21b866ea93ea519c9df7afc583aa22",
+   "results/y/progress/oc/boot_150.npz": "c140bed4d47a1574d2be6012b01b56a6c9099813904fd7361abc3f3d7be6fe6f",
+   "results/y/progress/oc/boot_151.npz": "b585890f4260a56c1cfa5cbfea9bd2196d68aa88b555e1ccb9dd64fb01bd6646",
+   "results/y/progress/oc/boot_152.npz": "eb6a252c20f5af6d509a294a276a63b755bb065ce1c4bb46b4e2040120b53427",
+   "results/y/progress/oc/boot_153.npz": "43aaf584eca98aa8da42e8eb02e39558db81918c7913bff0533ac53e871fa253",
+   "results/y/progress/oc/boot_154.npz": "dea91afdda025db9fbb251bbab369034f2d4cceb100cd0ac0b6d3f4f501ec7b1",
+   "results/y/progress/oc/boot_155.npz": "0ae71f967e1ba705a79f4fb85d55295859ce84a7c51fe354a18d29c23e952295",
+   "results/y/progress/oc/boot_156.npz": "10ed02148e94ffc115dbe88c30759f81e8e63939110cc3c575c58d0c5b8d29d7",
+   "results/y/progress/oc/boot_157.npz": "5bf802aa3c27d13878c8285d0e8cdfc4a6299ca087edb2b3bd5a81713cc58d61",
+   "results/y/progress/oc/boot_158.npz": "91f08f76959b85e7c35d9307c554029bb6f06d4849a6877196c5ca7d512cb791",
+   "results/y/progress/oc/boot_159.npz": "1ff6d48642a342382d762c58d7f599af5f4b255f384a6a84cf461bd0557a464d",
+   "results/y/progress/oc/boot_16.npz": "c5210f05e6f1756e5db7bd207f4d9211ef3acdae38c33517c88b420fcd5160ec",
+   "results/y/progress/oc/boot_160.npz": "4b8578b1364ef384f927f3c3c046981daff222ab949c3383f41a00ad6c34c428",
+   "results/y/progress/oc/boot_161.npz": "d342e29dff4dbc130aab5456808056f3628ac7fab0b78ee5dd48cec06d83110b",
+   "results/y/progress/oc/boot_162.npz": "141a199130241ec24cfe3dea7fc0b05d35e2db842787487dee8876aae37fe161",
+   "results/y/progress/oc/boot_163.npz": "81e64264e8944ca6ec81d65ae7ad8dd4d108031057e6a60dc2d1b92198ef75d8",
+   "results/y/progress/oc/boot_164.npz": "091aecd028f49f9ae66549964a10dcd7f3be335216631b937be964aac2c6622e",
+   "results/y/progress/oc/boot_165.npz": "95d1c5cf184321f0ceabbab68694d40cb50f555278c5190434bdc38e4da69b90",
+   "results/y/progress/oc/boot_166.npz": "d824535d40b97716db00a64ba9e4a7a4b43225648d049abfc804d549cf5f0260",
+   "results/y/progress/oc/boot_167.npz": "41017fede7bacbbd1d0b6eaa5329f9d7aa997fa9b8ca00152c383d5236d92fb3",
+   "results/y/progress/oc/boot_168.npz": "ac890980d19a8f1024182c3c46fed6a88c7d5523987a2aa5ab34b0af2316fb31",
+   "results/y/progress/oc/boot_169.npz": "0ae7713dcee33dda7bdcb22582cfa344cc72b08fa2c86025d2fefea21e47532f",
+   "results/y/progress/oc/boot_17.npz": "b1ea8c30b6ea20ed6329e098c66a16d6279ac225a60709e87f070ef6ff1d3425",
+   "results/y/progress/oc/boot_170.npz": "533a1ff1ff3123e41845be35f329a3fec89bae16c498c5c2da7f490e2857d210",
+   "results/y/progress/oc/boot_171.npz": "39790265cdc8fb542f92638053aee34790f49cbf559ef4206cbc5565482246da",
+   "results/y/progress/oc/boot_172.npz": "d74113ccdc2873e80946983b856b2da0fe58d5555851cf4a492e2b9570f8aec7",
+   "results/y/progress/oc/boot_173.npz": "1cecbb77e9e99b74e60e60552c4c7b9386d648ea3fe2302466b03019d8d5a3e7",
+   "results/y/progress/oc/boot_174.npz": "7998d7df6fe56a1aa86eb6f438413f182139250c52d1c43ac57177ce68f9e29f",
+   "results/y/progress/oc/boot_175.npz": "661014b14235b4713ae2fd8269f3f9f8d6d560dfea5efe3f2cd4b99b28ca9b63",
+   "results/y/progress/oc/boot_176.npz": "89c8682686ec5b978a487f45f263aaad3669b58330b3cc6c2b14c7f7b2b51037",
+   "results/y/progress/oc/boot_177.npz": "296a0f9c95f34789be13f3b1d9bc08a9a6254e7eb49e2ab74bafaf89dfa6b250",
+   "results/y/progress/oc/boot_178.npz": "df5d61cd08ab2195fc69abc045039048d8836e540c3ebc6c5ee1b15121e703e5",
+   "results/y/progress/oc/boot_179.npz": "edfcf50ffb32e9b45bda9783756db146488554430c78bd44f0a7f121af632a5a",
+   "results/y/progress/oc/boot_18.npz": "c1f04f9943ee81dfa459a936bf56effad87a79654aa447ea3cdf808a7108f5c3",
+   "results/y/progress/oc/boot_180.npz": "9fe6bdb1b895556e997929c6a884f1bf962947450c66ca7c95a4408e2265afbe",
+   "results/y/progress/oc/boot_181.npz": "13c3feedee881ef47da0e26de416f5def5633fd13323ccea05c3110b6e9bf76b",
+   "results/y/progress/oc/boot_182.npz": "393147aba521fad9a2c9e46cfd93eba2423d7cc005978e0632dc9e3fa028c3d4",
+   "results/y/progress/oc/boot_183.npz": "e80cfd27eb121bb3d72ab1ce556388447a0f9e735f38466c1311ed7630ede797",
+   "results/y/progress/oc/boot_184.npz": "9d61c2a284187050097f077def48a9d3e715ecd8bdb08579952cf9da61e2a6bd",
+   "results/y/progress/oc/boot_185.npz": "b31710af2004673fa1d88531cf6584b40b48fded3078510bdf24cb6712f0e522",
+   "results/y/progress/oc/boot_186.npz": "ad0fc4ea923fecfe2e2d44b7e02ffb54c92d5cfffc01f131bfa547fbf59c2fbb",
+   "results/y/progress/oc/boot_187.npz": "3e4fa654f81b8d5d835ef9440047e915c888f1e3e7dbfc9908d765575b8f695d",
+   "results/y/progress/oc/boot_188.npz": "1c898dee49785e788e0eae4493be6dfa8fd5fbc51e12356fa71ed30fbf8721cb",
+   "results/y/progress/oc/boot_189.npz": "2560f2520d872b2ccb3acdbe0c7d7439939661cbbf31f6772b0c5a37ee0d79fb",
+   "results/y/progress/oc/boot_19.npz": "d686a4fa3edf5edb22f99e438119bb431c96d468679f4c7f286245a07d0bcf28",
+   "results/y/progress/oc/boot_190.npz": "8872709b5255ed34ae83710c18b985ea949a42647b40fe64f0bf7aff29f14088",
+   "results/y/progress/oc/boot_191.npz": "e593376eb919f0a1e16b404628cea15169c5b41d1767b31d80049caa6264c240",
+   "results/y/progress/oc/boot_192.npz": "a8e545dcbd8dd58e9ad1d3a386dc07bd9f786e73d2ba3c57bb9715493d2c8a22",
+   "results/y/progress/oc/boot_193.npz": "a40baef7cff62100efbcf4ffed3fdabfbad32534f79a75e74b03df6f2e7bfbcc",
+   "results/y/progress/oc/boot_194.npz": "c4596351cb2b554182a9758ffc07f395ae588905386241dfd0ace5b701c0319c",
+   "results/y/progress/oc/boot_195.npz": "e8153d46f84a2ea693384e94cf3d35fe20e9e41a1fcab7bd3b04d5f3572064ac",
+   "results/y/progress/oc/boot_196.npz": "d61f253f5789b1f93f78cc1708a286741145d94dae170e34adf966d4a2ffa622",
+   "results/y/progress/oc/boot_197.npz": "c7a6986fe7a38d50f756d14341e12f4082615751d483f684f102a2518842633e",
+   "results/y/progress/oc/boot_198.npz": "df93b364fdc75388b8efb37e89730af0d964a9867537d056ef359fe613639b73",
+   "results/y/progress/oc/boot_199.npz": "9b1fc61f647202055cb1ce8994620283561aba3586e74d28914635cad9591f8c",
+   "results/y/progress/oc/boot_2.npz": "d0a7f420c0696d247cfc0bd6c25ecf2e5047042e1227e8812174231ac6882f7e",
+   "results/y/progress/oc/boot_20.npz": "bcf48bff3406156145c643331b3c65fe4bd211d3e2e7d2a6ec038c9ee880d772",
+   "results/y/progress/oc/boot_21.npz": "8b7ec2af43d5cc918ece4165f93be9f3273e84441841644894b02694bd7b1d96",
+   "results/y/progress/oc/boot_22.npz": "8ff926aa717a5b54284a42d47e215454c8636a6ff17a9e6e2e9cbca72777e7b5",
+   "results/y/progress/oc/boot_23.npz": "400e1c7b5d8296ff1b4dc65df7bace551ecff91fb9d0093f5b9c91ebddfbeb55",
+   "results/y/progress/oc/boot_24.npz": "8bab50cfe6ef90aa92025394bef83e5be45dd283e411d7cec4b8d3e1ebeb5123",
+   "results/y/progress/oc/boot_25.npz": "79b981cf1c4e71d6e9fda26f3ba4886f7409b485392eb3251c2c49b3e82d2c9f",
+   "results/y/progress/oc/boot_26.npz": "55615e95fd6d7797702d3558f47e36634b39b7bdfc09b2aacb403c2cc0a7f35d",
+   "results/y/progress/oc/boot_27.npz": "6d86e14b87e88c1bd293380c67b77dce0dbec56a9aa7e7ed583952686b5d0c1b",
+   "results/y/progress/oc/boot_28.npz": "d76a0574fc5b43524276dfa43423569ee49b82aba7b3440a72fd0a6433881b84",
+   "results/y/progress/oc/boot_29.npz": "c107a1f79c16d9a3974512e9c4ae4247d3d85a7243235935d3007c995c100322",
+   "results/y/progress/oc/boot_3.npz": "4be652b015d2d4c71abea1d11e38a858e6b76005606e78c54a112504a64fa1bd",
+   "results/y/progress/oc/boot_30.npz": "bdb8fd3a120747001d57d7f91e6c11b15b0bc07925eb374173bc77e16209be86",
+   "results/y/progress/oc/boot_31.npz": "e9583b4bb57fa83022395c56f9cc4404320310415bde5a837df6e09259dc5a39",
+   "results/y/progress/oc/boot_32.npz": "556c0fe803c559ace0e6548ffb43433ee7e0b002cc24e4f09c40f18fbe4d90a2",
+   "results/y/progress/oc/boot_33.npz": "0881b145712e6b86c47a0c218f5261c364e75da89e2947db8c2917a84a8954bf",
+   "results/y/progress/oc/boot_34.npz": "c781990778bdf4dc311214aa62f1b2b813068451e750d879c514c260e1d326c7",
+   "results/y/progress/oc/boot_35.npz": "0c8b162b07913cd365ca5eb8466b75bcbc916e43b60ff147664f0e6e64436cef",
+   "results/y/progress/oc/boot_36.npz": "d1f2097c465569f88b064de96a167a2fb8c577486421cf2142a383daf16a3233",
+   "results/y/progress/oc/boot_37.npz": "3c498cf34dd668ef5e897a5186aa2881a4971551607e3eeeede61bd119639ffe",
+   "results/y/progress/oc/boot_38.npz": "3b324b4b7ec9f6a012063642b19341002a65fbbbc7f08a35440db7621b251ad8",
+   "results/y/progress/oc/boot_39.npz": "43997572c338d4ecc2dc0c21b46aa5d01993cd6935ad0f2f949d5a3a1b01f19c",
+   "results/y/progress/oc/boot_4.npz": "258987d17df45f5f7e13c64d866db9b8c9b753182ef093e7de88bcef4a8d79ee",
+   "results/y/progress/oc/boot_40.npz": "ded6c6c266a8a48d4d05251ddf0e1d23b0882dad12b9c606aad1ec8ce3f4cc29",
+   "results/y/progress/oc/boot_41.npz": "ce73f4247eb21c90e430c2fb974cf6028ed6d5663aaac8d22798083d5440033c",
+   "results/y/progress/oc/boot_42.npz": "07eb14a830e159432986536f0570ae034873cc92d828577087d19337c5238487",
+   "results/y/progress/oc/boot_43.npz": "87c0a1cce7b84ad3fcc83cf1355f9a38e640e7e4e5c9d014e8bf1814e671e3a4",
+   "results/y/progress/oc/boot_44.npz": "36ac0f4154c9ca2704ec3e563d175929327b2d400c05a70dcf7553c1487dcf67",
+   "results/y/progress/oc/boot_45.npz": "b447e2fb4c0b7773504ecb81dfb3fedca171863628dc3c8addbfa7342a938cea",
+   "results/y/progress/oc/boot_46.npz": "8d7a60a3799d29c7d0d8ee89790db7a0e74cccd662fc10a8f160a51af1be9a9f",
+   "results/y/progress/oc/boot_47.npz": "c062d56406a623a3d7517d429b86a0825ba553c0f48d33bcb6b3ce1efe11f15c",
+   "results/y/progress/oc/boot_48.npz": "13df670116a45d8ad27247cae6c704aea57a6fdd4ae23c12ef4bd12b52ffc8b1",
+   "results/y/progress/oc/boot_49.npz": "8a7cb79e187d64b37a69cb9b223e9303f76246f91bcbfd3e1b0cab3033c97e98",
+   "results/y/progress/oc/boot_5.npz": "6f501c8f9c14e7305c6e9c1e391756187cced0e22f847b695d260c0275459523",
+   "results/y/progress/oc/boot_50.npz": "71b3b77c040b5279f70fd0fe9bf3b3556e8c640fb770a9961c89960e7b250a0b",
+   "results/y/progress/oc/boot_51.npz": "bcd3c954df6b91bf91b3ea0e6447d0bf1dfaf05d68150d9f692409e7be698b63",
+   "results/y/progress/oc/boot_52.npz": "53f81a4dbbdd6fe2a9e5d390a74679b31b303da24a20f0c6961a19dc9d01e491",
+   "results/y/progress/oc/boot_53.npz": "5e972a69f758970fc388dab524d63277cc3fdc8ad718c7c458d41880d69235f0",
+   "results/y/progress/oc/boot_54.npz": "3dcc804dc1d2105a3b445cc7944e173d83395c694662269883f472c35da4d185",
+   "results/y/progress/oc/boot_55.npz": "eeb5eba6810ce9d88ac1908cf00c6aabe2c056446c717d37684989405347fda7",
+   "results/y/progress/oc/boot_56.npz": "04c6f171a50ab5c1dfac5b91674159d90cf570a785fad4bff00111640b62c071",
+   "results/y/progress/oc/boot_57.npz": "987bede5b0da426a01315a24bd517f6b686cafff3e4d4e613182b3d3e6d306cc",
+   "results/y/progress/oc/boot_58.npz": "9d1975b77a7dce4d42eb442e30a38e6688699987e7b934a8125e6583ef34e1ce",
+   "results/y/progress/oc/boot_59.npz": "f37fca7c7d807438e72394fdd6fd57c24cc98f05d5c3c22e1a16910d4227d531",
+   "results/y/progress/oc/boot_6.npz": "568561396de536365f5d0e20588bf353d162f1120780e3ba934c549c0f6cb255",
+   "results/y/progress/oc/boot_60.npz": "4dacbadb88128f970c0b87b66168752a7f068bd5a9f1d96ad3bc67206824266b",
+   "results/y/progress/oc/boot_61.npz": "d890724142420702603f3dfac23112d83b84bb295f033dfb55c81dc59378be94",
+   "results/y/progress/oc/boot_62.npz": "8803b3c6c0ae0a6f986720e22594f2288efa4a9b049e56c4881982c2c222cbd0",
+   "results/y/progress/oc/boot_63.npz": "7234bf04b1b9c501319a3d1a4723407049edb419dbb9f179268d80e38ad8a7b5",
+   "results/y/progress/oc/boot_64.npz": "a518aa9fbdd350ab2a3c3b9e28895410707580f6df89894e25fe9a46f2d61b82",
+   "results/y/progress/oc/boot_65.npz": "fafd562c52a077035b18659f27b3a8c4bf18b4a4f3cf42c6bd3b92df9f6f17c6",
+   "results/y/progress/oc/boot_66.npz": "27c0e5eaa2e19c4c31a39cc3023bc463d7d83bbc1de76d4fcbe880bdddf06dee",
+   "results/y/progress/oc/boot_67.npz": "3b14bb65db096599dcf319738ad6550b92c3afa74902980d1f2a01642f255dbd",
+   "results/y/progress/oc/boot_68.npz": "da73a84b32461bf3a72577e30d7d6fb1859a40274a15ca5c63ed7957bde7cb32",
+   "results/y/progress/oc/boot_69.npz": "26017a2e56bb317717d502c1b285f364108f08054315d380e067bfba858b6044",
+   "results/y/progress/oc/boot_7.npz": "6737a5e20775c761f5e286e804477d03cfa4c4483943af70cc300a8f569a36bd",
+   "results/y/progress/oc/boot_70.npz": "e038ccc070c6706714b977585ba1d0ddc0d9ea1f642dc5fc60bd354c8d682e41",
+   "results/y/progress/oc/boot_71.npz": "6da63fb7a2ae81f4c07a802a6cd034e80a5b11becf0cdeb660e8d28e6efe6dd0",
+   "results/y/progress/oc/boot_72.npz": "55276760cedfc9a86cfda5adc129e4324f481a4ea4b334726cdaa3a1482ce8c5",
+   "results/y/progress/oc/boot_73.npz": "89bb1f2c6117d7cc2ae27806b68a03f98320a73492dc4181b5b54bd30eab751f",
+   "results/y/progress/oc/boot_74.npz": "b8d03b78d4cc2933b2d5decbcfc1b21e800fb3596e89021eca9f7406ad9f9923",
+   "results/y/progress/oc/boot_75.npz": "92dfcf6e6b7483584c35194c83cf91fe270acacbe41a46816d11a09ace433b9e",
+   "results/y/progress/oc/boot_76.npz": "ebafafafbfda2ef0e91567474eb9c312b2206b398274b7b728f682ca50b372d9",
+   "results/y/progress/oc/boot_77.npz": "59c524a132e44870d67e8a25e58fbd79effa8f082aae4bbb70bc2bf57318d426",
+   "results/y/progress/oc/boot_78.npz": "0b6a83288ab721b90fadcd2d4d74b8d15b61eb3fb83f27c6e08a8680acf1aad6",
+   "results/y/progress/oc/boot_79.npz": "a024651039c244e773eec574bf95228259fd9b40c200b00d0bc2651f05ff81c0",
+   "results/y/progress/oc/boot_8.npz": "47842c5bc936a7593818ba1de164ace9fed41e1d10e249e8cf00fdede2c8989d",
+   "results/y/progress/oc/boot_80.npz": "d5cb7a3c8423ee8f01c2821f9c33ff50f7d8aa897c1b62f9b539c918a239ce67",
+   "results/y/progress/oc/boot_81.npz": "bfdeb7f0bb77dd0130eb811348d27a15998588fee9f81e07992503b45be8b9dc",
+   "results/y/progress/oc/boot_82.npz": "18cd75dff2426542711874842387e436ba76ab44684f7f1a45cca105de452c0b",
+   "results/y/progress/oc/boot_83.npz": "483376a6cbd820cf633a6fbcb59e58907eced3b0ea23aedd8112bc144da88c56",
+   "results/y/progress/oc/boot_84.npz": "36b8d8f504472247a25c3d78a0573b81aeb2cca4677f016b43364d5e54e21cdc",
+   "results/y/progress/oc/boot_85.npz": "564dc82307fc73295358f2bab82c74bba872f8bb66468b8ef0c1bae76936fe1c",
+   "results/y/progress/oc/boot_86.npz": "a25aaa10fedf786f3cd9c752b12c51d623699f850f9367ec13accfea19590a67",
+   "results/y/progress/oc/boot_87.npz": "ee17cc95166051ca6f00ead8beceeafb0e1cdc647fc43d7955f1fca73660b95b",
+   "results/y/progress/oc/boot_88.npz": "36a9ead5a4fdc74c7f8b7c54f1b5046f0bc7d5087b564557f5fc1d8c514d1f32",
+   "results/y/progress/oc/boot_89.npz": "aa1063e95e3d9d5551dcc8423733632ef50151e2bb8e040511f89569cc43e233",
+   "results/y/progress/oc/boot_9.npz": "5232b3ee1126a4f79c4169308ec6e3a48b721c9276e86bef0ae41e978daab4c8",
+   "results/y/progress/oc/boot_90.npz": "1d021015209d6c44b89c2dd7f17b33f02b372fff61ab604977ab179dbe46fec7",
+   "results/y/progress/oc/boot_91.npz": "f985d4ddddb21ba4bbf348fb8ea3e4cd67a8de5ce1997574dba3c6ebf23a42d3",
+   "results/y/progress/oc/boot_92.npz": "c07f1b3ba5c1ee182b20766e0cc16972082fc4b6cd179713e0184487020e9176",
+   "results/y/progress/oc/boot_93.npz": "cc1b67cd18395733c0d5d87b01223543198298d728acc33ca93e1bf6fe686fce",
+   "results/y/progress/oc/boot_94.npz": "39ed2150e194480d6b3e6920d4d3426d09a32daf3390f6d46d4a4d552eccddb1",
+   "results/y/progress/oc/boot_95.npz": "889f4e8a0695997ca86a3b2d05699a600baba2f19f1ad778a42361068e70cb92",
+   "results/y/progress/oc/boot_96.npz": "fd608493901813744fb217deef7201b822ebd25c9b5a5bcaacfdfcdc7eb1247a",
+   "results/y/progress/oc/boot_97.npz": "f281dea74f60d0bf11f4233724ce8caed011f77dd005f5e241560e849c5192b2",
+   "results/y/progress/oc/boot_98.npz": "f41c17df30736249ad8820cc42404e446077349c17079e1d4f958673dd6f261a",
+   "results/y/progress/oc/boot_99.npz": "429f2ea653a7354e9112a0bc193b9544e921051591824ad9ebff901978b9749a"
+  },
+  "compare": {
+   "differ": [
+    "near_td_q10",
+    "low_gate_punish_assoc"
+   ],
+   "n": 101,
+   "n_equal": 99
+  },
+  "detail_path": "results/z/ydiag.json",
+  "detail_sha256": "61f68c50764c17345c188c44cda3e3e02dc008b38a6d99db465254fe19bac35c",
+  "env": {
+   "numpy": "2.5.3",
+   "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+   "python": "3.13.13",
+   "scipy": "1.18.1",
+   "uv_lock_sha256": "312615360bbaddee6c8f27b836c9660eab1e3edefe3c8d8e5f8c4004f5c31d4e",
+   "yxw_files": {
+    "flymon/brain/w_measure.py": "e23009146ee04e3f6f328445a51685f8f045f6bb194749bf4ebd8f80c6e2be63",
+    "flymon/brain/w_oc.py": "fbb5bd462a503cc36c2668b32b80ce10ffafd3a98d6b6afaade708461cbc80f3",
+    "flymon/brain/w_pairs.py": "985c0e89e2cf558326ede1fa0616c3c2154289abb1dbe9510883120d2f3e788f",
+    "flymon/brain/w_records.py": "2b630d2e3ee0655468970c8227ce0751ec9bea30c5cbe179307c5d89a2a8fd17",
+    "flymon/brain/w_rules.py": "43252cfe5fcfd73822f48c67999b7e835cec73ae231dac9fad48d31df788680f",
+    "flymon/brain/w_runner.py": "d68444f65db37bbe69a8476a88db0f992ab24c194eae90926db8c6e4f706beae",
+    "flymon/brain/w_spec.py": "678d6a24acbbe11b820c1c7f89b1cd5539402c1063ddc4ee1c87fe6432634351",
+    "flymon/brain/w_store.py": "06ee4e19dc8f4b488eefc6d923a225bd44d8aa4321e5f0b15455c40a7a24655f",
+    "flymon/brain/w_verdict.py": "0bd381ebfc12fded8722431dda9371d4dab9413f010a057ce8b94d1f51c9e401",
+    "flymon/brain/x_oc.py": "0548bd665229201c454b4d09f1c21d4b00fbbf559c126b9145b302b3397ec930",
+    "flymon/brain/x_rules.py": "67f0215009304f4f4762cc90224a78d4586fbe0bf96cc22a3d5c2058c67eab85",
+    "flymon/brain/x_runner.py": "b4001c63723b815d82bc7ed45b1f93dc62885bf668a6978251d79af022baa968",
+    "flymon/brain/x_spec.py": "b3ea0c31c89f53332fdbcc7e2b087cf5feefe0a7871d3a62cec1d06b805361a4",
+    "flymon/brain/x_store.py": "1b27465db9962d3e58e85a8c8789b49a22a1dd821c17cae7484fb7ecb074e350",
+    "flymon/brain/x_verdict.py": "7b2d2da8aded83da27db091b027a47ede14d235e41208d930e147b388bc3af4e",
+    "flymon/brain/y_oc.py": "e15e0f23aeb1d0253e82863d2e5976db356720a53cd695e2bc6c65f6bb218479",
+    "flymon/brain/y_rules.py": "7b2498845a9f483458a5843ff1e54869df85f29896e9b386dadcc81ad8e3ba12",
+    "flymon/brain/y_runner.py": "0ba331d74fab000fd010284c5440721eb45a103bc61e3341e472a254133efbee",
+    "flymon/brain/y_spec.py": "e14bb08c3af149836480cf22c45a66e89c50f8ec4eb22f17776bf79ee621a9c9",
+    "flymon/brain/y_store.py": "75218272e406a3de263f19ca7bc462b9ed93c1acc578811fb78ea03293773e54"
+   },
+   "z_files": {
+    "flymon/brain/z_oc.py": "666915f4cd64c94a6705b5aeed987a3311a4f99a06ca10a769ac3dc7b27eedb4",
+    "flymon/brain/z_rules.py": "78de45e97fe4a9dcead8ea836edadcfd6c247b163611d6ec30f9cc9481b1b538",
+    "flymon/brain/z_runner.py": "a5bc8bca0cb98adb5196c8f35d55211a24c0c75c800e40130595212be6381fe8",
+    "flymon/brain/z_spec.py": "b784b2c4f523b2d20ad3740b7a92caed873b4d4d41cd0e7019501de810717724",
+    "flymon/brain/z_split.py": "ca4a011f3ed736eca3ca730c96acde0e62c9718c172e39c826851e8a4472c7d3",
+    "flymon/brain/z_store.py": "b90dd8c13e7a94fbf9742a038de9a5f7e08221da9f014eea20fa2affd2f70562",
+    "scripts/run_z.py": "7cd0fd25621444a3d3a23b15a92e7dc7804dba0516f3fd7c79e4a37c65835390"
+   }
+  },
+  "gates": {
+   "i": {
+    "by_k": [
+     0.04712500000000006,
+     0.08712500000000005,
+     0.15850000000000025,
+     0.049625000000000065,
+     0.08225000000000005
+    ],
+    "equal_limits": true,
+    "equal_sim": true,
+    "false_by_k": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "ok": true,
+    "printed": true,
+    "sim": 0.04712500000000006
+   },
+   "ii": {
+    "n": 50,
+    "ok": true,
+    "unequal": []
+   },
+   "iii": {
+    "ok": true,
+    "reasons": []
+   }
+  },
+  "git": {
+   "commit": "94c6935a0f7ed6bff3c1c41188095344f4c8e73e",
+   "dirty_hashed": [],
+   "dirty_other": []
+  },
+  "note": "Z.7 0b: \ucf54\ub4dc \uacbd\ub85c \uc7ac\ud604(\uad00\ubb38 (i)\u2013(iii), \ud575\uc2ec \uc6d0\uc7a5) + \uae30\ub85d \uc804\uc6a9 \uc7ac\ud604(records \uc6d0\uc7a5, \uc778\uc1c4 \uc790\ub9bf\uc218 \ub300\uc870 \u2014 \ub2e4\ub974\uba74 Z.10\uc5d0\uc11c Z.0 \uc815\uc815, Z\uc758 \uaddc\uce59\uc740 \ubc14\ub00c\uc9c0 \uc54a\ub294\ub2e4).",
+  "order": "0b",
+  "outcome": "PASS",
+  "reasons": [],
+  "records_null": {},
+  "stage": "ydiag",
+  "u_measure_key": "8a4e09302f7f2f7e7d69f3540d8fc392da582cb1246bfebeb150348776e26523",
+  "w_measure_key": "761274e0ed09f9ec7043079e477588b4a2eef76c8076614782542573b2138df1",
+  "written_at": "2026-10-06T02:19:36.710217+00:00",
+  "y_cells_archive": [
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_0.npz",
+    "sha256": "5da3781e5ebeb079b88142b599c4dcaf7b587aa638e503d34528dd6969d394b1",
+    "src": "results/y/progress/oc/boot_0.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_1.npz",
+    "sha256": "f1e8557d58849009a9299eac3bc37d7121566cfb509b65b1357866820bf02cc0",
+    "src": "results/y/progress/oc/boot_1.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_2.npz",
+    "sha256": "d0a7f420c0696d247cfc0bd6c25ecf2e5047042e1227e8812174231ac6882f7e",
+    "src": "results/y/progress/oc/boot_2.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_3.npz",
+    "sha256": "4be652b015d2d4c71abea1d11e38a858e6b76005606e78c54a112504a64fa1bd",
+    "src": "results/y/progress/oc/boot_3.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_4.npz",
+    "sha256": "258987d17df45f5f7e13c64d866db9b8c9b753182ef093e7de88bcef4a8d79ee",
+    "src": "results/y/progress/oc/boot_4.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_5.npz",
+    "sha256": "6f501c8f9c14e7305c6e9c1e391756187cced0e22f847b695d260c0275459523",
+    "src": "results/y/progress/oc/boot_5.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_6.npz",
+    "sha256": "568561396de536365f5d0e20588bf353d162f1120780e3ba934c549c0f6cb255",
+    "src": "results/y/progress/oc/boot_6.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_7.npz",
+    "sha256": "6737a5e20775c761f5e286e804477d03cfa4c4483943af70cc300a8f569a36bd",
+    "src": "results/y/progress/oc/boot_7.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_8.npz",
+    "sha256": "47842c5bc936a7593818ba1de164ace9fed41e1d10e249e8cf00fdede2c8989d",
+    "src": "results/y/progress/oc/boot_8.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_9.npz",
+    "sha256": "5232b3ee1126a4f79c4169308ec6e3a48b721c9276e86bef0ae41e978daab4c8",
+    "src": "results/y/progress/oc/boot_9.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_10.npz",
+    "sha256": "e7a0d1fc763d859b32d151c37a7f428f32dc3f78408061c4dac9bac0aae21248",
+    "src": "results/y/progress/oc/boot_10.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_11.npz",
+    "sha256": "3e4ed2855ced02490a5bb84f9a9968102f018dceb408c47b323f1ca1ed9fd7cf",
+    "src": "results/y/progress/oc/boot_11.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_12.npz",
+    "sha256": "9d98ad083df944fba2100ae99d57c3f49cb1e7b1722a2c118c4c7855d167786b",
+    "src": "results/y/progress/oc/boot_12.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_13.npz",
+    "sha256": "855f24a5309e3c143ecaa64f15ea2572264013d2250c51143ec37541742b2d24",
+    "src": "results/y/progress/oc/boot_13.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_14.npz",
+    "sha256": "b4c8c6f348cb4268604b246a39b071344e25ca685f9699886feb023ef4c9bd30",
+    "src": "results/y/progress/oc/boot_14.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_15.npz",
+    "sha256": "e8cc6bae7a06b5ecd483d0265e04afbd0e21b866ea93ea519c9df7afc583aa22",
+    "src": "results/y/progress/oc/boot_15.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_16.npz",
+    "sha256": "c5210f05e6f1756e5db7bd207f4d9211ef3acdae38c33517c88b420fcd5160ec",
+    "src": "results/y/progress/oc/boot_16.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_17.npz",
+    "sha256": "b1ea8c30b6ea20ed6329e098c66a16d6279ac225a60709e87f070ef6ff1d3425",
+    "src": "results/y/progress/oc/boot_17.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_18.npz",
+    "sha256": "c1f04f9943ee81dfa459a936bf56effad87a79654aa447ea3cdf808a7108f5c3",
+    "src": "results/y/progress/oc/boot_18.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_19.npz",
+    "sha256": "d686a4fa3edf5edb22f99e438119bb431c96d468679f4c7f286245a07d0bcf28",
+    "src": "results/y/progress/oc/boot_19.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_20.npz",
+    "sha256": "bcf48bff3406156145c643331b3c65fe4bd211d3e2e7d2a6ec038c9ee880d772",
+    "src": "results/y/progress/oc/boot_20.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_21.npz",
+    "sha256": "8b7ec2af43d5cc918ece4165f93be9f3273e84441841644894b02694bd7b1d96",
+    "src": "results/y/progress/oc/boot_21.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_22.npz",
+    "sha256": "8ff926aa717a5b54284a42d47e215454c8636a6ff17a9e6e2e9cbca72777e7b5",
+    "src": "results/y/progress/oc/boot_22.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_23.npz",
+    "sha256": "400e1c7b5d8296ff1b4dc65df7bace551ecff91fb9d0093f5b9c91ebddfbeb55",
+    "src": "results/y/progress/oc/boot_23.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_24.npz",
+    "sha256": "8bab50cfe6ef90aa92025394bef83e5be45dd283e411d7cec4b8d3e1ebeb5123",
+    "src": "results/y/progress/oc/boot_24.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_25.npz",
+    "sha256": "79b981cf1c4e71d6e9fda26f3ba4886f7409b485392eb3251c2c49b3e82d2c9f",
+    "src": "results/y/progress/oc/boot_25.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_26.npz",
+    "sha256": "55615e95fd6d7797702d3558f47e36634b39b7bdfc09b2aacb403c2cc0a7f35d",
+    "src": "results/y/progress/oc/boot_26.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_27.npz",
+    "sha256": "6d86e14b87e88c1bd293380c67b77dce0dbec56a9aa7e7ed583952686b5d0c1b",
+    "src": "results/y/progress/oc/boot_27.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_28.npz",
+    "sha256": "d76a0574fc5b43524276dfa43423569ee49b82aba7b3440a72fd0a6433881b84",
+    "src": "results/y/progress/oc/boot_28.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_29.npz",
+    "sha256": "c107a1f79c16d9a3974512e9c4ae4247d3d85a7243235935d3007c995c100322",
+    "src": "results/y/progress/oc/boot_29.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_30.npz",
+    "sha256": "bdb8fd3a120747001d57d7f91e6c11b15b0bc07925eb374173bc77e16209be86",
+    "src": "results/y/progress/oc/boot_30.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_31.npz",
+    "sha256": "e9583b4bb57fa83022395c56f9cc4404320310415bde5a837df6e09259dc5a39",
+    "src": "results/y/progress/oc/boot_31.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_32.npz",
+    "sha256": "556c0fe803c559ace0e6548ffb43433ee7e0b002cc24e4f09c40f18fbe4d90a2",
+    "src": "results/y/progress/oc/boot_32.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_33.npz",
+    "sha256": "0881b145712e6b86c47a0c218f5261c364e75da89e2947db8c2917a84a8954bf",
+    "src": "results/y/progress/oc/boot_33.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_34.npz",
+    "sha256": "c781990778bdf4dc311214aa62f1b2b813068451e750d879c514c260e1d326c7",
+    "src": "results/y/progress/oc/boot_34.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_35.npz",
+    "sha256": "0c8b162b07913cd365ca5eb8466b75bcbc916e43b60ff147664f0e6e64436cef",
+    "src": "results/y/progress/oc/boot_35.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_36.npz",
+    "sha256": "d1f2097c465569f88b064de96a167a2fb8c577486421cf2142a383daf16a3233",
+    "src": "results/y/progress/oc/boot_36.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_37.npz",
+    "sha256": "3c498cf34dd668ef5e897a5186aa2881a4971551607e3eeeede61bd119639ffe",
+    "src": "results/y/progress/oc/boot_37.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_38.npz",
+    "sha256": "3b324b4b7ec9f6a012063642b19341002a65fbbbc7f08a35440db7621b251ad8",
+    "src": "results/y/progress/oc/boot_38.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_39.npz",
+    "sha256": "43997572c338d4ecc2dc0c21b46aa5d01993cd6935ad0f2f949d5a3a1b01f19c",
+    "src": "results/y/progress/oc/boot_39.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_40.npz",
+    "sha256": "ded6c6c266a8a48d4d05251ddf0e1d23b0882dad12b9c606aad1ec8ce3f4cc29",
+    "src": "results/y/progress/oc/boot_40.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_41.npz",
+    "sha256": "ce73f4247eb21c90e430c2fb974cf6028ed6d5663aaac8d22798083d5440033c",
+    "src": "results/y/progress/oc/boot_41.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_42.npz",
+    "sha256": "07eb14a830e159432986536f0570ae034873cc92d828577087d19337c5238487",
+    "src": "results/y/progress/oc/boot_42.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_43.npz",
+    "sha256": "87c0a1cce7b84ad3fcc83cf1355f9a38e640e7e4e5c9d014e8bf1814e671e3a4",
+    "src": "results/y/progress/oc/boot_43.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_44.npz",
+    "sha256": "36ac0f4154c9ca2704ec3e563d175929327b2d400c05a70dcf7553c1487dcf67",
+    "src": "results/y/progress/oc/boot_44.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_45.npz",
+    "sha256": "b447e2fb4c0b7773504ecb81dfb3fedca171863628dc3c8addbfa7342a938cea",
+    "src": "results/y/progress/oc/boot_45.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_46.npz",
+    "sha256": "8d7a60a3799d29c7d0d8ee89790db7a0e74cccd662fc10a8f160a51af1be9a9f",
+    "src": "results/y/progress/oc/boot_46.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_47.npz",
+    "sha256": "c062d56406a623a3d7517d429b86a0825ba553c0f48d33bcb6b3ce1efe11f15c",
+    "src": "results/y/progress/oc/boot_47.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_48.npz",
+    "sha256": "13df670116a45d8ad27247cae6c704aea57a6fdd4ae23c12ef4bd12b52ffc8b1",
+    "src": "results/y/progress/oc/boot_48.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_49.npz",
+    "sha256": "8a7cb79e187d64b37a69cb9b223e9303f76246f91bcbfd3e1b0cab3033c97e98",
+    "src": "results/y/progress/oc/boot_49.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_50.npz",
+    "sha256": "71b3b77c040b5279f70fd0fe9bf3b3556e8c640fb770a9961c89960e7b250a0b",
+    "src": "results/y/progress/oc/boot_50.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_51.npz",
+    "sha256": "bcd3c954df6b91bf91b3ea0e6447d0bf1dfaf05d68150d9f692409e7be698b63",
+    "src": "results/y/progress/oc/boot_51.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_52.npz",
+    "sha256": "53f81a4dbbdd6fe2a9e5d390a74679b31b303da24a20f0c6961a19dc9d01e491",
+    "src": "results/y/progress/oc/boot_52.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_53.npz",
+    "sha256": "5e972a69f758970fc388dab524d63277cc3fdc8ad718c7c458d41880d69235f0",
+    "src": "results/y/progress/oc/boot_53.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_54.npz",
+    "sha256": "3dcc804dc1d2105a3b445cc7944e173d83395c694662269883f472c35da4d185",
+    "src": "results/y/progress/oc/boot_54.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_55.npz",
+    "sha256": "eeb5eba6810ce9d88ac1908cf00c6aabe2c056446c717d37684989405347fda7",
+    "src": "results/y/progress/oc/boot_55.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_56.npz",
+    "sha256": "04c6f171a50ab5c1dfac5b91674159d90cf570a785fad4bff00111640b62c071",
+    "src": "results/y/progress/oc/boot_56.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_57.npz",
+    "sha256": "987bede5b0da426a01315a24bd517f6b686cafff3e4d4e613182b3d3e6d306cc",
+    "src": "results/y/progress/oc/boot_57.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_58.npz",
+    "sha256": "9d1975b77a7dce4d42eb442e30a38e6688699987e7b934a8125e6583ef34e1ce",
+    "src": "results/y/progress/oc/boot_58.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_59.npz",
+    "sha256": "f37fca7c7d807438e72394fdd6fd57c24cc98f05d5c3c22e1a16910d4227d531",
+    "src": "results/y/progress/oc/boot_59.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_60.npz",
+    "sha256": "4dacbadb88128f970c0b87b66168752a7f068bd5a9f1d96ad3bc67206824266b",
+    "src": "results/y/progress/oc/boot_60.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_61.npz",
+    "sha256": "d890724142420702603f3dfac23112d83b84bb295f033dfb55c81dc59378be94",
+    "src": "results/y/progress/oc/boot_61.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_62.npz",
+    "sha256": "8803b3c6c0ae0a6f986720e22594f2288efa4a9b049e56c4881982c2c222cbd0",
+    "src": "results/y/progress/oc/boot_62.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_63.npz",
+    "sha256": "7234bf04b1b9c501319a3d1a4723407049edb419dbb9f179268d80e38ad8a7b5",
+    "src": "results/y/progress/oc/boot_63.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_64.npz",
+    "sha256": "a518aa9fbdd350ab2a3c3b9e28895410707580f6df89894e25fe9a46f2d61b82",
+    "src": "results/y/progress/oc/boot_64.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_65.npz",
+    "sha256": "fafd562c52a077035b18659f27b3a8c4bf18b4a4f3cf42c6bd3b92df9f6f17c6",
+    "src": "results/y/progress/oc/boot_65.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_66.npz",
+    "sha256": "27c0e5eaa2e19c4c31a39cc3023bc463d7d83bbc1de76d4fcbe880bdddf06dee",
+    "src": "results/y/progress/oc/boot_66.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_67.npz",
+    "sha256": "3b14bb65db096599dcf319738ad6550b92c3afa74902980d1f2a01642f255dbd",
+    "src": "results/y/progress/oc/boot_67.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_68.npz",
+    "sha256": "da73a84b32461bf3a72577e30d7d6fb1859a40274a15ca5c63ed7957bde7cb32",
+    "src": "results/y/progress/oc/boot_68.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_69.npz",
+    "sha256": "26017a2e56bb317717d502c1b285f364108f08054315d380e067bfba858b6044",
+    "src": "results/y/progress/oc/boot_69.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_70.npz",
+    "sha256": "e038ccc070c6706714b977585ba1d0ddc0d9ea1f642dc5fc60bd354c8d682e41",
+    "src": "results/y/progress/oc/boot_70.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_71.npz",
+    "sha256": "6da63fb7a2ae81f4c07a802a6cd034e80a5b11becf0cdeb660e8d28e6efe6dd0",
+    "src": "results/y/progress/oc/boot_71.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_72.npz",
+    "sha256": "55276760cedfc9a86cfda5adc129e4324f481a4ea4b334726cdaa3a1482ce8c5",
+    "src": "results/y/progress/oc/boot_72.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_73.npz",
+    "sha256": "89bb1f2c6117d7cc2ae27806b68a03f98320a73492dc4181b5b54bd30eab751f",
+    "src": "results/y/progress/oc/boot_73.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_74.npz",
+    "sha256": "b8d03b78d4cc2933b2d5decbcfc1b21e800fb3596e89021eca9f7406ad9f9923",
+    "src": "results/y/progress/oc/boot_74.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_75.npz",
+    "sha256": "92dfcf6e6b7483584c35194c83cf91fe270acacbe41a46816d11a09ace433b9e",
+    "src": "results/y/progress/oc/boot_75.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_76.npz",
+    "sha256": "ebafafafbfda2ef0e91567474eb9c312b2206b398274b7b728f682ca50b372d9",
+    "src": "results/y/progress/oc/boot_76.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_77.npz",
+    "sha256": "59c524a132e44870d67e8a25e58fbd79effa8f082aae4bbb70bc2bf57318d426",
+    "src": "results/y/progress/oc/boot_77.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_78.npz",
+    "sha256": "0b6a83288ab721b90fadcd2d4d74b8d15b61eb3fb83f27c6e08a8680acf1aad6",
+    "src": "results/y/progress/oc/boot_78.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_79.npz",
+    "sha256": "a024651039c244e773eec574bf95228259fd9b40c200b00d0bc2651f05ff81c0",
+    "src": "results/y/progress/oc/boot_79.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_80.npz",
+    "sha256": "d5cb7a3c8423ee8f01c2821f9c33ff50f7d8aa897c1b62f9b539c918a239ce67",
+    "src": "results/y/progress/oc/boot_80.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_81.npz",
+    "sha256": "bfdeb7f0bb77dd0130eb811348d27a15998588fee9f81e07992503b45be8b9dc",
+    "src": "results/y/progress/oc/boot_81.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_82.npz",
+    "sha256": "18cd75dff2426542711874842387e436ba76ab44684f7f1a45cca105de452c0b",
+    "src": "results/y/progress/oc/boot_82.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_83.npz",
+    "sha256": "483376a6cbd820cf633a6fbcb59e58907eced3b0ea23aedd8112bc144da88c56",
+    "src": "results/y/progress/oc/boot_83.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_84.npz",
+    "sha256": "36b8d8f504472247a25c3d78a0573b81aeb2cca4677f016b43364d5e54e21cdc",
+    "src": "results/y/progress/oc/boot_84.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_85.npz",
+    "sha256": "564dc82307fc73295358f2bab82c74bba872f8bb66468b8ef0c1bae76936fe1c",
+    "src": "results/y/progress/oc/boot_85.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_86.npz",
+    "sha256": "a25aaa10fedf786f3cd9c752b12c51d623699f850f9367ec13accfea19590a67",
+    "src": "results/y/progress/oc/boot_86.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_87.npz",
+    "sha256": "ee17cc95166051ca6f00ead8beceeafb0e1cdc647fc43d7955f1fca73660b95b",
+    "src": "results/y/progress/oc/boot_87.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_88.npz",
+    "sha256": "36a9ead5a4fdc74c7f8b7c54f1b5046f0bc7d5087b564557f5fc1d8c514d1f32",
+    "src": "results/y/progress/oc/boot_88.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_89.npz",
+    "sha256": "aa1063e95e3d9d5551dcc8423733632ef50151e2bb8e040511f89569cc43e233",
+    "src": "results/y/progress/oc/boot_89.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_90.npz",
+    "sha256": "1d021015209d6c44b89c2dd7f17b33f02b372fff61ab604977ab179dbe46fec7",
+    "src": "results/y/progress/oc/boot_90.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_91.npz",
+    "sha256": "f985d4ddddb21ba4bbf348fb8ea3e4cd67a8de5ce1997574dba3c6ebf23a42d3",
+    "src": "results/y/progress/oc/boot_91.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_92.npz",
+    "sha256": "c07f1b3ba5c1ee182b20766e0cc16972082fc4b6cd179713e0184487020e9176",
+    "src": "results/y/progress/oc/boot_92.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_93.npz",
+    "sha256": "cc1b67cd18395733c0d5d87b01223543198298d728acc33ca93e1bf6fe686fce",
+    "src": "results/y/progress/oc/boot_93.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_94.npz",
+    "sha256": "39ed2150e194480d6b3e6920d4d3426d09a32daf3390f6d46d4a4d552eccddb1",
+    "src": "results/y/progress/oc/boot_94.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_95.npz",
+    "sha256": "889f4e8a0695997ca86a3b2d05699a600baba2f19f1ad778a42361068e70cb92",
+    "src": "results/y/progress/oc/boot_95.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_96.npz",
+    "sha256": "fd608493901813744fb217deef7201b822ebd25c9b5a5bcaacfdfcdc7eb1247a",
+    "src": "results/y/progress/oc/boot_96.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_97.npz",
+    "sha256": "f281dea74f60d0bf11f4233724ce8caed011f77dd005f5e241560e849c5192b2",
+    "src": "results/y/progress/oc/boot_97.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_98.npz",
+    "sha256": "f41c17df30736249ad8820cc42404e446077349c17079e1d4f958673dd6f261a",
+    "src": "results/y/progress/oc/boot_98.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_99.npz",
+    "sha256": "429f2ea653a7354e9112a0bc193b9544e921051591824ad9ebff901978b9749a",
+    "src": "results/y/progress/oc/boot_99.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_100.npz",
+    "sha256": "13981996e396b22be9bf42cd19d1e4017d9830c28c2316c608f23d6054fbad6f",
+    "src": "results/y/progress/oc/boot_100.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_101.npz",
+    "sha256": "d5618f3b2b6b979ece12eab460fd60d0312c9c84614d14f097a811de59e4d9a7",
+    "src": "results/y/progress/oc/boot_101.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_102.npz",
+    "sha256": "cf1d74fd7edfd1c198d8ce45799319395981a5e3930b36aa66f547f057f87280",
+    "src": "results/y/progress/oc/boot_102.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_103.npz",
+    "sha256": "fab8d4084280c79ffadcd78d9574d21497cc6b639b2b3fa7a0e781c7f670e9ba",
+    "src": "results/y/progress/oc/boot_103.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_104.npz",
+    "sha256": "48ce041f7bce8d22531635a89a38f732a7143f0d2d0ef3504971e1a58fb2ae47",
+    "src": "results/y/progress/oc/boot_104.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_105.npz",
+    "sha256": "75f84b19780768957836f10bd4ee5ef3b1c4265bf4dd9355a2f6cd26bedacc7b",
+    "src": "results/y/progress/oc/boot_105.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_106.npz",
+    "sha256": "d92a645665dd74be00bd9ba8a767ed410446b07fa8ec3510028855af4cdbc045",
+    "src": "results/y/progress/oc/boot_106.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_107.npz",
+    "sha256": "3efd75b7234f38d311d8127dc126f7fa626e266cfe530a031a8420a9e76324b3",
+    "src": "results/y/progress/oc/boot_107.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_108.npz",
+    "sha256": "daab1536669e1fce1bec4919792bf1174f90061ebfe2329aa204fe98f34b3c66",
+    "src": "results/y/progress/oc/boot_108.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_109.npz",
+    "sha256": "71f3650681b87cce823224a4b173e0bdd9a203e63dee25c6d8d159d3476063d3",
+    "src": "results/y/progress/oc/boot_109.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_110.npz",
+    "sha256": "3d84cd4306e5e8f70d70aac70813edb4dbf8ac373acaaec1425b4cba24830c0a",
+    "src": "results/y/progress/oc/boot_110.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_111.npz",
+    "sha256": "7de9c9a03158b0cab242081c04819593d4a209bed7e5987158046dcfeaff7347",
+    "src": "results/y/progress/oc/boot_111.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_112.npz",
+    "sha256": "002724fb7f1f925e0ea8565ef9bb9d4387488e117169090993d180e7c5c7d3fb",
+    "src": "results/y/progress/oc/boot_112.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_113.npz",
+    "sha256": "0da1762439d933d1eea4fc1739aff7976b5e316659b70d9607c051fd9274f4d2",
+    "src": "results/y/progress/oc/boot_113.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_114.npz",
+    "sha256": "f3503424d14519947929a3d325a83ad80bbc49a4dbddcbad9a26d67f183d988f",
+    "src": "results/y/progress/oc/boot_114.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_115.npz",
+    "sha256": "6a1a932fbe74602a743024caa34826f552153795aa2edf6523cd38dbe820cfbd",
+    "src": "results/y/progress/oc/boot_115.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_116.npz",
+    "sha256": "846761fa8513734a48928793fb7ac4aeedecbb8d00c494aadf5bf1c90a82d9c4",
+    "src": "results/y/progress/oc/boot_116.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_117.npz",
+    "sha256": "2659411711d2891e0c610f50119adca4b7b9252a986b338d03625d2793306ab7",
+    "src": "results/y/progress/oc/boot_117.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_118.npz",
+    "sha256": "94de25b0bd31e5db99efc0e9f8fd37b4909cac85422efff1f31ac6adb5bf1828",
+    "src": "results/y/progress/oc/boot_118.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_119.npz",
+    "sha256": "3d1515df9071ef28fa4383b88a9b66dd1e734a1e81ba1db5e865d8104d903666",
+    "src": "results/y/progress/oc/boot_119.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_120.npz",
+    "sha256": "b3acd8044839621171fa9e1f51d1d0306b6114a79ca6ff83f29525434ec664ee",
+    "src": "results/y/progress/oc/boot_120.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_121.npz",
+    "sha256": "4baf337774066ed4a0e9c2e58c83b3cdc127af8c8633f5f3990e4f1331cb195d",
+    "src": "results/y/progress/oc/boot_121.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_122.npz",
+    "sha256": "a4bfd692c06217391fa56febbf51a7ee99026a7b8a231a7a505f6cf2f522a18d",
+    "src": "results/y/progress/oc/boot_122.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_123.npz",
+    "sha256": "8d26eccfa48026029d416db6eedfdaefcaf4bdfcefdc1c2da42779c683bc4b6e",
+    "src": "results/y/progress/oc/boot_123.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_124.npz",
+    "sha256": "bd452f0ff89e7a44bd37e47f7530f62480d8c76060d468118d64b450413d604a",
+    "src": "results/y/progress/oc/boot_124.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_125.npz",
+    "sha256": "74b9632cdfa14e69a94f358c0871590091c920287e91967d338a1fa7575e3c5d",
+    "src": "results/y/progress/oc/boot_125.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_126.npz",
+    "sha256": "bb2095d67f341256f0cbc367bee8639b1287e283ee581d13e5ade412897ddeab",
+    "src": "results/y/progress/oc/boot_126.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_127.npz",
+    "sha256": "7ad579207cd17a9878325ddb83de0c0f262a9c1f59b1712b454df32cfcd150f0",
+    "src": "results/y/progress/oc/boot_127.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_128.npz",
+    "sha256": "1e62464be2e9b8fe7e41bfc1425f014d6c8bcd58d017de94221807f55a97d123",
+    "src": "results/y/progress/oc/boot_128.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_129.npz",
+    "sha256": "cd28d3c2440b2b54afb9cd66faead3d29e2dae4c0568b864ff51a56c21eee57f",
+    "src": "results/y/progress/oc/boot_129.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_130.npz",
+    "sha256": "91fa579925eb55ff4c9f1529551199bb061cd0bb7066b4a498fea6235664cbd8",
+    "src": "results/y/progress/oc/boot_130.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_131.npz",
+    "sha256": "f9025319f90273076a9301d0ecbb6607b2120757d3467ac627c9dc8dbab8bf7f",
+    "src": "results/y/progress/oc/boot_131.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_132.npz",
+    "sha256": "fdb6b9da72c462c59301d5ae4c036c8899d59fc0484378945e09d4b80bb576e3",
+    "src": "results/y/progress/oc/boot_132.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_133.npz",
+    "sha256": "1c22799c9f9ce1de029b28db0f55eb578e57004ada62ccc728809a88bae43a51",
+    "src": "results/y/progress/oc/boot_133.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_134.npz",
+    "sha256": "ad44fad58c3b65f956e5194d77287d1e053ed3e446c67b6e47d60adda6ccbe6e",
+    "src": "results/y/progress/oc/boot_134.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_135.npz",
+    "sha256": "8f800a0b4b2937f2c5808829fe2688a8f4e5491299f0f30d080d29698593921f",
+    "src": "results/y/progress/oc/boot_135.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_136.npz",
+    "sha256": "809f3fb2685ae410c59cbdbf03d449e5d09bfed75c51bb974459f67190802031",
+    "src": "results/y/progress/oc/boot_136.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_137.npz",
+    "sha256": "2a032d81de99c400dd41282fba5fb212ea7d353f0a3a4ac507cd04b1ccc9e044",
+    "src": "results/y/progress/oc/boot_137.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_138.npz",
+    "sha256": "3402353a55f025de13a90da55b11bf53e8042a29110e2028be90487923249ef5",
+    "src": "results/y/progress/oc/boot_138.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_139.npz",
+    "sha256": "f0fd7a0d664b3af5f67bd2fe2c746cafe8bad4e673e76038ff96363743b71575",
+    "src": "results/y/progress/oc/boot_139.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_140.npz",
+    "sha256": "3be0c909bed5d53c6772ed9e2c48e0e80af989d558f70c8ece7800126244d231",
+    "src": "results/y/progress/oc/boot_140.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_141.npz",
+    "sha256": "5340bc7b448f4a0cd5e0002cdbffad47d1314dc3911db7b279525a9982902982",
+    "src": "results/y/progress/oc/boot_141.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_142.npz",
+    "sha256": "b4fb089699ae48869e64b3bebd499532faf5672714619dfa781aa3d9eea68b2f",
+    "src": "results/y/progress/oc/boot_142.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_143.npz",
+    "sha256": "3aa728feedcac7a5d3020c4ad85c266416485a039a844aaa45a0b3760de49088",
+    "src": "results/y/progress/oc/boot_143.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_144.npz",
+    "sha256": "88bf702568b19414e72abd6e5b6e188d2afa35f86fbae250075368bf1e378b26",
+    "src": "results/y/progress/oc/boot_144.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_145.npz",
+    "sha256": "e1153b7ded39fa463f3ba8a254d453a75207ec1280a65e5e75848ebe5ed7d0f4",
+    "src": "results/y/progress/oc/boot_145.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_146.npz",
+    "sha256": "ae80842f2fac2603ba881896c0c0968a8c7727c92fb898a87313e3e2115bf120",
+    "src": "results/y/progress/oc/boot_146.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_147.npz",
+    "sha256": "53f8ceb27005428a0fb735fc2a0b8256563f68a92f683d4b3d964dd1d6a4b68b",
+    "src": "results/y/progress/oc/boot_147.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_148.npz",
+    "sha256": "4f5d6adaafda99f2c810e546b9ff5b57ba59a76e38aaf6c615dfc509c2d54ac5",
+    "src": "results/y/progress/oc/boot_148.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_149.npz",
+    "sha256": "f6a4121498944f1bf22b171b9570b98edd87ad46c6aba8131e0260e495f85ce5",
+    "src": "results/y/progress/oc/boot_149.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_150.npz",
+    "sha256": "c140bed4d47a1574d2be6012b01b56a6c9099813904fd7361abc3f3d7be6fe6f",
+    "src": "results/y/progress/oc/boot_150.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_151.npz",
+    "sha256": "b585890f4260a56c1cfa5cbfea9bd2196d68aa88b555e1ccb9dd64fb01bd6646",
+    "src": "results/y/progress/oc/boot_151.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_152.npz",
+    "sha256": "eb6a252c20f5af6d509a294a276a63b755bb065ce1c4bb46b4e2040120b53427",
+    "src": "results/y/progress/oc/boot_152.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_153.npz",
+    "sha256": "43aaf584eca98aa8da42e8eb02e39558db81918c7913bff0533ac53e871fa253",
+    "src": "results/y/progress/oc/boot_153.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_154.npz",
+    "sha256": "dea91afdda025db9fbb251bbab369034f2d4cceb100cd0ac0b6d3f4f501ec7b1",
+    "src": "results/y/progress/oc/boot_154.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_155.npz",
+    "sha256": "0ae71f967e1ba705a79f4fb85d55295859ce84a7c51fe354a18d29c23e952295",
+    "src": "results/y/progress/oc/boot_155.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_156.npz",
+    "sha256": "10ed02148e94ffc115dbe88c30759f81e8e63939110cc3c575c58d0c5b8d29d7",
+    "src": "results/y/progress/oc/boot_156.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_157.npz",
+    "sha256": "5bf802aa3c27d13878c8285d0e8cdfc4a6299ca087edb2b3bd5a81713cc58d61",
+    "src": "results/y/progress/oc/boot_157.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_158.npz",
+    "sha256": "91f08f76959b85e7c35d9307c554029bb6f06d4849a6877196c5ca7d512cb791",
+    "src": "results/y/progress/oc/boot_158.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_159.npz",
+    "sha256": "1ff6d48642a342382d762c58d7f599af5f4b255f384a6a84cf461bd0557a464d",
+    "src": "results/y/progress/oc/boot_159.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_160.npz",
+    "sha256": "4b8578b1364ef384f927f3c3c046981daff222ab949c3383f41a00ad6c34c428",
+    "src": "results/y/progress/oc/boot_160.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_161.npz",
+    "sha256": "d342e29dff4dbc130aab5456808056f3628ac7fab0b78ee5dd48cec06d83110b",
+    "src": "results/y/progress/oc/boot_161.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_162.npz",
+    "sha256": "141a199130241ec24cfe3dea7fc0b05d35e2db842787487dee8876aae37fe161",
+    "src": "results/y/progress/oc/boot_162.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_163.npz",
+    "sha256": "81e64264e8944ca6ec81d65ae7ad8dd4d108031057e6a60dc2d1b92198ef75d8",
+    "src": "results/y/progress/oc/boot_163.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_164.npz",
+    "sha256": "091aecd028f49f9ae66549964a10dcd7f3be335216631b937be964aac2c6622e",
+    "src": "results/y/progress/oc/boot_164.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_165.npz",
+    "sha256": "95d1c5cf184321f0ceabbab68694d40cb50f555278c5190434bdc38e4da69b90",
+    "src": "results/y/progress/oc/boot_165.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_166.npz",
+    "sha256": "d824535d40b97716db00a64ba9e4a7a4b43225648d049abfc804d549cf5f0260",
+    "src": "results/y/progress/oc/boot_166.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_167.npz",
+    "sha256": "41017fede7bacbbd1d0b6eaa5329f9d7aa997fa9b8ca00152c383d5236d92fb3",
+    "src": "results/y/progress/oc/boot_167.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_168.npz",
+    "sha256": "ac890980d19a8f1024182c3c46fed6a88c7d5523987a2aa5ab34b0af2316fb31",
+    "src": "results/y/progress/oc/boot_168.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_169.npz",
+    "sha256": "0ae7713dcee33dda7bdcb22582cfa344cc72b08fa2c86025d2fefea21e47532f",
+    "src": "results/y/progress/oc/boot_169.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_170.npz",
+    "sha256": "533a1ff1ff3123e41845be35f329a3fec89bae16c498c5c2da7f490e2857d210",
+    "src": "results/y/progress/oc/boot_170.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_171.npz",
+    "sha256": "39790265cdc8fb542f92638053aee34790f49cbf559ef4206cbc5565482246da",
+    "src": "results/y/progress/oc/boot_171.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_172.npz",
+    "sha256": "d74113ccdc2873e80946983b856b2da0fe58d5555851cf4a492e2b9570f8aec7",
+    "src": "results/y/progress/oc/boot_172.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_173.npz",
+    "sha256": "1cecbb77e9e99b74e60e60552c4c7b9386d648ea3fe2302466b03019d8d5a3e7",
+    "src": "results/y/progress/oc/boot_173.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_174.npz",
+    "sha256": "7998d7df6fe56a1aa86eb6f438413f182139250c52d1c43ac57177ce68f9e29f",
+    "src": "results/y/progress/oc/boot_174.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_175.npz",
+    "sha256": "661014b14235b4713ae2fd8269f3f9f8d6d560dfea5efe3f2cd4b99b28ca9b63",
+    "src": "results/y/progress/oc/boot_175.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_176.npz",
+    "sha256": "89c8682686ec5b978a487f45f263aaad3669b58330b3cc6c2b14c7f7b2b51037",
+    "src": "results/y/progress/oc/boot_176.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_177.npz",
+    "sha256": "296a0f9c95f34789be13f3b1d9bc08a9a6254e7eb49e2ab74bafaf89dfa6b250",
+    "src": "results/y/progress/oc/boot_177.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_178.npz",
+    "sha256": "df5d61cd08ab2195fc69abc045039048d8836e540c3ebc6c5ee1b15121e703e5",
+    "src": "results/y/progress/oc/boot_178.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_179.npz",
+    "sha256": "edfcf50ffb32e9b45bda9783756db146488554430c78bd44f0a7f121af632a5a",
+    "src": "results/y/progress/oc/boot_179.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_180.npz",
+    "sha256": "9fe6bdb1b895556e997929c6a884f1bf962947450c66ca7c95a4408e2265afbe",
+    "src": "results/y/progress/oc/boot_180.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_181.npz",
+    "sha256": "13c3feedee881ef47da0e26de416f5def5633fd13323ccea05c3110b6e9bf76b",
+    "src": "results/y/progress/oc/boot_181.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_182.npz",
+    "sha256": "393147aba521fad9a2c9e46cfd93eba2423d7cc005978e0632dc9e3fa028c3d4",
+    "src": "results/y/progress/oc/boot_182.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_183.npz",
+    "sha256": "e80cfd27eb121bb3d72ab1ce556388447a0f9e735f38466c1311ed7630ede797",
+    "src": "results/y/progress/oc/boot_183.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_184.npz",
+    "sha256": "9d61c2a284187050097f077def48a9d3e715ecd8bdb08579952cf9da61e2a6bd",
+    "src": "results/y/progress/oc/boot_184.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_185.npz",
+    "sha256": "b31710af2004673fa1d88531cf6584b40b48fded3078510bdf24cb6712f0e522",
+    "src": "results/y/progress/oc/boot_185.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_186.npz",
+    "sha256": "ad0fc4ea923fecfe2e2d44b7e02ffb54c92d5cfffc01f131bfa547fbf59c2fbb",
+    "src": "results/y/progress/oc/boot_186.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_187.npz",
+    "sha256": "3e4fa654f81b8d5d835ef9440047e915c888f1e3e7dbfc9908d765575b8f695d",
+    "src": "results/y/progress/oc/boot_187.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_188.npz",
+    "sha256": "1c898dee49785e788e0eae4493be6dfa8fd5fbc51e12356fa71ed30fbf8721cb",
+    "src": "results/y/progress/oc/boot_188.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_189.npz",
+    "sha256": "2560f2520d872b2ccb3acdbe0c7d7439939661cbbf31f6772b0c5a37ee0d79fb",
+    "src": "results/y/progress/oc/boot_189.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_190.npz",
+    "sha256": "8872709b5255ed34ae83710c18b985ea949a42647b40fe64f0bf7aff29f14088",
+    "src": "results/y/progress/oc/boot_190.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_191.npz",
+    "sha256": "e593376eb919f0a1e16b404628cea15169c5b41d1767b31d80049caa6264c240",
+    "src": "results/y/progress/oc/boot_191.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_192.npz",
+    "sha256": "a8e545dcbd8dd58e9ad1d3a386dc07bd9f786e73d2ba3c57bb9715493d2c8a22",
+    "src": "results/y/progress/oc/boot_192.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_193.npz",
+    "sha256": "a40baef7cff62100efbcf4ffed3fdabfbad32534f79a75e74b03df6f2e7bfbcc",
+    "src": "results/y/progress/oc/boot_193.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_194.npz",
+    "sha256": "c4596351cb2b554182a9758ffc07f395ae588905386241dfd0ace5b701c0319c",
+    "src": "results/y/progress/oc/boot_194.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_195.npz",
+    "sha256": "e8153d46f84a2ea693384e94cf3d35fe20e9e41a1fcab7bd3b04d5f3572064ac",
+    "src": "results/y/progress/oc/boot_195.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_196.npz",
+    "sha256": "d61f253f5789b1f93f78cc1708a286741145d94dae170e34adf966d4a2ffa622",
+    "src": "results/y/progress/oc/boot_196.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_197.npz",
+    "sha256": "c7a6986fe7a38d50f756d14341e12f4082615751d483f684f102a2518842633e",
+    "src": "results/y/progress/oc/boot_197.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_198.npz",
+    "sha256": "df93b364fdc75388b8efb37e89730af0d964a9867537d056ef359fe613639b73",
+    "src": "results/y/progress/oc/boot_198.npz"
+   },
+   {
+    "dst": "/Users/jeonsehyeon/flymon-archive/z/y_cells/oc/boot_199.npz",
+    "sha256": "9b1fc61f647202055cb1ce8994620283561aba3586e74d28914635cad9591f8c",
+    "src": "results/y/progress/oc/boot_199.npz"
+   }
+  ]
  }
 }
