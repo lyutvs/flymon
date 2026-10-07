@@ -228,6 +228,11 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   G.6 재계산(기록 전용, 이 지렛대의 다음 설계 입력이 아님): 네 관문 최솟값은 처벌 하락이 묶어 목표 Hedges 3.54 [2.69, 4.53](보정 없음 3.98 [3.02, 5.10]); Y θ̂에서는 여섯 행 모두 첫 설계 F 8 × K 8 · k [4, 8] · p_set 1.0 · q 0.75(1.56 h), 대상 설계 점 검정력 ≥ 0.99; θ_AA(이중 선택)에서는 Hedges 점 행과 두 하한끝 행이 p_set 0.625 / 0.75 · q 0.5이고 상한끝 두 행과 보정 없는 점 행은 `floor`다.
   비교표는 기술 전용이며 M2 상태(판정 없음)와 M3 차단은 그대로다. 주 세트는 이 지렛대 · 이 거름의 확인 출처로서 소비되었다(`untouched` 218 · `trained` 31). 예산 핵심 5.52 h / 12 h(학습 5.14 h — 추정 4.1 h를 넘음), records 0.32 h(G.6 956 s). 사용자 사전 승인(2026-10-06)에 따라 다음 선언 후보를 브레인스토밍 기록에 쓴다(자동 선언 없음).
 - **조합 지렛대 트랙 종료(2026-10-07, 사용자 결정)**: 조합 지렛대(APL→MBON05 2간선 + MBON05→MBON09 · MBON11 · MBON01 11간선 제거)의 트랙을 부록 V(오라클 시험 가능 SELECTED) → W · X · Y · Z(M2 학습 단위 판정, 네 번 모두 판정 전 STOP) → AA(효과 크기 추정, 판정 없음)로 닫는다. M2 상태(판정 없음)와 M3 차단은 그대로다. 다음은 부록 AB brainstorm이다(사용자 위임): M2 학습 단위 판정을 H.5 'POOL 안 확인'으로 다시 세우고, 판정 기준을 결과 전에 고정한 효과 크기 기준으로 바꾸는 스펙 개정을 검토한다.
+- **보정 관문 STOP(2세대 넓힌 풀 M2 학습 단위 판정, 효과 크기 기준, 2026-10-07, 부록 AB.10 — STOP_CALIBRATION〈0e〉, 판정 없음, 2세대 세트 미소비)**: 사용자 결정(C안)에 따라 2세대 상대(번호 152–251, 기본 종 73종)로 만든 새 생성원에서, 조합 지렛대의 M2 학습 단위를 결과 전에 고정한 효과 크기 기준(S1 쌍 평균 Hedges d′의 보정 신뢰 한계가 막대 ±1, 비표준화 대조 ±0.25 z, 유한 마리판, 네 관문 IUT, TS · 두 방향 군집 CG 두 방식)으로 판정하는 AB를 선언했다(이 지렛대에 한한 G.6 · F.5 개정, POOL 안 확인 아님). 레드팀(외부 모델 두 번, 둘 다 RETHINK) 뒤 측정 전 보정 관문(0e)을, 사용자 지시로 가망 관문(0f)을 더했다.
+  0a(시험 1002 통과 — Stage I 시험만, `bench` 0.099 s/rep, AA 차등 48/48 비트 동일), 0b 재사용(`lv_odour` 108냄새), 0c 생성(KC 전 209행, 선언값 재현, 측정 없음), 0d 봉인(`dc23b394`)을 거쳐 0e 보정 관문(대표 구조 g 5 · 6 · 7, 칸 24, 선택 5 000 · 검증 10 000회, CP 97.5% 상한)에서 멈췄다.
+  g 5(PASS 쪽 α D 0.0005 · D_fin 0.0005 · R 0.00025, FAIL 쪽 0.00005)와 g 6(0.0001 · 0.0001 · 0.0001, FAIL 쪽 0.00002)은 검증을 통과했고, g 7은 D · D_fin이 α 0.0001에서 통과했지만 **R이 격자 끝 α 0.0001의 검증에서 칸 19(왼쪽으로 치우친 X 라벨 묶음 효과, SD 2)의 동시 놓침 225/10 000, CP 상한 0.0256 > 0.025**로 막혔다(선택 단계는 98/5 000 · 0.0238로 통과). g 7 FAIL 쪽은 격자 끝에서도 닿지 않았다(기록). 합성 검증은 g 7 PASS 쪽 셋이 다 검증되지 않아 돌지 않았다.
+  0f(가망 관문)와 순서 3 이후는 돌지 않았다 — P̂ · 기록 격자 없음; 2세대 행은 어떤 값도 측정되지 않았고 후보 원장은 모두 0(AB 세트 미소비). 순서 3–10 코드는 단계별 구축으로 만들어지지 않았다(공개). 선언 시점 지표 P̂(스크래치, g 6 α 0.001 0.198 … 0.0001 0.002)는 어떤 결정에도 쓰지 않았고 AB.10에 처음 공개했다. 예산 핵심 1.85 h / 24 h(0e 1.84 h; 0e 전 예약 20.562 h).
+  기록 메모: 끝낸 것은 2세대 자료가 아니라 설계의 거짓 PASS 통제와 예상 S1 구조(g 7 · 치우친 묶음 칸)의 충돌이다. M2 상태(판정 없음)와 M3 차단은 그대로이고, H.5 · POOL 홀수 턴 (a) · M4 세트는 손대지 않았다. AB.9 닫힘 규칙에 따라 **이 지렛대의 M2 판정 트랙은 닫힌다** — 다음은 사용자 결정이다(트랙 끝냄이 기본값, 2세대 생성원은 새 사용자 결정의 미래 선언 출처로 남음).
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -460,6 +465,30 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   (G.6 956 s). Per the standing approval, next-declaration candidates go to the brainstorm record (no automatic
   declaration).
 - **Combined-lever track closed (2026-10-07, user decision).** The combined lever (APL->MBON05 2 edges + MBON05->MBON09 / MBON11 / MBON01 11 edges removed) is closed after appendix V (oracle-testable SELECTED), W / X / Y / Z (M2 learning-unit judgement, all four stopped before a judgement) and AA (effect-size estimate, no judgement). The M2 status (no judgement) and the M3 block are unchanged. Next is the appendix AB brainstorm (delegated by the user): re-establish the M2 learning-unit judgement as the H.5 'in-POOL confirmation', and review a spec amendment that replaces the G.6 bootstrap OC with an effect-size criterion fixed before results.
+- **Gen-2 widened-pool M2 learning-unit judgement (effect-size criterion): calibration-gate stop STOP_CALIBRATION
+  at 0e, no judgement, Gen-2 set unused (2026-10-07, appendix AB.10).** After the user chose option C, AB declared a
+  judgement of the combined lever's M2 learning unit on a new pair generator with Gen-2 opponents (dex 152-251, 73
+  base species), with an effect-size criterion fixed before results (calibrated limits of the S1 pair-mean Hedges d'
+  beyond the +/-1 bar, unstandardized contrasts beyond +/-0.25 z, a finite-fly version, all four gates by IUT, two
+  methods: two-stage bootstrap and two-way cluster-robust CG); a G.6 / F.5 amendment for this lever only, not an
+  in-POOL confirmation. After the red team (two external models, both RETHINK) a pre-measurement calibration gate
+  (0e) was added, and by user instruction a futility gate (0f). Order 0a (1002 tests pass, Stage I tests only; bench
+  0.099 s/rep; AA differential 48/48 bit-equal), 0b reuse (lv_odour 108 odours), 0c generate (209 KC-pre rows,
+  declared values reproduced, no measurement) and 0d seal (`dc23b394`) passed; 0e (representative structures g 5 / 6
+  / 7, 24 cells, 5 000 selection / 10 000 verification reps, CP 97.5 % bound) stopped AB. g 5 (PASS-side alpha D
+  0.0005, D_fin 0.0005, R 0.00025; FAIL side 0.00005) and g 6 (0.0001 / 0.0001 / 0.0001; FAIL side 0.00002)
+  verified; at g 7, D and D_fin verified at alpha 0.0001, but **R failed verification at the grid end alpha 0.0001 in
+  cell 19 (left-skewed X-label group effect, SD 2): joint miss 225/10 000, CP bound 0.0256 > 0.025** (selection had
+  passed at 98/5 000, 0.0238). The g 7 FAIL side was unreached even at the grid end (record). The synthetic
+  validation did not run (not all three g 7 PASS-side levels verified). 0f and orders 3 onward never ran: no P-hat,
+  no record grid; no Gen-2 row was ever measured and every candidate count is 0 (AB set unused). Orders 3-10 code was
+  never built (staged build, disclosed). An indicative pre-registration P-hat (scratch, g 6: 0.198 at alpha 0.001 ...
+  0.002 at alpha 0.0001) was used for no decision and is first disclosed in AB.10. Budget 1.85 h core of 24 h (0e
+  1.84 h; pre-0e reservation 20.562 h). Record note: what ended AB is the design's false-PASS control against the
+  expected S1 structure (g 7 with the skewed group cell), not the Gen-2 data. The M2 status (no judgement) and the M3
+  block are unchanged; H.5, the POOL odd-turn (a) set and the M4 set are untouched. By the AB.9 closure rule **this
+  lever's M2 judgement track is closed**; next is the user's decision (ending the track is the default; the Gen-2
+  generator remains a source for a future declaration under a new user decision).
 
 ## 실행
 
