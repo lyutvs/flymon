@@ -280,7 +280,7 @@ def _complete(ck, sched) -> bool:
 
 
 async def run_block(sched, store, logs_dir, attempt, swarm_state, retry_max, *, block, snapshot=None, rollback=None,
-                    after=None, stop_after=None) -> dict:
+                    after=None, stop_after=None, should_stop=None) -> dict:
     """run_cohort over one block. attempt(sb, n) plays attempt n (0 = first) of a battle and returns a dict with
     finished / won / ...; snapshot(sb) is taken before the first attempt, rollback(sb, snap, n, res) undoes an
     unfinished attempt, after(sb, res) runs once the battle is settled (before the commit)."""
@@ -314,7 +314,8 @@ async def run_block(sched, store, logs_dir, attempt, swarm_state, retry_max, *, 
             after(sb, rec)
         append_jsonl(logs_dir / "battles.jsonl", rec)
 
-    return await run_cohort(sched, store, logs_dir, play_one, swarm_state, stop_after=stop_after)
+    return await run_cohort(sched, store, logs_dir, play_one, swarm_state, stop_after=stop_after,
+                            should_stop=should_stop)
 
 
 def _nobrain_state(n_flies):
@@ -323,11 +324,13 @@ def _nobrain_state(n_flies):
 
 async def run_arm(out, *, eval_, attempt_for, cfg_hash: str, retry_max: int, resume: bool, n_flies: int,
                   learn=None, pool=None, swarm=None, yoke: YokeBook | None = None, reset_player=None,
-                  stop_after=None, on_block_end=None) -> dict:
+                  stop_after=None, on_block_end=None, after_battle=None, should_stop=None) -> dict:
     """Learning block (if `learn`), then enter_eval and the evaluation block. attempt_for(block) -> attempt(sb, n);
     reset_player(block, fly) drops a player's undelivered pulses after an unfinished attempt; on_block_end(block) is
     awaited after each block's cohort (the players log out). Returns
-    {complete, played, before, after}: per-fly weight sha256 entering and leaving the eval block (brain arms)."""
+    {complete, played, before, after}: per-fly weight sha256 entering and leaving the eval block (brain arms).
+    after_battle(block, sb, rec) runs once per settled battle, before its commit; should_stop() is asked at every battle
+    start and before the evaluation block (a session cap)."""
     out = Path(out)
     stores = {"E": CheckpointStore(out / "checkpoints" / "eval", cfg_hash)}
     if learn:
@@ -359,12 +362,14 @@ async def run_arm(out, *, eval_, attempt_for, cfg_hash: str, retry_max: int, res
         def after(sb, rec):
             if yoke and block == "L":
                 yoke.record(sb.fly_id, sb.battle_id)
+            if after_battle is not None:
+                after_battle(block, sb, rec)                # AC: fly-level INVALID, situation-pair evaluation
         return after
 
     async def block_run(block, sched, logs_dir):
         r = await run_block(sched, stores[block], logs_dir, attempt_for(block), state_fn, retry_max, block=block,
                             snapshot=snapshot_for(block), rollback=rollback_for(block), after=after_for(block),
-                            stop_after=budget["left"])
+                            stop_after=budget["left"], should_stop=should_stop)
         played[block] = r["played"]
         if on_block_end is not None:
             await on_block_end(block)
@@ -394,6 +399,8 @@ async def run_arm(out, *, eval_, attempt_for, cfg_hash: str, retry_max: int, res
         if cks["E"]:
             pool.load_state(cks["E"]["pool_state"])
         enter_eval(swarm, pool)
+    if should_stop is not None and should_stop() and not _complete(cks["E"], eval_):
+        return dict(complete=False, played=played, before=before, after={})
     if budget["left"] is not None and budget["left"] <= 0 and not _complete(cks["E"], eval_):
         return dict(complete=False, played=played, before=before, after={})
     eck = await block_run("E", eval_, out / "logs" / "eval")

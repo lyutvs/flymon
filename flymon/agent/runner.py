@@ -9,7 +9,8 @@ caller's resume load) and, after fly F's battle, replaces only entry F.
 
 stop_after reserves its budget when a battle starts, so exactly N battles are played even with concurrent flies.
 A checkpoint that cannot be used (every generation fails its checksum, or a config-hash mismatch) raises ValueError
-from store.load(); that is fatal, never a fresh start."""
+from store.load(); that is fatal, never a fresh start.
+should_stop() is asked when a battle would start (before stop_after reserves); True ends that fly's loop."""
 from __future__ import annotations
 
 import asyncio
@@ -25,7 +26,7 @@ def _entry(f: dict) -> dict:
     return dict(f, w=np.array(f["w"], np.float32, copy=True))
 
 
-async def run_cohort(sched, store, logs_dir, play_one, swarm_state, stop_after: int | None = None) -> dict:
+async def run_cohort(sched, store, logs_dir, play_one, swarm_state, stop_after: int | None = None, should_stop=None) -> dict:
     logs_dir = Path(logs_dir); logs_dir.mkdir(parents=True, exist_ok=True)
     ck = store.load()   # before any commit: commit() builds on the generation load() returned; ValueError propagates
     done = set(ck["completed"]) if ck else set()
@@ -42,6 +43,8 @@ async def run_cohort(sched, store, logs_dir, play_one, swarm_state, stop_after: 
             if sb.battle_id in done:
                 continue
             async with lock:
+                if should_stop is not None and should_stop():
+                    return                                  # a session cap (AC.6): nothing started, nothing reserved
                 if budget["left"] is not None:
                     if budget["left"] <= 0:
                         return
