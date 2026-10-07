@@ -84,7 +84,8 @@ class ACSpec:
         return max(n for _, n in self.brain_arms)
 
     def eval_rows(self) -> int:
-        return max(n for _, n in self.brain_arms + self.nobrain_arms)
+        # controller ruling (AC.4): ONE evaluation schedule of eval_battles battles, played by every fly of every arm
+        return 1
 
     def seeds(self) -> dict:
         return {"gen": self.gen_seed, "learn": self.learn_seed, "eval": self.eval_seed, "boot": self.boot_seed,

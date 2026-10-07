@@ -25,14 +25,22 @@ def guard(path) -> Path:
     return Path(path)
 
 
+def _json_default(o):
+    """numpy scalars -> the matching Python scalar (int stays int, bool stays bool); anything else is an error."""
+    item = getattr(o, "item", None)
+    if callable(item) and getattr(o, "shape", None) == ():
+        return item()
+    raise TypeError(f"not JSON serialisable: {type(o).__name__}")
+
+
 def write_json(path, obj) -> Path:
     p = guard(path)
-    _atomic_write(p, json.dumps(obj, sort_keys=True, indent=1, default=float).encode())
+    _atomic_write(p, json.dumps(obj, sort_keys=True, indent=1, default=_json_default).encode())
     return p
 
 
 def digest(obj) -> str:
-    return hashlib.sha256(json.dumps(obj, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    return hashlib.sha256(json.dumps(obj, sort_keys=True, separators=(",", ":"), default=_json_default).encode()).hexdigest()
 
 
 def sha256_file(path) -> str:

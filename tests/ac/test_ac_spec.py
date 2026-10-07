@@ -15,7 +15,7 @@ def test_arms_seeds_and_thresholds():
     assert SPEC.seeds() == {"gen": 301, "learn": 302, "eval": 303, "boot": 304, "tie": 305}
     assert (SPEC.learn_battles, SPEC.eval_battles, SPEC.sit_points) == (40, 20, (0, 10, 20, 30, 40))
     assert (SPEC.n_pairs, SPEC.boot_draws, SPEC.min_effect) == (20, 10_000, 0.15)
-    assert (SPEC.learn_rows(), SPEC.eval_rows()) == (12, 16)
+    assert (SPEC.learn_rows(), SPEC.eval_rows()) == (12, 1)
     assert SPEC.lever_edit == "u_apl_mbon05_x0.0+chain_entry"
     assert SPEC.lever_sha == "2d359b8b6947d542348b658db977e1edbe0db5919e7f4b1187598cb10ef1253a"
     assert (SPEC.strength, SPEC.a_type, SPEC.p_type, SPEC.codebook_config) == (1.0, "MBON13", "MBON05", "k2-norm")
@@ -65,3 +65,15 @@ def test_write_json_and_digest(tmp_path, monkeypatch):
 def test_spec_is_frozen():
     with pytest.raises(dataclasses.FrozenInstanceError):
         SPEC.n_pairs = 3
+
+
+def test_json_default_keeps_numpy_scalar_types(tmp_path, monkeypatch):
+    np = pytest.importorskip("numpy")
+    monkeypatch.chdir(tmp_path)
+    obj = {"i": np.int64(3), "f": np.float64(0.5), "b": np.bool_(True)}
+    p = store.write_json("results/m4/n.json", obj)
+    back = json.loads(p.read_text())
+    assert back == {"i": 3, "f": 0.5, "b": True} and type(back["i"]) is int
+    assert store.digest(obj) == store.digest({"i": 3, "f": 0.5, "b": True})
+    with pytest.raises(TypeError):
+        store.digest({"x": object()})
