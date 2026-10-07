@@ -31,3 +31,13 @@ def choose(v, tau_value: float, seed: int, mode: str) -> int:
     x = (v - v.max()) / float(tau_value)
     p = np.exp(x) / np.exp(x).sum()
     return int(np.random.default_rng(int(seed)).choice(len(v), p=p))
+
+
+def argmax_tiebreak(v, seed: int) -> tuple:
+    """Spec AC.2: argmax, with a tie (two or more candidates at the maximum V) broken uniformly at random from `seed`;
+    returns (index, tied). No state is kept between calls."""
+    v = np.asarray(v, float)
+    top = np.flatnonzero(v == v.max())
+    if top.size == 1:
+        return int(top[0]), False
+    return int(np.random.default_rng(int(seed)).choice(top)), True

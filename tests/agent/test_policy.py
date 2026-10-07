@@ -48,3 +48,14 @@ def test_derive_seed_is_deterministic_and_part_sensitive():
 def test_bad_mode_raises():
     with pytest.raises(ValueError):
         policy.choose(np.zeros(2), 1.0, seed=0, mode="greedy")
+
+
+def test_argmax_tiebreak_without_a_tie_is_argmax():
+    assert policy.argmax_tiebreak([0.1, 0.5, 0.2], seed=1) == (1, False)
+
+
+def test_argmax_tiebreak_is_seeded_uniform_and_flags_the_tie():
+    v = [0.3, 0.7, 0.7, 0.1]
+    assert {policy.argmax_tiebreak(v, seed=s)[0] for s in range(64)} == {1, 2}
+    assert all(policy.argmax_tiebreak(v, seed=s)[1] for s in range(8))
+    assert policy.argmax_tiebreak(v, seed=5) == policy.argmax_tiebreak(v, seed=5)
