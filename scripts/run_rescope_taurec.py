@@ -23,7 +23,8 @@ under superseded_rule_v1. Run it only after the grid run has exited (the grid ru
 
 --lv (spec AC.7 2a): the same grid, pulses, sampling and amended rule on the L_V brain (LeverFlyPool, LEVER_V) with
 E-grid k2-norm odours (taurec.synthetic_grid_odours) at strength 1.0; writes results/rescope/taurec_lv/ and
-results/summary/rescope_taurec_lv.json (with lever_edit, lever_sha, codebook_digest).
+results/summary/rescope_taurec_lv.json (with lever_edit, lever_sha, codebook_digest); every --lv output (summary,
+r_<value>.json, --reselect --lv summary) carries AC.5's label (flymon.ac.spec.LABEL).
 """
 from __future__ import annotations
 
@@ -61,6 +62,14 @@ def lv_setup(a) -> tuple:
 
 def carry_keys(lv: bool) -> tuple:
     return CARRY_KEYS + (LV_KEYS if lv else ())
+
+
+def lv_label(lv: bool) -> dict:
+    """{"label": AC.5's LABEL} on every --lv output (summary, r_<value>.json, --reselect summary); {} otherwise."""
+    if not lv:
+        return {}
+    from flymon.ac.spec import LABEL
+    return {"label": LABEL}
 
 
 def smoke_spec(spec=SPEC):
@@ -133,14 +142,15 @@ def main(argv=None) -> int:
     with make_pool(cfg.params, [FlySpec()], 1) as pool:
         mask, n_active = taurec.taught_mask(pool, odours[0], spec)
         lever = (dict(lever_edit=AC.lever_edit, lever_sha=pool.lever_sha(), codebook_digest=lv_codebook()[1],
-                      encoder="E-grid k2-norm", strength=spec.strength) if a.lv else {})
+                      encoder="E-grid k2-norm", strength=spec.strength, **lv_label(True)) if a.lv else {})
     log(f"taught edges {int(mask.sum())} (active KCs {n_active})")
     results, gp = {}, [cfg.params]
     for r in spec.recovery_grid:
         params = dataclasses.replace(cfg.params, recovery_per_pulse=float(r))
         with make_pool(params, [FlySpec(), FlySpec()], 2) as pool:
             results[float(r)] = taurec.trajectory(pool, odours, plan, spec, mask)
-        write_json(out / f"r_{r}.json", dict(recovery_per_pulse=float(r), trajectory=results[float(r)]), gp)
+        write_json(out / f"r_{r}.json", dict(recovery_per_pulse=float(r), trajectory=results[float(r)],
+                                             **lv_label(a.lv)), gp)
         log(f"r={r}: alt path min {min(results[float(r)]['alt']['ratio']):.3f}, "
             f"same path min {min(results[float(r)]['same']['ratio']):.3f}")
     sel = taurec.select(results, spec)
@@ -186,7 +196,7 @@ def reselect(out: Path, summary: Path, spec, smoke: bool, git: dict, argv: list,
         superseded = None
     sel = taurec.select(results, spec)
     summ = dict(sel, superseded_rule_v1=superseded, trajectories={str(r): t for r, t in results.items()},
-                **{k: (old or {}).get(k) for k in carry_keys(lv)}, smoke=smoke, spec=dataclasses.asdict(spec),
+                **{k: (old or {}).get(k) for k in carry_keys(lv)}, **lv_label(lv), smoke=smoke, spec=dataclasses.asdict(spec),
                 provenance=dict(git=git, argv=argv, reselect=True, per_r_sha256=sha, source_dir=out.as_posix(),
                                 finished_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
     write_json(summary, summ, [load_c3_config().params])
