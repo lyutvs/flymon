@@ -68,3 +68,40 @@ def test_script_writes_labelled_budget_and_exit_codes(tmp_path, monkeypatch):
     assert mod.main(["--bench", str(b)]) == 2
     with pytest.raises(SystemExit):
         mod.main(["--bench", str(tmp_path / "missing.json")])
+
+
+def test_a_killed_session_is_closed_and_charged_before_the_next(tmp_path, monkeypatch):
+    import os
+    monkeypatch.chdir(tmp_path)
+    out = tmp_path / "results/m4/stage1/BRAIN"
+    assert budget.close_stale(out) == 0                          # no wall_clock.json yet: nothing to close
+    budget.open_session(out, 1000.0)                             # hard-killed: never closed
+    budget.open_session(out, 5000.0)                             # a second session, also hard-killed
+    ck = out / "checkpoints/learn/ck.json"
+    ck.parent.mkdir(parents=True)
+    ck.write_text("{}")
+    os.utime(ck, (1600.0, 1600.0))
+    lg = out / "logs/eval/fly00.jsonl"
+    lg.parent.mkdir(parents=True)
+    lg.write_text("")
+    os.utime(lg, (5250.0, 5250.0))
+    (out / "unrelated.txt").write_text("")                       # only checkpoints/ and logs/ count
+    assert budget.close_stale(out) == 2
+    d = json.loads((out / "wall_clock.json").read_text())
+    assert [s["status"] for s in d["sessions"]] == ["killed", "killed"]
+    # session 0 is charged up to the next session's start at most; session 1 up to the latest mtime
+    assert d["sessions"][0]["seconds"] == pytest.approx(4000.0) and d["sessions"][1]["seconds"] == pytest.approx(250.0)
+    assert d["label"] == LABEL and budget.close_stale(out) == 0
+    assert budget.spent_s("results/m4/stage1") == pytest.approx(4250.0)
+    i = budget.open_session(out, 9000.0)
+    budget.close_session(out, i, 9000.0, "ok", None)
+    assert budget.close_stale(out) == 0
+
+
+def test_a_killed_session_without_files_is_charged_zero(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    out = tmp_path / "results/m4/stage1/RND"
+    budget.open_session(out, 1000.0)
+    assert budget.close_stale(out) == 1
+    s = json.loads((out / "wall_clock.json").read_text())["sessions"][0]
+    assert s["status"] == "killed" and s["seconds"] == 0.0

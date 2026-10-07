@@ -3,7 +3,9 @@ benchmark's s/batch-battle (24 flies, 16 workers, 2 battles, AC.7 2b) and rescop
 batch count (learn 40 + eval 20), plus the serial situation evaluations (benchmark s/fly x 96), times 1.3; above 48 h
 is STOP_BUDGET (no reduced path: battle 40 defines criterion 1). Each session is capped at min(24 h, 60 h minus
 every stage-1 session so far, aborted ones included); a resume reserves nothing again. Sessions are kept per arm in
-<out>/wall_clock.json (rescope's format, plus the AC.5 label)."""
+<out>/wall_clock.json (rescope's format, plus the AC.5 label). A session hard-killed before its own close (SIGKILL, OOM)
+is left "running"; close_stale() closes it as "killed" before the next session opens, charged from its start to the
+latest mtime under <out>/checkpoints or <out>/logs (at most the next session's start; 0 if no file)."""
 from __future__ import annotations
 
 import datetime as dt
@@ -68,3 +70,30 @@ def close_session(out, idx: int, t0: float, status: str, run) -> float:
                               complete=None if run is None else bool(run["complete"]))
     write_json(p, d)
     return round(sum(x["seconds"] for x in d["sessions"] if x.get("seconds") is not None), 2)
+
+
+def close_stale(out) -> int:
+    """Close every session of `out` still "running" (a hard-killed one) as "killed"; returns how many were closed."""
+    out = Path(out)
+    p = out / "wall_clock.json"
+    if not p.exists():
+        return 0
+    d = json.loads(p.read_text())
+    mtimes = [f.stat().st_mtime for sub in ("checkpoints", "logs") for f in (out / sub).rglob("*") if f.is_file()]
+    last = max(mtimes, default=None)
+    starts = [dt.datetime.fromisoformat(s["started_utc"]).timestamp() for s in d["sessions"]]
+    n = 0
+    for i, s in enumerate(d["sessions"]):
+        if s.get("status") != "running":
+            continue
+        end = last if last is not None else starts[i]
+        if i + 1 < len(starts):
+            end = min(end, starts[i + 1])
+        sec = max(0.0, end - starts[i])
+        s.update(status="killed", seconds=round(sec, 2),
+                 ended_utc=dt.datetime.fromtimestamp(starts[i] + sec, dt.timezone.utc).isoformat())
+        n += 1
+    if n:
+        d["label"] = LABEL
+        write_json(p, d)
+    return n
