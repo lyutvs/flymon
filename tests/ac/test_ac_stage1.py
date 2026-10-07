@@ -116,3 +116,38 @@ def test_coff_rows_when_frozen(tmp_path):
                                w0_sha=blocks.weights_sha(pool.w0[None]))
     assert rows[2]["coff_weights_unchanged"] is True and not any(r["invalid"] for r in rows)
     assert [(r["arm"], r["k"]) for r in rows] == LAY
+
+
+def test_all_brain_flies_share_the_evaluation_teams():
+    _, ev = stage1.brain_schedules(S, DOC)
+    t = lambda sched, g: [(s.my_team, s.opp_team, s.opponent) for s in sched if s.fly_id == g]
+    assert len(t(ev, 0)) == S.eval_battles
+    assert t(ev, 0) == t(ev, 1) == t(ev, 2) == t(ev, 3)          # FLY 0, FLY 1, C-off 0, TB 0: one schedule (AC.4)
+    full = stage1.brain_schedules(SPEC, {"learn": blocks.schedule_rows(schedules.learn_canonical(SPEC)),
+                                         "eval": blocks.schedule_rows(schedules.eval_canonical(SPEC))})[1]
+    assert all(t(full, g) == t(full, 0) for g in range(SPEC.n_brain())) and len(t(full, 0)) == 20
+
+
+def test_flies_skipped_because_their_arm_stopped_are_not_battle_failures(tmp_path):
+    book, log, hooks, pool = setup(tmp_path)
+    learn, ev = stage1.brain_schedules(S, DOC)
+    fail = {("SL-f01-b000", i) for i in range(S.retry_max + 1)}
+    run, _ = go(tmp_path, book, log, hooks, pool, learn, ev, fail=fail)
+    assert book.invalid[1].startswith("SL-f01-b000: unfinished after")
+    assert book.invalid[0] == "arm_stopped"                       # FLY stopped (STOP_INFRA): fly 0 was only skipped
+    assert book.stopped["FLY"]["n_invalid"] == 1
+    rows = stage1.per_fly_rows(tmp_path, LAY, eval_=ev, learn=learn, run=run, book=book,
+                               w0_sha=blocks.weights_sha(pool.w0[None]))
+    assert rows[0]["invalid"] and rows[0]["invalid_reason"] == "arm_stopped"
+    assert rows[1]["invalid_reason"].startswith("SL-f01-b000")
+
+
+def test_after_battle_on_a_stopped_arm_marks_arm_stopped(tmp_path):
+    book, log, hooks, _ = setup(tmp_path)
+    book.stopped["FLY"] = dict(status="STOP_INFRA")
+    sb = stage1.brain_schedules(S, DOC)[0][0]
+    assert sb.fly_id == 0 and book.skip(0)
+    hooks.after_battle("L", sb, dict(invalid=True, retries=S.retry_max))
+    assert book.invalid == {0: "arm_stopped"}
+    hooks.after_battle("L", sb, dict(invalid=True, retries=S.retry_max))
+    assert book.invalid == {0: "arm_stopped"}                     # an already-invalid fly keeps its first reason

@@ -8,7 +8,8 @@ and stopped arms, the situation-pair evaluations (each record carries LABEL, AC.
   point - 1 settles and before that battle's checkpoint commit, into logs/situations.jsonl keyed by that battle id; a
   resume filters the file to committed battles first, so an evaluation whose battle was not committed is redone.
   C-off is evaluated at 0 only (AC.2: it is deterministic; no column is duplicated).
-- An invalid battle (retries exhausted, or a skipped one) marks its fly in the InvalidBook (AC.8)."""
+- An invalid battle (retries exhausted) marks its fly in the InvalidBook (AC.8); a battle skipped only because the
+  fly's arm already stopped (STOP_INFRA) marks it with the distinct reason "arm_stopped", not a battle failure."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -97,7 +98,10 @@ class Stage1Hooks:
     def after_battle(self, block: str, sb, rec: dict) -> None:
         g = int(sb.fly_id)
         if rec["invalid"]:
-            self.book.mark(g, f"{sb.battle_id}: unfinished after {rec['retries']} retries (or skipped)")
+            # a fly skipped only because its arm already stopped (STOP_INFRA) is not a battle failure; an already
+            # INVALID fly keeps its first reason (mark is a no-op)
+            self.book.mark(g, "arm_stopped" if self.book.skip(g) else
+                           f"{sb.battle_id}: unfinished after {rec['retries']} retries")
             return
         if block != "L" or self.book.skip(g) or self.lay[g][0] == "COFF":
             return
