@@ -38,6 +38,21 @@ def synthetic_odours(pops, n: int, seed: int) -> list:
     return out
 
 
+def synthetic_grid_odours(enc, n: int, seed: int) -> list:
+    """Spec AC.2 / AC.7 2a (tau_rec on L_V): n E-grid odours - my / opponent species drawn from POOL (with
+    replacement) and one of my attacks, from one generator seeded `seed` (synthetic_odours' draw order without its hp
+    draws: an E-grid odour carries no HP); odour = encode_grid.odour(move type, sorted opponent types, enc's rule)."""
+    from ..agent import encode_grid as eg
+    rng, out = np.random.default_rng(seed), []
+    for _ in range(n):
+        me, opp = rng.choice(len(POOL), 2, replace=True)
+        mon = POOL[int(me)]
+        move = mon.attacks[int(rng.integers(len(mon.attacks)))]
+        out.append(eg.odour(enc.rc, enc.cb, enc.move_info[move][0],
+                            tuple(sorted(enc.species_types[POOL[int(opp)].species])), enc.rule))
+    return out
+
+
 def pulse_plan(spec) -> list:
     """[(dan, pulse_ms)] of length taurec_pulses, alternating reward / punish, starting with reward."""
     one = [(spec.reward_dan, float(spec.taurec_reward_ms)), (spec.punish_dan, float(spec.taurec_punish_ms))]

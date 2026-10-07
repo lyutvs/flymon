@@ -20,6 +20,10 @@ results/rescope-smoke/ only.
 median_floor and alt floor_frac_taught path max <= taurec_taught_floor_max) and rewrites the summary with
 rule "10.6 amendment 2026-09-28", the per-r files' sha256, and the previous old-rule summary's selection (if one exists)
 under superseded_rule_v1. Run it only after the grid run has exited (the grid run writes its own summary at the end).
+
+--lv (spec AC.7 2a): the same grid, pulses, sampling and amended rule on the L_V brain (LeverFlyPool, LEVER_V) with
+E-grid k2-norm odours (taurec.synthetic_grid_odours) at strength 1.0; writes results/rescope/taurec_lv/ and
+results/summary/rescope_taurec_lv.json (with lever_edit, lever_sha, codebook_digest).
 """
 from __future__ import annotations
 
@@ -38,6 +42,25 @@ from flymon.rescope.store import git_provenance, guard, write_json
 
 STAGE = "taurec"
 POOL_TIMEOUT_S = 1800
+DEFAULT_OUT = "results/rescope/taurec"
+LV_OUT = "results/rescope/taurec_lv"
+LV_KEYS = ("lever_edit", "lever_sha", "codebook_digest", "encoder", "strength")
+
+
+def lv_setup(a) -> tuple:
+    """(spec, stage): --lv (spec AC.2, AC.7 2a) keeps the grid, pulses, sampling and rule and changes the strength to
+    E-grid's 1.0, the stage name to taurec_lv and the default --out to results/rescope/taurec_lv."""
+    spec = smoke_spec() if a.smoke else SPEC
+    if not a.lv:
+        return spec, STAGE
+    from flymon.ac.spec import SPEC as AC
+    if a.out == DEFAULT_OUT:
+        a.out = LV_OUT
+    return dataclasses.replace(spec, strength=AC.strength), "taurec_lv"
+
+
+def carry_keys(lv: bool) -> tuple:
+    return CARRY_KEYS + (LV_KEYS if lv else ())
 
 
 def smoke_spec(spec=SPEC):
@@ -58,21 +81,26 @@ def paths(out: str, smoke: bool, stage: str = STAGE) -> tuple:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--npz", default="data/malecns.npz")
-    ap.add_argument("--out", default="results/rescope/taurec")
+    ap.add_argument("--out", default=DEFAULT_OUT)
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--allow-dirty", action="store_true")
     ap.add_argument("--reselect", action="store_true",
                     help="re-apply the amended selection (spec 10.6, 2026-09-28) to the per-r files; no trajectories")
+    ap.add_argument("--lv", action="store_true",
+                    help="spec AC.7 2a: the L_V brain (LEVER_V on a LeverFlyPool), E-grid k2-norm odours, strength 1.0")
     a = ap.parse_args(argv)
-    spec = smoke_spec() if a.smoke else SPEC
-    out, summary = paths(a.out, a.smoke)
+    spec, stage = lv_setup(a)
+    out, summary = paths(a.out, a.smoke, stage)
     guard(out / "x.json", [Params()])
     guard(summary, [Params()])
-    git = git_provenance(files=sorted(glob.glob("flymon/rescope/*.py")) + ["scripts/run_rescope_taurec.py"])
+    files = sorted(glob.glob("flymon/rescope/*.py")) + ["scripts/run_rescope_taurec.py"]
+    if a.lv:
+        files += sorted(glob.glob("flymon/ac/*.py")) + ["flymon/brain/lv_pool.py"]
+    git = git_provenance(files=files)
     if git["dirty"] and not a.allow_dirty:
         raise SystemExit(f"refusing: uncommitted changes in {git['dirty_files']} (commit them or pass --allow-dirty)")
     if a.reselect:
-        return reselect(out, summary, spec, a.smoke, git, list(sys.argv[1:] if argv is None else argv))
+        return reselect(out, summary, spec, a.smoke, git, list(sys.argv[1:] if argv is None else argv), lv=a.lv)
 
     from flymon.agent.config import load_c3_config
     from flymon.brain.circuits import Populations
@@ -80,20 +108,37 @@ def main(argv=None) -> int:
     from flymon.brain.fly_pool import FlyPool, FlySpec
     from flymon.rescope import taurec
 
-    cfg = load_c3_config()
-    pops = Populations.from_connectome(Connectome.load(a.npz))
-    odours = taurec.synthetic_odours(pops, spec.taurec_odours, spec.taurec_gen_seed)
+    if a.lv:
+        from flymon.ac.config import grid_encoder, load_lv_config, lv_codebook
+        from flymon.ac.spec import SPEC as AC
+        from flymon.brain.lv_pool import LeverFlyPool
+        cfg = load_lv_config(0.0)
+        pops = Populations.from_connectome(Connectome.load(a.npz))
+        odours = taurec.synthetic_grid_odours(grid_encoder(pops), spec.taurec_odours, spec.taurec_gen_seed)
+
+        def make_pool(params, flies, workers):
+            return LeverFlyPool(a.npz, params, flies, edit=AC.lever_edit, p_type=AC.p_type, workers=workers,
+                                timeout_s=POOL_TIMEOUT_S)
+    else:
+        cfg = load_c3_config()
+        pops = Populations.from_connectome(Connectome.load(a.npz))
+        odours = taurec.synthetic_odours(pops, spec.taurec_odours, spec.taurec_gen_seed)
+
+        def make_pool(params, flies, workers):
+            return FlyPool(a.npz, params, flies, workers=workers, timeout_s=POOL_TIMEOUT_S)
     plan = taurec.pulse_plan(spec)
     started = dt.datetime.now(dt.timezone.utc).isoformat()
     prov = dict(git=git, started_utc=started, argv=list(sys.argv[1:] if argv is None else argv), npz=a.npz)
     log = lambda s: print(s, flush=True)
-    with FlyPool(a.npz, cfg.params, [FlySpec()], workers=1, timeout_s=POOL_TIMEOUT_S) as pool:
+    with make_pool(cfg.params, [FlySpec()], 1) as pool:
         mask, n_active = taurec.taught_mask(pool, odours[0], spec)
+        lever = (dict(lever_edit=AC.lever_edit, lever_sha=pool.lever_sha(), codebook_digest=lv_codebook()[1],
+                      encoder="E-grid k2-norm", strength=spec.strength) if a.lv else {})
     log(f"taught edges {int(mask.sum())} (active KCs {n_active})")
     results, gp = {}, [cfg.params]
     for r in spec.recovery_grid:
         params = dataclasses.replace(cfg.params, recovery_per_pulse=float(r))
-        with FlyPool(a.npz, params, [FlySpec(), FlySpec()], workers=2, timeout_s=POOL_TIMEOUT_S) as pool:
+        with make_pool(params, [FlySpec(), FlySpec()], 2) as pool:
             results[float(r)] = taurec.trajectory(pool, odours, plan, spec, mask)
         write_json(out / f"r_{r}.json", dict(recovery_per_pulse=float(r), trajectory=results[float(r)]), gp)
         log(f"r={r}: alt path min {min(results[float(r)]['alt']['ratio']):.3f}, "
@@ -101,7 +146,7 @@ def main(argv=None) -> int:
     sel = taurec.select(results, spec)
     summ = dict(sel, trajectories={str(r): t for r, t in results.items()}, odours_seed=spec.taurec_gen_seed,
                 n_taught_edges=int(mask.sum()), n_active_kc=n_active, smoke=a.smoke, spec=dataclasses.asdict(spec),
-                provenance=dict(prov, finished_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
+                provenance=dict(prov, finished_utc=dt.datetime.now(dt.timezone.utc).isoformat()), **lever)
     write_json(summary, summ, gp)
     log(f"{sel['recovery_per_pulse'] if sel['status'] == 'SELECTED' else sel['status']}; wrote {summary}")
     return 0
@@ -127,7 +172,7 @@ def load_grid(out: Path, spec) -> tuple:
     return results, sha
 
 
-def reselect(out: Path, summary: Path, spec, smoke: bool, git: dict, argv: list) -> int:
+def reselect(out: Path, summary: Path, spec, smoke: bool, git: dict, argv: list, lv=False) -> int:
     """Spec 10.6 amendment 2026-09-28: the amended selection on the recorded grid; no trajectory is re-run."""
     from flymon.agent.config import load_c3_config
     from flymon.rescope import taurec
@@ -141,7 +186,7 @@ def reselect(out: Path, summary: Path, spec, smoke: bool, git: dict, argv: list)
         superseded = None
     sel = taurec.select(results, spec)
     summ = dict(sel, superseded_rule_v1=superseded, trajectories={str(r): t for r, t in results.items()},
-                **{k: (old or {}).get(k) for k in CARRY_KEYS}, smoke=smoke, spec=dataclasses.asdict(spec),
+                **{k: (old or {}).get(k) for k in carry_keys(lv)}, smoke=smoke, spec=dataclasses.asdict(spec),
                 provenance=dict(git=git, argv=argv, reselect=True, per_r_sha256=sha, source_dir=out.as_posix(),
                                 finished_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
     write_json(summary, summ, [load_c3_config().params])
