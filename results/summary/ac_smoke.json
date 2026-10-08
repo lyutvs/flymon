@@ -1,0 +1,41 @@
+{
+ "gates": {
+  "brain_complete_after_resume": true,
+  "coff_weights_unchanged": true,
+  "eval_digest_shared": true,
+  "full_suite": true,
+  "log_schema": true,
+  "nobrain_complete": true,
+  "pool_a0": true,
+  "pool_p0": true,
+  "pool_tie": true,
+  "safety_tests": true,
+  "situation_evals_frozen": true,
+  "tb_odour_tests": true,
+  "worker_equals_in_process": true
+ },
+ "kc_ratio_gt2": {
+  "frac": 0.5566666666666666,
+  "n_fly_turns": 600,
+  "n_gt2": 334
+ },
+ "label": "M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC).",
+ "n_situation_records": 14,
+ "pool_response": {
+  "a0_ratio": 0.010471204188481676,
+  "n_candidates": 191,
+  "n_situations": 79,
+  "p0_ratio": 0.0,
+  "tie_ratio": 0.0
+ },
+ "provenance": {
+  "git": {
+   "commit": "7ff36a7b241aa461754fcc1889fc1d2c6cbf0f44",
+   "dirty": false,
+   "dirty_files": []
+  },
+  "suite_exit": "results/m4-smoke/suite_exit.txt"
+ },
+ "schema_errors": [],
+ "status": "OK"
+}
