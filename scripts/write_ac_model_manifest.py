@@ -3,7 +3,8 @@
 
     uv run python scripts/write_ac_model_manifest.py [--taurec results/summary/rescope_taurec_lv.json]
 
-Writes results/summary/ac_model_manifest.json: status FROZEN (exit 0) or STOP_NO_RECOVERY (exit 2, AC stops). An
+Writes results/summary/ac_model_manifest.json: status FROZEN (exit 0) or STOP_NO_RECOVERY (exit 2, AC stops). A
+tau_rec summary from another lever prints one STOP_LEVER_MISMATCH line and exits 2 without writing. An
 existing FROZEN manifest with other content is never overwritten (a new one needs a new user decision)."""
 from __future__ import annotations
 
@@ -15,6 +16,7 @@ from pathlib import Path
 from flymon.ac import store
 from flymon.ac.config import ENCODER_GRID, TAUREC_LV, load_lv_config, lv_codebook
 from flymon.ac.manifest import MODEL_MANIFEST, build_model_manifest
+from flymon.ac.spec import SPEC
 
 
 def main(argv=None) -> int:
@@ -25,6 +27,11 @@ def main(argv=None) -> int:
     if not p.exists():
         raise SystemExit(f"refusing: {p} does not exist (run scripts/run_rescope_taurec.py --lv first)")
     taurec = json.loads(p.read_text())
+    if taurec.get("lever_edit") != SPEC.lever_edit or taurec.get("lever_sha") != SPEC.lever_sha:
+        print(f"STOP_LEVER_MISMATCH: {p} ran on lever {taurec.get('lever_edit')!r} / "
+              f"{str(taurec.get('lever_sha'))[:12]}, not AC's {SPEC.lever_edit!r} / {SPEC.lever_sha[:12]}; "
+              f"no manifest written", flush=True)
+        return 2
     ok = taurec.get("status") == "SELECTED"
     cfg = load_lv_config(float(taurec["recovery_per_pulse"]) if ok else 0.0)
     _, dg = lv_codebook()

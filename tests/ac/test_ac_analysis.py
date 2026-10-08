@@ -246,3 +246,34 @@ def test_script_refuses_incomplete_arm(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     with pytest.raises(SystemExit, match="not complete"):
         _script().main(["--m1", str(m1)])
+
+
+def test_c2_counts_dropped_records_per_arm():
+    """T17: decisions dropped for missing / None multipliers or a malformed chosen are counted per arm."""
+    rows = rows_for("FLY", 1) + rows_for("COFF", 1, 1)
+    recs = [dict(kind="decision", decider="fly", fly=0, candidates=["a", "b"], chosen="a", multipliers=None),
+            dict(kind="decision", decider="fly", fly=0, candidates=["a", "b"], chosen="z", multipliers=[2.0, 1.0]),
+            dict(kind="decision", decider="fly", fly=0, candidates=["a", "b"], chosen="a", multipliers=[1.0, 1.0]),
+            dict(kind="decision", decider="fly", fly=1, candidates=["a", "b"], chosen="a"),
+            dict(kind="decision", decider="fly", fly=1, candidates=["a", "b"], chosen="a", multipliers=[2.0, 1.0])]
+    dropped = {}
+    assert an.c2_units(recs, rows, dropped) == {"COFF": {1: [1]}}
+    assert dropped == {"FLY": 2, "COFF": 1}
+
+
+def test_analyse_reports_c2_n_dropped():
+    rows, sits = brain_world()
+    recs = [dict(kind="decision", decider="fly", fly=0, candidates=["a", "b"], chosen="a", multipliers=None)]
+    doc = an.analyse(world_results(rows), sits, recs, [], FAST)
+    c2 = next(c for c in doc["criteria"] if c["criterion"] == 2)
+    assert c2["n_dropped"] == {"FLY": 1, "COFF": 0, "TB": 0}
+
+
+def test_check_digests_refuses_missing_digest():
+    ok = dict(mode="run", eval_digest="e")
+    with pytest.raises(SystemExit, match="digest"):
+        an.check_digests({"BRAIN": dict(mode="run", eval_digest=None), "RND": dict(mode="run", eval_digest=None),
+                          "MAX": dict(mode="run", eval_digest=None)})
+    with pytest.raises(SystemExit, match="digest"):
+        an.check_digests({"BRAIN": dict(mode="run"), "RND": dict(mode="run"), "MAX": dict(mode="run")})
+    an.check_digests({"BRAIN": ok, "RND": ok, "MAX": ok})

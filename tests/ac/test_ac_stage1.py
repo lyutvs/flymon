@@ -151,3 +151,24 @@ def test_after_battle_on_a_stopped_arm_marks_arm_stopped(tmp_path):
     assert book.invalid == {0: "arm_stopped"}
     hooks.after_battle("L", sb, dict(invalid=True, retries=S.retry_max))
     assert book.invalid == {0: "arm_stopped"}                     # an already-invalid fly keeps its first reason
+
+
+def test_initial_repairs_a_torn_last_init_line(tmp_path):
+    """Final review M4: a fly killed mid-write leaves a torn last line; initial() drops it and redoes point 0."""
+    book, log, hooks, _ = setup(tmp_path)
+    log.init_path.parent.mkdir(parents=True)
+    good = json.dumps(dict(kind="situation_eval", fly=0, point=0, switched=[1, 0], frozen=True))
+    log.init_path.write_text(good + "\n" + '{"kind": "situation_eval", "fly": 1, "po')
+    hooks.initial()
+    lines = log.init_path.read_text().splitlines()
+    recs = [json.loads(x) for x in lines]                        # every line parses
+    assert sorted(r["fly"] for r in recs) == [0, 1, 2, 3] and log.init_path.read_text().endswith("\n")
+
+
+def test_initial_repairs_a_last_init_line_without_newline(tmp_path):
+    book, log, hooks, _ = setup(tmp_path)
+    log.init_path.parent.mkdir(parents=True)
+    log.init_path.write_text(json.dumps(dict(kind="situation_eval", fly=0, point=0, switched=[1], frozen=True)))
+    hooks.initial()
+    recs = [json.loads(x) for x in log.init_path.read_text().splitlines()]
+    assert sorted(r["fly"] for r in recs) == [0, 1, 2, 3]

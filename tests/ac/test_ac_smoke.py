@@ -80,3 +80,48 @@ def test_script_parses_and_carries_label():
     src = (ROOT / "scripts/check_ac_smoke.py").read_text()
     ast.parse(src)
     assert "label=LABEL" in src and isinstance(LABEL, str) and LABEL
+
+
+def test_resumed_ignores_crashed_earlier_attempts(tmp_path):
+    """Final review M1: a crashed / killed first attempt (complete None) before a real stop and a resume still counts."""
+    w = lambda s: (tmp_path / "wall_clock.json").write_text(json.dumps({"sessions": s}))  # noqa: E731
+    w([{"complete": None, "status": "aborted"}, {"complete": None, "status": "killed"},
+       {"complete": False, "status": "ok"}, {"complete": True, "status": "ok"}])
+    assert smoke.resumed(tmp_path)
+    w([{"complete": None, "status": "aborted"}, {"complete": True, "status": "ok"}])     # no real stop
+    assert not smoke.resumed(tmp_path)
+    w([{"complete": False, "status": "ok"}, {"complete": None, "status": "aborted"}])     # resume did not finish
+    assert not smoke.resumed(tmp_path)
+    w([{"complete": False, "status": "killed"}, {"complete": True, "status": "ok"}])      # killed is not a stop
+    assert not smoke.resumed(tmp_path)
+
+
+def test_resumed_is_false_without_wall_clock(tmp_path):
+    assert not smoke.resumed(tmp_path)
+
+
+def _check_script():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("check_ac_smoke", ROOT / "scripts/check_ac_smoke.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_check_script_writes_stop_smoke_when_recovery_refuses_and_files_are_missing(tmp_path, monkeypatch):
+    """T16: load_recovery refusing and missing result.json / wall_clock.json are failing gates, not crashes."""
+    cs = _check_script()
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(cs, "run_pytest", lambda ids: 0)
+    monkeypatch.setattr(cs.store, "git_provenance", lambda files=(): {"commit": "x", "dirty": False})
+    (tmp_path / "suite_exit.txt").write_text("0\n")
+    root = tmp_path / "results/m4-smoke/BRAIN"
+    root.mkdir(parents=True)
+    (root / "result.json").write_text(json.dumps({"complete": True, "per_fly": [], "eval_digest": "e"}))  # no wall_clock
+    assert cs.main(["--suite-exit", str(tmp_path / "suite_exit.txt")]) == 2   # load_recovery: no taurec summary
+    doc = json.loads((tmp_path / smoke.SMOKE).read_text())
+    assert doc["status"] == "STOP_SMOKE" and doc["label"] == LABEL
+    g = doc["gates"]
+    assert g["pool_tie"] is False and g["pool_a0"] is False and g["pool_p0"] is False
+    assert g["brain_complete_after_resume"] is False and g["nobrain_complete"] is False
+    assert "does not exist" in doc["pool_response"]["error"]

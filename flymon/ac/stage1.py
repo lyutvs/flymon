@@ -12,6 +12,7 @@ and stopped arms, the situation-pair evaluations (each record carries LABEL, AC.
   fly's arm already stopped (STOP_INFRA) marks it with the distinct reason "arm_stopped", not a battle failure."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from ..agent.checkpoint import CheckpointStore, filter_log
@@ -64,6 +65,24 @@ class SituationLog:
         self.init_path = Path(logs_dir) / "situations_init.jsonl"
         self.path = Path(logs_dir) / "situations.jsonl"
 
+    def repair_init(self) -> int:
+        """Drop unparsable lines (a torn last line from a kill mid-write) and end the file with a newline, so the next
+        append is not glued onto a torn record; returns the number of lines dropped."""
+        if not self.init_path.exists():
+            return 0
+        text = self.init_path.read_text()
+        keep = []
+        for line in text.splitlines():
+            try:
+                json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            keep.append(line)
+        fixed = "".join(x + "\n" for x in keep)
+        if fixed != text:
+            blocks._atomic_text(self.init_path, fixed)
+        return len(text.splitlines()) - len(keep)
+
     def has_init(self, fly: int) -> bool:
         return any(r.get("fly") == int(fly) for r in blocks.read_jsonl(self.init_path))
 
@@ -91,6 +110,7 @@ class Stage1Hooks:
         return dict(rec, arm=self.lay[g][0], battle_id=battle_id, label=LABEL)
 
     def initial(self) -> None:
+        self.sitlog.repair_init()
         for g in range(len(self.lay)):
             if not self.book.skip(g) and not self.sitlog.has_init(g):
                 self.sitlog.add_init(self._record(g, 0, None))

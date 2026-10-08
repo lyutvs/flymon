@@ -40,14 +40,21 @@ def c1_units(sit_records, rows, spec=SPEC) -> dict:
     return out
 
 
-def c2_units(eval_records, rows) -> dict:
+def c2_units(eval_records, rows, dropped: dict | None = None) -> dict:
+    """dropped (if given) receives, per arm of a valid fly, the count of fly decisions dropped for missing / None /
+    mismatched multipliers or candidates, or a chosen move not among the candidates."""
     valid, out = _valid(rows), {}
+    if dropped is not None:
+        for arm in dict.fromkeys(valid.values()):
+            dropped.setdefault(arm, 0)
     for rec in eval_records:
         f = rec.get("fly")
         if f not in valid or rec.get("kind") != "decision" or rec.get("decider") != "fly":
             continue
         cands, m, chosen = rec.get("candidates"), rec.get("multipliers"), rec.get("chosen")
         if not isinstance(cands, list) or not isinstance(m, list) or len(m) != len(cands) or chosen not in cands:
+            if dropped is not None:
+                dropped[valid[f]] += 1
             continue
         m = [float(x) for x in m]
         if len(set(m)) < 2:
@@ -135,6 +142,8 @@ def c1_summary(cs: list) -> str:
 def check_digests(results: dict) -> None:
     if any(r.get("mode") != "run" for r in results.values()):
         raise SystemExit("refusing: every stage-1 result must be mode 'run' (not smoke / bench)")
+    if any(not r.get("eval_digest") for r in results.values()):
+        raise SystemExit("refusing: an arm's result has no eval_digest (AC.4 digest gate)")
     if len({r.get("eval_digest") for r in results.values()}) != 1:
         raise SystemExit("refusing: the arms ran on different evaluation schedules (AC.4 digest gate)")
 
@@ -171,10 +180,12 @@ def analyse(results: dict, sit_records, eval_records, all_records, spec=SPEC, we
     stopped = {}
     for res in results.values():
         stopped.update(res.get("book", {}).get("stopped", {}))
-    u1, u2, u3 = c1_units(sit_records, brain_rows, spec), c2_units(eval_records, brain_rows), c3_units(rows)
+    c2_dropped: dict = {}
+    u1, u2, u3 = (c1_units(sit_records, brain_rows, spec), c2_units(eval_records, brain_rows, c2_dropped),
+                  c3_units(rows))
     cs = [contrast(1, "primary", "FLY", "COFF", u1, spec, spec.min_effect, stopped),
           contrast(1, "primary", "FLY", "TB", u1, spec, spec.min_effect, stopped),
-          contrast(2, "secondary", "FLY", "COFF", u2, spec, 0.0, stopped),
+          dict(contrast(2, "secondary", "FLY", "COFF", u2, spec, 0.0, stopped), n_dropped=c2_dropped),
           contrast(3, "secondary", "FLY", "RND", u3, spec, 0.0, stopped),
           contrast(3, "upper", "MAX", "FLY", u3, spec, 0.0, stopped),
           dict(criterion=4, kind="specificity", status="미측정"),

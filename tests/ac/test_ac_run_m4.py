@@ -152,3 +152,32 @@ def test_ac_battles_names_and_copy():
     src = (ROOT / "flymon/ac/battles.py").read_text()
     assert "copied from scripts/run_rescope_battles.py:Battles" in src
     assert schedules.account("TB", "E", 23) == "fm-aTBE-f23" and len(schedules.opponent_name("AE-f23-b019", 3)) <= 18
+
+
+def test_bench_with_an_earlier_attempt_says_remove_not_resume(tmp_path, monkeypatch):
+    """Final review M3: the bench refuses --resume, so a leftover bench dir must say remove-and-rerun."""
+    ra = load()
+    monkeypatch.chdir(tmp_path)
+    out = Path("results/m4-bench/BRAIN")
+    budget.open_session(out, 1000.0)                                  # a killed bench session
+    (out / "checkpoints" / "learn").mkdir(parents=True)
+    with pytest.raises(SystemExit) as e:
+        ra.main(["--arm", "BRAIN", "--bench"])
+    msg = str(e.value)
+    assert "remove results/m4-bench/BRAIN" in msg and "pass --resume" not in msg
+
+
+def test_incomplete_bench_says_remove_not_resume(tmp_path, monkeypatch, capsys):
+    from flymon.ac.spec import bench
+    ra = load()
+    monkeypatch.chdir(tmp_path)
+    write_inputs(bench())
+    store.write_json("results/summary/ac_model_manifest.json", {"status": "FROZEN", "recovery_per_pulse": 0.002})
+    monkeypatch.setattr(ra.store, "git_provenance", lambda files=(): {"commit": "x", "dirty": False})
+    monkeypatch.setattr(ra, "run_brain", lambda *a, **k: dict(
+        run=dict(complete=False, played={"L": ["BL-f00-b000"]}), book={"invalid": {}, "stopped": {}},
+        timing=dict(t_sit_init_s=1.0, n_init=1, t_run_s=1.0)))
+    assert ra.main(["--arm", "BRAIN", "--bench", "--stop-after", "1"]) == 2
+    out = capsys.readouterr().out
+    assert "remove results/m4-bench/BRAIN" in out and "--resume" not in out.replace("--resume is refused", "")
+    assert not Path("results/m4-bench/BRAIN/bench.json").exists()

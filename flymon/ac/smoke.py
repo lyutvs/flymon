@@ -73,8 +73,15 @@ def kc_ratio_frac(paths) -> dict:
 
 
 def resumed(arm_dir) -> bool:
-    s = json.loads((Path(arm_dir) / "wall_clock.json").read_text())["sessions"]
-    return len(s) >= 2 and s[0].get("complete") is False and s[-1].get("complete") is True
+    """A real stop then --resume: the last session completed and some earlier session ended incomplete with status
+    "ok" (stopped). Crashed ("aborted") or hard-killed ("killed") attempts, complete None, are ignored; no
+    wall_clock.json is not resumed."""
+    p = Path(arm_dir) / "wall_clock.json"
+    if not p.exists():
+        return False
+    s = json.loads(p.read_text())["sessions"]
+    stopped = any(x.get("complete") is False and x.get("status") == "ok" for x in s[:-1])
+    return bool(s) and s[-1].get("complete") is True and stopped
 
 
 def status(gates: dict) -> str:

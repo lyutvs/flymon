@@ -114,6 +114,14 @@ def session_cap(spec, a) -> float:
     return cap
 
 
+def fresh_bench(out) -> None:
+    """The bench is one fresh session (--resume is refused): any leftover of an earlier attempt must be removed."""
+    out = Path(out)
+    if out.exists() and any(out.iterdir()):
+        raise SystemExit(f"refusing: {out} holds an earlier bench attempt; the bench is one fresh session "
+                         f"(--resume is refused): remove {out} and rerun")
+
+
 def files() -> list:
     return sorted(glob.glob("flymon/ac/*.py")) + ["flymon/brain/lv_pool.py", "flymon/rescope/blocks.py",
                                                   "flymon/agent/runner.py", "flymon/agent/policy.py",
@@ -237,6 +245,8 @@ def main(argv=None) -> int:
     spec = spec_for(a)
     out = Path(a.out)
     store.guard(out / "result.json")
+    if spec.mode == "bench":
+        fresh_bench(out)
     doc, inputs_info = load_inputs(spec)
     model, r = load_model(spec) if a.arm == "BRAIN" else (None, None)
     bud = load_budget(spec)
@@ -263,6 +273,11 @@ def main(argv=None) -> int:
                if a.arm == "BRAIN" else run_nobrain(a, spec, out, doc, eval_, lay, lambda: time.time() >= deadline))
         run = res["run"]
         wall = closed["wall"] = budget.close_session(out, sess, t0, "ok", run)
+        if spec.mode == "bench" and not run["complete"]:
+            print(f"bench: stopped before completion (played {sum(len(v) for v in run['played'].values())}); "
+                  f"no bench.json. The bench is one fresh session (--resume is refused): remove {out} and rerun",
+                  flush=True)
+            return 2
         if spec.mode == "bench":
             t = res["timing"]
             b = dict(s_per_batch_battle=t["t_run_s"] / spec.learn_battles,

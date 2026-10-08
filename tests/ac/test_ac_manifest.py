@@ -55,3 +55,21 @@ def test_check_model_names_each_mismatch():
     assert "strength" in check_model(m, cfg=cfg(strength=0.35), codebook_digest="d" * 64)
     assert "z_V" in check_model(m, cfg=cfg(z={"A": (1.0, 1.0), "P": (1.0, 1.0)}), codebook_digest="d" * 64)
     assert check_model(dict(m, status="STOP_NO_RECOVERY"), cfg=c, codebook_digest="d" * 64)[0] == "status"
+
+
+def test_script_lever_mismatch_is_a_one_line_stop(tmp_path, monkeypatch, capsys):
+    """Final review M6: a lever sha mismatch exits 2 with one STOP line, no traceback, no manifest."""
+    import importlib.util
+    import json
+    from pathlib import Path
+    p = Path(__file__).resolve().parents[2] / "scripts/write_ac_model_manifest.py"
+    sp = importlib.util.spec_from_file_location("write_ac_model_manifest", p)
+    mod = importlib.util.module_from_spec(sp)
+    sp.loader.exec_module(mod)
+    monkeypatch.chdir(tmp_path)
+    t = tmp_path / "taurec.json"
+    t.write_text(json.dumps(taurec(lever_sha="0" * 64)))
+    assert mod.main(["--taurec", str(t)]) == 2
+    out = capsys.readouterr().out.strip().splitlines()
+    assert len(out) == 1 and out[0].startswith("STOP_LEVER_MISMATCH")
+    assert not (tmp_path / "results/summary/ac_model_manifest.json").exists()

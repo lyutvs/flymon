@@ -77,8 +77,12 @@ def main(argv=None) -> int:
             row["coff_weights_unchanged"] for row in brain["per_fly"] if row["arm"] == "COFF"),
         eval_digest_shared=all(res.values()) and len({r["eval_digest"] for r in res.values()}) == 1,
         situation_evals_frozen=bool(sits) and all(r["frozen"] for r in sits))
-    resp = pool_response(a)
-    gates.update(smoke.response_gates(resp))
+    try:
+        resp = pool_response(a)
+        gates.update(smoke.response_gates(resp))
+    except (SystemExit, Exception) as e:       # e.g. load_recovery refusing: POOL gates fail, summary still written
+        resp = dict(error=f"{type(e).__name__}: {e}")
+        gates.update(pool_tie=False, pool_a0=False, pool_p0=False)
     doc = dict(status=smoke.status(gates), gates=gates, pool_response=resp, kc_ratio_gt2=smoke.kc_ratio_frac(paths),
                schema_errors=errs[:20], n_situation_records=len(sits), label=LABEL,
                provenance=dict(git=store.git_provenance(), suite_exit=a.suite_exit))
