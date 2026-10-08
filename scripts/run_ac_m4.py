@@ -273,7 +273,10 @@ def main(argv=None) -> int:
                if a.arm == "BRAIN" else run_nobrain(a, spec, out, doc, eval_, lay, lambda: time.time() >= deadline))
         run = res["run"]
         wall = closed["wall"] = budget.close_session(out, sess, t0, "ok", run)
-        if spec.mode == "bench" and not run["complete"]:
+        # bench has no eval block (eval_battles = 0), so run["complete"] never turns True; it is finished when
+        # every scheduled learning battle was played (a session cap or --stop-after leaves it partial)
+        bench_done = spec.mode == "bench" and len(run["played"].get("L", [])) == len(learn or [])
+        if spec.mode == "bench" and not bench_done:
             print(f"bench: stopped before completion (played {sum(len(v) for v in run['played'].values())}); "
                   f"no bench.json. The bench is one fresh session (--resume is refused): remove {out} and rerun",
                   flush=True)

@@ -181,3 +181,33 @@ def test_incomplete_bench_says_remove_not_resume(tmp_path, monkeypatch, capsys):
     out = capsys.readouterr().out
     assert "remove results/m4-bench/BRAIN" in out and "--resume" not in out.replace("--resume is refused", "")
     assert not Path("results/m4-bench/BRAIN/bench.json").exists()
+
+
+@pytest.mark.parametrize("missing", [0, 1])
+def test_bench_finishes_when_every_learning_battle_is_played(tmp_path, monkeypatch, capsys, missing):
+    """Regression: bench has no eval block, so run["complete"] stays False; all L battles played = finished."""
+    from flymon.ac.spec import bench
+    ra = load()
+    monkeypatch.chdir(tmp_path)
+    write_inputs(bench())
+    store.write_json("results/summary/ac_model_manifest.json", {"status": "FROZEN", "recovery_per_pulse": 0.002})
+    monkeypatch.setattr(ra.store, "git_provenance", lambda files=(): {"commit": "x", "dirty": False})
+    seen = {}
+
+    def fake_run_brain(a, spec, out, doc, model, r, learn, eval_, lay, should_stop):
+        seen["n_learn"], seen["n_eval"] = len(learn), len(eval_)
+        played = [s.battle_id for s in learn][:len(learn) - missing]
+        return dict(run=dict(complete=False, played={"L": played}), book={"invalid": {}, "stopped": {}},
+                    timing=dict(t_sit_init_s=24.0, n_init=24, t_run_s=10.0 * bench().learn_battles))
+
+    monkeypatch.setattr(ra, "run_brain", fake_run_brain)
+    code = ra.main(["--arm", "BRAIN", "--bench"])
+    b_path = Path("results/m4-bench/BRAIN/bench.json")
+    assert seen["n_eval"] == 0 and seen["n_learn"] == len(ra.stage1.layout(bench())) * bench().learn_battles
+    if missing:
+        assert code == 2 and not b_path.exists()
+        assert "stopped before completion" in capsys.readouterr().out
+    else:
+        assert code == 0 and b_path.exists()
+        b = json.loads(b_path.read_text())
+        assert b["s_per_batch_battle"] == pytest.approx(10.0) and b["played"] == seen["n_learn"]
