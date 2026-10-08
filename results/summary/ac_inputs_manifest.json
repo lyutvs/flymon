@@ -1,0 +1,27 @@
+{
+ "counts": {
+  "all": 1680,
+  "deduped": 102,
+  "different_best": 102,
+  "distinct_types": 183,
+  "not_l": 909,
+  "unique_best": 183
+ },
+ "digests": {
+  "confirm": "71a10cbcabc67d551d9db9834c3436a10ce45e4172d44aba2c1b5c829bfec038",
+  "eval": "03e209ea65d38d461ba58befe3b893a9f54d301edd58cf4d5abb6518a91a8dfa",
+  "learn": "e3a046450d57160a3f6967cd3f9e6aee2f4a2f8222200ed5e3be746654bba3fa"
+ },
+ "inputs_path": "results/summary/ac_inputs.json",
+ "inputs_sha256": "e835317ea7fd09f6eccf48a76f1a52b8dfbdd6b0d5171b5fe1ee85dbc1b75cb4",
+ "label": "M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC).",
+ "mode": "run",
+ "seeds": {
+  "boot": 304,
+  "eval": 303,
+  "gen": 301,
+  "learn": 302,
+  "tie": 305
+ },
+ "status": "OK"
+}

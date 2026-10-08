@@ -1,0 +1,11352 @@
+{
+ "confirm": {
+  "counts": {
+   "all": 1680,
+   "deduped": 102,
+   "different_best": 102,
+   "distinct_types": 183,
+   "not_l": 909,
+   "unique_best": 183
+  },
+  "digest": "71a10cbcabc67d551d9db9834c3436a10ce45e4172d44aba2c1b5c829bfec038",
+  "l_set": {
+   "n_turns": 64,
+   "rng_seed": 20260927
+  },
+  "n_candidates": 102,
+  "n_pairs": 20,
+  "pairs": [
+   {
+    "best1": "Surf",
+    "best2": "Earthquake",
+    "cands": [
+     "Surf",
+     "Earthquake",
+     "Strength"
+    ],
+    "key": [
+     "Blastoise",
+     [
+      [
+       "GROUND",
+       "ROCK"
+      ],
+      [
+       "POISON",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Blastoise",
+    "mults1": [
+     4.0,
+     2.0,
+     0.5
+    ],
+    "mults2": [
+     0.5,
+     2.0,
+     1.0
+    ],
+    "o1": "Rhydon",
+    "o1_types": [
+     "GROUND",
+     "ROCK"
+    ],
+    "o2": "Tentacruel",
+    "o2_types": [
+     "POISON",
+     "WATER"
+    ]
+   },
+   {
+    "best1": "Strength",
+    "best2": "Earthquake",
+    "cands": [
+     "Surf",
+     "Earthquake",
+     "Strength"
+    ],
+    "key": [
+     "Blastoise",
+     [
+      [
+       "DRAGON",
+       "FLYING"
+      ],
+      [
+       "POISON",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Blastoise",
+    "mults1": [
+     0.5,
+     0.0,
+     1.0
+    ],
+    "mults2": [
+     0.5,
+     2.0,
+     1.0
+    ],
+    "o1": "Dragonite",
+    "o1_types": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "o2": "Tentacruel",
+    "o2_types": [
+     "POISON",
+     "WATER"
+    ]
+   },
+   {
+    "best1": "Strength",
+    "best2": "Earthquake",
+    "cands": [
+     "Earthquake",
+     "Surf",
+     "Strength"
+    ],
+    "key": [
+     "Snorlax",
+     [
+      [
+       "DRAGON",
+       "FLYING"
+      ],
+      [
+       "POISON",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Snorlax",
+    "mults1": [
+     0.0,
+     0.5,
+     1.0
+    ],
+    "mults2": [
+     2.0,
+     0.5,
+     1.0
+    ],
+    "o1": "Dragonite",
+    "o1_types": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "o2": "Tentacruel",
+    "o2_types": [
+     "POISON",
+     "WATER"
+    ]
+   },
+   {
+    "best1": "Mega Drain",
+    "best2": "Psychic",
+    "cands": [
+     "Psychic",
+     "Mega Drain"
+    ],
+    "key": [
+     "Exeggutor",
+     [
+      [
+       "GROUND",
+       "POISON"
+      ],
+      [
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Exeggutor",
+    "mults1": [
+     1.0,
+     2.0
+    ],
+    "mults2": [
+     2.0,
+     1.0
+    ],
+    "o1": "Blastoise",
+    "o1_types": [
+     "WATER"
+    ],
+    "o2": "Nidoking",
+    "o2_types": [
+     "GROUND",
+     "POISON"
+    ]
+   },
+   {
+    "best1": "Mega Drain",
+    "best2": "Psychic",
+    "cands": [
+     "Psychic",
+     "Mega Drain"
+    ],
+    "key": [
+     "Exeggutor",
+     [
+      [
+       "FIRE",
+       "FLYING"
+      ],
+      [
+       "PSYCHIC",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Exeggutor",
+    "mults1": [
+     0.5,
+     2.0
+    ],
+    "mults2": [
+     1.0,
+     0.25
+    ],
+    "o1": "Slowbro",
+    "o1_types": [
+     "PSYCHIC",
+     "WATER"
+    ],
+    "o2": "Charizard",
+    "o2_types": [
+     "FIRE",
+     "FLYING"
+    ]
+   },
+   {
+    "best1": "Mega Drain",
+    "best2": "Psychic",
+    "cands": [
+     "Psychic",
+     "Mega Drain"
+    ],
+    "key": [
+     "Exeggutor",
+     [
+      [
+       "DRAGON",
+       "FLYING"
+      ],
+      [
+       "PSYCHIC",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Exeggutor",
+    "mults1": [
+     0.5,
+     2.0
+    ],
+    "mults2": [
+     1.0,
+     0.25
+    ],
+    "o1": "Slowbro",
+    "o1_types": [
+     "PSYCHIC",
+     "WATER"
+    ],
+    "o2": "Dragonite",
+    "o2_types": [
+     "DRAGON",
+     "FLYING"
+    ]
+   },
+   {
+    "best1": "Thunderbolt",
+    "best2": "Psychic",
+    "cands": [
+     "Thunderbolt",
+     "Psychic"
+    ],
+    "key": [
+     "Chansey",
+     [
+      [
+       "FIGHTING"
+      ],
+      [
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Chansey",
+    "mults1": [
+     2.0,
+     1.0
+    ],
+    "mults2": [
+     1.0,
+     2.0
+    ],
+    "o1": "Blastoise",
+    "o1_types": [
+     "WATER"
+    ],
+    "o2": "Machamp",
+    "o2_types": [
+     "FIGHTING"
+    ]
+   },
+   {
+    "best1": "Thunderbolt",
+    "best2": "Psychic",
+    "cands": [
+     "Thunderbolt",
+     "Psychic"
+    ],
+    "key": [
+     "Chansey",
+     [
+      [
+       "GRASS",
+       "POISON"
+      ],
+      [
+       "PSYCHIC",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Chansey",
+    "mults1": [
+     2.0,
+     0.5
+    ],
+    "mults2": [
+     0.5,
+     2.0
+    ],
+    "o1": "Slowbro",
+    "o1_types": [
+     "PSYCHIC",
+     "WATER"
+    ],
+    "o2": "Venusaur",
+    "o2_types": [
+     "GRASS",
+     "POISON"
+    ]
+   },
+   {
+    "best1": "Thunderbolt",
+    "best2": "Psychic",
+    "cands": [
+     "Thunderbolt",
+     "Psychic"
+    ],
+    "key": [
+     "Chansey",
+     [
+      [
+       "FIGHTING"
+      ],
+      [
+       "PSYCHIC",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Chansey",
+    "mults1": [
+     2.0,
+     0.5
+    ],
+    "mults2": [
+     1.0,
+     2.0
+    ],
+    "o1": "Slowbro",
+    "o1_types": [
+     "PSYCHIC",
+     "WATER"
+    ],
+    "o2": "Machamp",
+    "o2_types": [
+     "FIGHTING"
+    ]
+   },
+   {
+    "best1": "Psychic",
+    "best2": "Thunderbolt",
+    "cands": [
+     "Thunderbolt",
+     "Psychic"
+    ],
+    "key": [
+     "Chansey",
+     [
+      [
+       "FIRE",
+       "FLYING"
+      ],
+      [
+       "GRASS",
+       "POISON"
+      ]
+     ]
+    ],
+    "me": "Chansey",
+    "mults1": [
+     0.5,
+     2.0
+    ],
+    "mults2": [
+     2.0,
+     1.0
+    ],
+    "o1": "Venusaur",
+    "o1_types": [
+     "GRASS",
+     "POISON"
+    ],
+    "o2": "Charizard",
+    "o2_types": [
+     "FIRE",
+     "FLYING"
+    ]
+   },
+   {
+    "best1": "Rock Slide",
+    "best2": "Earthquake",
+    "cands": [
+     "Earthquake",
+     "Rock Slide",
+     "Strength"
+    ],
+    "key": [
+     "Rhydon",
+     [
+      [
+       "DRAGON",
+       "FLYING"
+      ],
+      [
+       "POISON",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Rhydon",
+    "mults1": [
+     0.0,
+     2.0,
+     1.0
+    ],
+    "mults2": [
+     2.0,
+     1.0,
+     1.0
+    ],
+    "o1": "Dragonite",
+    "o1_types": [
+     "DRAGON",
+     "FLYING"
+    ],
+    "o2": "Tentacruel",
+    "o2_types": [
+     "POISON",
+     "WATER"
+    ]
+   },
+   {
+    "best1": "Surf",
+    "best2": "Psychic",
+    "cands": [
+     "Surf",
+     "Psychic"
+    ],
+    "key": [
+     "Slowbro",
+     [
+      [
+       "FIGHTING"
+      ],
+      [
+       "FIRE",
+       "FLYING"
+      ]
+     ]
+    ],
+    "me": "Slowbro",
+    "mults1": [
+     2.0,
+     1.0
+    ],
+    "mults2": [
+     1.0,
+     2.0
+    ],
+    "o1": "Charizard",
+    "o1_types": [
+     "FIRE",
+     "FLYING"
+    ],
+    "o2": "Machamp",
+    "o2_types": [
+     "FIGHTING"
+    ]
+   },
+   {
+    "best1": "Surf",
+    "best2": "Psychic",
+    "cands": [
+     "Surf",
+     "Psychic",
+     "Thunderbolt"
+    ],
+    "key": [
+     "Lapras",
+     [
+      [
+       "FIGHTING"
+      ],
+      [
+       "GROUND",
+       "ROCK"
+      ]
+     ]
+    ],
+    "me": "Lapras",
+    "mults1": [
+     4.0,
+     1.0,
+     0.0
+    ],
+    "mults2": [
+     1.0,
+     2.0,
+     1.0
+    ],
+    "o1": "Rhydon",
+    "o1_types": [
+     "GROUND",
+     "ROCK"
+    ],
+    "o2": "Machamp",
+    "o2_types": [
+     "FIGHTING"
+    ]
+   },
+   {
+    "best1": "Mega Drain",
+    "best2": "Cut",
+    "cands": [
+     "Mega Drain",
+     "Cut"
+    ],
+    "key": [
+     "Venusaur",
+     [
+      [
+       "DRAGON",
+       "FLYING"
+      ],
+      [
+       "ICE",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Venusaur",
+    "mults1": [
+     2.0,
+     1.0
+    ],
+    "mults2": [
+     0.25,
+     1.0
+    ],
+    "o1": "Lapras",
+    "o1_types": [
+     "ICE",
+     "WATER"
+    ],
+    "o2": "Dragonite",
+    "o2_types": [
+     "DRAGON",
+     "FLYING"
+    ]
+   },
+   {
+    "best1": "Flamethrower",
+    "best2": "Earthquake",
+    "cands": [
+     "Flamethrower",
+     "Earthquake",
+     "Strength"
+    ],
+    "key": [
+     "Charizard",
+     [
+      [
+       "GRASS",
+       "PSYCHIC"
+      ],
+      [
+       "POISON",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Charizard",
+    "mults1": [
+     2.0,
+     0.5,
+     1.0
+    ],
+    "mults2": [
+     0.5,
+     2.0,
+     1.0
+    ],
+    "o1": "Exeggutor",
+    "o1_types": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "o2": "Tentacruel",
+    "o2_types": [
+     "POISON",
+     "WATER"
+    ]
+   },
+   {
+    "best1": "Tri Attack",
+    "best2": "Psychic",
+    "cands": [
+     "Psychic",
+     "Tri Attack"
+    ],
+    "key": [
+     "Hypno",
+     [
+      [
+       "FIGHTING",
+       "WATER"
+      ],
+      [
+       "GRASS",
+       "PSYCHIC"
+      ]
+     ]
+    ],
+    "me": "Hypno",
+    "mults1": [
+     0.5,
+     1.0
+    ],
+    "mults2": [
+     2.0,
+     1.0
+    ],
+    "o1": "Exeggutor",
+    "o1_types": [
+     "GRASS",
+     "PSYCHIC"
+    ],
+    "o2": "Poliwrath",
+    "o2_types": [
+     "FIGHTING",
+     "WATER"
+    ]
+   },
+   {
+    "best1": "Surf",
+    "best2": "Thunderbolt",
+    "cands": [
+     "Surf",
+     "Thunderbolt"
+    ],
+    "key": [
+     "Dragonite",
+     [
+      [
+       "GROUND",
+       "ROCK"
+      ],
+      [
+       "PSYCHIC",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Dragonite",
+    "mults1": [
+     4.0,
+     0.0
+    ],
+    "mults2": [
+     0.5,
+     2.0
+    ],
+    "o1": "Rhydon",
+    "o1_types": [
+     "GROUND",
+     "ROCK"
+    ],
+    "o2": "Slowbro",
+    "o2_types": [
+     "PSYCHIC",
+     "WATER"
+    ]
+   },
+   {
+    "best1": "Surf",
+    "best2": "Thunderbolt",
+    "cands": [
+     "Surf",
+     "Thunderbolt"
+    ],
+    "key": [
+     "Dragonite",
+     [
+      [
+       "GROUND",
+       "POISON"
+      ],
+      [
+       "POISON",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Dragonite",
+    "mults1": [
+     2.0,
+     0.0
+    ],
+    "mults2": [
+     0.5,
+     2.0
+    ],
+    "o1": "Nidoking",
+    "o1_types": [
+     "GROUND",
+     "POISON"
+    ],
+    "o2": "Tentacruel",
+    "o2_types": [
+     "POISON",
+     "WATER"
+    ]
+   },
+   {
+    "best1": "Earthquake",
+    "best2": "Rock Slide",
+    "cands": [
+     "Earthquake",
+     "Rock Slide",
+     "Strength"
+    ],
+    "key": [
+     "Machamp",
+     [
+      [
+       "FIRE",
+       "FLYING"
+      ],
+      [
+       "GROUND",
+       "ROCK"
+      ]
+     ]
+    ],
+    "me": "Machamp",
+    "mults1": [
+     2.0,
+     0.5,
+     0.5
+    ],
+    "mults2": [
+     0.0,
+     4.0,
+     1.0
+    ],
+    "o1": "Rhydon",
+    "o1_types": [
+     "GROUND",
+     "ROCK"
+    ],
+    "o2": "Charizard",
+    "o2_types": [
+     "FIRE",
+     "FLYING"
+    ]
+   },
+   {
+    "best1": "Mega Drain",
+    "best2": "Surf",
+    "cands": [
+     "Surf",
+     "Mega Drain"
+    ],
+    "key": [
+     "Tentacruel",
+     [
+      [
+       "GRASS",
+       "POISON"
+      ],
+      [
+       "ICE",
+       "WATER"
+      ]
+     ]
+    ],
+    "me": "Tentacruel",
+    "mults1": [
+     0.5,
+     2.0
+    ],
+    "mults2": [
+     0.5,
+     0.25
+    ],
+    "o1": "Lapras",
+    "o1_types": [
+     "ICE",
+     "WATER"
+    ],
+    "o2": "Venusaur",
+    "o2_types": [
+     "GRASS",
+     "POISON"
+    ]
+   }
+  ],
+  "seed": 301,
+  "status": "OK"
+ },
+ "digests": {
+  "confirm": "71a10cbcabc67d551d9db9834c3436a10ce45e4172d44aba2c1b5c829bfec038",
+  "eval": "03e209ea65d38d461ba58befe3b893a9f54d301edd58cf4d5abb6518a91a8dfa",
+  "learn": "e3a046450d57160a3f6967cd3f9e6aee2f4a2f8222200ed5e3be746654bba3fa"
+ },
+ "eval": [
+  {
+   "battle_id": "f00-b000",
+   "fly_id": 0,
+   "my_team": [
+    "Rhydon",
+    "Venusaur",
+    "Hypno",
+    "Slowbro",
+    "Dragonite",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Tentacruel",
+    "Snorlax",
+    "Poliwrath",
+    "Slowbro",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b001",
+   "fly_id": 0,
+   "my_team": [
+    "Venusaur",
+    "Nidoking",
+    "Dragonite",
+    "Exeggutor",
+    "Tentacruel",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Tentacruel",
+    "Kangaskhan",
+    "Exeggutor",
+    "Hypno",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b002",
+   "fly_id": 0,
+   "my_team": [
+    "Rhydon",
+    "Exeggutor",
+    "Lapras",
+    "Snorlax",
+    "Hypno",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Hypno",
+    "Rhydon",
+    "Blastoise",
+    "Charizard",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b003",
+   "fly_id": 0,
+   "my_team": [
+    "Dragonite",
+    "Exeggutor",
+    "Rhydon",
+    "Blastoise",
+    "Chansey",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Poliwrath",
+    "Charizard",
+    "Dragonite",
+    "Nidoking",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b004",
+   "fly_id": 0,
+   "my_team": [
+    "Nidoking",
+    "Dragonite",
+    "Lapras",
+    "Blastoise",
+    "Kangaskhan",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Lapras",
+    "Nidoking",
+    "Kangaskhan",
+    "Blastoise",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b005",
+   "fly_id": 0,
+   "my_team": [
+    "Snorlax",
+    "Blastoise",
+    "Hypno",
+    "Slowbro",
+    "Dragonite",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Tentacruel",
+    "Rhydon",
+    "Machamp",
+    "Blastoise",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b006",
+   "fly_id": 0,
+   "my_team": [
+    "Snorlax",
+    "Venusaur",
+    "Exeggutor",
+    "Slowbro",
+    "Kangaskhan",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Exeggutor",
+    "Hypno",
+    "Chansey",
+    "Slowbro",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b007",
+   "fly_id": 0,
+   "my_team": [
+    "Exeggutor",
+    "Chansey",
+    "Kangaskhan",
+    "Rhydon",
+    "Dragonite",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Kangaskhan",
+    "Slowbro",
+    "Tentacruel",
+    "Machamp",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b008",
+   "fly_id": 0,
+   "my_team": [
+    "Chansey",
+    "Lapras",
+    "Poliwrath",
+    "Nidoking",
+    "Snorlax",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Nidoking",
+    "Poliwrath",
+    "Hypno",
+    "Chansey",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b009",
+   "fly_id": 0,
+   "my_team": [
+    "Nidoking",
+    "Kangaskhan",
+    "Tentacruel",
+    "Slowbro",
+    "Chansey",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Kangaskhan",
+    "Tentacruel",
+    "Poliwrath",
+    "Machamp",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b010",
+   "fly_id": 0,
+   "my_team": [
+    "Dragonite",
+    "Rhydon",
+    "Charizard",
+    "Venusaur",
+    "Nidoking",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Tentacruel",
+    "Chansey",
+    "Charizard",
+    "Snorlax",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b011",
+   "fly_id": 0,
+   "my_team": [
+    "Venusaur",
+    "Slowbro",
+    "Kangaskhan",
+    "Machamp",
+    "Lapras",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Charizard",
+    "Rhydon",
+    "Snorlax",
+    "Blastoise",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b012",
+   "fly_id": 0,
+   "my_team": [
+    "Venusaur",
+    "Slowbro",
+    "Charizard",
+    "Kangaskhan",
+    "Rhydon",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Poliwrath",
+    "Exeggutor",
+    "Lapras",
+    "Tentacruel",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b013",
+   "fly_id": 0,
+   "my_team": [
+    "Lapras",
+    "Tentacruel",
+    "Poliwrath",
+    "Charizard",
+    "Blastoise",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Slowbro",
+    "Nidoking",
+    "Dragonite",
+    "Poliwrath",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b014",
+   "fly_id": 0,
+   "my_team": [
+    "Lapras",
+    "Blastoise",
+    "Venusaur",
+    "Snorlax",
+    "Hypno",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Machamp",
+    "Venusaur",
+    "Dragonite",
+    "Lapras",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b015",
+   "fly_id": 0,
+   "my_team": [
+    "Venusaur",
+    "Machamp",
+    "Chansey",
+    "Charizard",
+    "Snorlax",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Nidoking",
+    "Chansey",
+    "Tentacruel",
+    "Dragonite",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b016",
+   "fly_id": 0,
+   "my_team": [
+    "Venusaur",
+    "Blastoise",
+    "Charizard",
+    "Dragonite",
+    "Rhydon",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Poliwrath",
+    "Chansey",
+    "Blastoise",
+    "Hypno",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b017",
+   "fly_id": 0,
+   "my_team": [
+    "Tentacruel",
+    "Kangaskhan",
+    "Machamp",
+    "Blastoise",
+    "Rhydon",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Poliwrath",
+    "Slowbro",
+    "Dragonite",
+    "Blastoise",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b018",
+   "fly_id": 0,
+   "my_team": [
+    "Slowbro",
+    "Chansey",
+    "Dragonite",
+    "Exeggutor",
+    "Lapras",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Venusaur",
+    "Charizard",
+    "Blastoise",
+    "Nidoking",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b019",
+   "fly_id": 0,
+   "my_team": [
+    "Slowbro",
+    "Snorlax",
+    "Tentacruel",
+    "Machamp",
+    "Charizard",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Machamp",
+    "Tentacruel",
+    "Charizard",
+    "Exeggutor",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  }
+ ],
+ "label": "M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC).",
+ "learn": [
+  {
+   "battle_id": "f00-b000",
+   "fly_id": 0,
+   "my_team": [
+    "Nidoking",
+    "Chansey",
+    "Charizard",
+    "Poliwrath",
+    "Hypno",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Exeggutor",
+    "Slowbro",
+    "Rhydon",
+    "Nidoking",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b001",
+   "fly_id": 0,
+   "my_team": [
+    "Hypno",
+    "Nidoking",
+    "Exeggutor",
+    "Machamp",
+    "Dragonite",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Lapras",
+    "Chansey",
+    "Poliwrath",
+    "Exeggutor",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b002",
+   "fly_id": 0,
+   "my_team": [
+    "Exeggutor",
+    "Rhydon",
+    "Chansey",
+    "Lapras",
+    "Machamp",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Hypno",
+    "Slowbro",
+    "Blastoise",
+    "Nidoking",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b003",
+   "fly_id": 0,
+   "my_team": [
+    "Charizard",
+    "Hypno",
+    "Kangaskhan",
+    "Slowbro",
+    "Nidoking",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Nidoking",
+    "Blastoise",
+    "Machamp",
+    "Dragonite",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b004",
+   "fly_id": 0,
+   "my_team": [
+    "Chansey",
+    "Rhydon",
+    "Snorlax",
+    "Nidoking",
+    "Poliwrath",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Venusaur",
+    "Slowbro",
+    "Kangaskhan",
+    "Tentacruel",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b005",
+   "fly_id": 0,
+   "my_team": [
+    "Lapras",
+    "Charizard",
+    "Slowbro",
+    "Kangaskhan",
+    "Rhydon",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Dragonite",
+    "Blastoise",
+    "Kangaskhan",
+    "Poliwrath",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b006",
+   "fly_id": 0,
+   "my_team": [
+    "Charizard",
+    "Exeggutor",
+    "Venusaur",
+    "Snorlax",
+    "Machamp",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Kangaskhan",
+    "Slowbro",
+    "Machamp",
+    "Hypno",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b007",
+   "fly_id": 0,
+   "my_team": [
+    "Machamp",
+    "Hypno",
+    "Lapras",
+    "Venusaur",
+    "Tentacruel",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Machamp",
+    "Chansey",
+    "Exeggutor",
+    "Charizard",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b008",
+   "fly_id": 0,
+   "my_team": [
+    "Chansey",
+    "Exeggutor",
+    "Machamp",
+    "Rhydon",
+    "Slowbro",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Slowbro",
+    "Snorlax",
+    "Poliwrath",
+    "Tentacruel",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b009",
+   "fly_id": 0,
+   "my_team": [
+    "Venusaur",
+    "Dragonite",
+    "Kangaskhan",
+    "Machamp",
+    "Chansey",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Exeggutor",
+    "Kangaskhan",
+    "Rhydon",
+    "Charizard",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b010",
+   "fly_id": 0,
+   "my_team": [
+    "Tentacruel",
+    "Exeggutor",
+    "Chansey",
+    "Snorlax",
+    "Hypno",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Tentacruel",
+    "Kangaskhan",
+    "Rhydon",
+    "Poliwrath",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b011",
+   "fly_id": 0,
+   "my_team": [
+    "Hypno",
+    "Slowbro",
+    "Exeggutor",
+    "Kangaskhan",
+    "Machamp",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Snorlax",
+    "Rhydon",
+    "Blastoise",
+    "Poliwrath",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b012",
+   "fly_id": 0,
+   "my_team": [
+    "Tentacruel",
+    "Machamp",
+    "Nidoking",
+    "Charizard",
+    "Hypno",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Machamp",
+    "Tentacruel",
+    "Rhydon",
+    "Chansey",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b013",
+   "fly_id": 0,
+   "my_team": [
+    "Exeggutor",
+    "Poliwrath",
+    "Slowbro",
+    "Rhydon",
+    "Blastoise",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Exeggutor",
+    "Machamp",
+    "Dragonite",
+    "Nidoking",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b014",
+   "fly_id": 0,
+   "my_team": [
+    "Charizard",
+    "Venusaur",
+    "Slowbro",
+    "Lapras",
+    "Rhydon",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Kangaskhan",
+    "Chansey",
+    "Hypno",
+    "Blastoise",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b015",
+   "fly_id": 0,
+   "my_team": [
+    "Rhydon",
+    "Dragonite",
+    "Poliwrath",
+    "Kangaskhan",
+    "Nidoking",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Lapras",
+    "Poliwrath",
+    "Machamp",
+    "Rhydon",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b016",
+   "fly_id": 0,
+   "my_team": [
+    "Dragonite",
+    "Lapras",
+    "Blastoise",
+    "Rhydon",
+    "Chansey",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Rhydon",
+    "Blastoise",
+    "Lapras",
+    "Slowbro",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b017",
+   "fly_id": 0,
+   "my_team": [
+    "Lapras",
+    "Hypno",
+    "Charizard",
+    "Blastoise",
+    "Exeggutor",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Machamp",
+    "Hypno",
+    "Snorlax",
+    "Lapras",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b018",
+   "fly_id": 0,
+   "my_team": [
+    "Tentacruel",
+    "Dragonite",
+    "Chansey",
+    "Rhydon",
+    "Kangaskhan",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Rhydon",
+    "Exeggutor",
+    "Charizard",
+    "Poliwrath",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b019",
+   "fly_id": 0,
+   "my_team": [
+    "Charizard",
+    "Poliwrath",
+    "Nidoking",
+    "Dragonite",
+    "Machamp",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Snorlax",
+    "Nidoking",
+    "Chansey",
+    "Hypno",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b020",
+   "fly_id": 0,
+   "my_team": [
+    "Machamp",
+    "Nidoking",
+    "Slowbro",
+    "Snorlax",
+    "Tentacruel",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Nidoking",
+    "Blastoise",
+    "Exeggutor",
+    "Dragonite",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b021",
+   "fly_id": 0,
+   "my_team": [
+    "Venusaur",
+    "Exeggutor",
+    "Poliwrath",
+    "Chansey",
+    "Blastoise",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Machamp",
+    "Dragonite",
+    "Lapras",
+    "Snorlax",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b022",
+   "fly_id": 0,
+   "my_team": [
+    "Nidoking",
+    "Slowbro",
+    "Chansey",
+    "Kangaskhan",
+    "Hypno",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Lapras",
+    "Charizard",
+    "Exeggutor",
+    "Tentacruel",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b023",
+   "fly_id": 0,
+   "my_team": [
+    "Rhydon",
+    "Hypno",
+    "Slowbro",
+    "Blastoise",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Chansey",
+    "Rhydon",
+    "Snorlax",
+    "Hypno",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b024",
+   "fly_id": 0,
+   "my_team": [
+    "Blastoise",
+    "Hypno",
+    "Exeggutor",
+    "Slowbro",
+    "Dragonite",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Charizard",
+    "Slowbro",
+    "Hypno",
+    "Tentacruel",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b025",
+   "fly_id": 0,
+   "my_team": [
+    "Venusaur",
+    "Poliwrath",
+    "Hypno",
+    "Chansey",
+    "Machamp",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Tentacruel",
+    "Slowbro",
+    "Venusaur",
+    "Blastoise",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b026",
+   "fly_id": 0,
+   "my_team": [
+    "Blastoise",
+    "Hypno",
+    "Venusaur",
+    "Poliwrath",
+    "Chansey",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Nidoking",
+    "Tentacruel",
+    "Rhydon",
+    "Slowbro",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b027",
+   "fly_id": 0,
+   "my_team": [
+    "Charizard",
+    "Snorlax",
+    "Machamp",
+    "Kangaskhan",
+    "Venusaur",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Slowbro",
+    "Hypno",
+    "Blastoise",
+    "Rhydon",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b028",
+   "fly_id": 0,
+   "my_team": [
+    "Slowbro",
+    "Blastoise",
+    "Tentacruel",
+    "Machamp",
+    "Rhydon",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Blastoise",
+    "Lapras",
+    "Chansey",
+    "Machamp",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b029",
+   "fly_id": 0,
+   "my_team": [
+    "Nidoking",
+    "Poliwrath",
+    "Dragonite",
+    "Exeggutor",
+    "Chansey",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Hypno",
+    "Chansey",
+    "Kangaskhan",
+    "Nidoking",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b030",
+   "fly_id": 0,
+   "my_team": [
+    "Hypno",
+    "Snorlax",
+    "Charizard",
+    "Lapras",
+    "Exeggutor",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Nidoking",
+    "Exeggutor",
+    "Chansey",
+    "Hypno",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b031",
+   "fly_id": 0,
+   "my_team": [
+    "Blastoise",
+    "Exeggutor",
+    "Dragonite",
+    "Rhydon",
+    "Venusaur",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Charizard",
+    "Lapras",
+    "Chansey",
+    "Rhydon",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b032",
+   "fly_id": 0,
+   "my_team": [
+    "Hypno",
+    "Charizard",
+    "Tentacruel",
+    "Nidoking",
+    "Dragonite",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Rhydon",
+    "Tentacruel",
+    "Venusaur",
+    "Chansey",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b033",
+   "fly_id": 0,
+   "my_team": [
+    "Machamp",
+    "Nidoking",
+    "Slowbro",
+    "Lapras",
+    "Snorlax",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Exeggutor",
+    "Blastoise",
+    "Venusaur",
+    "Poliwrath",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b034",
+   "fly_id": 0,
+   "my_team": [
+    "Lapras",
+    "Slowbro",
+    "Rhydon",
+    "Nidoking",
+    "Exeggutor",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Blastoise",
+    "Nidoking",
+    "Rhydon",
+    "Slowbro",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b035",
+   "fly_id": 0,
+   "my_team": [
+    "Poliwrath",
+    "Venusaur",
+    "Snorlax",
+    "Nidoking",
+    "Lapras",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Nidoking",
+    "Snorlax",
+    "Dragonite",
+    "Poliwrath",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b036",
+   "fly_id": 0,
+   "my_team": [
+    "Tentacruel",
+    "Charizard",
+    "Chansey",
+    "Poliwrath",
+    "Machamp",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Charizard",
+    "Lapras",
+    "Rhydon",
+    "Nidoking",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b037",
+   "fly_id": 0,
+   "my_team": [
+    "Machamp",
+    "Tentacruel",
+    "Rhydon",
+    "Venusaur",
+    "Blastoise",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Slowbro",
+    "Venusaur",
+    "Machamp",
+    "Blastoise",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b038",
+   "fly_id": 0,
+   "my_team": [
+    "Chansey",
+    "Kangaskhan",
+    "Venusaur",
+    "Dragonite",
+    "Slowbro",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Blastoise",
+    "Hypno",
+    "Exeggutor",
+    "Snorlax",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f00-b039",
+   "fly_id": 0,
+   "my_team": [
+    "Nidoking",
+    "Venusaur",
+    "Charizard",
+    "Tentacruel",
+    "Exeggutor",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Machamp",
+    "Rhydon",
+    "Snorlax",
+    "Slowbro",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b000",
+   "fly_id": 1,
+   "my_team": [
+    "Dragonite",
+    "Lapras",
+    "Hypno",
+    "Charizard",
+    "Chansey",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Slowbro",
+    "Dragonite",
+    "Poliwrath",
+    "Venusaur",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b001",
+   "fly_id": 1,
+   "my_team": [
+    "Snorlax",
+    "Venusaur",
+    "Poliwrath",
+    "Chansey",
+    "Hypno",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Hypno",
+    "Poliwrath",
+    "Snorlax",
+    "Nidoking",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b002",
+   "fly_id": 1,
+   "my_team": [
+    "Tentacruel",
+    "Dragonite",
+    "Chansey",
+    "Exeggutor",
+    "Rhydon",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Blastoise",
+    "Nidoking",
+    "Machamp",
+    "Snorlax",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b003",
+   "fly_id": 1,
+   "my_team": [
+    "Machamp",
+    "Lapras",
+    "Hypno",
+    "Slowbro",
+    "Rhydon",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Machamp",
+    "Kangaskhan",
+    "Poliwrath",
+    "Charizard",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b004",
+   "fly_id": 1,
+   "my_team": [
+    "Poliwrath",
+    "Chansey",
+    "Blastoise",
+    "Venusaur",
+    "Slowbro",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Venusaur",
+    "Lapras",
+    "Dragonite",
+    "Snorlax",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b005",
+   "fly_id": 1,
+   "my_team": [
+    "Snorlax",
+    "Exeggutor",
+    "Rhydon",
+    "Nidoking",
+    "Blastoise",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Exeggutor",
+    "Blastoise",
+    "Machamp",
+    "Slowbro",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b006",
+   "fly_id": 1,
+   "my_team": [
+    "Poliwrath",
+    "Lapras",
+    "Machamp",
+    "Slowbro",
+    "Nidoking",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Snorlax",
+    "Dragonite",
+    "Lapras",
+    "Rhydon",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b007",
+   "fly_id": 1,
+   "my_team": [
+    "Charizard",
+    "Rhydon",
+    "Poliwrath",
+    "Snorlax",
+    "Tentacruel",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Exeggutor",
+    "Venusaur",
+    "Machamp",
+    "Slowbro",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b008",
+   "fly_id": 1,
+   "my_team": [
+    "Snorlax",
+    "Tentacruel",
+    "Exeggutor",
+    "Chansey",
+    "Charizard",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Dragonite",
+    "Charizard",
+    "Tentacruel",
+    "Poliwrath",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b009",
+   "fly_id": 1,
+   "my_team": [
+    "Rhydon",
+    "Poliwrath",
+    "Machamp",
+    "Tentacruel",
+    "Kangaskhan",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Tentacruel",
+    "Blastoise",
+    "Hypno",
+    "Exeggutor",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b010",
+   "fly_id": 1,
+   "my_team": [
+    "Charizard",
+    "Kangaskhan",
+    "Venusaur",
+    "Poliwrath",
+    "Hypno",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Poliwrath",
+    "Dragonite",
+    "Exeggutor",
+    "Venusaur",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b011",
+   "fly_id": 1,
+   "my_team": [
+    "Kangaskhan",
+    "Slowbro",
+    "Machamp",
+    "Snorlax",
+    "Tentacruel",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Charizard",
+    "Venusaur",
+    "Nidoking",
+    "Rhydon",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b012",
+   "fly_id": 1,
+   "my_team": [
+    "Chansey",
+    "Dragonite",
+    "Lapras",
+    "Poliwrath",
+    "Tentacruel",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Chansey",
+    "Blastoise",
+    "Hypno",
+    "Poliwrath",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b013",
+   "fly_id": 1,
+   "my_team": [
+    "Venusaur",
+    "Rhydon",
+    "Nidoking",
+    "Chansey",
+    "Snorlax",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Machamp",
+    "Chansey",
+    "Nidoking",
+    "Blastoise",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b014",
+   "fly_id": 1,
+   "my_team": [
+    "Chansey",
+    "Snorlax",
+    "Blastoise",
+    "Lapras",
+    "Charizard",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Slowbro",
+    "Lapras",
+    "Charizard",
+    "Dragonite",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b015",
+   "fly_id": 1,
+   "my_team": [
+    "Blastoise",
+    "Slowbro",
+    "Dragonite",
+    "Venusaur",
+    "Tentacruel",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Slowbro",
+    "Venusaur",
+    "Charizard",
+    "Exeggutor",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b016",
+   "fly_id": 1,
+   "my_team": [
+    "Poliwrath",
+    "Chansey",
+    "Kangaskhan",
+    "Rhydon",
+    "Nidoking",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Hypno",
+    "Dragonite",
+    "Tentacruel",
+    "Kangaskhan",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b017",
+   "fly_id": 1,
+   "my_team": [
+    "Venusaur",
+    "Lapras",
+    "Rhydon",
+    "Machamp",
+    "Blastoise",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Slowbro",
+    "Tentacruel",
+    "Kangaskhan",
+    "Dragonite",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b018",
+   "fly_id": 1,
+   "my_team": [
+    "Slowbro",
+    "Nidoking",
+    "Lapras",
+    "Exeggutor",
+    "Machamp",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Charizard",
+    "Poliwrath",
+    "Lapras",
+    "Venusaur",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b019",
+   "fly_id": 1,
+   "my_team": [
+    "Rhydon",
+    "Tentacruel",
+    "Machamp",
+    "Poliwrath",
+    "Dragonite",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Kangaskhan",
+    "Poliwrath",
+    "Lapras",
+    "Chansey",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b020",
+   "fly_id": 1,
+   "my_team": [
+    "Slowbro",
+    "Blastoise",
+    "Hypno",
+    "Nidoking",
+    "Dragonite",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Hypno",
+    "Slowbro",
+    "Dragonite",
+    "Kangaskhan",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b021",
+   "fly_id": 1,
+   "my_team": [
+    "Dragonite",
+    "Chansey",
+    "Tentacruel",
+    "Charizard",
+    "Machamp",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Hypno",
+    "Poliwrath",
+    "Rhydon",
+    "Chansey",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b022",
+   "fly_id": 1,
+   "my_team": [
+    "Charizard",
+    "Machamp",
+    "Tentacruel",
+    "Hypno",
+    "Poliwrath",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Rhydon",
+    "Lapras",
+    "Exeggutor",
+    "Dragonite",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b023",
+   "fly_id": 1,
+   "my_team": [
+    "Nidoking",
+    "Blastoise",
+    "Venusaur",
+    "Hypno",
+    "Slowbro",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Slowbro",
+    "Rhydon",
+    "Exeggutor",
+    "Nidoking",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b024",
+   "fly_id": 1,
+   "my_team": [
+    "Nidoking",
+    "Kangaskhan",
+    "Rhydon",
+    "Snorlax",
+    "Charizard",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Nidoking",
+    "Dragonite",
+    "Chansey",
+    "Venusaur",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b025",
+   "fly_id": 1,
+   "my_team": [
+    "Charizard",
+    "Tentacruel",
+    "Hypno",
+    "Kangaskhan",
+    "Poliwrath",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Slowbro",
+    "Lapras",
+    "Snorlax",
+    "Tentacruel",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b026",
+   "fly_id": 1,
+   "my_team": [
+    "Poliwrath",
+    "Chansey",
+    "Venusaur",
+    "Charizard",
+    "Rhydon",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Blastoise",
+    "Hypno",
+    "Exeggutor",
+    "Dragonite",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b027",
+   "fly_id": 1,
+   "my_team": [
+    "Blastoise",
+    "Charizard",
+    "Dragonite",
+    "Tentacruel",
+    "Chansey",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Rhydon",
+    "Hypno",
+    "Nidoking",
+    "Chansey",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b028",
+   "fly_id": 1,
+   "my_team": [
+    "Dragonite",
+    "Chansey",
+    "Machamp",
+    "Exeggutor",
+    "Tentacruel",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Lapras",
+    "Dragonite",
+    "Hypno",
+    "Poliwrath",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b029",
+   "fly_id": 1,
+   "my_team": [
+    "Chansey",
+    "Exeggutor",
+    "Kangaskhan",
+    "Rhydon",
+    "Tentacruel",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Machamp",
+    "Poliwrath",
+    "Charizard",
+    "Tentacruel",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b030",
+   "fly_id": 1,
+   "my_team": [
+    "Kangaskhan",
+    "Snorlax",
+    "Machamp",
+    "Tentacruel",
+    "Nidoking",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Slowbro",
+    "Tentacruel",
+    "Poliwrath",
+    "Kangaskhan",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b031",
+   "fly_id": 1,
+   "my_team": [
+    "Machamp",
+    "Poliwrath",
+    "Snorlax",
+    "Lapras",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Dragonite",
+    "Exeggutor",
+    "Snorlax",
+    "Nidoking",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b032",
+   "fly_id": 1,
+   "my_team": [
+    "Tentacruel",
+    "Exeggutor",
+    "Machamp",
+    "Charizard",
+    "Hypno",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Rhydon",
+    "Chansey",
+    "Charizard",
+    "Blastoise",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b033",
+   "fly_id": 1,
+   "my_team": [
+    "Nidoking",
+    "Exeggutor",
+    "Blastoise",
+    "Slowbro",
+    "Kangaskhan",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Rhydon",
+    "Snorlax",
+    "Hypno",
+    "Charizard",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b034",
+   "fly_id": 1,
+   "my_team": [
+    "Charizard",
+    "Venusaur",
+    "Chansey",
+    "Exeggutor",
+    "Nidoking",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Lapras",
+    "Machamp",
+    "Poliwrath",
+    "Chansey",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b035",
+   "fly_id": 1,
+   "my_team": [
+    "Rhydon",
+    "Exeggutor",
+    "Charizard",
+    "Poliwrath",
+    "Lapras",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Nidoking",
+    "Tentacruel",
+    "Rhydon",
+    "Machamp",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b036",
+   "fly_id": 1,
+   "my_team": [
+    "Charizard",
+    "Blastoise",
+    "Venusaur",
+    "Kangaskhan",
+    "Exeggutor",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Hypno",
+    "Dragonite",
+    "Exeggutor",
+    "Nidoking",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b037",
+   "fly_id": 1,
+   "my_team": [
+    "Nidoking",
+    "Kangaskhan",
+    "Poliwrath",
+    "Hypno",
+    "Slowbro",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Rhydon",
+    "Nidoking",
+    "Venusaur",
+    "Charizard",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b038",
+   "fly_id": 1,
+   "my_team": [
+    "Blastoise",
+    "Slowbro",
+    "Kangaskhan",
+    "Snorlax",
+    "Machamp",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Snorlax",
+    "Chansey",
+    "Poliwrath",
+    "Hypno",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f01-b039",
+   "fly_id": 1,
+   "my_team": [
+    "Machamp",
+    "Snorlax",
+    "Chansey",
+    "Tentacruel",
+    "Slowbro",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Venusaur",
+    "Charizard",
+    "Kangaskhan",
+    "Exeggutor",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b000",
+   "fly_id": 2,
+   "my_team": [
+    "Snorlax",
+    "Poliwrath",
+    "Nidoking",
+    "Venusaur",
+    "Kangaskhan",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Dragonite",
+    "Exeggutor",
+    "Blastoise",
+    "Venusaur",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b001",
+   "fly_id": 2,
+   "my_team": [
+    "Charizard",
+    "Rhydon",
+    "Snorlax",
+    "Poliwrath",
+    "Tentacruel",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Machamp",
+    "Blastoise",
+    "Slowbro",
+    "Chansey",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b002",
+   "fly_id": 2,
+   "my_team": [
+    "Exeggutor",
+    "Dragonite",
+    "Tentacruel",
+    "Nidoking",
+    "Kangaskhan",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Blastoise",
+    "Tentacruel",
+    "Chansey",
+    "Kangaskhan",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b003",
+   "fly_id": 2,
+   "my_team": [
+    "Chansey",
+    "Blastoise",
+    "Slowbro",
+    "Machamp",
+    "Snorlax",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Kangaskhan",
+    "Rhydon",
+    "Dragonite",
+    "Poliwrath",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b004",
+   "fly_id": 2,
+   "my_team": [
+    "Nidoking",
+    "Slowbro",
+    "Lapras",
+    "Venusaur",
+    "Kangaskhan",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Snorlax",
+    "Dragonite",
+    "Tentacruel",
+    "Slowbro",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b005",
+   "fly_id": 2,
+   "my_team": [
+    "Exeggutor",
+    "Snorlax",
+    "Charizard",
+    "Machamp",
+    "Nidoking",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Slowbro",
+    "Machamp",
+    "Chansey",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b006",
+   "fly_id": 2,
+   "my_team": [
+    "Slowbro",
+    "Blastoise",
+    "Tentacruel",
+    "Venusaur",
+    "Rhydon",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Hypno",
+    "Snorlax",
+    "Tentacruel",
+    "Exeggutor",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b007",
+   "fly_id": 2,
+   "my_team": [
+    "Hypno",
+    "Nidoking",
+    "Slowbro",
+    "Dragonite",
+    "Tentacruel",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Lapras",
+    "Nidoking",
+    "Machamp",
+    "Rhydon",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b008",
+   "fly_id": 2,
+   "my_team": [
+    "Poliwrath",
+    "Blastoise",
+    "Lapras",
+    "Hypno",
+    "Venusaur",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Machamp",
+    "Lapras",
+    "Rhydon",
+    "Venusaur",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b009",
+   "fly_id": 2,
+   "my_team": [
+    "Poliwrath",
+    "Chansey",
+    "Charizard",
+    "Machamp",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Exeggutor",
+    "Venusaur",
+    "Dragonite",
+    "Poliwrath",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b010",
+   "fly_id": 2,
+   "my_team": [
+    "Chansey",
+    "Rhydon",
+    "Kangaskhan",
+    "Nidoking",
+    "Blastoise",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Charizard",
+    "Rhydon",
+    "Machamp",
+    "Exeggutor",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b011",
+   "fly_id": 2,
+   "my_team": [
+    "Tentacruel",
+    "Charizard",
+    "Poliwrath",
+    "Chansey",
+    "Venusaur",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Machamp",
+    "Poliwrath",
+    "Lapras",
+    "Exeggutor",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b012",
+   "fly_id": 2,
+   "my_team": [
+    "Snorlax",
+    "Hypno",
+    "Venusaur",
+    "Machamp",
+    "Poliwrath",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Exeggutor",
+    "Rhydon",
+    "Blastoise",
+    "Dragonite",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b013",
+   "fly_id": 2,
+   "my_team": [
+    "Rhydon",
+    "Exeggutor",
+    "Venusaur",
+    "Charizard",
+    "Poliwrath",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Chansey",
+    "Nidoking",
+    "Poliwrath",
+    "Machamp",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b014",
+   "fly_id": 2,
+   "my_team": [
+    "Dragonite",
+    "Snorlax",
+    "Chansey",
+    "Slowbro",
+    "Tentacruel",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Rhydon",
+    "Nidoking",
+    "Blastoise",
+    "Kangaskhan",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b015",
+   "fly_id": 2,
+   "my_team": [
+    "Venusaur",
+    "Hypno",
+    "Kangaskhan",
+    "Chansey",
+    "Nidoking",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Nidoking",
+    "Dragonite",
+    "Blastoise",
+    "Lapras",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b016",
+   "fly_id": 2,
+   "my_team": [
+    "Venusaur",
+    "Snorlax",
+    "Hypno",
+    "Kangaskhan",
+    "Rhydon",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Nidoking",
+    "Exeggutor",
+    "Charizard",
+    "Rhydon",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b017",
+   "fly_id": 2,
+   "my_team": [
+    "Snorlax",
+    "Machamp",
+    "Exeggutor",
+    "Hypno",
+    "Charizard",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Snorlax",
+    "Nidoking",
+    "Blastoise",
+    "Chansey",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b018",
+   "fly_id": 2,
+   "my_team": [
+    "Rhydon",
+    "Poliwrath",
+    "Hypno",
+    "Lapras",
+    "Kangaskhan",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Slowbro",
+    "Hypno",
+    "Dragonite",
+    "Tentacruel",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b019",
+   "fly_id": 2,
+   "my_team": [
+    "Nidoking",
+    "Chansey",
+    "Charizard",
+    "Blastoise",
+    "Poliwrath",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Chansey",
+    "Hypno",
+    "Poliwrath",
+    "Tentacruel",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b020",
+   "fly_id": 2,
+   "my_team": [
+    "Lapras",
+    "Exeggutor",
+    "Nidoking",
+    "Slowbro",
+    "Poliwrath",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Venusaur",
+    "Machamp",
+    "Kangaskhan",
+    "Nidoking",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b021",
+   "fly_id": 2,
+   "my_team": [
+    "Snorlax",
+    "Dragonite",
+    "Venusaur",
+    "Lapras",
+    "Rhydon",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Kangaskhan",
+    "Snorlax",
+    "Machamp",
+    "Dragonite",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b022",
+   "fly_id": 2,
+   "my_team": [
+    "Exeggutor",
+    "Nidoking",
+    "Dragonite",
+    "Rhydon",
+    "Hypno",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Poliwrath",
+    "Rhydon",
+    "Blastoise",
+    "Charizard",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b023",
+   "fly_id": 2,
+   "my_team": [
+    "Exeggutor",
+    "Dragonite",
+    "Machamp",
+    "Chansey",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Chansey",
+    "Machamp",
+    "Charizard",
+    "Blastoise",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b024",
+   "fly_id": 2,
+   "my_team": [
+    "Venusaur",
+    "Hypno",
+    "Exeggutor",
+    "Slowbro",
+    "Kangaskhan",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Exeggutor",
+    "Snorlax",
+    "Machamp",
+    "Venusaur",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b025",
+   "fly_id": 2,
+   "my_team": [
+    "Lapras",
+    "Poliwrath",
+    "Venusaur",
+    "Machamp",
+    "Slowbro",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Hypno",
+    "Poliwrath",
+    "Dragonite",
+    "Exeggutor",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b026",
+   "fly_id": 2,
+   "my_team": [
+    "Dragonite",
+    "Machamp",
+    "Chansey",
+    "Tentacruel",
+    "Venusaur",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Tentacruel",
+    "Snorlax",
+    "Exeggutor",
+    "Dragonite",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b027",
+   "fly_id": 2,
+   "my_team": [
+    "Blastoise",
+    "Exeggutor",
+    "Hypno",
+    "Venusaur",
+    "Nidoking",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Tentacruel",
+    "Rhydon",
+    "Dragonite",
+    "Poliwrath",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b028",
+   "fly_id": 2,
+   "my_team": [
+    "Machamp",
+    "Hypno",
+    "Kangaskhan",
+    "Rhydon",
+    "Lapras",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Charizard",
+    "Slowbro",
+    "Machamp",
+    "Lapras",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b029",
+   "fly_id": 2,
+   "my_team": [
+    "Rhydon",
+    "Machamp",
+    "Snorlax",
+    "Hypno",
+    "Charizard",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Tentacruel",
+    "Hypno",
+    "Dragonite",
+    "Nidoking",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b030",
+   "fly_id": 2,
+   "my_team": [
+    "Hypno",
+    "Slowbro",
+    "Lapras",
+    "Nidoking",
+    "Venusaur",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Tentacruel",
+    "Chansey",
+    "Machamp",
+    "Exeggutor",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b031",
+   "fly_id": 2,
+   "my_team": [
+    "Nidoking",
+    "Tentacruel",
+    "Chansey",
+    "Kangaskhan",
+    "Blastoise",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Tentacruel",
+    "Hypno",
+    "Blastoise",
+    "Snorlax",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b032",
+   "fly_id": 2,
+   "my_team": [
+    "Slowbro",
+    "Nidoking",
+    "Kangaskhan",
+    "Tentacruel",
+    "Exeggutor",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Poliwrath",
+    "Slowbro",
+    "Kangaskhan",
+    "Hypno",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b033",
+   "fly_id": 2,
+   "my_team": [
+    "Exeggutor",
+    "Machamp",
+    "Snorlax",
+    "Dragonite",
+    "Slowbro",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Charizard",
+    "Nidoking",
+    "Machamp",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b034",
+   "fly_id": 2,
+   "my_team": [
+    "Dragonite",
+    "Chansey",
+    "Nidoking",
+    "Lapras",
+    "Machamp",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Charizard",
+    "Lapras",
+    "Chansey",
+    "Dragonite",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b035",
+   "fly_id": 2,
+   "my_team": [
+    "Nidoking",
+    "Blastoise",
+    "Rhydon",
+    "Chansey",
+    "Hypno",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Venusaur",
+    "Lapras",
+    "Hypno",
+    "Blastoise",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b036",
+   "fly_id": 2,
+   "my_team": [
+    "Poliwrath",
+    "Hypno",
+    "Blastoise",
+    "Tentacruel",
+    "Dragonite",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Tentacruel",
+    "Charizard",
+    "Rhydon",
+    "Kangaskhan",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b037",
+   "fly_id": 2,
+   "my_team": [
+    "Exeggutor",
+    "Chansey",
+    "Kangaskhan",
+    "Slowbro",
+    "Snorlax",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Kangaskhan",
+    "Machamp",
+    "Dragonite",
+    "Snorlax",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b038",
+   "fly_id": 2,
+   "my_team": [
+    "Snorlax",
+    "Venusaur",
+    "Kangaskhan",
+    "Rhydon",
+    "Exeggutor",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Lapras",
+    "Nidoking",
+    "Snorlax",
+    "Machamp",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f02-b039",
+   "fly_id": 2,
+   "my_team": [
+    "Lapras",
+    "Dragonite",
+    "Machamp",
+    "Hypno",
+    "Kangaskhan",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Venusaur",
+    "Tentacruel",
+    "Machamp",
+    "Snorlax",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b000",
+   "fly_id": 3,
+   "my_team": [
+    "Exeggutor",
+    "Poliwrath",
+    "Hypno",
+    "Rhydon",
+    "Kangaskhan",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Hypno",
+    "Machamp",
+    "Poliwrath",
+    "Tentacruel",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b001",
+   "fly_id": 3,
+   "my_team": [
+    "Slowbro",
+    "Exeggutor",
+    "Venusaur",
+    "Snorlax",
+    "Chansey",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Poliwrath",
+    "Rhydon",
+    "Charizard",
+    "Kangaskhan",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b002",
+   "fly_id": 3,
+   "my_team": [
+    "Poliwrath",
+    "Tentacruel",
+    "Nidoking",
+    "Venusaur",
+    "Snorlax",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Hypno",
+    "Machamp",
+    "Exeggutor",
+    "Dragonite",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b003",
+   "fly_id": 3,
+   "my_team": [
+    "Hypno",
+    "Nidoking",
+    "Dragonite",
+    "Snorlax",
+    "Blastoise",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Lapras",
+    "Venusaur",
+    "Chansey",
+    "Rhydon",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b004",
+   "fly_id": 3,
+   "my_team": [
+    "Kangaskhan",
+    "Exeggutor",
+    "Lapras",
+    "Venusaur",
+    "Nidoking",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Nidoking",
+    "Blastoise",
+    "Exeggutor",
+    "Poliwrath",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b005",
+   "fly_id": 3,
+   "my_team": [
+    "Machamp",
+    "Nidoking",
+    "Lapras",
+    "Snorlax",
+    "Dragonite",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Rhydon",
+    "Dragonite",
+    "Tentacruel",
+    "Chansey",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b006",
+   "fly_id": 3,
+   "my_team": [
+    "Rhydon",
+    "Dragonite",
+    "Machamp",
+    "Venusaur",
+    "Hypno",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Exeggutor",
+    "Snorlax",
+    "Blastoise",
+    "Hypno",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b007",
+   "fly_id": 3,
+   "my_team": [
+    "Kangaskhan",
+    "Dragonite",
+    "Tentacruel",
+    "Chansey",
+    "Hypno",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Kangaskhan",
+    "Hypno",
+    "Tentacruel",
+    "Chansey",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b008",
+   "fly_id": 3,
+   "my_team": [
+    "Lapras",
+    "Kangaskhan",
+    "Rhydon",
+    "Chansey",
+    "Venusaur",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Slowbro",
+    "Dragonite",
+    "Lapras",
+    "Exeggutor",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b009",
+   "fly_id": 3,
+   "my_team": [
+    "Nidoking",
+    "Slowbro",
+    "Chansey",
+    "Lapras",
+    "Exeggutor",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Venusaur",
+    "Dragonite",
+    "Exeggutor",
+    "Tentacruel",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b010",
+   "fly_id": 3,
+   "my_team": [
+    "Exeggutor",
+    "Snorlax",
+    "Rhydon",
+    "Slowbro",
+    "Charizard",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Nidoking",
+    "Snorlax",
+    "Exeggutor",
+    "Venusaur",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b011",
+   "fly_id": 3,
+   "my_team": [
+    "Poliwrath",
+    "Dragonite",
+    "Venusaur",
+    "Charizard",
+    "Tentacruel",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Slowbro",
+    "Tentacruel",
+    "Exeggutor",
+    "Chansey",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b012",
+   "fly_id": 3,
+   "my_team": [
+    "Venusaur",
+    "Poliwrath",
+    "Slowbro",
+    "Blastoise",
+    "Exeggutor",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Nidoking",
+    "Machamp",
+    "Dragonite",
+    "Venusaur",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b013",
+   "fly_id": 3,
+   "my_team": [
+    "Blastoise",
+    "Chansey",
+    "Poliwrath",
+    "Tentacruel",
+    "Charizard",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Poliwrath",
+    "Snorlax",
+    "Slowbro",
+    "Chansey",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b014",
+   "fly_id": 3,
+   "my_team": [
+    "Machamp",
+    "Venusaur",
+    "Chansey",
+    "Poliwrath",
+    "Snorlax",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Venusaur",
+    "Nidoking",
+    "Charizard",
+    "Slowbro",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b015",
+   "fly_id": 3,
+   "my_team": [
+    "Nidoking",
+    "Chansey",
+    "Tentacruel",
+    "Blastoise",
+    "Lapras",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Kangaskhan",
+    "Rhydon",
+    "Exeggutor",
+    "Tentacruel",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b016",
+   "fly_id": 3,
+   "my_team": [
+    "Lapras",
+    "Chansey",
+    "Poliwrath",
+    "Machamp",
+    "Slowbro",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Venusaur",
+    "Poliwrath",
+    "Nidoking",
+    "Blastoise",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b017",
+   "fly_id": 3,
+   "my_team": [
+    "Exeggutor",
+    "Hypno",
+    "Chansey",
+    "Machamp",
+    "Blastoise",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Lapras",
+    "Machamp",
+    "Hypno",
+    "Dragonite",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b018",
+   "fly_id": 3,
+   "my_team": [
+    "Chansey",
+    "Slowbro",
+    "Tentacruel",
+    "Nidoking",
+    "Rhydon",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Charizard",
+    "Kangaskhan",
+    "Nidoking",
+    "Hypno",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b019",
+   "fly_id": 3,
+   "my_team": [
+    "Dragonite",
+    "Machamp",
+    "Charizard",
+    "Poliwrath",
+    "Tentacruel",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Lapras",
+    "Nidoking",
+    "Kangaskhan",
+    "Rhydon",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b020",
+   "fly_id": 3,
+   "my_team": [
+    "Slowbro",
+    "Chansey",
+    "Rhydon",
+    "Tentacruel",
+    "Venusaur",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Kangaskhan",
+    "Chansey",
+    "Tentacruel",
+    "Rhydon",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b021",
+   "fly_id": 3,
+   "my_team": [
+    "Rhydon",
+    "Poliwrath",
+    "Venusaur",
+    "Chansey",
+    "Tentacruel",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Blastoise",
+    "Tentacruel",
+    "Slowbro",
+    "Chansey",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b022",
+   "fly_id": 3,
+   "my_team": [
+    "Machamp",
+    "Blastoise",
+    "Venusaur",
+    "Chansey",
+    "Slowbro",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Rhydon",
+    "Slowbro",
+    "Poliwrath",
+    "Hypno",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b023",
+   "fly_id": 3,
+   "my_team": [
+    "Nidoking",
+    "Poliwrath",
+    "Rhydon",
+    "Snorlax",
+    "Blastoise",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Chansey",
+    "Snorlax",
+    "Lapras",
+    "Kangaskhan",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b024",
+   "fly_id": 3,
+   "my_team": [
+    "Slowbro",
+    "Machamp",
+    "Lapras",
+    "Nidoking",
+    "Snorlax",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Dragonite",
+    "Kangaskhan",
+    "Charizard",
+    "Rhydon",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b025",
+   "fly_id": 3,
+   "my_team": [
+    "Nidoking",
+    "Dragonite",
+    "Charizard",
+    "Slowbro",
+    "Venusaur",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Exeggutor",
+    "Hypno",
+    "Tentacruel",
+    "Machamp",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b026",
+   "fly_id": 3,
+   "my_team": [
+    "Rhydon",
+    "Dragonite",
+    "Charizard",
+    "Lapras",
+    "Chansey",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Kangaskhan",
+    "Chansey",
+    "Hypno",
+    "Rhydon",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b027",
+   "fly_id": 3,
+   "my_team": [
+    "Snorlax",
+    "Nidoking",
+    "Dragonite",
+    "Machamp",
+    "Poliwrath",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Chansey",
+    "Nidoking",
+    "Machamp",
+    "Hypno",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b028",
+   "fly_id": 3,
+   "my_team": [
+    "Venusaur",
+    "Hypno",
+    "Charizard",
+    "Exeggutor",
+    "Lapras",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Blastoise",
+    "Nidoking",
+    "Charizard",
+    "Venusaur",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b029",
+   "fly_id": 3,
+   "my_team": [
+    "Exeggutor",
+    "Blastoise",
+    "Kangaskhan",
+    "Slowbro",
+    "Venusaur",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Exeggutor",
+    "Lapras",
+    "Hypno",
+    "Slowbro",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b030",
+   "fly_id": 3,
+   "my_team": [
+    "Poliwrath",
+    "Rhydon",
+    "Venusaur",
+    "Kangaskhan",
+    "Slowbro",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Dragonite",
+    "Kangaskhan",
+    "Nidoking",
+    "Machamp",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b031",
+   "fly_id": 3,
+   "my_team": [
+    "Slowbro",
+    "Lapras",
+    "Charizard",
+    "Blastoise",
+    "Tentacruel",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Machamp",
+    "Slowbro",
+    "Nidoking",
+    "Tentacruel",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b032",
+   "fly_id": 3,
+   "my_team": [
+    "Venusaur",
+    "Chansey",
+    "Rhydon",
+    "Charizard",
+    "Lapras",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Slowbro",
+    "Exeggutor",
+    "Machamp",
+    "Blastoise",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b033",
+   "fly_id": 3,
+   "my_team": [
+    "Machamp",
+    "Hypno",
+    "Rhydon",
+    "Snorlax",
+    "Exeggutor",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Blastoise",
+    "Slowbro",
+    "Kangaskhan",
+    "Chansey",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b034",
+   "fly_id": 3,
+   "my_team": [
+    "Rhydon",
+    "Poliwrath",
+    "Slowbro",
+    "Hypno",
+    "Kangaskhan",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Tentacruel",
+    "Charizard",
+    "Blastoise",
+    "Snorlax",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b035",
+   "fly_id": 3,
+   "my_team": [
+    "Kangaskhan",
+    "Nidoking",
+    "Slowbro",
+    "Rhydon",
+    "Dragonite",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Exeggutor",
+    "Nidoking",
+    "Hypno",
+    "Poliwrath",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b036",
+   "fly_id": 3,
+   "my_team": [
+    "Charizard",
+    "Venusaur",
+    "Hypno",
+    "Lapras",
+    "Slowbro",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Exeggutor",
+    "Lapras",
+    "Hypno",
+    "Poliwrath",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b037",
+   "fly_id": 3,
+   "my_team": [
+    "Tentacruel",
+    "Charizard",
+    "Kangaskhan",
+    "Dragonite",
+    "Nidoking",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Lapras",
+    "Slowbro",
+    "Snorlax",
+    "Hypno",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b038",
+   "fly_id": 3,
+   "my_team": [
+    "Venusaur",
+    "Hypno",
+    "Exeggutor",
+    "Slowbro",
+    "Lapras",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Tentacruel",
+    "Rhydon",
+    "Machamp",
+    "Dragonite",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f03-b039",
+   "fly_id": 3,
+   "my_team": [
+    "Blastoise",
+    "Nidoking",
+    "Hypno",
+    "Machamp",
+    "Slowbro",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Blastoise",
+    "Dragonite",
+    "Slowbro",
+    "Charizard",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b000",
+   "fly_id": 4,
+   "my_team": [
+    "Lapras",
+    "Tentacruel",
+    "Blastoise",
+    "Machamp",
+    "Chansey",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Rhydon",
+    "Charizard",
+    "Venusaur",
+    "Lapras",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b001",
+   "fly_id": 4,
+   "my_team": [
+    "Venusaur",
+    "Snorlax",
+    "Tentacruel",
+    "Slowbro",
+    "Dragonite",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Venusaur",
+    "Dragonite",
+    "Exeggutor",
+    "Chansey",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b002",
+   "fly_id": 4,
+   "my_team": [
+    "Nidoking",
+    "Chansey",
+    "Venusaur",
+    "Dragonite",
+    "Poliwrath",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Slowbro",
+    "Charizard",
+    "Poliwrath",
+    "Rhydon",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b003",
+   "fly_id": 4,
+   "my_team": [
+    "Charizard",
+    "Lapras",
+    "Slowbro",
+    "Nidoking",
+    "Hypno",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Kangaskhan",
+    "Nidoking",
+    "Charizard",
+    "Hypno",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b004",
+   "fly_id": 4,
+   "my_team": [
+    "Chansey",
+    "Nidoking",
+    "Poliwrath",
+    "Machamp",
+    "Venusaur",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Lapras",
+    "Hypno",
+    "Snorlax",
+    "Machamp",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b005",
+   "fly_id": 4,
+   "my_team": [
+    "Dragonite",
+    "Exeggutor",
+    "Lapras",
+    "Chansey",
+    "Slowbro",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Venusaur",
+    "Exeggutor",
+    "Rhydon",
+    "Lapras",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b006",
+   "fly_id": 4,
+   "my_team": [
+    "Rhydon",
+    "Nidoking",
+    "Snorlax",
+    "Blastoise",
+    "Dragonite",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Chansey",
+    "Exeggutor",
+    "Nidoking",
+    "Poliwrath",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b007",
+   "fly_id": 4,
+   "my_team": [
+    "Tentacruel",
+    "Charizard",
+    "Rhydon",
+    "Snorlax",
+    "Lapras",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Rhydon",
+    "Chansey",
+    "Nidoking",
+    "Kangaskhan",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b008",
+   "fly_id": 4,
+   "my_team": [
+    "Kangaskhan",
+    "Nidoking",
+    "Slowbro",
+    "Lapras",
+    "Charizard",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Tentacruel",
+    "Kangaskhan",
+    "Lapras",
+    "Dragonite",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b009",
+   "fly_id": 4,
+   "my_team": [
+    "Slowbro",
+    "Rhydon",
+    "Poliwrath",
+    "Lapras",
+    "Blastoise",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Machamp",
+    "Rhydon",
+    "Chansey",
+    "Nidoking",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b010",
+   "fly_id": 4,
+   "my_team": [
+    "Snorlax",
+    "Venusaur",
+    "Charizard",
+    "Blastoise",
+    "Hypno",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Blastoise",
+    "Hypno",
+    "Kangaskhan",
+    "Nidoking",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b011",
+   "fly_id": 4,
+   "my_team": [
+    "Tentacruel",
+    "Exeggutor",
+    "Nidoking",
+    "Poliwrath",
+    "Blastoise",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Rhydon",
+    "Lapras",
+    "Chansey",
+    "Tentacruel",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b012",
+   "fly_id": 4,
+   "my_team": [
+    "Charizard",
+    "Dragonite",
+    "Lapras",
+    "Machamp",
+    "Nidoking",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Lapras",
+    "Poliwrath",
+    "Dragonite",
+    "Blastoise",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b013",
+   "fly_id": 4,
+   "my_team": [
+    "Poliwrath",
+    "Nidoking",
+    "Charizard",
+    "Venusaur",
+    "Machamp",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Charizard",
+    "Tentacruel",
+    "Hypno",
+    "Lapras",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b014",
+   "fly_id": 4,
+   "my_team": [
+    "Tentacruel",
+    "Machamp",
+    "Chansey",
+    "Snorlax",
+    "Exeggutor",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Lapras",
+    "Hypno",
+    "Charizard",
+    "Blastoise",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b015",
+   "fly_id": 4,
+   "my_team": [
+    "Snorlax",
+    "Poliwrath",
+    "Hypno",
+    "Slowbro",
+    "Chansey",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Dragonite",
+    "Machamp",
+    "Snorlax",
+    "Tentacruel",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b016",
+   "fly_id": 4,
+   "my_team": [
+    "Tentacruel",
+    "Kangaskhan",
+    "Snorlax",
+    "Hypno",
+    "Rhydon",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Lapras",
+    "Rhydon",
+    "Chansey",
+    "Venusaur",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b017",
+   "fly_id": 4,
+   "my_team": [
+    "Chansey",
+    "Dragonite",
+    "Nidoking",
+    "Rhydon",
+    "Exeggutor",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Venusaur",
+    "Nidoking",
+    "Hypno",
+    "Slowbro",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b018",
+   "fly_id": 4,
+   "my_team": [
+    "Tentacruel",
+    "Kangaskhan",
+    "Poliwrath",
+    "Snorlax",
+    "Lapras",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Tentacruel",
+    "Rhydon",
+    "Venusaur",
+    "Snorlax",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b019",
+   "fly_id": 4,
+   "my_team": [
+    "Machamp",
+    "Kangaskhan",
+    "Snorlax",
+    "Nidoking",
+    "Poliwrath",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Tentacruel",
+    "Exeggutor",
+    "Venusaur",
+    "Dragonite",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b020",
+   "fly_id": 4,
+   "my_team": [
+    "Kangaskhan",
+    "Nidoking",
+    "Charizard",
+    "Snorlax",
+    "Slowbro",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Kangaskhan",
+    "Snorlax",
+    "Lapras",
+    "Poliwrath",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b021",
+   "fly_id": 4,
+   "my_team": [
+    "Dragonite",
+    "Chansey",
+    "Kangaskhan",
+    "Lapras",
+    "Rhydon",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Charizard",
+    "Snorlax",
+    "Chansey",
+    "Tentacruel",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b022",
+   "fly_id": 4,
+   "my_team": [
+    "Venusaur",
+    "Poliwrath",
+    "Machamp",
+    "Tentacruel",
+    "Charizard",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Hypno",
+    "Nidoking",
+    "Slowbro",
+    "Venusaur",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b023",
+   "fly_id": 4,
+   "my_team": [
+    "Dragonite",
+    "Snorlax",
+    "Chansey",
+    "Machamp",
+    "Slowbro",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Slowbro",
+    "Kangaskhan",
+    "Lapras",
+    "Chansey",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b024",
+   "fly_id": 4,
+   "my_team": [
+    "Kangaskhan",
+    "Hypno",
+    "Snorlax",
+    "Tentacruel",
+    "Dragonite",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Slowbro",
+    "Rhydon",
+    "Machamp",
+    "Kangaskhan",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b025",
+   "fly_id": 4,
+   "my_team": [
+    "Poliwrath",
+    "Lapras",
+    "Chansey",
+    "Hypno",
+    "Machamp",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Chansey",
+    "Machamp",
+    "Exeggutor",
+    "Dragonite",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b026",
+   "fly_id": 4,
+   "my_team": [
+    "Blastoise",
+    "Nidoking",
+    "Machamp",
+    "Rhydon",
+    "Dragonite",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Lapras",
+    "Hypno",
+    "Dragonite",
+    "Charizard",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b027",
+   "fly_id": 4,
+   "my_team": [
+    "Rhydon",
+    "Kangaskhan",
+    "Exeggutor",
+    "Tentacruel",
+    "Chansey",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Kangaskhan",
+    "Poliwrath",
+    "Chansey",
+    "Charizard",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b028",
+   "fly_id": 4,
+   "my_team": [
+    "Hypno",
+    "Snorlax",
+    "Chansey",
+    "Lapras",
+    "Charizard",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Venusaur",
+    "Snorlax",
+    "Blastoise",
+    "Nidoking",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b029",
+   "fly_id": 4,
+   "my_team": [
+    "Charizard",
+    "Tentacruel",
+    "Lapras",
+    "Poliwrath",
+    "Dragonite",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Charizard",
+    "Machamp",
+    "Lapras",
+    "Chansey",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b030",
+   "fly_id": 4,
+   "my_team": [
+    "Poliwrath",
+    "Rhydon",
+    "Venusaur",
+    "Hypno",
+    "Nidoking",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Lapras",
+    "Chansey",
+    "Slowbro",
+    "Blastoise",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b031",
+   "fly_id": 4,
+   "my_team": [
+    "Kangaskhan",
+    "Tentacruel",
+    "Blastoise",
+    "Hypno",
+    "Rhydon",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Rhydon",
+    "Machamp",
+    "Venusaur",
+    "Snorlax",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b032",
+   "fly_id": 4,
+   "my_team": [
+    "Blastoise",
+    "Exeggutor",
+    "Snorlax",
+    "Nidoking",
+    "Charizard",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Lapras",
+    "Machamp",
+    "Exeggutor",
+    "Rhydon",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b033",
+   "fly_id": 4,
+   "my_team": [
+    "Kangaskhan",
+    "Rhydon",
+    "Blastoise",
+    "Charizard",
+    "Chansey",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Kangaskhan",
+    "Chansey",
+    "Tentacruel",
+    "Lapras",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b034",
+   "fly_id": 4,
+   "my_team": [
+    "Chansey",
+    "Blastoise",
+    "Kangaskhan",
+    "Rhydon",
+    "Charizard",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Lapras",
+    "Rhydon",
+    "Tentacruel",
+    "Poliwrath",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b035",
+   "fly_id": 4,
+   "my_team": [
+    "Snorlax",
+    "Charizard",
+    "Rhydon",
+    "Hypno",
+    "Venusaur",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Hypno",
+    "Poliwrath",
+    "Charizard",
+    "Venusaur",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b036",
+   "fly_id": 4,
+   "my_team": [
+    "Blastoise",
+    "Dragonite",
+    "Nidoking",
+    "Machamp",
+    "Rhydon",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Dragonite",
+    "Blastoise",
+    "Snorlax",
+    "Slowbro",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b037",
+   "fly_id": 4,
+   "my_team": [
+    "Exeggutor",
+    "Poliwrath",
+    "Tentacruel",
+    "Slowbro",
+    "Charizard",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Blastoise",
+    "Kangaskhan",
+    "Rhydon",
+    "Poliwrath",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b038",
+   "fly_id": 4,
+   "my_team": [
+    "Machamp",
+    "Charizard",
+    "Lapras",
+    "Chansey",
+    "Rhydon",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Machamp",
+    "Kangaskhan",
+    "Dragonite",
+    "Chansey",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f04-b039",
+   "fly_id": 4,
+   "my_team": [
+    "Exeggutor",
+    "Machamp",
+    "Rhydon",
+    "Venusaur",
+    "Chansey",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Charizard",
+    "Lapras",
+    "Venusaur",
+    "Slowbro",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b000",
+   "fly_id": 5,
+   "my_team": [
+    "Kangaskhan",
+    "Charizard",
+    "Poliwrath",
+    "Dragonite",
+    "Lapras",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Dragonite",
+    "Snorlax",
+    "Exeggutor",
+    "Tentacruel",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b001",
+   "fly_id": 5,
+   "my_team": [
+    "Poliwrath",
+    "Chansey",
+    "Rhydon",
+    "Venusaur",
+    "Hypno",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Snorlax",
+    "Slowbro",
+    "Charizard",
+    "Hypno",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b002",
+   "fly_id": 5,
+   "my_team": [
+    "Snorlax",
+    "Rhydon",
+    "Nidoking",
+    "Hypno",
+    "Charizard",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Lapras",
+    "Snorlax",
+    "Chansey",
+    "Poliwrath",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b003",
+   "fly_id": 5,
+   "my_team": [
+    "Tentacruel",
+    "Chansey",
+    "Poliwrath",
+    "Blastoise",
+    "Rhydon",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Chansey",
+    "Exeggutor",
+    "Blastoise",
+    "Rhydon",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b004",
+   "fly_id": 5,
+   "my_team": [
+    "Lapras",
+    "Nidoking",
+    "Hypno",
+    "Chansey",
+    "Snorlax",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Hypno",
+    "Tentacruel",
+    "Dragonite",
+    "Poliwrath",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b005",
+   "fly_id": 5,
+   "my_team": [
+    "Tentacruel",
+    "Snorlax",
+    "Kangaskhan",
+    "Rhydon",
+    "Poliwrath",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Poliwrath",
+    "Hypno",
+    "Blastoise",
+    "Kangaskhan",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b006",
+   "fly_id": 5,
+   "my_team": [
+    "Poliwrath",
+    "Nidoking",
+    "Dragonite",
+    "Blastoise",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Charizard",
+    "Poliwrath",
+    "Rhydon",
+    "Snorlax",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b007",
+   "fly_id": 5,
+   "my_team": [
+    "Lapras",
+    "Tentacruel",
+    "Nidoking",
+    "Rhydon",
+    "Exeggutor",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Tentacruel",
+    "Hypno",
+    "Venusaur",
+    "Poliwrath",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b008",
+   "fly_id": 5,
+   "my_team": [
+    "Rhydon",
+    "Tentacruel",
+    "Hypno",
+    "Lapras",
+    "Exeggutor",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Nidoking",
+    "Kangaskhan",
+    "Exeggutor",
+    "Slowbro",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b009",
+   "fly_id": 5,
+   "my_team": [
+    "Poliwrath",
+    "Slowbro",
+    "Venusaur",
+    "Exeggutor",
+    "Charizard",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Snorlax",
+    "Slowbro",
+    "Nidoking",
+    "Hypno",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b010",
+   "fly_id": 5,
+   "my_team": [
+    "Chansey",
+    "Blastoise",
+    "Lapras",
+    "Poliwrath",
+    "Exeggutor",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Venusaur",
+    "Rhydon",
+    "Machamp",
+    "Kangaskhan",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b011",
+   "fly_id": 5,
+   "my_team": [
+    "Chansey",
+    "Charizard",
+    "Slowbro",
+    "Blastoise",
+    "Tentacruel",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Blastoise",
+    "Snorlax",
+    "Nidoking",
+    "Lapras",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b012",
+   "fly_id": 5,
+   "my_team": [
+    "Hypno",
+    "Kangaskhan",
+    "Snorlax",
+    "Exeggutor",
+    "Blastoise",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Snorlax",
+    "Lapras",
+    "Dragonite",
+    "Poliwrath",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b013",
+   "fly_id": 5,
+   "my_team": [
+    "Blastoise",
+    "Machamp",
+    "Hypno",
+    "Exeggutor",
+    "Slowbro",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Slowbro",
+    "Snorlax",
+    "Kangaskhan",
+    "Machamp",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b014",
+   "fly_id": 5,
+   "my_team": [
+    "Hypno",
+    "Kangaskhan",
+    "Venusaur",
+    "Chansey",
+    "Dragonite",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Exeggutor",
+    "Machamp",
+    "Dragonite",
+    "Snorlax",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b015",
+   "fly_id": 5,
+   "my_team": [
+    "Lapras",
+    "Slowbro",
+    "Charizard",
+    "Kangaskhan",
+    "Machamp",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Nidoking",
+    "Snorlax",
+    "Dragonite",
+    "Exeggutor",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b016",
+   "fly_id": 5,
+   "my_team": [
+    "Dragonite",
+    "Lapras",
+    "Charizard",
+    "Slowbro",
+    "Blastoise",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Poliwrath",
+    "Nidoking",
+    "Machamp",
+    "Blastoise",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b017",
+   "fly_id": 5,
+   "my_team": [
+    "Dragonite",
+    "Snorlax",
+    "Machamp",
+    "Charizard",
+    "Exeggutor",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Nidoking",
+    "Exeggutor",
+    "Kangaskhan",
+    "Machamp",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b018",
+   "fly_id": 5,
+   "my_team": [
+    "Chansey",
+    "Machamp",
+    "Hypno",
+    "Dragonite",
+    "Exeggutor",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Charizard",
+    "Slowbro",
+    "Nidoking",
+    "Tentacruel",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b019",
+   "fly_id": 5,
+   "my_team": [
+    "Blastoise",
+    "Rhydon",
+    "Slowbro",
+    "Charizard",
+    "Exeggutor",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Venusaur",
+    "Blastoise",
+    "Poliwrath",
+    "Chansey",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b020",
+   "fly_id": 5,
+   "my_team": [
+    "Snorlax",
+    "Kangaskhan",
+    "Venusaur",
+    "Dragonite",
+    "Hypno",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Tentacruel",
+    "Machamp",
+    "Nidoking",
+    "Hypno",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b021",
+   "fly_id": 5,
+   "my_team": [
+    "Dragonite",
+    "Venusaur",
+    "Blastoise",
+    "Lapras",
+    "Poliwrath",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Kangaskhan",
+    "Blastoise",
+    "Snorlax",
+    "Venusaur",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b022",
+   "fly_id": 5,
+   "my_team": [
+    "Slowbro",
+    "Kangaskhan",
+    "Snorlax",
+    "Dragonite",
+    "Tentacruel",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Poliwrath",
+    "Machamp",
+    "Dragonite",
+    "Venusaur",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b023",
+   "fly_id": 5,
+   "my_team": [
+    "Rhydon",
+    "Chansey",
+    "Blastoise",
+    "Dragonite",
+    "Exeggutor",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Machamp",
+    "Lapras",
+    "Tentacruel",
+    "Slowbro",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b024",
+   "fly_id": 5,
+   "my_team": [
+    "Kangaskhan",
+    "Lapras",
+    "Hypno",
+    "Snorlax",
+    "Poliwrath",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Chansey",
+    "Machamp",
+    "Rhydon",
+    "Venusaur",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b025",
+   "fly_id": 5,
+   "my_team": [
+    "Tentacruel",
+    "Charizard",
+    "Blastoise",
+    "Lapras",
+    "Nidoking",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Blastoise",
+    "Slowbro",
+    "Rhydon",
+    "Lapras",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b026",
+   "fly_id": 5,
+   "my_team": [
+    "Nidoking",
+    "Blastoise",
+    "Kangaskhan",
+    "Hypno",
+    "Slowbro",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Rhydon",
+    "Kangaskhan",
+    "Nidoking",
+    "Poliwrath",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b027",
+   "fly_id": 5,
+   "my_team": [
+    "Snorlax",
+    "Rhydon",
+    "Hypno",
+    "Poliwrath",
+    "Machamp",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Tentacruel",
+    "Slowbro",
+    "Exeggutor",
+    "Dragonite",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b028",
+   "fly_id": 5,
+   "my_team": [
+    "Chansey",
+    "Charizard",
+    "Machamp",
+    "Slowbro",
+    "Snorlax",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Poliwrath",
+    "Chansey",
+    "Lapras",
+    "Nidoking",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b029",
+   "fly_id": 5,
+   "my_team": [
+    "Nidoking",
+    "Blastoise",
+    "Charizard",
+    "Chansey",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Slowbro",
+    "Poliwrath",
+    "Rhydon",
+    "Hypno",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b030",
+   "fly_id": 5,
+   "my_team": [
+    "Lapras",
+    "Blastoise",
+    "Tentacruel",
+    "Kangaskhan",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Machamp",
+    "Rhydon",
+    "Slowbro",
+    "Venusaur",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b031",
+   "fly_id": 5,
+   "my_team": [
+    "Rhydon",
+    "Blastoise",
+    "Snorlax",
+    "Exeggutor",
+    "Tentacruel",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Dragonite",
+    "Chansey",
+    "Poliwrath",
+    "Lapras",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b032",
+   "fly_id": 5,
+   "my_team": [
+    "Snorlax",
+    "Lapras",
+    "Exeggutor",
+    "Nidoking",
+    "Chansey",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Lapras",
+    "Snorlax",
+    "Poliwrath",
+    "Venusaur",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b033",
+   "fly_id": 5,
+   "my_team": [
+    "Hypno",
+    "Snorlax",
+    "Charizard",
+    "Kangaskhan",
+    "Tentacruel",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Rhydon",
+    "Chansey",
+    "Blastoise",
+    "Hypno",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b034",
+   "fly_id": 5,
+   "my_team": [
+    "Charizard",
+    "Tentacruel",
+    "Lapras",
+    "Snorlax",
+    "Nidoking",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Machamp",
+    "Chansey",
+    "Rhydon",
+    "Exeggutor",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b035",
+   "fly_id": 5,
+   "my_team": [
+    "Lapras",
+    "Exeggutor",
+    "Chansey",
+    "Snorlax",
+    "Hypno",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Venusaur",
+    "Nidoking",
+    "Poliwrath",
+    "Chansey",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b036",
+   "fly_id": 5,
+   "my_team": [
+    "Tentacruel",
+    "Exeggutor",
+    "Lapras",
+    "Blastoise",
+    "Kangaskhan",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Poliwrath",
+    "Machamp",
+    "Nidoking",
+    "Dragonite",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b037",
+   "fly_id": 5,
+   "my_team": [
+    "Slowbro",
+    "Tentacruel",
+    "Nidoking",
+    "Venusaur",
+    "Exeggutor",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Dragonite",
+    "Snorlax",
+    "Tentacruel",
+    "Kangaskhan",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b038",
+   "fly_id": 5,
+   "my_team": [
+    "Slowbro",
+    "Blastoise",
+    "Snorlax",
+    "Lapras",
+    "Chansey",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Chansey",
+    "Nidoking",
+    "Venusaur",
+    "Rhydon",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f05-b039",
+   "fly_id": 5,
+   "my_team": [
+    "Machamp",
+    "Charizard",
+    "Blastoise",
+    "Venusaur",
+    "Exeggutor",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Exeggutor",
+    "Charizard",
+    "Tentacruel",
+    "Kangaskhan",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b000",
+   "fly_id": 6,
+   "my_team": [
+    "Venusaur",
+    "Hypno",
+    "Slowbro",
+    "Blastoise",
+    "Machamp",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Dragonite",
+    "Hypno",
+    "Chansey",
+    "Tentacruel",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b001",
+   "fly_id": 6,
+   "my_team": [
+    "Blastoise",
+    "Lapras",
+    "Dragonite",
+    "Chansey",
+    "Machamp",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Lapras",
+    "Chansey",
+    "Poliwrath",
+    "Rhydon",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b002",
+   "fly_id": 6,
+   "my_team": [
+    "Charizard",
+    "Chansey",
+    "Lapras",
+    "Blastoise",
+    "Dragonite",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Hypno",
+    "Dragonite",
+    "Venusaur",
+    "Nidoking",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b003",
+   "fly_id": 6,
+   "my_team": [
+    "Venusaur",
+    "Hypno",
+    "Snorlax",
+    "Blastoise",
+    "Poliwrath",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Blastoise",
+    "Poliwrath",
+    "Rhydon",
+    "Nidoking",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b004",
+   "fly_id": 6,
+   "my_team": [
+    "Venusaur",
+    "Charizard",
+    "Kangaskhan",
+    "Dragonite",
+    "Lapras",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Exeggutor",
+    "Slowbro",
+    "Kangaskhan",
+    "Chansey",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b005",
+   "fly_id": 6,
+   "my_team": [
+    "Slowbro",
+    "Hypno",
+    "Lapras",
+    "Dragonite",
+    "Rhydon",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Machamp",
+    "Hypno",
+    "Tentacruel",
+    "Chansey",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b006",
+   "fly_id": 6,
+   "my_team": [
+    "Machamp",
+    "Charizard",
+    "Blastoise",
+    "Chansey",
+    "Snorlax",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Chansey",
+    "Lapras",
+    "Slowbro",
+    "Dragonite",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b007",
+   "fly_id": 6,
+   "my_team": [
+    "Chansey",
+    "Hypno",
+    "Slowbro",
+    "Dragonite",
+    "Rhydon",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Snorlax",
+    "Venusaur",
+    "Rhydon",
+    "Tentacruel",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b008",
+   "fly_id": 6,
+   "my_team": [
+    "Snorlax",
+    "Machamp",
+    "Dragonite",
+    "Slowbro",
+    "Blastoise",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Blastoise",
+    "Tentacruel",
+    "Hypno",
+    "Dragonite",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b009",
+   "fly_id": 6,
+   "my_team": [
+    "Nidoking",
+    "Kangaskhan",
+    "Hypno",
+    "Venusaur",
+    "Tentacruel",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Dragonite",
+    "Venusaur",
+    "Kangaskhan",
+    "Slowbro",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b010",
+   "fly_id": 6,
+   "my_team": [
+    "Venusaur",
+    "Slowbro",
+    "Charizard",
+    "Kangaskhan",
+    "Chansey",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Hypno",
+    "Charizard",
+    "Snorlax",
+    "Lapras",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b011",
+   "fly_id": 6,
+   "my_team": [
+    "Exeggutor",
+    "Machamp",
+    "Nidoking",
+    "Lapras",
+    "Tentacruel",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Nidoking",
+    "Hypno",
+    "Machamp",
+    "Blastoise",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b012",
+   "fly_id": 6,
+   "my_team": [
+    "Slowbro",
+    "Venusaur",
+    "Snorlax",
+    "Tentacruel",
+    "Charizard",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Blastoise",
+    "Nidoking",
+    "Dragonite",
+    "Poliwrath",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b013",
+   "fly_id": 6,
+   "my_team": [
+    "Blastoise",
+    "Machamp",
+    "Lapras",
+    "Exeggutor",
+    "Kangaskhan",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Slowbro",
+    "Exeggutor",
+    "Lapras",
+    "Charizard",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b014",
+   "fly_id": 6,
+   "my_team": [
+    "Venusaur",
+    "Dragonite",
+    "Lapras",
+    "Chansey",
+    "Tentacruel",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Poliwrath",
+    "Slowbro",
+    "Dragonite",
+    "Exeggutor",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b015",
+   "fly_id": 6,
+   "my_team": [
+    "Dragonite",
+    "Venusaur",
+    "Chansey",
+    "Machamp",
+    "Kangaskhan",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Snorlax",
+    "Lapras",
+    "Tentacruel",
+    "Kangaskhan",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b016",
+   "fly_id": 6,
+   "my_team": [
+    "Slowbro",
+    "Exeggutor",
+    "Kangaskhan",
+    "Venusaur",
+    "Lapras",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Slowbro",
+    "Machamp",
+    "Kangaskhan",
+    "Snorlax",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b017",
+   "fly_id": 6,
+   "my_team": [
+    "Lapras",
+    "Blastoise",
+    "Charizard",
+    "Nidoking",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Blastoise",
+    "Exeggutor",
+    "Tentacruel",
+    "Snorlax",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b018",
+   "fly_id": 6,
+   "my_team": [
+    "Poliwrath",
+    "Lapras",
+    "Venusaur",
+    "Blastoise",
+    "Snorlax",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Rhydon",
+    "Charizard",
+    "Nidoking",
+    "Machamp",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b019",
+   "fly_id": 6,
+   "my_team": [
+    "Chansey",
+    "Dragonite",
+    "Kangaskhan",
+    "Poliwrath",
+    "Hypno",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Poliwrath",
+    "Charizard",
+    "Venusaur",
+    "Kangaskhan",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b020",
+   "fly_id": 6,
+   "my_team": [
+    "Poliwrath",
+    "Rhydon",
+    "Tentacruel",
+    "Blastoise",
+    "Snorlax",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Charizard",
+    "Kangaskhan",
+    "Dragonite",
+    "Rhydon",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b021",
+   "fly_id": 6,
+   "my_team": [
+    "Hypno",
+    "Exeggutor",
+    "Lapras",
+    "Venusaur",
+    "Rhydon",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Lapras",
+    "Chansey",
+    "Snorlax",
+    "Exeggutor",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b022",
+   "fly_id": 6,
+   "my_team": [
+    "Lapras",
+    "Kangaskhan",
+    "Snorlax",
+    "Charizard",
+    "Tentacruel",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Hypno",
+    "Poliwrath",
+    "Blastoise",
+    "Tentacruel",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b023",
+   "fly_id": 6,
+   "my_team": [
+    "Blastoise",
+    "Exeggutor",
+    "Snorlax",
+    "Nidoking",
+    "Hypno",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Lapras",
+    "Machamp",
+    "Charizard",
+    "Snorlax",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b024",
+   "fly_id": 6,
+   "my_team": [
+    "Slowbro",
+    "Chansey",
+    "Hypno",
+    "Nidoking",
+    "Kangaskhan",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Snorlax",
+    "Exeggutor",
+    "Hypno",
+    "Kangaskhan",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b025",
+   "fly_id": 6,
+   "my_team": [
+    "Dragonite",
+    "Blastoise",
+    "Rhydon",
+    "Venusaur",
+    "Slowbro",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Tentacruel",
+    "Nidoking",
+    "Kangaskhan",
+    "Blastoise",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b026",
+   "fly_id": 6,
+   "my_team": [
+    "Slowbro",
+    "Kangaskhan",
+    "Exeggutor",
+    "Nidoking",
+    "Charizard",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Tentacruel",
+    "Blastoise",
+    "Poliwrath",
+    "Exeggutor",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b027",
+   "fly_id": 6,
+   "my_team": [
+    "Exeggutor",
+    "Slowbro",
+    "Poliwrath",
+    "Nidoking",
+    "Rhydon",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Lapras",
+    "Venusaur",
+    "Rhydon",
+    "Poliwrath",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b028",
+   "fly_id": 6,
+   "my_team": [
+    "Blastoise",
+    "Dragonite",
+    "Nidoking",
+    "Slowbro",
+    "Lapras",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Chansey",
+    "Nidoking",
+    "Hypno",
+    "Exeggutor",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b029",
+   "fly_id": 6,
+   "my_team": [
+    "Charizard",
+    "Dragonite",
+    "Exeggutor",
+    "Poliwrath",
+    "Venusaur",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Nidoking",
+    "Snorlax",
+    "Chansey",
+    "Rhydon",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b030",
+   "fly_id": 6,
+   "my_team": [
+    "Poliwrath",
+    "Lapras",
+    "Rhydon",
+    "Snorlax",
+    "Blastoise",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Charizard",
+    "Hypno",
+    "Poliwrath",
+    "Lapras",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b031",
+   "fly_id": 6,
+   "my_team": [
+    "Machamp",
+    "Blastoise",
+    "Rhydon",
+    "Kangaskhan",
+    "Poliwrath",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Blastoise",
+    "Lapras",
+    "Charizard",
+    "Slowbro",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b032",
+   "fly_id": 6,
+   "my_team": [
+    "Nidoking",
+    "Chansey",
+    "Blastoise",
+    "Lapras",
+    "Rhydon",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Nidoking",
+    "Poliwrath",
+    "Slowbro",
+    "Kangaskhan",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b033",
+   "fly_id": 6,
+   "my_team": [
+    "Machamp",
+    "Lapras",
+    "Tentacruel",
+    "Chansey",
+    "Venusaur",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Chansey",
+    "Rhydon",
+    "Poliwrath",
+    "Tentacruel",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b034",
+   "fly_id": 6,
+   "my_team": [
+    "Charizard",
+    "Dragonite",
+    "Rhydon",
+    "Exeggutor",
+    "Poliwrath",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Nidoking",
+    "Exeggutor",
+    "Chansey",
+    "Tentacruel",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b035",
+   "fly_id": 6,
+   "my_team": [
+    "Chansey",
+    "Machamp",
+    "Nidoking",
+    "Slowbro",
+    "Tentacruel",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Nidoking",
+    "Blastoise",
+    "Snorlax",
+    "Dragonite",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b036",
+   "fly_id": 6,
+   "my_team": [
+    "Machamp",
+    "Kangaskhan",
+    "Hypno",
+    "Snorlax",
+    "Nidoking",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Kangaskhan",
+    "Chansey",
+    "Charizard",
+    "Dragonite",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b037",
+   "fly_id": 6,
+   "my_team": [
+    "Kangaskhan",
+    "Poliwrath",
+    "Rhydon",
+    "Machamp",
+    "Chansey",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Snorlax",
+    "Dragonite",
+    "Slowbro",
+    "Lapras",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b038",
+   "fly_id": 6,
+   "my_team": [
+    "Exeggutor",
+    "Nidoking",
+    "Rhydon",
+    "Machamp",
+    "Charizard",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Nidoking",
+    "Lapras",
+    "Snorlax",
+    "Poliwrath",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f06-b039",
+   "fly_id": 6,
+   "my_team": [
+    "Dragonite",
+    "Venusaur",
+    "Hypno",
+    "Tentacruel",
+    "Exeggutor",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Nidoking",
+    "Hypno",
+    "Machamp",
+    "Lapras",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b000",
+   "fly_id": 7,
+   "my_team": [
+    "Nidoking",
+    "Rhydon",
+    "Kangaskhan",
+    "Blastoise",
+    "Charizard",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Slowbro",
+    "Venusaur",
+    "Hypno",
+    "Nidoking",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b001",
+   "fly_id": 7,
+   "my_team": [
+    "Poliwrath",
+    "Venusaur",
+    "Exeggutor",
+    "Rhydon",
+    "Hypno",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Charizard",
+    "Venusaur",
+    "Slowbro",
+    "Rhydon",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b002",
+   "fly_id": 7,
+   "my_team": [
+    "Exeggutor",
+    "Poliwrath",
+    "Snorlax",
+    "Dragonite",
+    "Slowbro",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Nidoking",
+    "Hypno",
+    "Dragonite",
+    "Snorlax",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b003",
+   "fly_id": 7,
+   "my_team": [
+    "Machamp",
+    "Dragonite",
+    "Snorlax",
+    "Tentacruel",
+    "Poliwrath",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Snorlax",
+    "Exeggutor",
+    "Venusaur",
+    "Poliwrath",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b004",
+   "fly_id": 7,
+   "my_team": [
+    "Slowbro",
+    "Chansey",
+    "Lapras",
+    "Snorlax",
+    "Rhydon",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Chansey",
+    "Snorlax",
+    "Exeggutor",
+    "Tentacruel",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b005",
+   "fly_id": 7,
+   "my_team": [
+    "Hypno",
+    "Tentacruel",
+    "Venusaur",
+    "Exeggutor",
+    "Blastoise",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Charizard",
+    "Chansey",
+    "Kangaskhan",
+    "Machamp",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b006",
+   "fly_id": 7,
+   "my_team": [
+    "Charizard",
+    "Venusaur",
+    "Dragonite",
+    "Blastoise",
+    "Tentacruel",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Hypno",
+    "Slowbro",
+    "Kangaskhan",
+    "Nidoking",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b007",
+   "fly_id": 7,
+   "my_team": [
+    "Slowbro",
+    "Kangaskhan",
+    "Chansey",
+    "Charizard",
+    "Snorlax",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Machamp",
+    "Dragonite",
+    "Slowbro",
+    "Nidoking",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b008",
+   "fly_id": 7,
+   "my_team": [
+    "Machamp",
+    "Lapras",
+    "Tentacruel",
+    "Kangaskhan",
+    "Blastoise",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Slowbro",
+    "Kangaskhan",
+    "Nidoking",
+    "Hypno",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b009",
+   "fly_id": 7,
+   "my_team": [
+    "Chansey",
+    "Lapras",
+    "Hypno",
+    "Slowbro",
+    "Machamp",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Machamp",
+    "Nidoking",
+    "Exeggutor",
+    "Dragonite",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b010",
+   "fly_id": 7,
+   "my_team": [
+    "Rhydon",
+    "Slowbro",
+    "Charizard",
+    "Kangaskhan",
+    "Nidoking",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Snorlax",
+    "Chansey",
+    "Hypno",
+    "Rhydon",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b011",
+   "fly_id": 7,
+   "my_team": [
+    "Tentacruel",
+    "Chansey",
+    "Lapras",
+    "Exeggutor",
+    "Charizard",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Exeggutor",
+    "Blastoise",
+    "Machamp",
+    "Nidoking",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b012",
+   "fly_id": 7,
+   "my_team": [
+    "Snorlax",
+    "Slowbro",
+    "Machamp",
+    "Hypno",
+    "Venusaur",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Tentacruel",
+    "Nidoking",
+    "Machamp",
+    "Exeggutor",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b013",
+   "fly_id": 7,
+   "my_team": [
+    "Hypno",
+    "Dragonite",
+    "Machamp",
+    "Tentacruel",
+    "Chansey",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Exeggutor",
+    "Tentacruel",
+    "Blastoise",
+    "Charizard",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b014",
+   "fly_id": 7,
+   "my_team": [
+    "Blastoise",
+    "Machamp",
+    "Poliwrath",
+    "Slowbro",
+    "Snorlax",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Machamp",
+    "Rhydon",
+    "Venusaur",
+    "Lapras",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b015",
+   "fly_id": 7,
+   "my_team": [
+    "Tentacruel",
+    "Snorlax",
+    "Nidoking",
+    "Blastoise",
+    "Charizard",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Poliwrath",
+    "Blastoise",
+    "Exeggutor",
+    "Hypno",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b016",
+   "fly_id": 7,
+   "my_team": [
+    "Venusaur",
+    "Exeggutor",
+    "Hypno",
+    "Blastoise",
+    "Tentacruel",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Slowbro",
+    "Exeggutor",
+    "Kangaskhan",
+    "Machamp",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b017",
+   "fly_id": 7,
+   "my_team": [
+    "Slowbro",
+    "Charizard",
+    "Poliwrath",
+    "Snorlax",
+    "Venusaur",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Venusaur",
+    "Poliwrath",
+    "Slowbro",
+    "Exeggutor",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b018",
+   "fly_id": 7,
+   "my_team": [
+    "Rhydon",
+    "Exeggutor",
+    "Snorlax",
+    "Nidoking",
+    "Venusaur",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Lapras",
+    "Snorlax",
+    "Blastoise",
+    "Dragonite",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b019",
+   "fly_id": 7,
+   "my_team": [
+    "Tentacruel",
+    "Blastoise",
+    "Hypno",
+    "Dragonite",
+    "Charizard",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Tentacruel",
+    "Slowbro",
+    "Kangaskhan",
+    "Hypno",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b020",
+   "fly_id": 7,
+   "my_team": [
+    "Hypno",
+    "Tentacruel",
+    "Nidoking",
+    "Venusaur",
+    "Rhydon",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Machamp",
+    "Snorlax",
+    "Slowbro",
+    "Hypno",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b021",
+   "fly_id": 7,
+   "my_team": [
+    "Chansey",
+    "Rhydon",
+    "Dragonite",
+    "Machamp",
+    "Exeggutor",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Blastoise",
+    "Venusaur",
+    "Tentacruel",
+    "Chansey",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b022",
+   "fly_id": 7,
+   "my_team": [
+    "Dragonite",
+    "Chansey",
+    "Kangaskhan",
+    "Machamp",
+    "Exeggutor",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Kangaskhan",
+    "Machamp",
+    "Rhydon",
+    "Tentacruel",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b023",
+   "fly_id": 7,
+   "my_team": [
+    "Tentacruel",
+    "Snorlax",
+    "Slowbro",
+    "Hypno",
+    "Machamp",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Poliwrath",
+    "Exeggutor",
+    "Lapras",
+    "Chansey",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b024",
+   "fly_id": 7,
+   "my_team": [
+    "Dragonite",
+    "Lapras",
+    "Machamp",
+    "Nidoking",
+    "Rhydon",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Poliwrath",
+    "Rhydon",
+    "Chansey",
+    "Charizard",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b025",
+   "fly_id": 7,
+   "my_team": [
+    "Machamp",
+    "Tentacruel",
+    "Lapras",
+    "Poliwrath",
+    "Hypno",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Kangaskhan",
+    "Hypno",
+    "Slowbro",
+    "Blastoise",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b026",
+   "fly_id": 7,
+   "my_team": [
+    "Lapras",
+    "Tentacruel",
+    "Poliwrath",
+    "Charizard",
+    "Snorlax",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Snorlax",
+    "Rhydon",
+    "Dragonite",
+    "Charizard",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b027",
+   "fly_id": 7,
+   "my_team": [
+    "Nidoking",
+    "Venusaur",
+    "Rhydon",
+    "Hypno",
+    "Exeggutor",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Exeggutor",
+    "Kangaskhan",
+    "Venusaur",
+    "Poliwrath",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b028",
+   "fly_id": 7,
+   "my_team": [
+    "Venusaur",
+    "Slowbro",
+    "Poliwrath",
+    "Chansey",
+    "Charizard",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Poliwrath",
+    "Kangaskhan",
+    "Machamp",
+    "Nidoking",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b029",
+   "fly_id": 7,
+   "my_team": [
+    "Lapras",
+    "Dragonite",
+    "Poliwrath",
+    "Venusaur",
+    "Charizard",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Venusaur",
+    "Lapras",
+    "Charizard",
+    "Hypno",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b030",
+   "fly_id": 7,
+   "my_team": [
+    "Lapras",
+    "Charizard",
+    "Hypno",
+    "Snorlax",
+    "Kangaskhan",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Slowbro",
+    "Machamp",
+    "Venusaur",
+    "Dragonite",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b031",
+   "fly_id": 7,
+   "my_team": [
+    "Exeggutor",
+    "Charizard",
+    "Slowbro",
+    "Chansey",
+    "Tentacruel",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Snorlax",
+    "Nidoking",
+    "Hypno",
+    "Chansey",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b032",
+   "fly_id": 7,
+   "my_team": [
+    "Slowbro",
+    "Tentacruel",
+    "Venusaur",
+    "Blastoise",
+    "Dragonite",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Lapras",
+    "Blastoise",
+    "Charizard",
+    "Chansey",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b033",
+   "fly_id": 7,
+   "my_team": [
+    "Hypno",
+    "Chansey",
+    "Lapras",
+    "Machamp",
+    "Exeggutor",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Charizard",
+    "Kangaskhan",
+    "Dragonite",
+    "Tentacruel",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b034",
+   "fly_id": 7,
+   "my_team": [
+    "Nidoking",
+    "Rhydon",
+    "Kangaskhan",
+    "Venusaur",
+    "Charizard",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Slowbro",
+    "Hypno",
+    "Nidoking",
+    "Poliwrath",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b035",
+   "fly_id": 7,
+   "my_team": [
+    "Lapras",
+    "Rhydon",
+    "Machamp",
+    "Hypno",
+    "Snorlax",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Poliwrath",
+    "Hypno",
+    "Tentacruel",
+    "Snorlax",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b036",
+   "fly_id": 7,
+   "my_team": [
+    "Dragonite",
+    "Blastoise",
+    "Nidoking",
+    "Chansey",
+    "Snorlax",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Blastoise",
+    "Chansey",
+    "Charizard",
+    "Kangaskhan",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b037",
+   "fly_id": 7,
+   "my_team": [
+    "Nidoking",
+    "Rhydon",
+    "Chansey",
+    "Lapras",
+    "Venusaur",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Tentacruel",
+    "Machamp",
+    "Chansey",
+    "Blastoise",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b038",
+   "fly_id": 7,
+   "my_team": [
+    "Lapras",
+    "Kangaskhan",
+    "Snorlax",
+    "Exeggutor",
+    "Hypno",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Blastoise",
+    "Hypno",
+    "Exeggutor",
+    "Chansey",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f07-b039",
+   "fly_id": 7,
+   "my_team": [
+    "Rhydon",
+    "Blastoise",
+    "Snorlax",
+    "Hypno",
+    "Chansey",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Dragonite",
+    "Slowbro",
+    "Lapras",
+    "Machamp",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b000",
+   "fly_id": 8,
+   "my_team": [
+    "Lapras",
+    "Exeggutor",
+    "Snorlax",
+    "Poliwrath",
+    "Tentacruel",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Snorlax",
+    "Tentacruel",
+    "Nidoking",
+    "Machamp",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b001",
+   "fly_id": 8,
+   "my_team": [
+    "Nidoking",
+    "Exeggutor",
+    "Tentacruel",
+    "Charizard",
+    "Hypno",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Rhydon",
+    "Poliwrath",
+    "Blastoise",
+    "Nidoking",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b002",
+   "fly_id": 8,
+   "my_team": [
+    "Exeggutor",
+    "Kangaskhan",
+    "Dragonite",
+    "Poliwrath",
+    "Snorlax",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Venusaur",
+    "Rhydon",
+    "Exeggutor",
+    "Kangaskhan",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b003",
+   "fly_id": 8,
+   "my_team": [
+    "Exeggutor",
+    "Dragonite",
+    "Snorlax",
+    "Rhydon",
+    "Charizard",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Rhydon",
+    "Blastoise",
+    "Exeggutor",
+    "Snorlax",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b004",
+   "fly_id": 8,
+   "my_team": [
+    "Dragonite",
+    "Poliwrath",
+    "Machamp",
+    "Tentacruel",
+    "Kangaskhan",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Blastoise",
+    "Dragonite",
+    "Lapras",
+    "Nidoking",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b005",
+   "fly_id": 8,
+   "my_team": [
+    "Hypno",
+    "Charizard",
+    "Blastoise",
+    "Chansey",
+    "Venusaur",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Rhydon",
+    "Venusaur",
+    "Snorlax",
+    "Blastoise",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b006",
+   "fly_id": 8,
+   "my_team": [
+    "Dragonite",
+    "Slowbro",
+    "Machamp",
+    "Poliwrath",
+    "Charizard",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Kangaskhan",
+    "Lapras",
+    "Machamp",
+    "Snorlax",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b007",
+   "fly_id": 8,
+   "my_team": [
+    "Exeggutor",
+    "Blastoise",
+    "Snorlax",
+    "Dragonite",
+    "Hypno",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Machamp",
+    "Chansey",
+    "Rhydon",
+    "Snorlax",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b008",
+   "fly_id": 8,
+   "my_team": [
+    "Rhydon",
+    "Chansey",
+    "Slowbro",
+    "Kangaskhan",
+    "Snorlax",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Charizard",
+    "Machamp",
+    "Chansey",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b009",
+   "fly_id": 8,
+   "my_team": [
+    "Tentacruel",
+    "Kangaskhan",
+    "Lapras",
+    "Slowbro",
+    "Snorlax",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Dragonite",
+    "Chansey",
+    "Hypno",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b010",
+   "fly_id": 8,
+   "my_team": [
+    "Dragonite",
+    "Lapras",
+    "Poliwrath",
+    "Venusaur",
+    "Machamp",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Machamp",
+    "Charizard",
+    "Chansey",
+    "Dragonite",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b011",
+   "fly_id": 8,
+   "my_team": [
+    "Kangaskhan",
+    "Dragonite",
+    "Tentacruel",
+    "Nidoking",
+    "Poliwrath",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Machamp",
+    "Hypno",
+    "Kangaskhan",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b012",
+   "fly_id": 8,
+   "my_team": [
+    "Poliwrath",
+    "Venusaur",
+    "Slowbro",
+    "Rhydon",
+    "Blastoise",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Hypno",
+    "Dragonite",
+    "Snorlax",
+    "Blastoise",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b013",
+   "fly_id": 8,
+   "my_team": [
+    "Charizard",
+    "Rhydon",
+    "Nidoking",
+    "Poliwrath",
+    "Lapras",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Charizard",
+    "Dragonite",
+    "Exeggutor",
+    "Venusaur",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b014",
+   "fly_id": 8,
+   "my_team": [
+    "Tentacruel",
+    "Dragonite",
+    "Poliwrath",
+    "Slowbro",
+    "Blastoise",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Slowbro",
+    "Blastoise",
+    "Snorlax",
+    "Venusaur",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b015",
+   "fly_id": 8,
+   "my_team": [
+    "Chansey",
+    "Rhydon",
+    "Charizard",
+    "Exeggutor",
+    "Kangaskhan",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Kangaskhan",
+    "Machamp",
+    "Lapras",
+    "Blastoise",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b016",
+   "fly_id": 8,
+   "my_team": [
+    "Kangaskhan",
+    "Exeggutor",
+    "Tentacruel",
+    "Snorlax",
+    "Dragonite",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Rhydon",
+    "Machamp",
+    "Poliwrath",
+    "Charizard",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b017",
+   "fly_id": 8,
+   "my_team": [
+    "Venusaur",
+    "Nidoking",
+    "Charizard",
+    "Poliwrath",
+    "Snorlax",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Machamp",
+    "Rhydon",
+    "Snorlax",
+    "Tentacruel",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b018",
+   "fly_id": 8,
+   "my_team": [
+    "Machamp",
+    "Dragonite",
+    "Snorlax",
+    "Nidoking",
+    "Exeggutor",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Rhydon",
+    "Kangaskhan",
+    "Chansey",
+    "Hypno",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b019",
+   "fly_id": 8,
+   "my_team": [
+    "Dragonite",
+    "Slowbro",
+    "Hypno",
+    "Kangaskhan",
+    "Snorlax",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Machamp",
+    "Rhydon",
+    "Lapras",
+    "Charizard",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b020",
+   "fly_id": 8,
+   "my_team": [
+    "Blastoise",
+    "Lapras",
+    "Slowbro",
+    "Rhydon",
+    "Chansey",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Rhydon",
+    "Chansey",
+    "Exeggutor",
+    "Venusaur",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b021",
+   "fly_id": 8,
+   "my_team": [
+    "Kangaskhan",
+    "Nidoking",
+    "Blastoise",
+    "Charizard",
+    "Lapras",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Kangaskhan",
+    "Dragonite",
+    "Exeggutor",
+    "Charizard",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b022",
+   "fly_id": 8,
+   "my_team": [
+    "Kangaskhan",
+    "Exeggutor",
+    "Slowbro",
+    "Machamp",
+    "Venusaur",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Lapras",
+    "Charizard",
+    "Hypno",
+    "Machamp",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b023",
+   "fly_id": 8,
+   "my_team": [
+    "Venusaur",
+    "Slowbro",
+    "Rhydon",
+    "Hypno",
+    "Dragonite",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Blastoise",
+    "Tentacruel",
+    "Exeggutor",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b024",
+   "fly_id": 8,
+   "my_team": [
+    "Snorlax",
+    "Poliwrath",
+    "Nidoking",
+    "Kangaskhan",
+    "Venusaur",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Kangaskhan",
+    "Chansey",
+    "Tentacruel",
+    "Rhydon",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b025",
+   "fly_id": 8,
+   "my_team": [
+    "Snorlax",
+    "Slowbro",
+    "Venusaur",
+    "Tentacruel",
+    "Nidoking",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Chansey",
+    "Lapras",
+    "Nidoking",
+    "Rhydon",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b026",
+   "fly_id": 8,
+   "my_team": [
+    "Exeggutor",
+    "Kangaskhan",
+    "Poliwrath",
+    "Hypno",
+    "Machamp",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Tentacruel",
+    "Nidoking",
+    "Hypno",
+    "Venusaur",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b027",
+   "fly_id": 8,
+   "my_team": [
+    "Tentacruel",
+    "Snorlax",
+    "Chansey",
+    "Kangaskhan",
+    "Rhydon",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Poliwrath",
+    "Tentacruel",
+    "Nidoking",
+    "Exeggutor",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b028",
+   "fly_id": 8,
+   "my_team": [
+    "Nidoking",
+    "Slowbro",
+    "Poliwrath",
+    "Blastoise",
+    "Kangaskhan",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Nidoking",
+    "Lapras",
+    "Charizard",
+    "Chansey",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b029",
+   "fly_id": 8,
+   "my_team": [
+    "Venusaur",
+    "Nidoking",
+    "Lapras",
+    "Snorlax",
+    "Kangaskhan",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Dragonite",
+    "Venusaur",
+    "Exeggutor",
+    "Poliwrath",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b030",
+   "fly_id": 8,
+   "my_team": [
+    "Blastoise",
+    "Charizard",
+    "Rhydon",
+    "Kangaskhan",
+    "Hypno",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Rhydon",
+    "Blastoise",
+    "Dragonite",
+    "Slowbro",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b031",
+   "fly_id": 8,
+   "my_team": [
+    "Machamp",
+    "Venusaur",
+    "Snorlax",
+    "Exeggutor",
+    "Slowbro",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Poliwrath",
+    "Rhydon",
+    "Slowbro",
+    "Lapras",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b032",
+   "fly_id": 8,
+   "my_team": [
+    "Exeggutor",
+    "Hypno",
+    "Nidoking",
+    "Blastoise",
+    "Tentacruel",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Tentacruel",
+    "Nidoking",
+    "Poliwrath",
+    "Exeggutor",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b033",
+   "fly_id": 8,
+   "my_team": [
+    "Blastoise",
+    "Lapras",
+    "Exeggutor",
+    "Dragonite",
+    "Machamp",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Rhydon",
+    "Tentacruel",
+    "Slowbro",
+    "Charizard",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b034",
+   "fly_id": 8,
+   "my_team": [
+    "Machamp",
+    "Kangaskhan",
+    "Venusaur",
+    "Nidoking",
+    "Slowbro",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Hypno",
+    "Rhydon",
+    "Nidoking",
+    "Machamp",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b035",
+   "fly_id": 8,
+   "my_team": [
+    "Charizard",
+    "Exeggutor",
+    "Venusaur",
+    "Lapras",
+    "Machamp",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Slowbro",
+    "Kangaskhan",
+    "Dragonite",
+    "Blastoise",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b036",
+   "fly_id": 8,
+   "my_team": [
+    "Nidoking",
+    "Dragonite",
+    "Kangaskhan",
+    "Lapras",
+    "Venusaur",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Blastoise",
+    "Dragonite",
+    "Chansey",
+    "Tentacruel",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b037",
+   "fly_id": 8,
+   "my_team": [
+    "Kangaskhan",
+    "Snorlax",
+    "Exeggutor",
+    "Slowbro",
+    "Blastoise",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Poliwrath",
+    "Lapras",
+    "Tentacruel",
+    "Venusaur",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b038",
+   "fly_id": 8,
+   "my_team": [
+    "Snorlax",
+    "Chansey",
+    "Hypno",
+    "Charizard",
+    "Slowbro",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Dragonite",
+    "Venusaur",
+    "Chansey",
+    "Nidoking",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f08-b039",
+   "fly_id": 8,
+   "my_team": [
+    "Machamp",
+    "Charizard",
+    "Nidoking",
+    "Blastoise",
+    "Tentacruel",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Nidoking",
+    "Dragonite",
+    "Rhydon",
+    "Tentacruel",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b000",
+   "fly_id": 9,
+   "my_team": [
+    "Exeggutor",
+    "Poliwrath",
+    "Chansey",
+    "Dragonite",
+    "Tentacruel",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Nidoking",
+    "Machamp",
+    "Tentacruel",
+    "Exeggutor",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b001",
+   "fly_id": 9,
+   "my_team": [
+    "Exeggutor",
+    "Lapras",
+    "Kangaskhan",
+    "Snorlax",
+    "Blastoise",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Venusaur",
+    "Chansey",
+    "Rhydon",
+    "Machamp",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b002",
+   "fly_id": 9,
+   "my_team": [
+    "Kangaskhan",
+    "Chansey",
+    "Poliwrath",
+    "Dragonite",
+    "Machamp",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Hypno",
+    "Poliwrath",
+    "Venusaur",
+    "Machamp",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b003",
+   "fly_id": 9,
+   "my_team": [
+    "Kangaskhan",
+    "Machamp",
+    "Poliwrath",
+    "Venusaur",
+    "Snorlax",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Nidoking",
+    "Poliwrath",
+    "Snorlax",
+    "Rhydon",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b004",
+   "fly_id": 9,
+   "my_team": [
+    "Dragonite",
+    "Blastoise",
+    "Tentacruel",
+    "Hypno",
+    "Poliwrath",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Dragonite",
+    "Blastoise",
+    "Hypno",
+    "Tentacruel",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b005",
+   "fly_id": 9,
+   "my_team": [
+    "Chansey",
+    "Rhydon",
+    "Slowbro",
+    "Poliwrath",
+    "Charizard",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Tentacruel",
+    "Kangaskhan",
+    "Nidoking",
+    "Poliwrath",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b006",
+   "fly_id": 9,
+   "my_team": [
+    "Tentacruel",
+    "Machamp",
+    "Nidoking",
+    "Venusaur",
+    "Charizard",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Rhydon",
+    "Snorlax",
+    "Dragonite",
+    "Poliwrath",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b007",
+   "fly_id": 9,
+   "my_team": [
+    "Machamp",
+    "Venusaur",
+    "Dragonite",
+    "Snorlax",
+    "Rhydon",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Chansey",
+    "Venusaur",
+    "Tentacruel",
+    "Lapras",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b008",
+   "fly_id": 9,
+   "my_team": [
+    "Snorlax",
+    "Rhydon",
+    "Tentacruel",
+    "Lapras",
+    "Machamp",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Hypno",
+    "Lapras",
+    "Rhydon",
+    "Charizard",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b009",
+   "fly_id": 9,
+   "my_team": [
+    "Exeggutor",
+    "Rhydon",
+    "Slowbro",
+    "Machamp",
+    "Venusaur",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Exeggutor",
+    "Nidoking",
+    "Poliwrath",
+    "Dragonite",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b010",
+   "fly_id": 9,
+   "my_team": [
+    "Exeggutor",
+    "Slowbro",
+    "Hypno",
+    "Nidoking",
+    "Machamp",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Chansey",
+    "Hypno",
+    "Exeggutor",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b011",
+   "fly_id": 9,
+   "my_team": [
+    "Nidoking",
+    "Dragonite",
+    "Charizard",
+    "Hypno",
+    "Rhydon",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Snorlax",
+    "Chansey",
+    "Poliwrath",
+    "Dragonite",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b012",
+   "fly_id": 9,
+   "my_team": [
+    "Tentacruel",
+    "Hypno",
+    "Dragonite",
+    "Venusaur",
+    "Rhydon",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Machamp",
+    "Snorlax",
+    "Rhydon",
+    "Poliwrath",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b013",
+   "fly_id": 9,
+   "my_team": [
+    "Exeggutor",
+    "Kangaskhan",
+    "Slowbro",
+    "Blastoise",
+    "Charizard",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Kangaskhan",
+    "Venusaur",
+    "Nidoking",
+    "Snorlax",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b014",
+   "fly_id": 9,
+   "my_team": [
+    "Venusaur",
+    "Snorlax",
+    "Rhydon",
+    "Chansey",
+    "Poliwrath",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Blastoise",
+    "Venusaur",
+    "Snorlax",
+    "Charizard",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b015",
+   "fly_id": 9,
+   "my_team": [
+    "Hypno",
+    "Dragonite",
+    "Poliwrath",
+    "Venusaur",
+    "Charizard",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Kangaskhan",
+    "Lapras",
+    "Machamp",
+    "Snorlax",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b016",
+   "fly_id": 9,
+   "my_team": [
+    "Venusaur",
+    "Blastoise",
+    "Poliwrath",
+    "Machamp",
+    "Exeggutor",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Venusaur",
+    "Hypno",
+    "Nidoking",
+    "Dragonite",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b017",
+   "fly_id": 9,
+   "my_team": [
+    "Nidoking",
+    "Charizard",
+    "Rhydon",
+    "Venusaur",
+    "Machamp",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Rhydon",
+    "Charizard",
+    "Poliwrath",
+    "Tentacruel",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b018",
+   "fly_id": 9,
+   "my_team": [
+    "Chansey",
+    "Tentacruel",
+    "Poliwrath",
+    "Nidoking",
+    "Rhydon",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Exeggutor",
+    "Chansey",
+    "Kangaskhan",
+    "Blastoise",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b019",
+   "fly_id": 9,
+   "my_team": [
+    "Slowbro",
+    "Lapras",
+    "Poliwrath",
+    "Tentacruel",
+    "Chansey",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Venusaur",
+    "Hypno",
+    "Tentacruel",
+    "Dragonite",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b020",
+   "fly_id": 9,
+   "my_team": [
+    "Poliwrath",
+    "Venusaur",
+    "Hypno",
+    "Machamp",
+    "Rhydon",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Chansey",
+    "Dragonite",
+    "Hypno",
+    "Lapras",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b021",
+   "fly_id": 9,
+   "my_team": [
+    "Venusaur",
+    "Nidoking",
+    "Hypno",
+    "Exeggutor",
+    "Blastoise",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Poliwrath",
+    "Hypno",
+    "Nidoking",
+    "Tentacruel",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b022",
+   "fly_id": 9,
+   "my_team": [
+    "Dragonite",
+    "Machamp",
+    "Chansey",
+    "Blastoise",
+    "Lapras",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Chansey",
+    "Blastoise",
+    "Tentacruel",
+    "Dragonite",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b023",
+   "fly_id": 9,
+   "my_team": [
+    "Venusaur",
+    "Rhydon",
+    "Machamp",
+    "Dragonite",
+    "Charizard",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Kangaskhan",
+    "Chansey",
+    "Dragonite",
+    "Snorlax",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b024",
+   "fly_id": 9,
+   "my_team": [
+    "Nidoking",
+    "Snorlax",
+    "Rhydon",
+    "Charizard",
+    "Lapras",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Machamp",
+    "Rhydon",
+    "Poliwrath",
+    "Dragonite",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b025",
+   "fly_id": 9,
+   "my_team": [
+    "Slowbro",
+    "Tentacruel",
+    "Hypno",
+    "Rhydon",
+    "Chansey",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Hypno",
+    "Nidoking",
+    "Rhydon",
+    "Tentacruel",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b026",
+   "fly_id": 9,
+   "my_team": [
+    "Snorlax",
+    "Chansey",
+    "Nidoking",
+    "Machamp",
+    "Poliwrath",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Snorlax",
+    "Rhydon",
+    "Venusaur",
+    "Hypno",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b027",
+   "fly_id": 9,
+   "my_team": [
+    "Snorlax",
+    "Slowbro",
+    "Hypno",
+    "Venusaur",
+    "Dragonite",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Rhydon",
+    "Poliwrath",
+    "Slowbro",
+    "Chansey",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b028",
+   "fly_id": 9,
+   "my_team": [
+    "Kangaskhan",
+    "Venusaur",
+    "Snorlax",
+    "Charizard",
+    "Blastoise",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Lapras",
+    "Machamp",
+    "Rhydon",
+    "Kangaskhan",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b029",
+   "fly_id": 9,
+   "my_team": [
+    "Lapras",
+    "Poliwrath",
+    "Rhydon",
+    "Kangaskhan",
+    "Nidoking",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Exeggutor",
+    "Kangaskhan",
+    "Poliwrath",
+    "Hypno",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b030",
+   "fly_id": 9,
+   "my_team": [
+    "Rhydon",
+    "Snorlax",
+    "Chansey",
+    "Lapras",
+    "Nidoking",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Exeggutor",
+    "Snorlax",
+    "Hypno",
+    "Chansey",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b031",
+   "fly_id": 9,
+   "my_team": [
+    "Kangaskhan",
+    "Blastoise",
+    "Tentacruel",
+    "Machamp",
+    "Rhydon",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Lapras",
+    "Machamp",
+    "Charizard",
+    "Slowbro",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b032",
+   "fly_id": 9,
+   "my_team": [
+    "Exeggutor",
+    "Snorlax",
+    "Chansey",
+    "Slowbro",
+    "Machamp",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Hypno",
+    "Exeggutor",
+    "Tentacruel",
+    "Blastoise",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b033",
+   "fly_id": 9,
+   "my_team": [
+    "Tentacruel",
+    "Exeggutor",
+    "Dragonite",
+    "Venusaur",
+    "Rhydon",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Charizard",
+    "Dragonite",
+    "Nidoking",
+    "Venusaur",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b034",
+   "fly_id": 9,
+   "my_team": [
+    "Poliwrath",
+    "Exeggutor",
+    "Kangaskhan",
+    "Rhydon",
+    "Charizard",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Blastoise",
+    "Slowbro",
+    "Charizard",
+    "Rhydon",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b035",
+   "fly_id": 9,
+   "my_team": [
+    "Chansey",
+    "Dragonite",
+    "Charizard",
+    "Lapras",
+    "Snorlax",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Kangaskhan",
+    "Rhydon",
+    "Dragonite",
+    "Blastoise",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b036",
+   "fly_id": 9,
+   "my_team": [
+    "Blastoise",
+    "Snorlax",
+    "Poliwrath",
+    "Machamp",
+    "Tentacruel",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Chansey",
+    "Machamp",
+    "Exeggutor",
+    "Blastoise",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b037",
+   "fly_id": 9,
+   "my_team": [
+    "Kangaskhan",
+    "Dragonite",
+    "Snorlax",
+    "Blastoise",
+    "Venusaur",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Chansey",
+    "Venusaur",
+    "Slowbro",
+    "Kangaskhan",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b038",
+   "fly_id": 9,
+   "my_team": [
+    "Lapras",
+    "Kangaskhan",
+    "Nidoking",
+    "Snorlax",
+    "Exeggutor",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Nidoking",
+    "Poliwrath",
+    "Dragonite",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f09-b039",
+   "fly_id": 9,
+   "my_team": [
+    "Venusaur",
+    "Lapras",
+    "Nidoking",
+    "Slowbro",
+    "Rhydon",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Chansey",
+    "Poliwrath",
+    "Hypno",
+    "Dragonite",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b000",
+   "fly_id": 10,
+   "my_team": [
+    "Machamp",
+    "Chansey",
+    "Exeggutor",
+    "Nidoking",
+    "Charizard",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Snorlax",
+    "Machamp",
+    "Hypno",
+    "Rhydon",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b001",
+   "fly_id": 10,
+   "my_team": [
+    "Venusaur",
+    "Rhydon",
+    "Kangaskhan",
+    "Poliwrath",
+    "Blastoise",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Kangaskhan",
+    "Rhydon",
+    "Tentacruel",
+    "Blastoise",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b002",
+   "fly_id": 10,
+   "my_team": [
+    "Venusaur",
+    "Snorlax",
+    "Blastoise",
+    "Machamp",
+    "Lapras",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Tentacruel",
+    "Poliwrath",
+    "Nidoking",
+    "Hypno",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b003",
+   "fly_id": 10,
+   "my_team": [
+    "Poliwrath",
+    "Venusaur",
+    "Rhydon",
+    "Chansey",
+    "Slowbro",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Nidoking",
+    "Venusaur",
+    "Tentacruel",
+    "Poliwrath",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b004",
+   "fly_id": 10,
+   "my_team": [
+    "Slowbro",
+    "Nidoking",
+    "Blastoise",
+    "Dragonite",
+    "Chansey",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Venusaur",
+    "Poliwrath",
+    "Slowbro",
+    "Chansey",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b005",
+   "fly_id": 10,
+   "my_team": [
+    "Charizard",
+    "Kangaskhan",
+    "Lapras",
+    "Blastoise",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Poliwrath",
+    "Snorlax",
+    "Kangaskhan",
+    "Lapras",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b006",
+   "fly_id": 10,
+   "my_team": [
+    "Exeggutor",
+    "Dragonite",
+    "Lapras",
+    "Rhydon",
+    "Charizard",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Exeggutor",
+    "Tentacruel",
+    "Machamp",
+    "Venusaur",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b007",
+   "fly_id": 10,
+   "my_team": [
+    "Rhydon",
+    "Chansey",
+    "Dragonite",
+    "Hypno",
+    "Machamp",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Lapras",
+    "Nidoking",
+    "Dragonite",
+    "Poliwrath",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b008",
+   "fly_id": 10,
+   "my_team": [
+    "Snorlax",
+    "Venusaur",
+    "Poliwrath",
+    "Machamp",
+    "Kangaskhan",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Slowbro",
+    "Machamp",
+    "Kangaskhan",
+    "Hypno",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b009",
+   "fly_id": 10,
+   "my_team": [
+    "Slowbro",
+    "Blastoise",
+    "Lapras",
+    "Snorlax",
+    "Chansey",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Rhydon",
+    "Nidoking",
+    "Blastoise",
+    "Snorlax",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b010",
+   "fly_id": 10,
+   "my_team": [
+    "Blastoise",
+    "Venusaur",
+    "Kangaskhan",
+    "Machamp",
+    "Rhydon",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Hypno",
+    "Venusaur",
+    "Exeggutor",
+    "Nidoking",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b011",
+   "fly_id": 10,
+   "my_team": [
+    "Charizard",
+    "Hypno",
+    "Poliwrath",
+    "Machamp",
+    "Chansey",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Snorlax",
+    "Chansey",
+    "Slowbro",
+    "Nidoking",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b012",
+   "fly_id": 10,
+   "my_team": [
+    "Venusaur",
+    "Charizard",
+    "Slowbro",
+    "Chansey",
+    "Exeggutor",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Lapras",
+    "Blastoise",
+    "Dragonite",
+    "Hypno",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b013",
+   "fly_id": 10,
+   "my_team": [
+    "Tentacruel",
+    "Machamp",
+    "Dragonite",
+    "Exeggutor",
+    "Hypno",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Venusaur",
+    "Nidoking",
+    "Dragonite",
+    "Rhydon",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b014",
+   "fly_id": 10,
+   "my_team": [
+    "Venusaur",
+    "Poliwrath",
+    "Lapras",
+    "Tentacruel",
+    "Rhydon",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Nidoking",
+    "Slowbro",
+    "Venusaur",
+    "Kangaskhan",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b015",
+   "fly_id": 10,
+   "my_team": [
+    "Venusaur",
+    "Snorlax",
+    "Slowbro",
+    "Poliwrath",
+    "Chansey",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Lapras",
+    "Machamp",
+    "Nidoking",
+    "Charizard",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b016",
+   "fly_id": 10,
+   "my_team": [
+    "Machamp",
+    "Lapras",
+    "Blastoise",
+    "Rhydon",
+    "Dragonite",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Poliwrath",
+    "Nidoking",
+    "Venusaur",
+    "Machamp",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b017",
+   "fly_id": 10,
+   "my_team": [
+    "Rhydon",
+    "Machamp",
+    "Lapras",
+    "Poliwrath",
+    "Charizard",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Snorlax",
+    "Chansey",
+    "Blastoise",
+    "Exeggutor",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b018",
+   "fly_id": 10,
+   "my_team": [
+    "Poliwrath",
+    "Chansey",
+    "Dragonite",
+    "Venusaur",
+    "Machamp",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Snorlax",
+    "Poliwrath",
+    "Chansey",
+    "Tentacruel",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b019",
+   "fly_id": 10,
+   "my_team": [
+    "Slowbro",
+    "Hypno",
+    "Machamp",
+    "Tentacruel",
+    "Poliwrath",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Machamp",
+    "Kangaskhan",
+    "Poliwrath",
+    "Venusaur",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b020",
+   "fly_id": 10,
+   "my_team": [
+    "Snorlax",
+    "Blastoise",
+    "Kangaskhan",
+    "Venusaur",
+    "Lapras",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Kangaskhan",
+    "Rhydon",
+    "Machamp",
+    "Poliwrath",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b021",
+   "fly_id": 10,
+   "my_team": [
+    "Chansey",
+    "Tentacruel",
+    "Machamp",
+    "Charizard",
+    "Poliwrath",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Poliwrath",
+    "Exeggutor",
+    "Charizard",
+    "Rhydon",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b022",
+   "fly_id": 10,
+   "my_team": [
+    "Snorlax",
+    "Kangaskhan",
+    "Slowbro",
+    "Lapras",
+    "Rhydon",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Snorlax",
+    "Exeggutor",
+    "Hypno",
+    "Rhydon",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b023",
+   "fly_id": 10,
+   "my_team": [
+    "Blastoise",
+    "Slowbro",
+    "Venusaur",
+    "Chansey",
+    "Kangaskhan",
+    "Machamp"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Nidoking",
+    "Poliwrath",
+    "Blastoise",
+    "Kangaskhan",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b024",
+   "fly_id": 10,
+   "my_team": [
+    "Slowbro",
+    "Rhydon",
+    "Kangaskhan",
+    "Tentacruel",
+    "Nidoking",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Lapras",
+    "Hypno",
+    "Machamp",
+    "Exeggutor",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b025",
+   "fly_id": 10,
+   "my_team": [
+    "Nidoking",
+    "Charizard",
+    "Blastoise",
+    "Machamp",
+    "Snorlax",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Rhydon",
+    "Lapras",
+    "Slowbro",
+    "Poliwrath",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b026",
+   "fly_id": 10,
+   "my_team": [
+    "Dragonite",
+    "Rhydon",
+    "Nidoking",
+    "Tentacruel",
+    "Exeggutor",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Blastoise",
+    "Kangaskhan",
+    "Rhydon",
+    "Lapras",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b027",
+   "fly_id": 10,
+   "my_team": [
+    "Nidoking",
+    "Chansey",
+    "Lapras",
+    "Charizard",
+    "Blastoise",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Rhydon",
+    "Charizard",
+    "Nidoking",
+    "Venusaur",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b028",
+   "fly_id": 10,
+   "my_team": [
+    "Venusaur",
+    "Blastoise",
+    "Chansey",
+    "Tentacruel",
+    "Kangaskhan",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Dragonite",
+    "Chansey",
+    "Venusaur",
+    "Tentacruel",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b029",
+   "fly_id": 10,
+   "my_team": [
+    "Exeggutor",
+    "Blastoise",
+    "Kangaskhan",
+    "Rhydon",
+    "Charizard",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Slowbro",
+    "Tentacruel",
+    "Poliwrath",
+    "Snorlax",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b030",
+   "fly_id": 10,
+   "my_team": [
+    "Hypno",
+    "Poliwrath",
+    "Kangaskhan",
+    "Tentacruel",
+    "Charizard",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Slowbro",
+    "Nidoking",
+    "Venusaur",
+    "Machamp",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b031",
+   "fly_id": 10,
+   "my_team": [
+    "Nidoking",
+    "Blastoise",
+    "Snorlax",
+    "Exeggutor",
+    "Lapras",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Blastoise",
+    "Tentacruel",
+    "Venusaur",
+    "Dragonite",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b032",
+   "fly_id": 10,
+   "my_team": [
+    "Charizard",
+    "Nidoking",
+    "Machamp",
+    "Chansey",
+    "Blastoise",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Chansey",
+    "Tentacruel",
+    "Blastoise",
+    "Poliwrath",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b033",
+   "fly_id": 10,
+   "my_team": [
+    "Blastoise",
+    "Snorlax",
+    "Venusaur",
+    "Machamp",
+    "Dragonite",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Kangaskhan",
+    "Snorlax",
+    "Venusaur",
+    "Poliwrath",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b034",
+   "fly_id": 10,
+   "my_team": [
+    "Dragonite",
+    "Slowbro",
+    "Poliwrath",
+    "Nidoking",
+    "Chansey",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Tentacruel",
+    "Blastoise",
+    "Kangaskhan",
+    "Poliwrath",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b035",
+   "fly_id": 10,
+   "my_team": [
+    "Snorlax",
+    "Chansey",
+    "Exeggutor",
+    "Slowbro",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Rhydon",
+    "Blastoise",
+    "Kangaskhan",
+    "Tentacruel",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b036",
+   "fly_id": 10,
+   "my_team": [
+    "Dragonite",
+    "Lapras",
+    "Hypno",
+    "Kangaskhan",
+    "Nidoking",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Tentacruel",
+    "Rhydon",
+    "Exeggutor",
+    "Machamp",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b037",
+   "fly_id": 10,
+   "my_team": [
+    "Rhydon",
+    "Dragonite",
+    "Lapras",
+    "Kangaskhan",
+    "Snorlax",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Nidoking",
+    "Snorlax",
+    "Slowbro",
+    "Blastoise",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b038",
+   "fly_id": 10,
+   "my_team": [
+    "Rhydon",
+    "Poliwrath",
+    "Dragonite",
+    "Lapras",
+    "Machamp",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Snorlax",
+    "Hypno",
+    "Rhydon",
+    "Poliwrath",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f10-b039",
+   "fly_id": 10,
+   "my_team": [
+    "Dragonite",
+    "Chansey",
+    "Hypno",
+    "Snorlax",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Tentacruel",
+    "Machamp",
+    "Slowbro",
+    "Kangaskhan",
+    "Dragonite"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b000",
+   "fly_id": 11,
+   "my_team": [
+    "Nidoking",
+    "Rhydon",
+    "Poliwrath",
+    "Chansey",
+    "Dragonite",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Kangaskhan",
+    "Chansey",
+    "Machamp",
+    "Exeggutor",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b001",
+   "fly_id": 11,
+   "my_team": [
+    "Slowbro",
+    "Venusaur",
+    "Kangaskhan",
+    "Snorlax",
+    "Charizard",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Hypno",
+    "Charizard",
+    "Slowbro",
+    "Blastoise",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b002",
+   "fly_id": 11,
+   "my_team": [
+    "Charizard",
+    "Chansey",
+    "Machamp",
+    "Rhydon",
+    "Slowbro",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Chansey",
+    "Charizard",
+    "Nidoking",
+    "Dragonite",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b003",
+   "fly_id": 11,
+   "my_team": [
+    "Lapras",
+    "Exeggutor",
+    "Kangaskhan",
+    "Hypno",
+    "Snorlax",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Chansey",
+    "Machamp",
+    "Blastoise",
+    "Rhydon",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b004",
+   "fly_id": 11,
+   "my_team": [
+    "Lapras",
+    "Tentacruel",
+    "Nidoking",
+    "Poliwrath",
+    "Venusaur",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Exeggutor",
+    "Blastoise",
+    "Poliwrath",
+    "Nidoking",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b005",
+   "fly_id": 11,
+   "my_team": [
+    "Chansey",
+    "Exeggutor",
+    "Dragonite",
+    "Slowbro",
+    "Poliwrath",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Tentacruel",
+    "Blastoise",
+    "Snorlax",
+    "Venusaur",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b006",
+   "fly_id": 11,
+   "my_team": [
+    "Dragonite",
+    "Nidoking",
+    "Hypno",
+    "Tentacruel",
+    "Exeggutor",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Chansey",
+    "Machamp",
+    "Hypno",
+    "Rhydon",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b007",
+   "fly_id": 11,
+   "my_team": [
+    "Snorlax",
+    "Dragonite",
+    "Venusaur",
+    "Exeggutor",
+    "Poliwrath",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Nidoking",
+    "Exeggutor",
+    "Rhydon",
+    "Hypno",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b008",
+   "fly_id": 11,
+   "my_team": [
+    "Venusaur",
+    "Lapras",
+    "Nidoking",
+    "Slowbro",
+    "Blastoise",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Venusaur",
+    "Dragonite",
+    "Blastoise",
+    "Charizard",
+    "Exeggutor",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b009",
+   "fly_id": 11,
+   "my_team": [
+    "Nidoking",
+    "Poliwrath",
+    "Machamp",
+    "Snorlax",
+    "Venusaur",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Slowbro",
+    "Nidoking",
+    "Venusaur",
+    "Hypno",
+    "Kangaskhan"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b010",
+   "fly_id": 11,
+   "my_team": [
+    "Rhydon",
+    "Exeggutor",
+    "Blastoise",
+    "Snorlax",
+    "Tentacruel",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Exeggutor",
+    "Venusaur",
+    "Chansey",
+    "Lapras",
+    "Poliwrath"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b011",
+   "fly_id": 11,
+   "my_team": [
+    "Blastoise",
+    "Machamp",
+    "Chansey",
+    "Tentacruel",
+    "Kangaskhan",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Kangaskhan",
+    "Charizard",
+    "Exeggutor",
+    "Chansey",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b012",
+   "fly_id": 11,
+   "my_team": [
+    "Kangaskhan",
+    "Snorlax",
+    "Dragonite",
+    "Rhydon",
+    "Tentacruel",
+    "Slowbro"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Machamp",
+    "Venusaur",
+    "Snorlax",
+    "Dragonite",
+    "Nidoking"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b013",
+   "fly_id": 11,
+   "my_team": [
+    "Dragonite",
+    "Blastoise",
+    "Venusaur",
+    "Machamp",
+    "Snorlax",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Charizard",
+    "Poliwrath",
+    "Machamp",
+    "Nidoking",
+    "Slowbro",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b014",
+   "fly_id": 11,
+   "my_team": [
+    "Kangaskhan",
+    "Rhydon",
+    "Lapras",
+    "Poliwrath",
+    "Tentacruel",
+    "Dragonite"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Blastoise",
+    "Snorlax",
+    "Exeggutor",
+    "Chansey",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b015",
+   "fly_id": 11,
+   "my_team": [
+    "Venusaur",
+    "Charizard",
+    "Dragonite",
+    "Lapras",
+    "Blastoise",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Rhydon",
+    "Charizard",
+    "Venusaur",
+    "Slowbro",
+    "Exeggutor",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b016",
+   "fly_id": 11,
+   "my_team": [
+    "Charizard",
+    "Poliwrath",
+    "Rhydon",
+    "Exeggutor",
+    "Machamp",
+    "Kangaskhan"
+   ],
+   "opp_team": [
+    "Hypno",
+    "Blastoise",
+    "Chansey",
+    "Lapras",
+    "Snorlax",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b017",
+   "fly_id": 11,
+   "my_team": [
+    "Venusaur",
+    "Poliwrath",
+    "Tentacruel",
+    "Charizard",
+    "Chansey",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Lapras",
+    "Kangaskhan",
+    "Rhydon",
+    "Charizard",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b018",
+   "fly_id": 11,
+   "my_team": [
+    "Machamp",
+    "Exeggutor",
+    "Slowbro",
+    "Poliwrath",
+    "Kangaskhan",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Blastoise",
+    "Charizard",
+    "Slowbro",
+    "Snorlax",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b019",
+   "fly_id": 11,
+   "my_team": [
+    "Blastoise",
+    "Dragonite",
+    "Poliwrath",
+    "Hypno",
+    "Snorlax",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Slowbro",
+    "Lapras",
+    "Hypno",
+    "Charizard",
+    "Poliwrath",
+    "Blastoise"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b020",
+   "fly_id": 11,
+   "my_team": [
+    "Rhydon",
+    "Charizard",
+    "Lapras",
+    "Tentacruel",
+    "Blastoise",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Kangaskhan",
+    "Chansey",
+    "Venusaur",
+    "Nidoking",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b021",
+   "fly_id": 11,
+   "my_team": [
+    "Dragonite",
+    "Charizard",
+    "Rhydon",
+    "Machamp",
+    "Venusaur",
+    "Nidoking"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Slowbro",
+    "Tentacruel",
+    "Kangaskhan",
+    "Charizard",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b022",
+   "fly_id": 11,
+   "my_team": [
+    "Hypno",
+    "Tentacruel",
+    "Poliwrath",
+    "Slowbro",
+    "Machamp",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Kangaskhan",
+    "Venusaur",
+    "Charizard",
+    "Hypno",
+    "Poliwrath",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b023",
+   "fly_id": 11,
+   "my_team": [
+    "Dragonite",
+    "Kangaskhan",
+    "Venusaur",
+    "Nidoking",
+    "Tentacruel",
+    "Snorlax"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Rhydon",
+    "Dragonite",
+    "Tentacruel",
+    "Kangaskhan",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b024",
+   "fly_id": 11,
+   "my_team": [
+    "Poliwrath",
+    "Nidoking",
+    "Hypno",
+    "Lapras",
+    "Snorlax",
+    "Rhydon"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Venusaur",
+    "Slowbro",
+    "Machamp",
+    "Poliwrath",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b025",
+   "fly_id": 11,
+   "my_team": [
+    "Snorlax",
+    "Charizard",
+    "Nidoking",
+    "Slowbro",
+    "Chansey",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Slowbro",
+    "Tentacruel",
+    "Nidoking",
+    "Charizard",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b026",
+   "fly_id": 11,
+   "my_team": [
+    "Dragonite",
+    "Charizard",
+    "Machamp",
+    "Venusaur",
+    "Lapras",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Chansey",
+    "Kangaskhan",
+    "Rhydon",
+    "Snorlax",
+    "Lapras",
+    "Venusaur"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b027",
+   "fly_id": 11,
+   "my_team": [
+    "Kangaskhan",
+    "Dragonite",
+    "Slowbro",
+    "Blastoise",
+    "Venusaur",
+    "Charizard"
+   ],
+   "opp_team": [
+    "Machamp",
+    "Kangaskhan",
+    "Nidoking",
+    "Hypno",
+    "Snorlax",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b028",
+   "fly_id": 11,
+   "my_team": [
+    "Rhydon",
+    "Hypno",
+    "Exeggutor",
+    "Lapras",
+    "Poliwrath",
+    "Chansey"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Venusaur",
+    "Dragonite",
+    "Kangaskhan",
+    "Lapras",
+    "Hypno"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b029",
+   "fly_id": 11,
+   "my_team": [
+    "Kangaskhan",
+    "Blastoise",
+    "Nidoking",
+    "Poliwrath",
+    "Lapras",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Lapras",
+    "Hypno",
+    "Dragonite",
+    "Snorlax",
+    "Machamp"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b030",
+   "fly_id": 11,
+   "my_team": [
+    "Machamp",
+    "Snorlax",
+    "Charizard",
+    "Lapras",
+    "Hypno",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Tentacruel",
+    "Exeggutor",
+    "Kangaskhan",
+    "Dragonite",
+    "Charizard"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b031",
+   "fly_id": 11,
+   "my_team": [
+    "Charizard",
+    "Venusaur",
+    "Kangaskhan",
+    "Snorlax",
+    "Nidoking",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Exeggutor",
+    "Tentacruel",
+    "Poliwrath",
+    "Hypno",
+    "Slowbro",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b032",
+   "fly_id": 11,
+   "my_team": [
+    "Kangaskhan",
+    "Blastoise",
+    "Tentacruel",
+    "Slowbro",
+    "Dragonite",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Dragonite",
+    "Machamp",
+    "Lapras",
+    "Kangaskhan",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b033",
+   "fly_id": 11,
+   "my_team": [
+    "Chansey",
+    "Rhydon",
+    "Lapras",
+    "Nidoking",
+    "Kangaskhan",
+    "Venusaur"
+   ],
+   "opp_team": [
+    "Nidoking",
+    "Chansey",
+    "Slowbro",
+    "Machamp",
+    "Lapras",
+    "Snorlax"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b034",
+   "fly_id": 11,
+   "my_team": [
+    "Tentacruel",
+    "Lapras",
+    "Poliwrath",
+    "Hypno",
+    "Slowbro",
+    "Blastoise"
+   ],
+   "opp_team": [
+    "Poliwrath",
+    "Venusaur",
+    "Tentacruel",
+    "Exeggutor",
+    "Lapras",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b035",
+   "fly_id": 11,
+   "my_team": [
+    "Hypno",
+    "Slowbro",
+    "Nidoking",
+    "Tentacruel",
+    "Blastoise",
+    "Lapras"
+   ],
+   "opp_team": [
+    "Snorlax",
+    "Blastoise",
+    "Tentacruel",
+    "Dragonite",
+    "Chansey",
+    "Lapras"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b036",
+   "fly_id": 11,
+   "my_team": [
+    "Machamp",
+    "Hypno",
+    "Tentacruel",
+    "Venusaur",
+    "Dragonite",
+    "Poliwrath"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Charizard",
+    "Blastoise",
+    "Poliwrath",
+    "Lapras",
+    "Chansey"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b037",
+   "fly_id": 11,
+   "my_team": [
+    "Kangaskhan",
+    "Dragonite",
+    "Chansey",
+    "Machamp",
+    "Venusaur",
+    "Tentacruel"
+   ],
+   "opp_team": [
+    "Blastoise",
+    "Nidoking",
+    "Snorlax",
+    "Chansey",
+    "Charizard",
+    "Exeggutor"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b038",
+   "fly_id": 11,
+   "my_team": [
+    "Tentacruel",
+    "Slowbro",
+    "Exeggutor",
+    "Dragonite",
+    "Machamp",
+    "Hypno"
+   ],
+   "opp_team": [
+    "Tentacruel",
+    "Lapras",
+    "Dragonite",
+    "Hypno",
+    "Slowbro",
+    "Rhydon"
+   ],
+   "opponent": "heuristic"
+  },
+  {
+   "battle_id": "f11-b039",
+   "fly_id": 11,
+   "my_team": [
+    "Slowbro",
+    "Tentacruel",
+    "Blastoise",
+    "Lapras",
+    "Venusaur",
+    "Exeggutor"
+   ],
+   "opp_team": [
+    "Lapras",
+    "Venusaur",
+    "Tentacruel",
+    "Blastoise",
+    "Machamp",
+    "Slowbro"
+   ],
+   "opponent": "heuristic"
+  }
+ ],
+ "mode": "run",
+ "n_pairs": 20,
+ "seeds": {
+  "boot": 304,
+  "eval": 303,
+  "gen": 301,
+  "learn": 302,
+  "tie": 305
+ },
+ "status": "OK"
+}
