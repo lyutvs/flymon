@@ -1,0 +1,50 @@
+{
+ "c3_threshold_sha256": "542f87a324c4c39eb82f39cd1529ff5f3646db1821bd009094a1ccaedc0d4d9f",
+ "codebook_config": "k2-norm",
+ "codebook_digest": "76500f42964b24c4e4a934fb70fb1692e75fc0ff353cb78486e9034a2cd2c858",
+ "config_hash": "9f4473bd21030b7701aba6e42ef0dee8a1ea31e30d59c0c4552be6eb8fb387b6",
+ "dual_rule": "norm",
+ "encoder_grid_sha256": "1cc08c0cf4e7d9a5bd26209f4f7ecb30d08737e2498814e614413f0711afdec1",
+ "label": "M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC).",
+ "lever_edit": "u_apl_mbon05_x0.0+chain_entry",
+ "lever_sha": "2d359b8b6947d542348b658db977e1edbe0db5919e7f4b1187598cb10ef1253a",
+ "p_type": "MBON05",
+ "punish_dan": "PPL105",
+ "read_ms": 600.0,
+ "readout": {
+  "A": "MBON13",
+  "P": "MBON05"
+ },
+ "recovery_per_pulse": 0.001,
+ "reward_dan": "PAM08",
+ "seeds": {
+  "boot": 304,
+  "eval": 303,
+  "gen": 301,
+  "learn": 302,
+  "tie": 305
+ },
+ "settle_ms": 800.0,
+ "status": "FROZEN",
+ "strength": 1.0,
+ "tau": {
+  "battles": 20,
+  "end": 0.2,
+  "start": 1.0
+ },
+ "taurec": {
+  "path": "results/summary/rescope_taurec_lv.json",
+  "sha256": "1bbac9ad509db5c5e3ddb7fc71d8ad1f92f0ecd19871583d5648860e598a4343"
+ },
+ "taurec_rule": "10.6 amendment 2026-09-28",
+ "z_V": {
+  "A": [
+   16.917,
+   12.484
+  ],
+  "P": [
+   80.167,
+   29.775
+  ]
+ }
+}
