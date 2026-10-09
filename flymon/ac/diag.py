@@ -188,3 +188,55 @@ def noise_spread(recs, n_pairs: int) -> dict:
             modal.append(max(picks.count(k) for k in set(picks)) / len(picks))
     return dict(n_flies=len(recs), v_sd_across_flies_same_input=mean(sd_v), modal_pick_share=mean(modal),
                 margin_mean=mean(margin(s["v"]) for r in recs for s in r["situations"]))
+
+
+def pick_dist(recs, pair: int, side: int, k: int) -> np.ndarray:
+    """The pick distribution over k candidates at one (pair, side), pooled over the given flies' records."""
+    q = np.zeros(k)
+    for r in recs:
+        q[sides(r)[(pair, side)]["pick"]] += 1
+    return q / q.sum()
+
+
+def empirical_null(recs, pairs) -> dict:
+    """Per pair q_side0[best1] * q_side1[best2], q = the arm's own pick distribution per side pooled over its flies at
+    that point: the switch rate expected if the two sides' picks were independent given those distributions. For
+    FLY-TB (identical odours on both sides, only the decision seed differs) this is its seed-noise null."""
+    per = []
+    for i, p in enumerate(pairs):
+        k = len(p["cands"])
+        q0, q1 = pick_dist(recs, i, 0, k), pick_dist(recs, i, 1, k)
+        per.append(float(q0[p["cands"].index(p["best1"])] * q1[p["cands"].index(p["best2"])]))
+    return dict(mean=float(np.mean(per)), per_pair=per)
+
+
+def crossed_boot(units_a: dict, units_b: dict, draws: int, seed: int, paired: bool = False) -> dict:
+    """Percentile bootstrap of mean(A) - mean(B) for fly x pair tables (fly -> per-pair values, same pair order).
+    Each draw resamples ONE set of pair indices shared by both arms (pairs are crossed with flies) and resamples
+    flies with replacement: independently per arm, or, if paired (same flies at two points), one shared fly draw."""
+    ka, kb = sorted(units_a), sorted(units_b)
+    A = np.array([units_a[f] for f in ka], float)
+    B = np.array([units_b[f] for f in kb], float)
+    if A.shape[1] != B.shape[1]:
+        raise ValueError("both arms need the same pairs")
+    if paired and ka != kb:
+        raise ValueError("a paired contrast needs the same flies in both arms")
+    rng = np.random.default_rng(int(seed))
+    n_p = A.shape[1]
+    d = np.empty(int(draws))
+    for b in range(int(draws)):
+        pi = rng.integers(0, n_p, n_p)
+        fa = rng.integers(0, len(ka), len(ka))
+        fb = fa if paired else rng.integers(0, len(kb), len(kb))
+        d[b] = A[np.ix_(fa, pi)].mean() - B[np.ix_(fb, pi)].mean()
+    lo, hi = np.percentile(d, [2.5, 97.5])
+    return dict(diff=float(A.mean() - B.mean()), lo=float(lo), hi=float(hi), n_a=len(ka), n_b=len(kb),
+                n_pairs=int(n_p), draws=int(draws), seed=int(seed), paired=bool(paired))
+
+
+def fisher_ci(r: float, n: int, z: float = 1.959964) -> tuple:
+    """Approximate 95% CI of a Pearson r via Fisher's z (n - 3 degrees of freedom)."""
+    if r is None or n <= 3:
+        return (None, None)
+    m, s = math.atanh(r), 1.0 / math.sqrt(n - 3)
+    return (math.tanh(m - z * s), math.tanh(m + z * s))

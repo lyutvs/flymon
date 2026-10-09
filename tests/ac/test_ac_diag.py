@@ -100,3 +100,27 @@ def test_noise_spread_same_input():
     s = diag.noise_spread([a, b], 2)
     assert s["n_flies"] == 2 and s["modal_pick_share"] == pytest.approx((0.5 + 1 + 1 + 1) / 4)
     assert s["v_sd_across_flies_same_input"] > 0
+
+
+def test_empirical_null_uses_each_sides_pick_distribution():
+    a = rec([1.0, 0.0], [0.0, 1.0], [0.0, 0.0, 1.0], [1.0, 0.0, 0.0], fly=0)   # both pairs switched
+    b = rec([1.0, 0.0], [1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], fly=1)   # neither
+    out = diag.empirical_null([a, b], PAIRS)
+    assert out["per_pair"] == [pytest.approx(1.0 * 0.5), pytest.approx(1.0 * 0.5)] and out["mean"] == 0.5
+
+
+def test_crossed_boot_shares_pairs_and_pairs_flies():
+    ua = {0: [1, 0, 1, 0], 1: [1, 0, 1, 0]}
+    ub = {0: [1, 0, 1, 0], 1: [1, 0, 1, 0]}
+    res = diag.crossed_boot(ua, ub, 200, 1, paired=True)
+    assert res["diff"] == 0 and res["lo"] == 0 and res["hi"] == 0     # shared pairs + shared flies -> zero spread
+    res = diag.crossed_boot(ua, {5: [0, 0, 0, 0]}, 200, 1)
+    assert res["diff"] == 0.5 and res["lo"] < 0.5 < res["hi"]           # pair resampling alone gives spread
+    with pytest.raises(ValueError):
+        diag.crossed_boot(ua, {5: [0, 0, 0, 0]}, 10, 1, paired=True)
+
+
+def test_fisher_ci_brackets_r():
+    lo, hi = diag.fisher_ci(-0.27, 20)
+    assert lo == pytest.approx(-0.636, abs=0.01) and hi == pytest.approx(0.195, abs=0.01)
+    assert diag.fisher_ci(0.5, 3) == (None, None)

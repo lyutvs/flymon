@@ -62,6 +62,7 @@ def section_i(sits, pairs, cb, mi) -> dict:
         cells[f"{arm}@{point}"] = dict(
             arm=arm, point=point, n_flies=len(recs),
             switch_rate=diag.mean(r["rate"] for r in recs),
+            empirical_null_switch=diag.empirical_null(recs, pairs)["mean"],
             side_correct=diag.mean(x for r in recs for x in diag.side_correct(r)),
             pick_changed_across_sides=diag.mean(x for r in recs for x in diag.pick_changed(r, n)),
             best_contrast_mean=diag.mean(contrasts),
@@ -80,8 +81,13 @@ def section_i(sits, pairs, cb, mi) -> dict:
     noise_tb = diag.noise_spread(by[("TB", 0)], n)
     jac = [diag.glom_jaccard(cb, mi[c][0], p["o1_types"], p["o2_types"]) for p in pairs for c in p["cands"]]
     return dict(
-        chance_switch_mean=float(np.mean(chance)),
-        chance_note="1/k^2 per pair (uniform independent pick on each side); a fixed opponent-blind pick switches 0",
+        uniform_reference_switch=float(np.mean(chance)),
+        uniform_reference_note="uniform reference, not a noise null: 1/k^2 per pair (uniform independent pick on each "
+                               "side); a fixed opponent-blind pick switches 0",
+        empirical_null_note="cells[*].empirical_null_switch = mean over pairs of q_side0[best1] * q_side1[best2], q = "
+                            "the arm's own pick distribution per side at that point pooled over its flies. FLY-TB sees "
+                            "identical odours on both sides, so its switches come only from decision-seed noise and "
+                            "this is its expected switch rate",
         n_pairs_by_k={str(k): sum(len(p["cands"]) == k for p in pairs) for k in (2, 3)},
         cells=cells,
         point0_noise=dict(fly_and_coff=noise_fly, tb=noise_tb,
@@ -128,6 +134,8 @@ def section_ii(sits, pairs, mi, st, ids, learn_logs, eval_logs, arms, ckpt) -> d
     for arm in ("FLY", "TB"):
         acc = defaultdict(lambda: defaultdict(list))
         cls = defaultdict(lambda: defaultdict(list))
+        cls_items, cls_odours = defaultdict(set), defaultdict(set)
+        cls_moves = defaultdict(lambda: defaultdict(int))
         for r in sits:
             if r["arm"] != arm or r["point"] not in (0, 40):
                 continue
@@ -136,12 +144,31 @@ def section_ii(sits, pairs, mi, st, ids, learn_logs, eval_logs, arms, ckpt) -> d
                 mults = p["mults1"] if s["side"] == 0 else p["mults2"]
                 for c, v, m in zip(p["cands"], diag.centred(s["v"]), mults):
                     acc[c][r["point"]].append(v)
-                    cls[diag.mult_class(m)][r["point"]].append(v)
+                    k = diag.mult_class(m)
+                    cls[k][r["point"]].append(v)
+                    if r["point"] == 0 and r["fly"] == min(x["fly"] for x in sits if x["arm"] == arm):
+                        cls_items[k].add((p["me"], p["o1"] if s["side"] == 0 else p["o2"], c))
+                        ot = p["o1_types"] if s["side"] == 0 else p["o2_types"]
+                        cls_odours[k].add((mi[c][0], tuple(ot)))
+                        cls_moves[k][c] += 1
         shift[arm] = {c: dict(v0=diag.mean(d[0]), v40=diag.mean(d[40]), shift=diag.mean(d[40]) - diag.mean(d[0]),
                               n=len(d[40])) for c, d in sorted(acc.items())}
-        by_class[arm] = {k: dict(v0=diag.mean(d[0]), v40=diag.mean(d[40])) for k, d in sorted(cls.items())}
+        by_class[arm] = {k: dict(v0=diag.mean(d[0]), v40=diag.mean(d[40]),
+                                 n_candidate_situations=sum(cls_moves[k].values()),
+                                 n_unique_items=len(cls_items[k]),
+                                 n_unique_odours=len(cls_odours[k]), moves=dict(sorted(cls_moves[k].items())))
+                         for k, d in sorted(cls.items())}
     out["centred_v_shift_by_move"] = shift
     out["centred_v_by_mult_class"] = by_class
+    out["centred_v_by_mult_class_note"] = (
+        "n_candidate_situations = (pair, side, candidate) entries per fly (40 situations); n_unique_items = distinct "
+        "(me, opponent, move); n_unique_odours = distinct (move type, opponent type set), what the brain sees. At point 0 every fly of an arm shares w0, so the effective n is the situations, not "
+        "flies x situations. The immune class is few items (Earthquake / Thunderbolt) and its point-0 figure mostly "
+        "reflects those moves' naive V")
+    out["tb_rule_note"] = (
+        "FLY-TB cannot see the opponent: its multiplier agreement and its multiplier share where the power and "
+        "multiplier picks conflict are set by the pair construction (which side its opponent-blind preference "
+        "happens to match), not by type use. Only FLY's change from point 0 to 40 is informative there")
     # decisions: learning by quarter (battles 0-9, ..., 30-39) and evaluation, per arm
     dec = {}
     for name, logs in (("learn", learn_logs), ("eval", eval_logs)):
@@ -257,6 +284,7 @@ def section_iv(sits, pairs, mi) -> dict:
     frac = {f"{a}@{p}": np.mean(np.array(v, float), axis=0) for (a, p), v in pick.items()}
     chgf = {f"{a}@{p}": np.mean(np.array(v, float), axis=0) for (a, p), v in chg.items()}
     chance = diag.chance_switch(pairs)
+    tb_null = diag.empirical_null([r for r in sits if r["arm"] == "TB" and r["point"] == last], pairs)["per_pair"]
     rows = []
     for i, p in enumerate(pairs):
         pw = [mi[c][1] for c in p["cands"]]
@@ -264,7 +292,7 @@ def section_iv(sits, pairs, mi) -> dict:
         pname = p["cands"][pp] if pp is not None else None
         power_side = [s for s, b in ((0, p["best1"]), (1, p["best2"])) if pname == b]
         rows.append(dict(pair=i, me=p["me"], o1=p["o1"], o2=p["o2"], cands=p["cands"], best1=p["best1"],
-                         best2=p["best2"], k=len(p["cands"]), chance=chance[i], power_pick=pname,
+                         best2=p["best2"], k=len(p["cands"]), chance=chance[i], tb40_null=tb_null[i], power_pick=pname,
                          power_right_side=power_side[0] if power_side else None,
                          **{f"switch_{k}": float(v[i]) for k, v in frac.items()},
                          **{f"pick_changed_{k}": float(v[i]) for k, v in chgf.items()},
@@ -286,7 +314,8 @@ def section_iv(sits, pairs, mi) -> dict:
         both_any=int(np.sum((f40 > 0) & (t40 > 0))), only_fly_any=int(np.sum((f40 > 0) & (t40 == 0))),
         only_tb_any=int(np.sum((f40 == 0) & (t40 > 0))), neither_any=int(np.sum((f40 == 0) & (t40 == 0))),
         fly_ge_half=int(np.sum(f40 >= 0.5)), tb_ge_half=int(np.sum(t40 >= 0.5)),
-        pearson_pairs_fly40_vs_tb40=diag.pearson(f40, t40), pearson_pairs_tb40_vs_chance=diag.pearson(t40, ch),
+        pearson_pairs_fly40_vs_tb40=diag.pearson(f40, t40),
+        pearson_pairs_fly40_vs_tb40_ci95_fisher=list(diag.fisher_ci(diag.pearson(f40, t40), len(f40))), pearson_pairs_tb40_vs_chance=diag.pearson(t40, ch),
         pearson_pairs_fly40_vs_chance=diag.pearson(f40, ch),
         note="'any' = at least one fly of the arm switched on that pair (FLY 12 flies, FLY-TB 6: unequal chance)")
 
@@ -297,17 +326,23 @@ def boot_section(sits, pairs) -> dict:
     units = defaultdict(dict)
     for r in sits:
         k = f"{r['arm']}@{r['point']}"
-        d = diag.best_contrast(r, pairs)
-        units[("contrast_pos", k)][r["fly"]] = [int(x > 0) for x in d]
+        units[("switched", k)][r["fly"]] = list(r["switched"])
+        units[("contrast_pos", k)][r["fly"]] = [int(x > 0) for x in diag.best_contrast(r, pairs)]
         units[("pick_changed", k)][r["fly"]] = diag.pick_changed(r, len(pairs))
+    plan = ((f"FLY@{last}", f"TB@{last}", False), (f"FLY@{last}", "COFF@0", False), (f"FLY@{last}", "FLY@0", True),
+            (f"TB@{last}", "TB@0", True), ("FLY@0", "COFF@0", False))
     out = []
-    for metric in ("contrast_pos", "pick_changed"):
-        for a, b in ((f"FLY@{last}", f"TB@{last}"), (f"FLY@{last}", "FLY@0"), (f"TB@{last}", "TB@0"),
-                     ("FLY@0", "COFF@0")):
+    for metric in ("switched", "contrast_pos", "pick_changed"):
+        for a, b, paired in plan:
             log(f"  bootstrap {metric} {a} - {b}")
-            res = boot.two_stage_diff(units[(metric, a)], units[(metric, b)], SPEC.boot_draws, SPEC.boot_seed)
+            res = diag.crossed_boot(units[(metric, a)], units[(metric, b)], SPEC.boot_draws, SPEC.boot_seed, paired)
             out.append(dict(metric=metric, a=a, b=b, **res, kind="descriptive"))
-    return dict(seed=SPEC.boot_seed, draws=SPEC.boot_draws, method="flymon/ac/boot.two_stage_diff (descriptive)",
+    return dict(seed=SPEC.boot_seed, draws=SPEC.boot_draws,
+                method="flymon/ac/diag.crossed_boot (descriptive): one shared draw of the 20 pair indices per "
+                       "replicate for both sides of a contrast (pairs crossed with flies); flies resampled per arm, "
+                       "or one shared fly draw when the contrast is the same flies at two points (paired)",
+                note="'switched' re-reads criterion 1's quantity under this resampling for description only; the "
+                     "AC.5 criterion-1 result (ac_m4_stage1.json, two_stage_diff) is unchanged",
                 contrasts=out)
 
 

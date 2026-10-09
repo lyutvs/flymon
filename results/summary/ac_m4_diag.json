@@ -5,66 +5,181 @@
    {
     "a": "FLY@40",
     "b": "TB@40",
-    "diff": -0.22916666666666669,
+    "diff": 0.05833333333333332,
     "draws": 10000,
-    "hi": -0.09166666666666662,
+    "hi": 0.2833333333333333,
     "kind": "descriptive",
-    "lo": -0.36666666666666664,
-    "metric": "contrast_pos",
+    "lo": -0.15833333333333333,
+    "metric": "switched",
     "n_a": 12,
     "n_b": 6,
+    "n_pairs": 20,
+    "paired": false,
+    "seed": 304
+   },
+   {
+    "a": "FLY@40",
+    "b": "COFF@0",
+    "diff": 0.19166666666666665,
+    "draws": 10000,
+    "hi": 0.3416666666666667,
+    "kind": "descriptive",
+    "lo": 0.06666666666666667,
+    "metric": "switched",
+    "n_a": 12,
+    "n_b": 6,
+    "n_pairs": 20,
+    "paired": false,
     "seed": 304
    },
    {
     "a": "FLY@40",
     "b": "FLY@0",
-    "diff": 0.16250000000000006,
+    "diff": 0.2125,
     "draws": 10000,
-    "hi": 0.25000000000000006,
+    "hi": 0.36666666666666664,
     "kind": "descriptive",
-    "lo": 0.07083333333333341,
-    "metric": "contrast_pos",
+    "lo": 0.07916666666666666,
+    "metric": "switched",
     "n_a": 12,
     "n_b": 12,
+    "n_pairs": 20,
+    "paired": true,
     "seed": 304
    },
    {
     "a": "TB@40",
     "b": "TB@0",
-    "diff": 0.06666666666666676,
+    "diff": 0.08333333333333334,
     "draws": 10000,
-    "hi": 0.2333333333333335,
+    "hi": 0.23333333333333334,
     "kind": "descriptive",
-    "lo": -0.11666666666666647,
-    "metric": "contrast_pos",
+    "lo": -0.05833333333333335,
+    "metric": "switched",
     "n_a": 6,
     "n_b": 6,
+    "n_pairs": 20,
+    "paired": true,
     "seed": 304
    },
    {
     "a": "FLY@0",
     "b": "COFF@0",
-    "diff": 0.008333333333333276,
+    "diff": -0.020833333333333336,
     "draws": 10000,
-    "hi": 0.11250000000000002,
+    "hi": 0.025104166666665158,
     "kind": "descriptive",
-    "lo": -0.09583333333333335,
-    "metric": "contrast_pos",
+    "lo": -0.08333333333333334,
+    "metric": "switched",
     "n_a": 12,
     "n_b": 6,
+    "n_pairs": 20,
+    "paired": false,
     "seed": 304
    },
    {
     "a": "FLY@40",
     "b": "TB@40",
-    "diff": 0.14166666666666672,
+    "diff": -0.22916666666666669,
     "draws": 10000,
-    "hi": 0.2625,
+    "hi": 0.004166666666666652,
     "kind": "descriptive",
-    "lo": 0.02083333333333337,
+    "lo": -0.44999999999999996,
+    "metric": "contrast_pos",
+    "n_a": 12,
+    "n_b": 6,
+    "n_pairs": 20,
+    "paired": false,
+    "seed": 304
+   },
+   {
+    "a": "FLY@40",
+    "b": "COFF@0",
+    "diff": 0.17083333333333334,
+    "draws": 10000,
+    "hi": 0.3333333333333333,
+    "kind": "descriptive",
+    "lo": 0.029166666666666674,
+    "metric": "contrast_pos",
+    "n_a": 12,
+    "n_b": 6,
+    "n_pairs": 20,
+    "paired": false,
+    "seed": 304
+   },
+   {
+    "a": "FLY@40",
+    "b": "FLY@0",
+    "diff": 0.1625,
+    "draws": 10000,
+    "hi": 0.3208333333333333,
+    "kind": "descriptive",
+    "lo": 0.029166666666666674,
+    "metric": "contrast_pos",
+    "n_a": 12,
+    "n_b": 12,
+    "n_pairs": 20,
+    "paired": true,
+    "seed": 304
+   },
+   {
+    "a": "TB@40",
+    "b": "TB@0",
+    "diff": 0.06666666666666665,
+    "draws": 10000,
+    "hi": 0.25,
+    "kind": "descriptive",
+    "lo": -0.125,
+    "metric": "contrast_pos",
+    "n_a": 6,
+    "n_b": 6,
+    "n_pairs": 20,
+    "paired": true,
+    "seed": 304
+   },
+   {
+    "a": "FLY@0",
+    "b": "COFF@0",
+    "diff": 0.008333333333333331,
+    "draws": 10000,
+    "hi": 0.09166666666666666,
+    "kind": "descriptive",
+    "lo": -0.0875,
+    "metric": "contrast_pos",
+    "n_a": 12,
+    "n_b": 6,
+    "n_pairs": 20,
+    "paired": false,
+    "seed": 304
+   },
+   {
+    "a": "FLY@40",
+    "b": "TB@40",
+    "diff": 0.14166666666666666,
+    "draws": 10000,
+    "hi": 0.37927083333333184,
+    "kind": "descriptive",
+    "lo": -0.09583333333333333,
     "metric": "pick_changed",
     "n_a": 12,
     "n_b": 6,
+    "n_pairs": 20,
+    "paired": false,
+    "seed": 304
+   },
+   {
+    "a": "FLY@40",
+    "b": "COFF@0",
+    "diff": -0.04999999999999999,
+    "draws": 10000,
+    "hi": 0.22916666666666663,
+    "kind": "descriptive",
+    "lo": -0.325,
+    "metric": "pick_changed",
+    "n_a": 12,
+    "n_b": 6,
+    "n_pairs": 20,
+    "paired": false,
     "seed": 304
    },
    {
@@ -72,25 +187,29 @@
     "b": "FLY@0",
     "diff": -0.03750000000000003,
     "draws": 10000,
-    "hi": 0.07083333333333336,
+    "hi": 0.22916666666666669,
     "kind": "descriptive",
-    "lo": -0.14583333333333343,
+    "lo": -0.3041666666666667,
     "metric": "pick_changed",
     "n_a": 12,
     "n_b": 12,
+    "n_pairs": 20,
+    "paired": true,
     "seed": 304
    },
    {
     "a": "TB@40",
     "b": "TB@0",
-    "diff": 0.05833333333333329,
+    "diff": 0.05833333333333335,
     "draws": 10000,
-    "hi": 0.22499999999999995,
+    "hi": 0.275,
     "kind": "descriptive",
-    "lo": -0.10833333333333339,
+    "lo": -0.1833333333333333,
     "metric": "pick_changed",
     "n_a": 6,
     "n_b": 6,
+    "n_pairs": 20,
+    "paired": true,
     "seed": 304
    },
    {
@@ -98,17 +217,20 @@
     "b": "COFF@0",
     "diff": -0.012499999999999956,
     "draws": 10000,
-    "hi": 0.1291666666666666,
+    "hi": 0.12916666666666665,
     "kind": "descriptive",
-    "lo": -0.14583333333333337,
+    "lo": -0.15000000000000002,
     "metric": "pick_changed",
     "n_a": 12,
     "n_b": 6,
+    "n_pairs": 20,
+    "paired": false,
     "seed": 304
    }
   ],
   "draws": 10000,
-  "method": "flymon/ac/boot.two_stage_diff (descriptive)",
+  "method": "flymon/ac/diag.crossed_boot (descriptive): one shared draw of the 20 pair indices per replicate for both sides of a contrast (pairs crossed with flies); flies resampled per arm, or one shared fly draw when the contrast is the same flies at two points (paired)",
+  "note": "'switched' re-reads criterion 1's quantity under this resampling for description only; the AC.5 criterion-1 result (ac_m4_stage1.json, two_stage_diff) is unchanged",
   "seed": 304
  },
  "brain_evaluation": "none (records only)",
@@ -170,41 +292,132 @@
   "centred_v_by_mult_class": {
    "FLY": {
     "immune": {
+     "moves": {
+      "Earthquake": 4,
+      "Thunderbolt": 3
+     },
+     "n_candidate_situations": 7,
+     "n_unique_items": 7,
+     "n_unique_odours": 4,
      "v0": 0.746404605577092,
      "v40": 0.07882840959355222
     },
     "neutral": {
+     "moves": {
+      "Cut": 2,
+      "Mega Drain": 1,
+      "Psychic": 7,
+      "Rock Slide": 1,
+      "Strength": 10,
+      "Surf": 2,
+      "Thunderbolt": 3,
+      "Tri Attack": 2
+     },
+     "n_candidate_situations": 28,
+     "n_unique_items": 26,
+     "n_unique_odours": 14,
      "v0": -0.04262980637979929,
      "v40": 0.019888469515579127
     },
     "not_very": {
+     "moves": {
+      "Earthquake": 1,
+      "Flamethrower": 1,
+      "Mega Drain": 4,
+      "Psychic": 5,
+      "Rock Slide": 1,
+      "Strength": 2,
+      "Surf": 9,
+      "Thunderbolt": 2
+     },
+     "n_candidate_situations": 25,
+     "n_unique_items": 21,
+     "n_unique_odours": 15,
      "v0": 0.2971431173295605,
      "v40": -0.023185809564949162
     },
     "super": {
+     "moves": {
+      "Earthquake": 7,
+      "Flamethrower": 1,
+      "Mega Drain": 5,
+      "Psychic": 8,
+      "Rock Slide": 2,
+      "Surf": 5,
+      "Thunderbolt": 6
+     },
+     "n_candidate_situations": 34,
+     "n_unique_items": 29,
+     "n_unique_odours": 19,
      "v0": -0.3370522233424787,
      "v40": -0.01555972866080446
     }
    },
    "TB": {
     "immune": {
+     "moves": {
+      "Earthquake": 4,
+      "Thunderbolt": 3
+     },
+     "n_candidate_situations": 7,
+     "n_unique_items": 7,
+     "n_unique_odours": 4,
      "v0": 0.054603433636908845,
      "v40": 0.04924570345941942
     },
     "neutral": {
+     "moves": {
+      "Cut": 2,
+      "Mega Drain": 1,
+      "Psychic": 7,
+      "Rock Slide": 1,
+      "Strength": 10,
+      "Surf": 2,
+      "Thunderbolt": 3,
+      "Tri Attack": 2
+     },
+     "n_candidate_situations": 28,
+     "n_unique_items": 26,
+     "n_unique_odours": 14,
      "v0": 0.06763287370474644,
      "v40": 0.047004582322131366
     },
     "not_very": {
+     "moves": {
+      "Earthquake": 1,
+      "Flamethrower": 1,
+      "Mega Drain": 4,
+      "Psychic": 5,
+      "Rock Slide": 1,
+      "Strength": 2,
+      "Surf": 9,
+      "Thunderbolt": 2
+     },
+     "n_candidate_situations": 25,
+     "n_unique_items": 21,
+     "n_unique_odours": 15,
      "v0": -0.11390125587078541,
      "v40": -0.0851549855071138
     },
     "super": {
+     "moves": {
+      "Earthquake": 7,
+      "Flamethrower": 1,
+      "Mega Drain": 5,
+      "Psychic": 8,
+      "Rock Slide": 2,
+      "Surf": 5,
+      "Thunderbolt": 6
+     },
+     "n_candidate_situations": 34,
+     "n_unique_items": 29,
+     "n_unique_odours": 19,
      "v0": 0.016811379340540382,
      "v40": 0.013765482601242116
     }
    }
   },
+  "centred_v_by_mult_class_note": "n_candidate_situations = (pair, side, candidate) entries per fly (40 situations); n_unique_items = distinct (me, opponent, move); n_unique_odours = distinct (move type, opponent type set), what the brain sees. At point 0 every fly of an arm shares w0, so the effective n is the situations, not flies x situations. The immune class is few items (Earthquake / Thunderbolt) and its point-0 figure mostly reflects those moves' naive V",
   "centred_v_shift_by_move": {
    "FLY": {
     "Cut": {
@@ -1108,6 +1321,7 @@
     }
    }
   },
+  "tb_rule_note": "FLY-TB cannot see the opponent: its multiplier agreement and its multiplier share where the power and multiplier picks conflict are set by the pair construction (which side its opponent-blind preference happens to match), not by type use. Only FLY's change from point 0 to 40 is informative there",
   "weights": {
    "checkpoint": "results/m4/stage1/BRAIN/checkpoints/learn/state_000960.npz",
    "coff_all_equal": true,
@@ -1147,6 +1361,7 @@
     "arm": "COFF",
     "best_contrast_mean": -1.4723343612821893,
     "best_contrast_pos_share": 0.21666666666666667,
+    "empirical_null_switch": 0.05416666666666666,
     "margin_mean": 1.3115870878396332,
     "mean_a": 27.657801418439718,
     "mean_kc": 249.75177304964538,
@@ -1166,6 +1381,7 @@
     "arm": "FLY",
     "best_contrast_mean": -1.4452306396912369,
     "best_contrast_pos_share": 0.225,
+    "empirical_null_switch": 0.03958333333333334,
     "margin_mean": 1.2909631633276488,
     "mean_a": 27.627659574468087,
     "mean_kc": 249.75886524822695,
@@ -1185,6 +1401,7 @@
     "arm": "FLY",
     "best_contrast_mean": -0.7496601415274748,
     "best_contrast_pos_share": 0.32083333333333336,
+    "empirical_null_switch": 0.2197916666666667,
     "margin_mean": 1.1004235603492425,
     "mean_a": 16.61968085106383,
     "mean_kc": 237.9671985815603,
@@ -1204,6 +1421,7 @@
     "arm": "FLY",
     "best_contrast_mean": -0.6166604364697926,
     "best_contrast_pos_share": 0.3541666666666667,
+    "empirical_null_switch": 0.23715277777777777,
     "margin_mean": 1.1730118161658345,
     "mean_a": 13.727836879432624,
     "mean_kc": 236.65159574468086,
@@ -1223,6 +1441,7 @@
     "arm": "FLY",
     "best_contrast_mean": -0.5689445042130838,
     "best_contrast_pos_share": 0.3875,
+    "empirical_null_switch": 0.2229166666666667,
     "margin_mean": 1.1664010594069785,
     "mean_a": 12.493794326241135,
     "mean_kc": 236.32801418439718,
@@ -1242,6 +1461,7 @@
     "arm": "FLY",
     "best_contrast_mean": -0.5876687455212755,
     "best_contrast_pos_share": 0.3875,
+    "empirical_null_switch": 0.24965277777777778,
     "margin_mean": 1.1722965485381884,
     "mean_a": 12.143617021276595,
     "mean_kc": 237.3209219858156,
@@ -1261,6 +1481,7 @@
     "arm": "TB",
     "best_contrast_mean": 0.04152635832864105,
     "best_contrast_pos_share": 0.55,
+    "empirical_null_switch": 0.1388888888888889,
     "margin_mean": 0.2829071869703828,
     "mean_a": 3.367021276595745,
     "mean_kc": 67.75709219858156,
@@ -1280,6 +1501,7 @@
     "arm": "TB",
     "best_contrast_mean": 0.021138773274907992,
     "best_contrast_pos_share": 0.5166666666666667,
+    "empirical_null_switch": 0.15555555555555553,
     "margin_mean": 0.22646596375518513,
     "mean_a": 2.521276595744681,
     "mean_kc": 67.2145390070922,
@@ -1299,6 +1521,7 @@
     "arm": "TB",
     "best_contrast_mean": 0.01214247211521707,
     "best_contrast_pos_share": 0.55,
+    "empirical_null_switch": 0.10694444444444444,
     "margin_mean": 0.2112030126801881,
     "mean_a": 2.2180851063829787,
     "mean_kc": 66.9645390070922,
@@ -1318,6 +1541,7 @@
     "arm": "TB",
     "best_contrast_mean": 0.038150102772466755,
     "best_contrast_pos_share": 0.5416666666666666,
+    "empirical_null_switch": 0.15972222222222218,
     "margin_mean": 0.20167753711596628,
     "mean_a": 2.1808510638297873,
     "mean_kc": 66.23049645390071,
@@ -1337,6 +1561,7 @@
     "arm": "TB",
     "best_contrast_mean": 0.07264566487253142,
     "best_contrast_pos_share": 0.6166666666666667,
+    "empirical_null_switch": 0.19583333333333333,
     "margin_mean": 0.18558063865548627,
     "mean_a": 2.0124113475177303,
     "mean_kc": 67.86347517730496,
@@ -1349,8 +1574,7 @@
     "ties": 5
    }
   },
-  "chance_note": "1/k^2 per pair (uniform independent pick on each side); a fixed opponent-blind pick switches 0",
-  "chance_switch_mean": 0.20138888888888892,
+  "empirical_null_note": "cells[*].empirical_null_switch = mean over pairs of q_side0[best1] * q_side1[best2], q = the arm's own pick distribution per side at that point pooled over its flies. FLY-TB sees identical odours on both sides, so its switches come only from decision-seed noise and this is its expected switch rate",
   "fly_odour_glom_jaccard_across_sides": {
    "mean": 0.014184397163120567,
    "note": "FLY-TB: 1.0 by construction (odour of move type only)",
@@ -1375,7 +1599,9 @@
     "v_sd_across_flies_same_input": 0.18253702039077002
    }
   },
-  "tb_design": "FLY-TB odour = mean over the 16 POOL type sets of the E-grid odour of the move type, rescaled to the FLY mean total strength (flymon/ac/tb.py): the opponent-type channel is removed; the two sides of a pair present identical odours, so any TB pick change across sides comes from simulation noise"
+  "tb_design": "FLY-TB odour = mean over the 16 POOL type sets of the E-grid odour of the move type, rescaled to the FLY mean total strength (flymon/ac/tb.py): the opponent-type channel is removed; the two sides of a pair present identical odours, so any TB pick change across sides comes from simulation noise",
+  "uniform_reference_note": "uniform reference, not a noise null: 1/k^2 per pair (uniform independent pick on each side); a fixed opponent-blind pick switches 0",
+  "uniform_reference_switch": 0.20138888888888892
  },
  "pairs": {
   "both_any": 3,
@@ -1442,7 +1668,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.6666666666666666,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.0
+    "switch_TB@40": 0.0,
+    "tb40_null": 0.0
    },
    {
     "best1": "Strength",
@@ -1471,7 +1698,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.16666666666666666,
-    "switch_TB@40": 0.16666666666666666
+    "switch_TB@40": 0.16666666666666666,
+    "tb40_null": 0.1388888888888889
    },
    {
     "best1": "Strength",
@@ -1500,7 +1728,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.16666666666666666,
-    "switch_TB@40": 0.5
+    "switch_TB@40": 0.5,
+    "tb40_null": 0.5
    },
    {
     "best1": "Mega Drain",
@@ -1528,7 +1757,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.3333333333333333,
-    "switch_TB@40": 0.16666666666666666
+    "switch_TB@40": 0.16666666666666666,
+    "tb40_null": 0.2222222222222222
    },
    {
     "best1": "Mega Drain",
@@ -1556,7 +1786,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.3333333333333333,
-    "switch_TB@40": 0.16666666666666666
+    "switch_TB@40": 0.16666666666666666,
+    "tb40_null": 0.2777777777777778
    },
    {
     "best1": "Mega Drain",
@@ -1584,7 +1815,8 @@
     "switch_FLY@0": 0.5833333333333334,
     "switch_FLY@40": 1.0,
     "switch_TB@0": 0.16666666666666666,
-    "switch_TB@40": 0.3333333333333333
+    "switch_TB@40": 0.3333333333333333,
+    "tb40_null": 0.4166666666666667
    },
    {
     "best1": "Thunderbolt",
@@ -1612,7 +1844,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.16666666666666666
+    "switch_TB@40": 0.16666666666666666,
+    "tb40_null": 0.3333333333333333
    },
    {
     "best1": "Thunderbolt",
@@ -1640,7 +1873,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.6666666666666666
+    "switch_TB@40": 0.6666666666666666,
+    "tb40_null": 0.5555555555555556
    },
    {
     "best1": "Thunderbolt",
@@ -1668,7 +1902,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.16666666666666666,
-    "switch_TB@40": 0.3333333333333333
+    "switch_TB@40": 0.3333333333333333,
+    "tb40_null": 0.2222222222222222
    },
    {
     "best1": "Psychic",
@@ -1696,7 +1931,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.5833333333333334,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.3333333333333333
+    "switch_TB@40": 0.3333333333333333,
+    "tb40_null": 0.3333333333333333
    },
    {
     "best1": "Rock Slide",
@@ -1725,7 +1961,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.8333333333333334,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.0
+    "switch_TB@40": 0.0,
+    "tb40_null": 0.08333333333333333
    },
    {
     "best1": "Surf",
@@ -1753,7 +1990,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.16666666666666666
+    "switch_TB@40": 0.16666666666666666,
+    "tb40_null": 0.16666666666666666
    },
    {
     "best1": "Surf",
@@ -1782,7 +2020,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.0
+    "switch_TB@40": 0.0,
+    "tb40_null": 0.0
    },
    {
     "best1": "Mega Drain",
@@ -1810,7 +2049,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.16666666666666666
+    "switch_TB@40": 0.16666666666666666,
+    "tb40_null": 0.2222222222222222
    },
    {
     "best1": "Flamethrower",
@@ -1839,7 +2079,8 @@
     "switch_FLY@0": 0.08333333333333333,
     "switch_FLY@40": 0.6666666666666666,
     "switch_TB@0": 0.16666666666666666,
-    "switch_TB@40": 0.0
+    "switch_TB@40": 0.0,
+    "tb40_null": 0.0
    },
    {
     "best1": "Tri Attack",
@@ -1867,7 +2108,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.16666666666666666,
-    "switch_TB@40": 0.5
+    "switch_TB@40": 0.5,
+    "tb40_null": 0.3333333333333333
    },
    {
     "best1": "Surf",
@@ -1895,7 +2137,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.0
+    "switch_TB@40": 0.0,
+    "tb40_null": 0.0
    },
    {
     "best1": "Surf",
@@ -1923,7 +2166,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.0,
     "switch_TB@0": 0.3333333333333333,
-    "switch_TB@40": 0.0
+    "switch_TB@40": 0.0,
+    "tb40_null": 0.0
    },
    {
     "best1": "Earthquake",
@@ -1952,7 +2196,8 @@
     "switch_FLY@0": 0.0,
     "switch_FLY@40": 0.25,
     "switch_TB@0": 0.0,
-    "switch_TB@40": 0.16666666666666666
+    "switch_TB@40": 0.16666666666666666,
+    "tb40_null": 0.1111111111111111
    },
    {
     "best1": "Mega Drain",
@@ -1980,7 +2225,8 @@
     "switch_FLY@0": 0.08333333333333333,
     "switch_FLY@40": 1.0,
     "switch_TB@0": 0.16666666666666666,
-    "switch_TB@40": 0.0
+    "switch_TB@40": 0.0,
+    "tb40_null": 0.0
    }
   ],
   "pairs_driving_fly_coff_gap": [
@@ -2017,6 +2263,10 @@
   ],
   "pearson_pairs_fly40_vs_chance": -0.18894533672167776,
   "pearson_pairs_fly40_vs_tb40": -0.27376483204914065,
+  "pearson_pairs_fly40_vs_tb40_ci95_fisher": [
+   -0.6388866532287303,
+   0.19201832589674242
+  ],
   "pearson_pairs_tb40_vs_chance": 0.2774992912907593,
   "tb_ge_half": 3
  },
