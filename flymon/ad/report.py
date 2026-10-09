@@ -59,7 +59,7 @@ def unmeasured_sentence(n: int) -> str:
     return f"4.3 기준 {n}: — 탐색 기준 미측정(AC.2 2단계 팔 보류, 부록 AD). {LABEL}"
 
 
-def summary_sentence(p1, p2, final, reason) -> str:
+def summary_sentence(p1, p2, final, reason, notes=()) -> str:
     if final is None:                       # STOP_BUDGET with no common point (every arm stopped or no point reached)
         s = "AD 1차 대조는 측정 불성립이다(최종 판독 시점 없음 — 유효한 마리가 함께 도달한 시점이 없다)."
     elif p1["status"] == "충족":
@@ -75,6 +75,8 @@ def summary_sentence(p1, p2, final, reason) -> str:
         s += f" 40배틀 시점 대조는 {p2['status']}로 최종 시점과 다르다 — 둘을 합쳐 읽지 않는다."
     if reason != "complete" and final is not None:
         s += f" 최종 판독 시점은 {final}배틀이다({REASON[reason]})."
+    for n in notes:                         # AD.3: the floor note reaches the headline sentence too
+        s += f" {n}"
     return f"{s} {LABEL}"
 
 
@@ -186,7 +188,7 @@ def analyse(*, spec, T, result, sits, pairs, coff, fly1, battles_L, eval_records
     # Ruling S2: the evaluation battles run after learning ends (the final point), so criteria 2-3 carry the floor
     # note whenever the first point above 0.5 is at or before the final point.
     sentences += [row_sentence(c, floor_note(final)) for c in ev] + [unmeasured_sentence(4), unmeasured_sentence(5)]
-    summary = summary_sentence(p1, p2, final, reason)
+    summary = summary_sentence(p1, p2, final, reason, floor_note(final))
     extra = [futility_sentence(fut)] if fut.get("status") == "STOP_FUTILE" else []
     extra += [learncheck_sentence(arm, lc, points, final) for arm in ("FLYL", "FLYOS")] if points else []
     check(sentences + [summary] + extra)

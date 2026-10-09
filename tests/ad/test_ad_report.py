@@ -164,3 +164,35 @@ def test_futility_recheck_only_with_every_point40_record():               # Task
     assert run(sits, futility=good)["futility_recheck"] == dict(checked=True, same=True)
     with pytest.raises(SystemExit, match="STOP_INFRA"):
         run(sits, futility=dict(good, share_at_point=0.0))
+
+
+def test_summary_carries_the_floor_note(monkeypatch):                    # fix round 1, I1 (AD.3)
+    note = "회복 r 보정 범위(1 000펄스) 밖 — 바닥 접촉 0.700"
+    out = run(make_sits((0, 20, 40), (0, 20, 40), floor_l={20: 0.3, 40: 0.7}), monkeypatch=monkeypatch)
+    assert note in out["summary"] and out["summary"].endswith(LABEL)
+    out = run(make_sits((0, 20, 40), (0, 20, 40), floor_l={20: 0.1, 40: 0.2}), monkeypatch=monkeypatch)
+    assert "회복 r" not in out["summary"]
+    assert report.summary_sentence(C, C, 120, "complete", ["X"]).endswith(f"X {LABEL}")
+
+
+def test_futility_recheck_reads_the_run_shape():                          # fix round 1, (a)
+    import json
+
+    from flymon.ad import validity
+    sits = make_sits((0, 20, 40), (0, 20, 40))
+    # run_ad.decide_futility returns validity.futility's dict (via persist_futility); run_ad writes it to result.json
+    fut = json.loads(json.dumps(validity.futility(sits, PAIRS, S)))
+    assert set(fut) >= {"status", "point", "share_at_point", "share_at_0", "n_at_point", "n_at_0"}
+    assert run(sits, futility=fut)["futility_recheck"] == dict(checked=True, same=True)
+    assert run(sits, futility={"status": "CONTINUE"})["futility_recheck"]["checked"] is True   # runner fallback shape
+
+
+def test_every_situation_row_has_a_point():                               # fix round 1, (b)
+    sits = make_sits((0, 20, 40), (0, 20, 40))
+    extra = [dict(r, set="new") for r in sits if r["point"] in (0, 40)]
+    extra += [dict(r, mode="os_paired") for r in sits if r["arm"] == "FLYL"]
+    rd = an.situation_readings(sits + extra, S, final=40, new_points=[0, 40], coff=[], fly1=[], retried=[])
+    rows = [c for k in ("did", "aux", "new_set", "paired_os", "sensitivity") for c in rd[k]]
+    assert rows and all(isinstance(c["point"], int) for c in rows)
+    assert {k for k in ("did", "aux", "new_set", "paired_os", "sensitivity") if rd[k]} == {
+        "did", "aux", "new_set", "paired_os", "sensitivity"}
