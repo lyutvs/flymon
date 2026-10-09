@@ -149,3 +149,21 @@ async def test_stale_requests_are_logged(rig, tmp_path):
     rig.attempts.retire(1)
     await rig.sw.reinforce_run_batch([_req(_ctx(1, tok, rig.sw.gen_of(1), 9))])
     assert '"at": "submit"' in (tmp_path / "stale.jsonl").read_text()
+
+
+async def test_rollback_between_submit_check_and_pool_is_refused_at_write_back(rig):
+    # (f) the 1480b36 gap: the rollback lands after ADSwarm's submission check, before the pool reads the generation
+    tok = rig.attempts.begin(0, B, 0)
+    snap = np.array(rig.pool.w[0], copy=True)
+    c = _ctx(0, tok, rig.sw.gen_of(0), 8)
+    real = rig.pool.reinforce_batch
+
+    def late_rollback(*a, **kw):
+        _rollback(rig, 0, snap)
+        rig.attempts.begin(0, B, 1)
+        return real(*a, **kw)
+    rig.pool.reinforce_batch = late_rollback
+    await rig.sw.reinforce_run_batch([_req(c)])
+    del rig.pool.reinforce_batch
+    assert np.array_equal(rig.pool.w[0], snap)
+    assert rig.sw.stale == [dict(fly=0, attempt=[B, 0], gen=c["gen"], at="apply")]

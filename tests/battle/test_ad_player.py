@@ -34,7 +34,7 @@ class ShadowEnc(Enc):
         return dict(true="Charizard", drawn="Lapras", same_types=False)
 
 
-def make(tmp_path, cls=ADAgentPlayer, enc=None, name="fm-ad-t1"):
+def make(tmp_path, cls=ADAgentPlayer, enc=None, name="fm-ad-t1", gen_of=lambda f: 7):
     async def decide_batch(reqs):
         for r in reqs:
             n = len(r.candidates)
@@ -50,7 +50,7 @@ def make(tmp_path, cls=ADAgentPlayer, enc=None, name="fm-ad-t1"):
             rbarrier=BatchBarrier(reinforce_batch, deadline_ms=5), coach=Coach(),
             barrier=BatchBarrier(decide_batch, deadline_ms=5), log_path=tmp_path / "fly03.jsonl",
             account_configuration=AccountConfiguration(name, None), battle_format="gen1ou", start_listening=False,
-            gfly=27, attempts=att, gen_of=lambda f: 7)
+            gfly=27, attempts=att, gen_of=gen_of)
     p.start_attempt("DL-f27-b004", 4, 1)
     return p, att
 
@@ -94,3 +94,19 @@ async def test_eval_player_queues_no_pulse_and_logs_multipliers_and_shadow(make_
     assert p.pending_pulses(battle.battle_tag) == []
     d = records(tmp_path)[-1]
     assert d["gfly"] == 27 and "multipliers" in d and d["os"]["drawn"] == "Lapras"
+
+
+async def test_late_outcome_after_the_retry_began_carries_the_choosing_attempt(make_battle, tmp_path):
+    # (e) the old room delivers the outcome after the rollback and the retry's start_attempt: the pulse keeps the
+    # choosing attempt's token, battle id and generation, so ADSwarm refuses it
+    gen = [7]
+    p, att = make(tmp_path, name="fm-ad-t4", gen_of=lambda f: gen[0])
+    battle = make_battle(by_species["Blastoise"], "Charizard")
+    await p.choose_move(battle)
+    gen[0] = 8                                    # rollback: the fly's generation moves on
+    p.start_attempt("DL-f27-b004", 4, 2)          # the retry begins
+    p._on_outcome(battle.battle_tag, battle.turn, Outcome(dealt_frac=0.5, effectiveness="resisted"))
+    q = p.pending_pulses(battle.battle_tag)
+    assert q and all(x["attempt"] == ["DL-f27-b004", 1] and x["gen"] == 7 for x in q)
+    assert not any(att.is_current(3, x["attempt"]) for x in q)
+    assert q[0]["seed"] == derive_seed("reinforce", 27, "DL-f27-b004", battle.turn, 0)

@@ -15,6 +15,7 @@ class ADSwarm(LVSwarm):
         self.stale: list = []
 
     def gen_of(self, fly: int) -> int:
+        # read without the pool lock: a snapshot; reinforce_batch re-checks the generation under the lock
         return int(getattr(self.pool.w, "gen", {}).get(int(fly), 0))
 
     def _current(self, c: dict) -> bool:
