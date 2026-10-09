@@ -130,7 +130,8 @@ class LeverFlyPool(FlyPool):
     (LVSwarm's executor, one batch per thread) share the workers instead of queueing behind the slowest job of the
     batch before. Values are unchanged: each job carries its fly's weights at submission, reinforce_batch replaces
     (never mutates) self.w[f] under the lock, and a fly's own steps stay ordered because its player awaits each one.
-    False = FlyPool's _map (lock held until the batch is done)."""
+    False = FlyPool's _map (lock held until the batch is done).
+    reinforce_batch(expect, accept) (AD.5 2): a request created before a rollback is refused at submission and at write-back."""
 
     # copied from flymon/brain/fly_pool.py:FlyPool.__init__ (+ edit check, lever worker initializer)
     def __init__(self, npz, params: Params, flies, edit: str, p_type: str = "MBON05", workers: int = 16,
@@ -173,22 +174,36 @@ class LeverFlyPool(FlyPool):
         # timeout_s now also counts time queued behind other in-flight calls' jobs, not only this call's run time
         return self.pool.map_async(fn, items, chunksize=1).get(self.timeout_s)
 
-    # copied from flymon/brain/fly_pool.py:FlyPool.reinforce_batch (+ stale results after a rollback are dropped)
-    def reinforce_batch(self, requests, strength: float, settle_ms: float = 800.0, gap_ms: float = 200.0) -> None:
+    # copied from flymon/brain/fly_pool.py:FlyPool.reinforce_batch (+ stale results after a rollback are dropped;
+    # AD.5 2: `expect` - the generation each request was created under - replaces the generation read here, and
+    # `accept(k)`, the caller's attempt-token check, is asked at submission and again at write-back)
+    def reinforce_batch(self, requests, strength: float, settle_ms: float = 800.0, gap_ms: float = 200.0,
+                        expect=None, accept=None) -> list:
         ids = [int(f) for f, *_ in requests]
         dup = sorted({f for f in ids if ids.count(f) > 1})
         if dup:
             raise ValueError(f"reinforce_batch: fly ids {dup} appear more than once in one batch")
+        if expect is not None and len(expect) != len(ids):
+            raise ValueError(f"reinforce_batch: {len(expect)} expected generations for {len(ids)} requests")
+        ok = (lambda k: True) if accept is None else accept
         with self._lock:
-            gen = {f: self.w.gen.get(f, 0) for f in ids}
-            jobs = [dict(w=self.w[f], shuffle_seed=self.flies[f].shuffle_seed, odor=o, strength=strength, dan=d,
-                         pulse_ms=float(pm), seed=int(s), settle_ms=settle_ms, gap_ms=gap_ms,
-                         enabled=self.flies[f].enabled) for f, o, d, pm, s in requests]
-        new = self._map(fly_pool._reinforce_job, jobs)  # waits outside the lock
+            gen = [self.w.gen.get(f, 0) if expect is None else int(expect[k]) for k, f in enumerate(ids)]
+            live = [k for k, f in enumerate(ids) if self.w.gen.get(f, 0) == gen[k] and ok(k)]
+            jobs = []
+            for k in live:
+                f, o, d, pm, s = requests[k]
+                jobs.append(dict(w=self.w[ids[k]], shuffle_seed=self.flies[ids[k]].shuffle_seed, odor=o,
+                                 strength=strength, dan=d, pulse_ms=float(pm), seed=int(s), settle_ms=settle_ms,
+                                 gap_ms=gap_ms, enabled=self.flies[ids[k]].enabled))
+        new = self._map(fly_pool._reinforce_job, jobs) if jobs else []   # waits outside the lock
+        applied = [False] * len(ids)
         with self._lock:
-            for (f, *_), w in zip(requests, new):
-                if self.w.gen.get(f, 0) == gen[f]:      # rolled back / reloaded meanwhile: this result is stale
+            for k, w in zip(live, new):
+                f = ids[k]
+                if self.w.gen.get(f, 0) == gen[k] and ok(k):      # rolled back / reloaded / retired meanwhile: stale
                     self.w._set_own(f, w)
+                    applied[k] = True
+        return applied
 
     def lever_sha(self) -> str:
         return self.run_jobs(lever_sha_job, [{}])[0]
