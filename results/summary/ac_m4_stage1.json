@@ -1,0 +1,186 @@
+{
+ "appendix": "AC",
+ "boot": {
+  "draws": 10000,
+  "seed": 304
+ },
+ "c1_summary": "\ubc30\ud2c0\ub85c \ud559\uc2b5\ud55c \ub9c8\ub9ac\uc758 \uc0c1\uc131 \uc870\uac74\ubd80 \uc120\ud0dd\uc774 \ud0d0\uc0c9 \uae30\uc900\uc5d0 \ubabb \ubbf8\ucce4\ub2e4. \ud655\uc778 \uc138\ud2b8 \uc0c1\ud669\uc740 \ud559\uc2b5 \uc911\uc5d0\ub3c4 \ub098\uc654\uc744 \uc218 \uc788\ub2e4(AC.4). M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC).",
+ "criteria": [
+  {
+   "a": "FLY",
+   "b": "COFF",
+   "criterion": 1,
+   "diff": 0.19166666666666665,
+   "draws": 10000,
+   "hi": 0.26666666666666666,
+   "kind": "primary",
+   "lo": 0.11250000000000002,
+   "min_a": 9,
+   "min_b": 4,
+   "min_effect": 0.15,
+   "n_a": 12,
+   "n_b": 6,
+   "seed": 304,
+   "status": "\ucda9\uc871",
+   "stopped_a": false,
+   "stopped_b": false
+  },
+  {
+   "a": "FLY",
+   "b": "TB",
+   "criterion": 1,
+   "diff": 0.05833333333333332,
+   "draws": 10000,
+   "hi": 0.16249999999999992,
+   "kind": "primary",
+   "lo": -0.045833333333333365,
+   "min_a": 9,
+   "min_b": 4,
+   "min_effect": 0.15,
+   "n_a": 12,
+   "n_b": 6,
+   "seed": 304,
+   "status": "\ubbf8\ucda9\uc871",
+   "stopped_a": false,
+   "stopped_b": false
+  },
+  {
+   "a": "FLY",
+   "b": "COFF",
+   "criterion": 2,
+   "diff": 0.14508322811858515,
+   "draws": 10000,
+   "hi": 0.18432559335245718,
+   "kind": "secondary",
+   "lo": 0.10750879646553574,
+   "min_a": 9,
+   "min_b": 4,
+   "min_effect": 0.0,
+   "n_a": 12,
+   "n_b": 6,
+   "n_dropped": {
+    "COFF": 0,
+    "FLY": 0,
+    "TB": 0
+   },
+   "seed": 304,
+   "status": "\ucda9\uc871",
+   "stopped_a": false,
+   "stopped_b": false
+  },
+  {
+   "a": "FLY",
+   "b": "RND",
+   "criterion": 3,
+   "diff": 0.020833333333333343,
+   "draws": 10000,
+   "hi": 0.11145833333333333,
+   "kind": "secondary",
+   "lo": -0.07083333333333333,
+   "min_a": 9,
+   "min_b": 12,
+   "min_effect": 0.0,
+   "n_a": 12,
+   "n_b": 16,
+   "seed": 304,
+   "status": "\ubbf8\ucda9\uc871",
+   "stopped_a": false,
+   "stopped_b": false
+  },
+  {
+   "a": "MAX",
+   "b": "FLY",
+   "criterion": 3,
+   "diff": 0.2822916666666666,
+   "draws": 10000,
+   "hi": 0.38125,
+   "kind": "upper",
+   "lo": 0.18125000000000002,
+   "min_a": 12,
+   "min_b": 9,
+   "min_effect": 0.0,
+   "n_a": 16,
+   "n_b": 12,
+   "seed": 304,
+   "status": "\uae30\uc220",
+   "stopped_a": false,
+   "stopped_b": false
+  },
+  {
+   "criterion": 4,
+   "kind": "specificity",
+   "status": "\ubbf8\uce21\uc815"
+  },
+  {
+   "criterion": 5,
+   "kind": "reversal",
+   "status": "\ubbf8\uce21\uc815"
+  }
+ ],
+ "eval_digest": "03e209ea65d38d461ba58befe3b893a9f54d301edd58cf4d5abb6518a91a8dfa",
+ "invalid_reasons": {
+  "COFF": {},
+  "FLY": {},
+  "MAX": {},
+  "RND": {},
+  "TB": {}
+ },
+ "kc_ratio_gt2": {
+  "COFF": 0.3159294978383771,
+  "FLY": 0.3245145906665153,
+  "TB": 0.7119270292114075
+ },
+ "label": "M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC).",
+ "n_arm_stopped": {
+  "COFF": 0,
+  "FLY": 0,
+  "MAX": 0,
+  "RND": 0,
+  "TB": 0
+ },
+ "n_valid": {
+  "COFF": 6,
+  "FLY": 12,
+  "MAX": 16,
+  "RND": 16,
+  "TB": 6
+ },
+ "notes": [
+  "\ub2e4\uc911 \ube44\uad50 \ubcf4\uc815 \uc5c6\uc74c(AC.0 8): \uae30\uc900 1\ub9cc 1\ucc28, \ub098\uba38\uc9c0\ub294 \uae30\uc220 \ud1b5\uacc4.",
+  "6\ub9c8\ub9ac \ud314\uc758 CI\ub294 \ubd88\uc548\uc815\ud560 \uc218 \uc788\ub2e4(AC.5).",
+  "\uae30\uc900 3\uc740 \ud559\uc2b5\uc758 \ud655\uc778 \uc218\ub2e8\uc774 \uc544\ub2c8\ub2e4(AC.0 5 \u00b7 7, \uac80\uc815\ub825 \ub0ae\uc74c).",
+  "\uae30\uc900 4 \u00b7 5\ub294 2\ub2e8\uacc4 \ud314\uc774 \ud544\uc694\ud574 1\ub2e8\uacc4\uc5d0\uc11c \ubbf8\uce21\uc815\uc774\ub2e4(\uae30\uc900 4\ub294 \uce21\uc815\ub418\ub354\ub77c\ub3c4 \uae30\uc220\ub85c\ub9cc \uc801\ub294\ub2e4, AC.5).",
+  "MAX \u2212 FLY\ub294 \uc0c1\ud55c \ubcf4\uace0(\uae30\uc220)\uc774\uba70 \ud310\uc815\uc5d0 \uc4f0\uc9c0 \uc54a\ub294\ub2e4.",
+  "WEAK \ud314\uc740 M1 \ud30c\uc77c\ub7ff \uac12\uc744 \uc62e\uaca8 \uc801\uc740 \uac83\uc774\ub2e4(AC.2).",
+  "KC \ud3ed\uc8fc(D.6 (a))\ub294 \ub300\uc751 \uc5c6\uc774 \uc218\uc6a9\ud558\uace0 \uc7ac\uae30\ub9cc \ud588\ub2e4(AC.0 6)."
+ ],
+ "sentences": [
+  "FLY \u2212 C-off\uc5d0\uc11c 4.3 \uae30\uc900 1: 0.192 [95% CI 0.113, 0.267] \u2014 \ud0d0\uc0c9 \uae30\uc900 \ucda9\uc871. (6\ub9c8\ub9ac \ud314\uc758 CI\ub294 \ubd88\uc548\uc815\ud560 \uc218 \uc788\ub2e4) M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC). \uac19\uc740 \ud134 \ud6c4\ubcf4 KC \ube44\uc728 > 2 \ud134 \ube44\uc728(FLY): 0.325.",
+  "FLY \u2212 FLY-TB\uc5d0\uc11c 4.3 \uae30\uc900 1: 0.058 [95% CI -0.046, 0.162] \u2014 \ud0d0\uc0c9 \uae30\uc900 \ubbf8\ucda9\uc871. (6\ub9c8\ub9ac \ud314\uc758 CI\ub294 \ubd88\uc548\uc815\ud560 \uc218 \uc788\ub2e4) M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC). \uac19\uc740 \ud134 \ud6c4\ubcf4 KC \ube44\uc728 > 2 \ud134 \ube44\uc728(FLY): 0.325.",
+  "FLY \u2212 C-off\uc5d0\uc11c 4.3 \uae30\uc900 2: 0.145 [95% CI 0.108, 0.184] \u2014 \ud0d0\uc0c9 \uae30\uc900 \ucda9\uc871. (\uae30\uc220 \ud1b5\uacc4, \ub2e4\uc911 \ube44\uad50 \ubbf8\ubcf4\uc815) (6\ub9c8\ub9ac \ud314\uc758 CI\ub294 \ubd88\uc548\uc815\ud560 \uc218 \uc788\ub2e4) M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC). \uac19\uc740 \ud134 \ud6c4\ubcf4 KC \ube44\uc728 > 2 \ud134 \ube44\uc728(FLY): 0.325.",
+  "FLY \u2212 RND\uc5d0\uc11c 4.3 \uae30\uc900 3: 0.021 [95% CI -0.071, 0.111] \u2014 \ud0d0\uc0c9 \uae30\uc900 \ubbf8\ucda9\uc871. M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC). \uac19\uc740 \ud134 \ud6c4\ubcf4 KC \ube44\uc728 > 2 \ud134 \ube44\uc728(FLY): 0.325.",
+  "MAX \u2212 FLY\uc5d0\uc11c 4.3 \uae30\uc900 3: 0.282 [95% CI 0.181, 0.381] \u2014 \uc0c1\ud55c \ubcf4\uace0(\uae30\uc220). M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC). \uac19\uc740 \ud134 \ud6c4\ubcf4 KC \ube44\uc728 > 2 \ud134 \ube44\uc728(FLY): 0.325.",
+  "4.3 \uae30\uc900 4: \u2014 \ud0d0\uc0c9 \uae30\uc900 \ubbf8\uce21\uc815(2\ub2e8\uacc4 \ud314\uc774 \ud544\uc694\ud558\ub2e4). M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC). \uac19\uc740 \ud134 \ud6c4\ubcf4 KC \ube44\uc728 > 2 \ud134 \ube44\uc728(FLY): 0.325.",
+  "4.3 \uae30\uc900 5: \u2014 \ud0d0\uc0c9 \uae30\uc900 \ubbf8\uce21\uc815(2\ub2e8\uacc4 \ud314\uc774 \ud544\uc694\ud558\ub2e4). M2 \uc815\uc2dd \ud310\uc815 \uc5c6\uc74c \u2014 \uadfc\uac70\ub294 AA \ud6a8\uacfc \ud06c\uae30 \ucd94\uc815(\ubcf4\uc0c1 \uc5f0\ud569 d\u2032 6.02 [4.83, 7.49], \ucc98\ubc8c \u22124.52 [\u22125.89, \u22123.23], \ub113\ud78c \ud480 16\uc30d, \ucee4\ubc84\ub9ac\uc9c0 0.855 \uba85\ubaa9 \ubbf8\ub2ec)\ubfd0. \ud0d0\uc0c9 \ub2e8\uacc4(\ubd80\ub85d AC). \uac19\uc740 \ud134 \ud6c4\ubcf4 KC \ube44\uc728 > 2 \ud134 \ube44\uc728(FLY): 0.325."
+ ],
+ "sources": {
+  "BRAIN": {
+   "path": "results/m4/stage1/BRAIN/result.json",
+   "sha256": "4b398d4e8c39435646e849666c0fe21ed0927acad2b8f7fb8a6f917b47c50fc8"
+  },
+  "MAX": {
+   "path": "results/m4/stage1/MAX/result.json",
+   "sha256": "42eee107a28a7f9722bbfee734e2eca22f1169134808648c7d6ac7c22d6fdba6"
+  },
+  "RND": {
+   "path": "results/m4/stage1/RND/result.json",
+   "sha256": "f7f89a00482b552b7dc7ed75d0efdcf8537e56b7631892d56fa071aab47809a5"
+  }
+ },
+ "stage": 1,
+ "stopped": {},
+ "weak_pilot": {
+  "WEAK-MAX": 0.485,
+  "WEAK-RND": 0.145
+ }
+}
