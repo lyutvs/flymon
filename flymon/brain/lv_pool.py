@@ -106,15 +106,21 @@ class LeverFlyPool(FlyPool):
     """FlyPool whose workers carry the CSC edit `edit` (u_measure's string; "none" = no edit) on p_type.
 
     mask_plasticity (default on): workers run MaskPlasticity, bit-identical to Plasticity and cheaper per step;
-    False = the plain Plasticity (the old path, kept for the equality tests)."""
+    False = the plain Plasticity (the old path, kept for the equality tests).
+    overlap (default on): _map waits for its jobs without holding the pool lock, so calls from several threads
+    (LVSwarm's executor, one batch per thread) share the workers instead of queueing behind the slowest job of the
+    batch before. Values are unchanged: each job carries its fly's weights at submission, reinforce_batch replaces
+    (never mutates) self.w[f] under the lock, and a fly's own steps stay ordered because its player awaits each one.
+    False = FlyPool's _map (lock held until the batch is done)."""
 
     # copied from flymon/brain/fly_pool.py:FlyPool.__init__ (+ edit check, lever worker initializer)
     def __init__(self, npz, params: Params, flies, edit: str, p_type: str = "MBON05", workers: int = 16,
                  punish_type: str = "PPL105", reward_type: str = "PAM08", timeout_s: float = 3600.0,
-                 max_variants: int = 4, mask_plasticity: bool = True):
+                 max_variants: int = 4, mask_plasticity: bool = True, overlap: bool = True):
         if edit != NONE:
             parse_u_edit(edit)                                   # ValueError before any worker is spawned
         self.edit, self.p_type = edit, p_type
+        self.overlap = bool(overlap)
         self.flies = [f if isinstance(f, FlySpec) else FlySpec(**f) for f in flies]
         if not self.flies:
             raise ValueError("LeverFlyPool needs at least one fly")
@@ -139,6 +145,13 @@ class LeverFlyPool(FlyPool):
             self.pool.join()
             raise
         self.w = {i: self.w0[f.shuffle_seed].copy() for i, f in enumerate(self.flies)}
+
+    def _map(self, fn, items):
+        if not self.overlap:
+            return super()._map(fn, items)
+        if not items:
+            return []
+        return self.pool.map_async(fn, items, chunksize=1).get(self.timeout_s)
 
     def lever_sha(self) -> str:
         return self.run_jobs(lever_sha_job, [{}])[0]

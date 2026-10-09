@@ -4,6 +4,8 @@ and only the flag is recorded. Every fly decision also records whether the turn'
 than kc_ratio (D.6 (a), AC.0 6) and each candidate's E-grid cell [move type, opponent types]."""
 from __future__ import annotations
 
+import concurrent.futures
+
 import numpy as np
 
 from ..agent import policy
@@ -30,9 +32,15 @@ def egrid_fn(enc):
 
 class LVSwarm(BrainSwarm):
     def __init__(self, pool, cfg, cells: dict, kc, mode: str = "learn", tie_seed: int = SPEC.tie_seed,
-                 kc_ratio: float = SPEC.kc_ratio, egrid=None):
+                 kc_ratio: float = SPEC.kc_ratio, egrid=None, threads: int = 64):
         super().__init__(pool, cfg, cells, kc, mode)
         self.tie_seed, self.kc_ratio, self.egrid = int(tie_seed), float(kc_ratio), egrid
+        # speedup brief fix 3: a pool whose calls may overlap (LeverFlyPool overlap=True) gets one executor thread per
+        # in-flight batch, so batches no longer queue behind each other; any other pool keeps BrainSwarm's one thread
+        self.overlapping = bool(getattr(pool, "overlap", False))
+        if self.overlapping:
+            self._exec.shutdown(wait=False)
+            self._exec = concurrent.futures.ThreadPoolExecutor(max_workers=threads)
 
     async def decide_run_batch(self, reqs) -> list:
         # copied from flymon/agent/swarm.py:BrainSwarm.decide_run_batch (tie rule and shadow fields added)

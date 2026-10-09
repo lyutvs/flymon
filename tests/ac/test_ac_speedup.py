@@ -157,3 +157,154 @@ def test_per_candidate_decide_equals_per_fly_decide(rig):
         pool._map = lambda fn, items: (n_jobs.append(len(items)), real(fn, items))[1]
         pool.decide_batch(reqs, cfg.strength, 100.0, 100.0)
         assert n_jobs == [sum(len(c) for _, c, _ in reqs)]                # one job per candidate
+
+
+# ---------------------------------------------------------------- fix 3: no whole-batch waiting
+import asyncio  # noqa: E402
+import inspect  # noqa: E402
+import threading  # noqa: E402
+
+from tests.battle import test_barrier as _barrier_tests  # noqa: E402
+
+_BARRIER_TESTS = [n for n, f in vars(_barrier_tests).items() if n.startswith("test_") and inspect.iscoroutinefunction(f)]
+
+
+@pytest.mark.parametrize("name", _BARRIER_TESTS)
+async def test_overlap_barrier_keeps_batch_barrier_behaviour(name, monkeypatch):
+    from flymon.ac.barrier import OverlapBarrier
+    monkeypatch.setattr(_barrier_tests, "BatchBarrier", OverlapBarrier)
+    await getattr(_barrier_tests, name)()
+
+
+async def test_overlap_barrier_runs_a_second_batch_while_the_first_is_in_flight():
+    from flymon.ac.barrier import OverlapBarrier
+    running, peak, calls = [0], [0], []
+    release = asyncio.Event()
+
+    async def run_batch(reqs):
+        calls.append([r.player_id for r in reqs])
+        running[0] += 1; peak[0] = max(peak[0], running[0])
+        if reqs[0].player_id == "a":
+            await release.wait()                         # batch "a" is the slow one
+        running[0] -= 1
+        return [i for i, _ in enumerate(reqs)]
+
+    bar = OverlapBarrier(run_batch, deadline_ms=20)
+    bar.register("a"); bar.register("b")
+    ta = asyncio.create_task(bar.submit("a", None, ["x"], {}))
+    await asyncio.sleep(0.05)                            # deadline fired: batch "a" in flight
+    tb = asyncio.create_task(bar.submit("b", None, ["x"], {}))
+    assert await asyncio.wait_for(tb, 1.0) == 0          # "b" is served while "a" still runs
+    assert not ta.done() and peak[0] == 2
+    release.set()
+    assert await asyncio.wait_for(ta, 1.0) == 0
+    assert calls == [["a"], ["b"]]
+
+
+def _fly_sequence(pool, fly, rig, decide, out):
+    """One fly's own ordered decide / reinforce steps (as a player awaits them), then a situation evaluation."""
+    from flymon.rescope.blocks import weights_sha
+    cfg, o, idx = rig["cfg"], rig["odours"], rig["idx"]
+    rec = []
+    for k, (dan, ms) in enumerate((("PAM08", 400.0), ("PPL105", 400.0))):
+        rec.append(decide(pool, [(fly, o[k:] + o[:k], 40 + 10 * fly + k)], cfg.strength, cfg.settle_ms, cfg.read_ms,
+                          idx)[0])
+        pool.reinforce_batch([(fly, o[(k + fly) % 3], dan, ms, 60 + 10 * fly + k)], cfg.strength, cfg.settle_ms)
+        rec.append(pool.w[fly].copy())
+    rec.append(weights_sha(pool.w[fly]))
+    rec.append(_evaluate(pool, fly, rig))
+    out[fly] = rec
+
+
+@needs_data
+def test_overlapping_pool_calls_equal_the_serial_old_path(rig):
+    from flymon.brain.fly_pool import FlyPool
+    cfg, o, idx = rig["cfg"], rig["odours"], rig["idx"]
+    want: dict = {}
+    with _pool(rig, flies=2, workers=4, mask_plasticity=False, overlap=False) as old:
+        _say("old pool up (Plasticity, per-fly jobs, lock held while waiting)")
+        t = time.perf_counter()
+        for f in (0, 1):
+            _fly_sequence(_OldDecide(old), f, rig, FlyPool.decide_batch, want)
+        t_old = time.perf_counter() - t
+        lever_old = old.lever_sha()
+        hold = threading.Thread(target=old.decide_batch, args=([(0, o, 1)], cfg.strength, cfg.settle_ms, cfg.read_ms, idx))
+        hold.start(); time.sleep(0.5)
+        assert old._lock.locked()                        # the old _map holds the lock while its batch runs
+        hold.join()
+    got: dict = {}
+    with _pool(rig, flies=2, workers=4) as new:
+        _say("new pool up (all three fixes); two flies in two threads at once")
+        t = time.perf_counter()
+        ths = [threading.Thread(target=_fly_sequence, args=(new, f, rig, LeverFlyPoolDecide, got)) for f in (0, 1)]
+        for th in ths:
+            th.start()
+        for th in ths:
+            th.join()
+        t_new = time.perf_counter() - t
+        assert new.lever_sha() == lever_old
+        hold = threading.Thread(target=new.decide_batch, args=([(0, o, 1)], cfg.strength, cfg.settle_ms, cfg.read_ms, idx))
+        hold.start(); time.sleep(0.5)
+        assert not new._lock.locked()                    # waiting for workers no longer holds the lock
+        hold.join()
+    _say(f"two-fly sequence wall: old serial {t_old:.2f} s, new overlapping {t_new:.2f} s")
+    assert sorted(got) == [0, 1]
+    for f in (0, 1):
+        g, w = got[f], want[f]
+        _same_counts([g[0], g[2]], [w[0], w[2]])          # decide counts
+        _same_counts([g[1], g[3]], [w[1], w[3]])          # weights after each reinforce
+        assert g[4] == w[4]                               # weights_sha
+        assert g[5] == w[5] and g[5]["frozen"]            # situation-eval record
+
+
+def LeverFlyPoolDecide(pool, *a, **kw):
+    return pool.decide_batch(*a, **kw)
+
+
+async def test_lvswarm_overlapping_batches_equal_serial_batches(synthetic_npz):
+    from flymon.ac.swarm import LVSwarm
+    from flymon.brain.circuits import Populations
+    from flymon.brain.connectome import Connectome
+    from flymon.brain.fly_pool import FlySpec
+    from flymon.brain.h4_jobs import type_cells
+    from flymon.brain.lv_pool import LeverFlyPool
+    from tests.ac.test_ac_swarm import CFG, P, _ctx, _req
+    conn = Connectome.load(str(synthetic_npz)); pops = Populations.from_connectome(conn)
+    cells = type_cells(conn, ["MBON03", "MBON01"])
+    B = {"ORN_VA2": 1.0, "ORN_DM6": 1.0}
+    A = {"ORN_DM1": 1.0, "ORN_DA1": 1.0}
+
+    def batches():
+        return [[_req(dict(_ctx(t, [A, B]), fly=0))] for t in range(4)] + [[_req(dict(_ctx(t, [B, A]), fly=1))]
+                                                                             for t in range(4)]
+    with LeverFlyPool(synthetic_npz, P, [FlySpec(), FlySpec()], edit="none", workers=2, timeout_s=120,
+                      overlap=False) as old:
+        sw = LVSwarm(old, CFG, cells, pops.kc, mode="eval")
+        assert sw._exec._max_workers == 1 and not sw.overlapping
+        want_b = batches()
+        want = [await sw.decide_run_batch(b) for b in want_b]
+    with LeverFlyPool(synthetic_npz, P, [FlySpec(), FlySpec()], edit="none", workers=2, timeout_s=120) as new:
+        sw = LVSwarm(new, CFG, cells, pops.kc, mode="eval")
+        assert sw._exec._max_workers > 1 and sw.overlapping
+        got_b = batches()
+        got = await asyncio.gather(*(sw.decide_run_batch(b) for b in got_b))
+    assert list(got) == want
+    assert [b[0].context["detail"] for b in got_b] == [b[0].context["detail"] for b in want_b]
+
+
+def test_acbattles_uses_the_overlap_barrier_only_for_an_overlapping_swarm(tmp_path):
+    from types import SimpleNamespace
+    from flymon.ac.barrier import OverlapBarrier
+    from flymon.ac.battles import ACBattles
+    from flymon.battle.barrier import BatchBarrier
+
+    async def rb(reqs):
+        return [0] * len(reqs)
+
+    async def make(overlapping):
+        sw = SimpleNamespace(decide_run_batch=rb, reinforce_run_batch=rb, overlapping=overlapping)
+        return ACBattles({0: "FLY"}, tmp_path, None, swarm=sw).bars
+    bars = asyncio.run(make(True))
+    assert all(type(b) is OverlapBarrier for pair in bars.values() for b in pair)
+    bars = asyncio.run(make(False))
+    assert all(type(b) is BatchBarrier for pair in bars.values() for b in pair)

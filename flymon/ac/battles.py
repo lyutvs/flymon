@@ -28,8 +28,11 @@ class ACBattles:  # copied from scripts/run_rescope_battles.py:Battles (AC ids, 
         self.bars = {}
         if swarm is not None:
             from ..battle.barrier import BatchBarrier
-            self.bars["L"] = (BatchBarrier(swarm.decide_run_batch), BatchBarrier(swarm.reinforce_run_batch))
-            self.bars["E"] = (BatchBarrier(swarm.decide_run_batch), BatchBarrier(blocks.refuse_pulses))
+            from .barrier import OverlapBarrier
+            # speedup brief fix 3: batches of an overlapping swarm (LVSwarm on LeverFlyPool) may run side by side
+            Bar = OverlapBarrier if getattr(swarm, "overlapping", False) else BatchBarrier
+            self.bars["L"] = (Bar(swarm.decide_run_batch), Bar(swarm.reinforce_run_batch))
+            self.bars["E"] = (Bar(swarm.decide_run_batch), Bar(blocks.refuse_pulses))
 
     def player(self, block: str, sb):
         p = self.players[block].get(sb.fly_id)
