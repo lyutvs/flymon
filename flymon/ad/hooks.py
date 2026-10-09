@@ -25,6 +25,7 @@ from ..agent.checkpoint import CheckpointStore, filter_log
 from ..rescope import blocks
 from . import os_encoder
 from .inputs import battle_index
+from .runner import load_checkpoint
 from .spec import LABEL
 
 OS_KEY = {("confirm", "own"): "os-sit", ("confirm", "os_paired"): "os-sit-paired", ("new", "own"): "os-sit-new"}
@@ -53,10 +54,7 @@ class ADSituationLog(SituationLog):
 def committed_all(out, key: str) -> set:
     done = set()
     for block in ("learn", "eval"):
-        try:
-            ck = CheckpointStore(Path(out) / "checkpoints" / block, key).load()
-        except ValueError as e:
-            raise SystemExit(f"STOP_MANIFEST: {out}/checkpoints/{block}: {e} (another run manifest, AD.4)")
+        ck = load_checkpoint(CheckpointStore(Path(out) / "checkpoints" / block, key))   # STOP_INFRA | STOP_MANIFEST
         if ck:
             done |= set(ck["completed"])
     return done

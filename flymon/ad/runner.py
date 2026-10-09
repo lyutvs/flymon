@@ -4,9 +4,12 @@ the decision, Task 8), then phase 2 = the rest - or nothing under STOP_FUTILE - 
 effective learning end. Phase boundaries are a barrier: a fly ahead waits for the slowest before battle 40, so the
 check reads every fly at 40 and no fly learns past 40 before the decision. should_stop_battle(block, sb) is asked at
 every battle start (AD.4's per-batch reservation). A checkpoint written under another key (the run manifest's sha256 is
-part of it) is STOP_MANIFEST. Without an evaluation schedule (the bench) the run is complete when learning is."""
+part of it) is STOP_MANIFEST; a checkpoint failing its checksum is STOP_INFRA. on_block_end("L") is awaited once, after
+the last learning phase (the learning players stay logged in across the split); on_block_end("E") after the evaluation
+block. Without an evaluation schedule (the bench) the run is complete when learning is."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -20,11 +23,21 @@ def _complete(ck, sched) -> bool:
     return ck is not None and set(blocks.ids_of(sched)) <= set(ck["completed"])
 
 
-def _load(store):
+def load_checkpoint(store):
+    """store.load() with AD's STOP codes: a checkpoint no generation of which passes its checksum (or an unreadable
+    manifest) is STOP_INFRA - damaged files, not another run; a schema or config-hash (= checkpoint key, which holds
+    the run manifest's sha256) mismatch is STOP_MANIFEST (AD.4)."""
     try:
         return store.load()
+    except json.JSONDecodeError as e:
+        raise SystemExit(f"STOP_INFRA: {store.root}: unreadable checkpoint manifest ({e})")
     except ValueError as e:
+        if "checksum" in str(e):
+            raise SystemExit(f"STOP_INFRA: {store.root}: {e} (damaged checkpoint files)")
         raise SystemExit(f"STOP_MANIFEST: {store.root}: {e} (the checkpoint key holds the run manifest's sha256, AD.4)")
+
+
+_load = load_checkpoint
 
 
 # copied from flymon/rescope/blocks.py:run_arm (+ two learning phases split at the futility point, the per-battle start
@@ -65,8 +78,8 @@ async def run_ad_arm(out, *, learn, eval_, attempt_for, cfg_hash: str, retry_max
                                    after=after_for(block), stop_after=budget["left"], should_stop=should_stop,
                                    should_stop_battle=gate)
         played[block] += r["played"]
-        if on_block_end is not None:
-            await on_block_end(block)
+        if on_block_end is not None and block == "E":
+            await on_block_end(block)                    # "L" closes once, after its last phase (below)
         if budget["left"] is not None:
             budget["left"] -= len(r["played"])
         return _load(stores[block])
@@ -98,6 +111,8 @@ async def run_ad_arm(out, *, learn, eval_, attempt_for, cfg_hash: str, retry_max
                 if not _complete(ck, eff):
                     return partial()
     state["learn_ids"] = [sb.battle_id for sb in eff]
+    if on_block_end is not None:
+        await on_block_end("L")                          # once per session: the learning players stay across the split
     pool.load_state(ck["pool_state"])                    # the committed end of learning (== the live pool)
     before = {f: blocks.weights_sha(e["w"]) for f, e in enumerate(ck["pool_state"]["flies"])}
     if not eval_:

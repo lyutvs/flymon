@@ -62,23 +62,42 @@ def parse_args(argv=None):
     return a
 
 
+def _reuse_bad(digests: dict, man: dict, spec) -> list:
+    now = reuse.reuse_fields(digests["confirm"], digests["eval"], spec)
+    return reuse.changed_since(man.get("reuse"), now) + reuse.reuse_problems(now, spec)
+
+
 def load_inputs(spec) -> tuple:
+    """AD.2: (가) before (나) - in the run, the stage-1 fields (the document's confirm / eval digests and stage 1's
+    records) are checked first, and a rebuilt confirm / eval digest that left stage 1's is STOP_REUSE too, so a
+    reuse change never reads as STOP_MANIFEST; then the AD-fixed fields (check_inputs) -> STOP_MANIFEST. An input
+    manifest with status STOP_REUSE is STOP_REUSE; STOP_SET (fewer candidates than pairs; unreachable, 82 >= 20) maps
+    to STOP_REUSE for the reused confirmation set, else (the new 20 pairs, an AD-fixed field) to STOP_MANIFEST."""
     doc_p, man_p = inputs.input_paths(spec)
     for p in (doc_p, man_p):
         if not p.exists():
             raise SystemExit(f"refusing: {p} does not exist (scripts/write_ad_inputs.py"
                              f"{'' if spec.mode == 'run' else ' --' + spec.mode})")
     doc, man = json.loads(doc_p.read_text()), json.loads(man_p.read_text())
-    if man.get("status") != "OK":
-        raise SystemExit(f"refusing: {man_p} status {man.get('status')!r} (STOP_REUSE / STOP_SET stop AD)")
-    bad = inputs.check_inputs(doc, man, spec, doc_p)
-    if bad:
-        raise SystemExit(f"STOP_MANIFEST: {doc_p} does not match its seeds / manifest: {bad}")
+    st = man.get("status")
+    if st == "STOP_REUSE":
+        raise SystemExit(f"STOP_REUSE: {man_p} status STOP_REUSE: {man.get('reuse_problems')}")
+    if st == "STOP_SET":
+        code = "STOP_REUSE" if (doc.get("confirm") or {}).get("status") != "OK" else "STOP_MANIFEST"
+        raise SystemExit(f"{code}: {man_p} status STOP_SET (a pair set could not be drawn, AD.2)")
+    if st != "OK":
+        raise SystemExit(f"refusing: {man_p} status {st!r}")
     if spec.mode == "run":
-        now = reuse.reuse_fields(doc["digests"]["confirm"], doc["digests"]["eval"], spec)
-        bad = reuse.changed_since(man.get("reuse"), now) + reuse.reuse_problems(now, spec)
+        bad = _reuse_bad(doc["digests"], man, spec)
         if bad:
             raise SystemExit(f"STOP_REUSE: stage-1 fields changed or wrong since {man_p}: {bad}")
+    bad = inputs.check_inputs(doc, man, spec, doc_p)
+    if bad:
+        if spec.mode == "run":
+            rb = _reuse_bad(inputs.inputs_doc(spec)["digests"], man, spec)
+            if rb:
+                raise SystemExit(f"STOP_REUSE: the confirm / eval digests rebuilt from the seeds left stage 1's: {rb}")
+        raise SystemExit(f"STOP_MANIFEST: {doc_p} does not match its seeds / manifest: {bad}")
     return doc, dict(path=str(doc_p), manifest=str(man_p), manifest_sha256=store.sha256_file(man_p),
                      digests=doc["digests"])
 
@@ -150,6 +169,12 @@ def srv_config(srv):
     return ServerConfiguration(srv.url_ws, "https://play.pokemonshowdown.com/action.php?")
 
 
+def gate_kwargs(gate) -> dict:
+    """Ruling C1: no session-wide should_stop - the per-battle gate alone decides, so a batch already opened is finished
+    by its lagging flies after a refusal of the next batch (a session-wide stop would drop their battle k)."""
+    return dict(should_stop=None, should_stop_battle=gate)
+
+
 async def drive(a, out, key, spec, learn, eval_, pool, swarm, lay, encoders, books, attempts, after, srv_cfg, gate,
                 decide_futility):
     from flymon.ad import hooks
@@ -160,8 +185,7 @@ async def drive(a, out, key, spec, learn, eval_, pool, swarm, lay, encoders, boo
         return await run_ad_arm(out, learn=learn, eval_=eval_, attempt_for=hooks.skipping(b.attempt_for, books),
                                 cfg_hash=key, retry_max=spec.retry_max, resume=a.resume, pool=pool, swarm=swarm,
                                 reset_player=b.reset_player, stop_after=a.stop_after, on_block_end=b.close_block,
-                                after_battle=after, should_stop=lambda: gate.refused is not None,
-                                should_stop_battle=gate,
+                                after_battle=after, **gate_kwargs(gate),
                                 futility_point=spec.futility_point if spec.futility_checked() else None,
                                 decide_futility=decide_futility)
     finally:
@@ -222,7 +246,7 @@ def run_brain(a, spec, out, doc, model, r, learn, eval_, T, new_set, man_sha, ga
         gate = budget.BatchGate(spec, T, new_set, times_path=out / "batch_times.json", **gate_args)
 
         def after(block, sb, rec):
-            gate.finished(block, sb)                         # the battle's span, before its evaluations
+            gate.finished(block, sb)                         # the battle's span ends before its point evaluations
             hk.after_battle(block, sb, rec)
 
         def decide_futility():
@@ -233,7 +257,10 @@ def run_brain(a, spec, out, doc, model, r, learn, eval_, T, new_set, man_sha, ga
 
         try:
             if a.resume:
-                sitlog.filter(hooks.committed_all(out, key))
+                done = hooks.committed_all(out, key)         # STOP_INFRA (checksum) | STOP_MANIFEST (key)
+                sitlog.filter(done)
+                for blk, tag in zip("LE", spec.tags):        # a half-played batch is finished, never refused
+                    gate.reopen(blk, [b for b in done if b.startswith(tag + "-")])
             t1 = time.time()
             n_init = hk.initial()
             t_sit = time.time() - t1
@@ -259,6 +286,16 @@ def run_brain(a, spec, out, doc, model, r, learn, eval_, T, new_set, man_sha, ga
                 config_hash=config_hash(cfg), stale=len(swarm.stale),
                 gate=dict(refused=gate.refused, refusal=gate.refusal, longest_s=gate.longest),
                 timing=dict(t_sit_init_s=t_sit, n_init=n_init, t_run_s=t_run))
+
+
+def bench_doc(spec, t: dict, *, t0: float, t_ended: float, workers: int, git) -> dict:
+    """bench.json (AD.4, read by scripts/write_ad_budget.py): pid is this python's own (the load log's process, not
+    uv's), [t_started, t_ended] the attempt's window; s/evaluation = the point-0 situation time over EVERY point-0
+    evaluation of the session (n_init: 24 own + 12 paired OS + 24 new-set = 60 on a fresh bench)."""
+    return dict(s_per_batch_battle=t["t_run_s"] / spec.learn_battles,
+                sit_eval_s_per_eval=t["t_sit_init_s"] / max(1, t["n_init"]), n_init=t["n_init"],
+                flies=spec.n_flies(), workers=workers, battles=spec.learn_battles, pid=os.getpid(),
+                t_started=t0, t_ended=t_ended, attempt=spec.bench_attempt, timing=t, git=git, label=LABEL)
 
 
 def main(argv=None) -> int:
@@ -299,10 +336,7 @@ def main(argv=None) -> int:
                 print("bench: stopped before completion; no bench.json (use the next attempt N)", flush=True)
                 return 2
             t = res["timing"]
-            b = dict(s_per_batch_battle=t["t_run_s"] / spec.learn_battles,
-                     sit_eval_s_per_eval=t["t_sit_init_s"] / max(1, t["n_init"]), n_init=t["n_init"],
-                     flies=spec.n_flies(), workers=a.workers, battles=spec.learn_battles, pid=os.getpid(),
-                     t_started=t0, t_ended=time.time(), attempt=spec.bench_attempt, timing=t, git=git, label=LABEL)
+            b = bench_doc(spec, t, t0=t0, t_ended=time.time(), workers=a.workers, git=git)
             store.write_json(out / "bench.json", b)
             print(f"bench {spec.bench_attempt}: {b['s_per_batch_battle']:.1f} s/batch-battle, "
                   f"{b['sit_eval_s_per_eval']:.1f} s/evaluation ({t['n_init']}); wrote {out / 'bench.json'}", flush=True)

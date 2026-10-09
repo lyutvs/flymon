@@ -15,7 +15,9 @@
   median; persisted in batch_times.json) + the bench median s/evaluation x the situation evaluations at point k + 1 (a
   learning batch ending on a point). Once a batch is open its other flies' battles are not checked again. A refusal by
   the total budget is STOP_BUDGET (the run stops; the reading uses the latest common point); by the session cap only, the
-  session closes at a batch boundary for --resume. A batch-battle's span runs from its first start to its last finish."""
+  session closes at a batch boundary for --resume. A batch-battle's span runs from its first start to its last finish
+  (run_ad.py calls finished() before the battle's point evaluations, so a span excludes its own point's evaluations -
+  worst() adds them from the bench). On a resume, reopen() marks every batch with a committed battle as opened."""
 from __future__ import annotations
 
 import datetime as dt
@@ -119,6 +121,13 @@ class BatchGate:
         self.opened: set = set()
         self.spans: dict = {}
         self.refused, self.refusal = None, None
+
+    def reopen(self, block: str, battle_ids) -> int:
+        """A resume: every batch with a committed battle counts as opened (opened is in memory only), so a batch half
+        played in an earlier session is finished by its lagging flies, never refused. Returns how many were added."""
+        keys = {(block, battle_index(b)) for b in battle_ids} - self.opened
+        self.opened |= keys
+        return len(keys)
 
     def worst(self, block: str, index: int) -> float:
         base = self.spec.worst_factor * (self.longest if self.longest > 0 else self.bench_batch_s)
