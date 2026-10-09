@@ -233,7 +233,7 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   g 5(PASS 쪽 α D 0.0005 · D_fin 0.0005 · R 0.00025, FAIL 쪽 0.00005)와 g 6(0.0001 · 0.0001 · 0.0001, FAIL 쪽 0.00002)은 검증을 통과했고, g 7은 D · D_fin이 α 0.0001에서 통과했지만 **R이 격자 끝 α 0.0001의 검증에서 칸 19(왼쪽으로 치우친 X 라벨 묶음 효과, SD 2)의 동시 놓침 225/10 000, CP 상한 0.0256 > 0.025**로 막혔다(선택 단계는 98/5 000 · 0.0238로 통과). g 7 FAIL 쪽은 격자 끝에서도 닿지 않았다(기록). 합성 검증은 g 7 PASS 쪽 셋이 다 검증되지 않아 돌지 않았다.
   0f(가망 관문)와 순서 3 이후는 돌지 않았다 — P̂ · 기록 격자 없음; 2세대 행은 어떤 값도 측정되지 않았고 후보 원장은 모두 0(AB 세트 미소비). 순서 3–10 코드는 단계별 구축으로 만들어지지 않았다(공개). 선언 시점 지표 P̂(스크래치, g 6 α 0.001 0.198 … 0.0001 0.002)는 어떤 결정에도 쓰지 않았고 AB.10에 처음 공개했다. 예산 핵심 1.85 h / 24 h(0e 1.84 h; 0e 전 예약 20.562 h).
   기록 메모: 끝낸 것은 2세대 자료가 아니라 설계의 거짓 PASS 통제와 예상 S1 구조(g 7 · 치우친 묶음 칸)의 충돌이다. M2 상태(판정 없음)와 M3 차단은 그대로이고, H.5 · POOL 홀수 턴 (a) · M4 세트는 손대지 않았다. AB.9 닫힘 규칙에 따라 **이 지렛대의 M2 판정 트랙은 닫힌다** — 다음은 사용자 결정이다(트랙 끝냄이 기본값, 2세대 생성원은 새 사용자 결정의 미래 선언 출처로 남음).
-- **M3 · M4 탐색 단계, M4 1단계 완료(2026-10-09, 부록 AC.10 — 판정 없음)**: 라벨: M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC). 사용자 결정(2026-10-07)에 따라 M2를 "판정 없음"으로 확정하고, F.7 · I.6에 예외를 두는 개정으로 M3 · M4를 탐색 단계로 진행하는 AC를 선언했다(L_V 뇌 · E-grid 세기 1.0 · allow-all 라우터, 4.3 문턱 그대로, 결과 문장은 판정 대신 "탐색 기준 충족/미충족"). 레드팀(호스트 + 외부 모델 두 번, 셋 다 RETHINK) 뒤 계획 17태스크를 SDD로 구현했다(`248b03a..55d0c36`).
+- **M3 · M4 탐색 단계, M4 1단계 완료(2026-10-09, 부록 AC.10 — 판정 없음)**: 라벨: M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC). 사용자 결정(2026-10-07)에 따라 M2를 "판정 없음"으로 확정하고, F.7 · I.6에 예외를 두는 개정으로 M3 · M4를 탐색 단계로 진행하는 AC를 선언했다(L_V 뇌 · E-grid 세기 1.0 · allow-all 라우터, 4.3 문턱 그대로, 결과 문장은 판정 대신 "탐색 기준 충족/미충족"). 레드팀(호스트 + 외부 모델 두 번, 셋 다 RETHINK) 뒤 계획 17태스크를 SDD로 구현했다(계획 · 구현 · 2a/2b 결과 커밋 `248b03a..55d0c36`).
   M3 관문: τ_rec 재보정에서 r = 0.001 `SELECTED`, 모델 manifest FROZEN(`7ff36a7`); 스모크 관문 모두 충족(`57fc3ee`, 시험 3787 통과, POOL 냄새 응답 동률 0.0 · A = 0 0.010 · P = 0 0.0, KC 비율 > 2 턴 0.557 기록); 확인 세트 102후보 중 20쌍(시드 301), 일정 302 · 303(`73441ec`).
   예산(AC.6): 첫 벤치 2 936.1 s/배치-배틀로 외삽 65.0 h > 48 h `STOP_BUDGET`(`1ad03c5`). 사용자 결정 (B) 진단에서 L_V 스텝 비용은 rescope와 같았고(0.97 대 1.02 ms/step) 느린 벤치는 환경 탓으로 보였다. 코드 · 규칙 변경 없이 혼자 다시 잰 벤치 838.9 s/배치-배틀로 외삽 19.1 h OK(`1051a12`) — `STOP_BUDGET`은 규칙 변경이 아니라 재측정으로 대체됐고, 두 측정 모두 이력에 남는다.
   1단계(`3773fb2`): RND 16/16 · MAX 16/16 · BRAIN 24/24 유효, 멈춘 팔 없음, Mac 재부팅 두 번 뒤 체크포인트에서 재개, 벽시계 11.58 h. 기준 1: FLY − C-off 0.192 [0.113, 0.267] 충족, FLY − FLY-TB 0.058 [−0.046, 0.162] 미충족 → "배틀로 학습한 마리의 상성 조건부 선택이 탐색 기준에 못 미쳤다." 기준 2: FLY − C-off 0.145 [0.108, 0.184] 충족(기술, 다중 비교 미보정). 기준 3: FLY − RND 0.021 [−0.071, 0.111] 미충족, MAX − FLY 0.282 [0.181, 0.381] 상한 기술. 기준 4 · 5 미측정(2단계 팔 필요). KC 비율 > 2 턴(FLY) 0.325. M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).
@@ -494,26 +494,30 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   block are unchanged; H.5, the POOL odd-turn (a) set and the M4 set are untouched. By the AB.9 closure rule **this
   lever's M2 judgement track is closed**; next is the user's decision (ending the track is the default; the Gen-2
   generator remains a source for a future declaration under a new user decision).
-- **M3 / M4 as an exploration stage; M4 stage 1 complete, no judgement (2026-10-09, appendix AC.10).** Label: M2: no formal judgement — the only evidence is the AA effect-size estimate (reward association d' 6.02 [4.83, 7.49], punishment -4.52 [-5.89, -3.23], 16 widened-pool pairs, coverage 0.855 below nominal). Exploration stage (appendix AC).
-  After AB, the user fixed M2 as "no judgement" and, by an amendment that makes an exception to F.7 / I.6, moved M3 and
-  M4 forward as an exploration stage (L_V brain, E-grid strength 1.0, allow-all router, spec 4.3 thresholds unchanged,
-  result sentences say "exploration criterion met / not met" instead of a verdict). After the red team (host + two
-  external models, all RETHINK) the 17-task plan was built via SDD (`248b03a..55d0c36`). M3 gates: tau_rec
-  re-calibration selected r = 0.001 and froze the model manifest (`7ff36a7`); every smoke gate held (`57fc3ee`: 3787
-  tests passed; POOL odour response tie 0.0, A = 0 0.010, P = 0 0.0; KC ratio > 2 turns 0.557, record only); the
-  confirmation set is 20 of 102 candidate pairs (seed 301), schedules 302 / 303 (`73441ec`). Budget (AC.6): the first
-  bench measured 2936.1 s per batch-battle, an extrapolated 65.0 h > 48 h, `STOP_BUDGET` (`1ad03c5`). In the
-  user-chosen diagnosis (B) the L_V per-step cost matched rescope (0.97 vs 1.02 ms/step) and the slow bench looked
-  environment-slowed; a re-bench run alone, with no code or rule change, measured 838.9 s per batch-battle, an
-  extrapolated 19.1 h, OK (`1051a12`). `STOP_BUDGET` was superseded by a re-measurement, not by a rule change; both
-  measurements stay in the history. Stage 1 (`3773fb2`): RND 16/16, MAX 16/16, BRAIN 24/24 valid, no stopped arm,
-  resumed from checkpoints after two Mac reboots, 11.58 h wall clock. Criterion 1: FLY - C-off 0.192 [0.113, 0.267]
-  met; FLY - FLY-TB 0.058 [-0.046, 0.162] not met, so the summary is that the type-conditional choice of battle-trained
-  flies fell short of the exploration criterion. Criterion 2: FLY - C-off 0.145 [0.108, 0.184] met (descriptive, no
-  multiple-comparison correction). Criterion 3: FLY - RND 0.021 [-0.071, 0.111] not met; MAX - FLY 0.282 [0.181,
-  0.381] reported as an upper bound. Criteria 4 and 5 not measured (stage-2 arms needed). KC ratio > 2 turns (FLY)
-  0.325. M2: no formal judgement — the only evidence is the AA effect-size estimate (reward association d' 6.02 [4.83, 7.49], punishment -4.52 [-5.89, -3.23], 16 widened-pool pairs, coverage 0.855 below nominal). Exploration stage (appendix AC). Next: the AC.7 step-5 stage-2 arms (FLY-RS, FLY-C3, C-PAM, C-shuf, C-PPL, REV) are not built or run
-  yet and are the next plan. The M2 status (no judgement) is unchanged.
+- **M3 / M4 as an exploration stage; M4 stage 1 complete, no judgement (2026-10-09, appendix AC.10).** Label: M2: no
+  formal judgement — the only evidence is the AA effect-size estimate (reward association d' 6.02 [4.83, 7.49],
+  punishment -4.52 [-5.89, -3.23], 16 widened-pool pairs, coverage 0.855 below nominal). Exploration stage (appendix
+  AC). After AB, the user fixed M2 as "no judgement" and, by an amendment that makes an exception to F.7 / I.6, moved M3
+  and M4 forward as an exploration stage (L_V brain, E-grid strength 1.0, allow-all router, spec 4.3 thresholds
+  unchanged, result sentences say "exploration criterion met / not met" instead of a verdict). After the red team (host
+  + two external models, all RETHINK) the 17-task plan was built via SDD (plan, implementation and 2a/2b result commits
+  `248b03a..55d0c36`). M3 gates: tau_rec re-calibration selected r = 0.001 and froze the model manifest (`7ff36a7`);
+  every smoke gate held (`57fc3ee`: 3787 tests passed; POOL odour response tie 0.0, A = 0 0.010, P = 0 0.0; KC ratio > 2
+  turns 0.557, record only); the confirmation set is 20 of 102 candidate pairs (seed 301), schedules 302 / 303
+  (`73441ec`). Budget (AC.6): the first bench measured 2936.1 s per batch-battle, an extrapolated 65.0 h > 48 h,
+  `STOP_BUDGET` (`1ad03c5`). In the user-chosen diagnosis (B) the L_V per-step cost matched rescope (0.97 vs 1.02
+  ms/step) and the slow bench looked environment-slowed; a re-bench run alone, with no code or rule change, measured
+  838.9 s per batch-battle, an extrapolated 19.1 h, OK (`1051a12`). `STOP_BUDGET` was superseded by a re-measurement,
+  not by a rule change; both measurements stay in the history. Stage 1 (`3773fb2`): RND 16/16, MAX 16/16, BRAIN 24/24
+  valid, no stopped arm, resumed from checkpoints after two Mac reboots, 11.58 h wall clock. Criterion 1: FLY - C-off
+  0.192 [0.113, 0.267] met; FLY - FLY-TB 0.058 [-0.046, 0.162] not met, so the summary is that the type-conditional
+  choice of battle-trained flies fell short of the exploration criterion. Criterion 2: FLY - C-off 0.145 [0.108, 0.184]
+  met (descriptive, no multiple-comparison correction). Criterion 3: FLY - RND 0.021 [-0.071, 0.111] not met; MAX - FLY
+  0.282 [0.181, 0.381] reported as an upper bound. Criteria 4 and 5 not measured (stage-2 arms needed). KC ratio > 2
+  turns (FLY) 0.325. M2: no formal judgement — the only evidence is the AA effect-size estimate (reward association d'
+  6.02 [4.83, 7.49], punishment -4.52 [-5.89, -3.23], 16 widened-pool pairs, coverage 0.855 below nominal). Exploration
+  stage (appendix AC). Next: the AC.7 step-5 stage-2 arms (FLY-RS, FLY-C3, C-PAM, C-shuf, C-PPL, REV) are not built or
+  run yet and are the next plan. The M2 status (no judgement) is unchanged.
 
 ## 실행
 
