@@ -4,7 +4,8 @@ rule. A fly's switch rate = the share of its pairs where it picked the best move
 derive_seed(tie_seed, "sit", fly, pair, side), tie seed derive_seed(tie_seed, "sit-tie", fly, pair, side): no point
 in the seed, so a change between points comes from the weights only. The fly's weight sha256 is recorded before and
 after (frozen must hold). floor_contact is AC.3's shadow: the floor (w/w0 <= 0.2) share of the taught edges (PAM08 /
-PPL105 core-compartment plastic edges with w != w0), taurec's tolerance."""
+PPL105 core-compartment plastic edges with w != w0), taurec's tolerance.
+seed_fly / seed_key (AD.1, AD.2): the global fly and the key of the new set ("sit-new"); defaults are AC's."""
 from __future__ import annotations
 
 import numpy as np
@@ -26,14 +27,16 @@ def pair_odours(enc, pairs) -> list:
             for p in pairs]
 
 
-def evaluate(pool, fly: int, point: int, pairs, odours, cfg, a_idx, p_idx, kc_idx, tie_seed: int) -> dict:
+def evaluate(pool, fly: int, point: int, pairs, odours, cfg, a_idx, p_idx, kc_idx, tie_seed: int, seed_fly=None,
+             seed_key: str = "sit") -> dict:
     a_idx, p_idx, kc_idx = np.asarray(a_idx), np.asarray(p_idx), np.asarray(kc_idx)
     idx = np.concatenate([a_idx, p_idx, kc_idx])
     na, npp = len(a_idx), len(p_idx)
+    sf = int(fly) if seed_fly is None else int(seed_fly)
     reqs, keys = [], []
     for i, (o1, o2) in enumerate(odours):
         for side, ods in ((0, o1), (1, o2)):
-            reqs.append((int(fly), list(ods), policy.derive_seed(tie_seed, "sit", int(fly), i, side)))
+            reqs.append((int(fly), list(ods), policy.derive_seed(tie_seed, seed_key, sf, i, side)))
             keys.append((i, side))
     before = weights_sha(pool.w[fly])
     counts = pool.decide_batch(reqs, cfg.strength, cfg.settle_ms, cfg.read_ms, idx)
@@ -43,7 +46,7 @@ def evaluate(pool, fly: int, point: int, pairs, odours, cfg, a_idx, p_idx, kc_id
         cnt = np.asarray(cnt)
         a, p = cnt[:, :na].sum(1), cnt[:, na:na + npp].sum(1)
         v = policy.values(a, p, cfg.z)
-        pick, tied = policy.argmax_tiebreak(v, policy.derive_seed(tie_seed, "sit-tie", int(fly), i, side))
+        pick, tied = policy.argmax_tiebreak(v, policy.derive_seed(tie_seed, f"{seed_key}-tie", sf, i, side))
         pr = pairs[i]
         best = pr["best1"] if side == 0 else pr["best2"]
         ok[(i, side)] = pr["cands"][pick] == best

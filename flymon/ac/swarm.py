@@ -1,7 +1,8 @@
 """LVSwarm: BrainSwarm's decision batch with spec AC's tie rule and AC.3's shadow record. In evaluation (argmax) a tie
 in V is broken from derive_seed(tie_seed, "tie", fly, battle_id, turn, k) and flagged; in learning the softmax is M3's
 and only the flag is recorded. Every fly decision also records whether the turn's candidate KC counts differ by more
-than kc_ratio (D.6 (a), AC.0 6) and each candidate's E-grid cell [move type, opponent types]."""
+than kc_ratio (D.6 (a), AC.0 6) and each candidate's E-grid cell [move type, opponent types].
+seed_fly (AD.1) maps the pool index to the global fly for the decision and tie seeds."""
 from __future__ import annotations
 
 import concurrent.futures
@@ -32,9 +33,11 @@ def egrid_fn(enc):
 
 class LVSwarm(BrainSwarm):
     def __init__(self, pool, cfg, cells: dict, kc, mode: str = "learn", tie_seed: int = SPEC.tie_seed,
-                 kc_ratio: float = SPEC.kc_ratio, egrid=None, threads: int = 64):
+                 kc_ratio: float = SPEC.kc_ratio, egrid=None, threads: int = 64, seed_fly: dict | None = None):
         super().__init__(pool, cfg, cells, kc, mode)
         self.tie_seed, self.kc_ratio, self.egrid = int(tie_seed), float(kc_ratio), egrid
+        # AD.1: pool index -> global fly for every derive_seed key (None = the pool index, AC's stage 1)
+        self.seed_fly = None if seed_fly is None else {int(k): int(v) for k, v in dict(seed_fly).items()}
         # speedup brief fix 3: a pool whose calls may overlap (LeverFlyPool overlap=True) gets one executor thread per
         # in-flight batch, so batches no longer queue behind each other; any other pool keeps BrainSwarm's one thread
         self.overlapping = bool(getattr(pool, "overlap", False))
@@ -42,12 +45,15 @@ class LVSwarm(BrainSwarm):
             self._exec.shutdown(wait=False)
             self._exec = concurrent.futures.ThreadPoolExecutor(max_workers=threads)
 
+    def _sf(self, fly) -> int:
+        return int(fly) if self.seed_fly is None else self.seed_fly[int(fly)]
+
     async def decide_run_batch(self, reqs) -> list:
         # copied from flymon/agent/swarm.py:BrainSwarm.decide_run_batch (tie rule and shadow fields added)
         seeds, jobs = [], []
         for r in reqs:
             c = r.context
-            s = policy.derive_seed("decide", c["fly"], c["battle_id"], c["turn"], c["k"])
+            s = policy.derive_seed("decide", self._sf(c["fly"]), c["battle_id"], c["turn"], c["k"])
             seeds.append(s)
             jobs.append((c["fly"], c["odours"], s))
         counts = await self._run(self.pool.decide_batch, jobs, self.cfg.strength, self.cfg.settle_ms,
@@ -61,7 +67,7 @@ class LVSwarm(BrainSwarm):
             t = policy.tau(c["battle_index"], self.cfg)
             if self.mode == "eval":
                 pick, tied = policy.argmax_tiebreak(
-                    v, policy.derive_seed(self.tie_seed, "tie", c["fly"], c["battle_id"], c["turn"], c["k"]))
+                    v, policy.derive_seed(self.tie_seed, "tie", self._sf(c["fly"]), c["battle_id"], c["turn"], c["k"]))
             else:
                 pick = policy.choose(v, t, policy.derive_seed("choose", s), self.mode)
                 tied = bool(np.sum(v == v.max()) > 1)
