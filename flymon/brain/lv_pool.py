@@ -9,6 +9,8 @@ import hashlib
 import multiprocessing as mp
 import threading
 
+import numpy as np
+
 from . import fly_pool
 from .circuits import Populations, compartments, validate_populations
 from .conditioning import Readout
@@ -21,13 +23,55 @@ from .q_jobs import NONE
 from .u_measure import apply_u_edit, parse_u_edit
 
 
+class MaskPlasticity(Plasticity):
+    """Plasticity whose per-step membership tests use precomputed boolean masks (is_kc[fired], is_type[fired].sum())
+    instead of np.isin (speedup brief fix 1; plasticity.py is a measurement-key file and is not edited). Same fired
+    selection in the same order, the same integer counts and the same float expressions in the same order, so every
+    trace and weight is bit-identical to Plasticity's."""
+
+    def __init__(self, engine: Engine, pops: Populations, comps: dict):
+        super().__init__(engine, pops, comps)
+        self._is_kc = np.zeros(engine.N, bool); self._is_kc[pops.kc] = True
+        self._type_masks = []
+        for cells, wvec in self.types.values():
+            m = np.zeros(engine.N, bool); m[cells] = True
+            self._type_masks.append((m, wvec, len(cells)))
+
+    # copied from flymon/brain/plasticity.py:Plasticity.on_step (np.isin -> boolean masks)
+    def on_step(self, engine: Engine, fired: np.ndarray) -> None:
+        p, dt = self.p, self.p.dt
+        self.kc_trace *= (1.0 - dt / p.kc_trace_ms)
+        kf = self.pops.kc
+        fired_kc = fired[self._is_kc[fired]]
+        if fired_kc.size:
+            self.kc_trace[np.searchsorted(kf, fired_kc)] += dt / p.kc_trace_ms
+        self.da *= (1.0 - dt / p.da_trace_ms)
+        for mask, wvec, n_cells in self._type_masks:
+            n = int(mask[fired].sum())
+            if n:
+                self.da += wvec * (n / n_cells) * (dt / p.da_trace_ms)
+        self.da_base += (self.da - self.da_base) * (dt / p.da_baseline_ms)
+        if not self.enabled:
+            return
+        phasic = np.maximum(self.da - self.da_base, 0.0)
+        coincide = (self.kc_trace[self.pre_kc] * p.kc_trace_scale) * (phasic[self.post_mb] * p.da_trace_scale)
+        if coincide.any():
+            w = self.eng.csc.w
+            # w[self.edges] is a fancy-index copy: depress and floor it, then write the block back
+            we = w[self.edges] * (1.0 - p.learn_rate * np.tanh(coincide)).astype(np.float32)
+            np.maximum(we, self.w0 * p.min_weight_frac, out=we)
+            w[self.edges] = we
+
+
 class _LeverWorkerState(fly_pool._WorkerState):
-    def __init__(self, npz, params, punish_type, reward_type, max_variants, edit: str, p_type: str):
+    def __init__(self, npz, params, punish_type, reward_type, max_variants, edit: str, p_type: str,
+                 mask_plasticity: bool = True):
         super().__init__(npz, params, punish_type, reward_type, max_variants)
         self.edit, self.p_type = edit, p_type
+        self.plasticity_cls = MaskPlasticity if mask_plasticity else Plasticity
         self.edit_info: dict = {}
 
-    # copied from flymon/brain/fly_pool.py:_WorkerState.get (+ apply_u_edit before Plasticity)
+    # copied from flymon/brain/fly_pool.py:_WorkerState.get (+ apply_u_edit before Plasticity; MaskPlasticity)
     def get(self, shuffle_seed):
         key = None if shuffle_seed is None else int(shuffle_seed)
         if key not in self.variants:
@@ -39,15 +83,16 @@ class _LeverWorkerState(fly_pool._WorkerState):
             validate_populations(conn, self.pops, comps, self.punish_type, self.reward_type)
             eng = Engine(conn, self.pops, self.params, seed=0)
             sha, n_apl, blocks = apply_u_edit(eng, self.pops, self.edit, self.p_type)
-            pl = Plasticity(eng, self.pops, comps)
+            pl = self.plasticity_cls(eng, self.pops, comps)
             ro = Readout.from_compartments(comps, self.punish_type, self.reward_type)
             self.variants[key] = (eng, pl, comps, ro)
             self.edit_info[key] = dict(sha=sha, n_apl=n_apl, blocks=blocks)
         return self.variants[key]
 
 
-def _init_lever_worker(npz, params, punish_type, reward_type, max_variants, edit, p_type) -> None:
-    fly_pool._W = _LeverWorkerState(npz, params, punish_type, reward_type, max_variants, edit, p_type)
+def _init_lever_worker(npz, params, punish_type, reward_type, max_variants, edit, p_type,
+                       mask_plasticity: bool = True) -> None:
+    fly_pool._W = _LeverWorkerState(npz, params, punish_type, reward_type, max_variants, edit, p_type, mask_plasticity)
 
 
 def lever_sha_job(eng, pl, pops, comps, ro) -> str:
@@ -58,12 +103,15 @@ def lever_sha_job(eng, pl, pops, comps, ro) -> str:
 
 
 class LeverFlyPool(FlyPool):
-    """FlyPool whose workers carry the CSC edit `edit` (u_measure's string; "none" = no edit) on p_type."""
+    """FlyPool whose workers carry the CSC edit `edit` (u_measure's string; "none" = no edit) on p_type.
+
+    mask_plasticity (default on): workers run MaskPlasticity, bit-identical to Plasticity and cheaper per step;
+    False = the plain Plasticity (the old path, kept for the equality tests)."""
 
     # copied from flymon/brain/fly_pool.py:FlyPool.__init__ (+ edit check, lever worker initializer)
     def __init__(self, npz, params: Params, flies, edit: str, p_type: str = "MBON05", workers: int = 16,
                  punish_type: str = "PPL105", reward_type: str = "PAM08", timeout_s: float = 3600.0,
-                 max_variants: int = 4):
+                 max_variants: int = 4, mask_plasticity: bool = True):
         if edit != NONE:
             parse_u_edit(edit)                                   # ValueError before any worker is spawned
         self.edit, self.p_type = edit, p_type
@@ -82,7 +130,8 @@ class LeverFlyPool(FlyPool):
         self.n_workers = max(1, min(int(workers), len(self.flies)))
         ctx = mp.get_context("spawn")
         self.pool = ctx.Pool(self.n_workers, initializer=_init_lever_worker,
-                             initargs=(str(npz), params, punish_type, reward_type, int(max_variants), edit, p_type))
+                             initargs=(str(npz), params, punish_type, reward_type, int(max_variants), edit, p_type,
+                                       bool(mask_plasticity)))
         try:
             self.w0 = dict(zip(variants, self._map(fly_pool._w0_job, variants)))
         except BaseException:
