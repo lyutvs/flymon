@@ -39,9 +39,10 @@ def stage1_fly_records(points_path, flies, point: int) -> list:
 
 def reuse_fields(confirm_digest, eval_digest, spec=SPEC, model_path=MODEL_MANIFEST) -> dict:
     p = stage1_paths(spec)
-    for k in ("result", "init"):
-        if not p[k].exists():
-            raise SystemExit(f"STOP_REUSE: {p[k]} does not exist (AD reuses stage 1's records, AD.1)")
+    missing = [str(x) for x in (p["result"], p["init"], Path(model_path)) if not x.exists()]
+    if missing:                                             # AD.1: AD reuses stage 1's records -> STOP_REUSE, not a crash
+        return dict(missing_stage1=missing, model_path=str(model_path), coff_path=str(p["init"]),
+                    confirm_digest=confirm_digest, eval_digest=eval_digest)
     res = json.loads(p["result"].read_text())
     model = json.loads(Path(model_path).read_text())
     co = coff_records(p["init"], spec.coff_flies)
@@ -56,6 +57,8 @@ def reuse_fields(confirm_digest, eval_digest, spec=SPEC, model_path=MODEL_MANIFE
 
 
 def reuse_problems(f: dict, spec=SPEC) -> list:
+    if f.get("missing_stage1"):
+        return ["missing_stage1"]
     bad = []
     if f["model_status"] != "FROZEN":
         bad.append("model_status")

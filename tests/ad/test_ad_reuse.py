@@ -4,7 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 
-from flymon.ad import reuse, store
+from flymon.ad import inputs, reuse, store
 from flymon.ad.spec import LABEL, SPEC
 from flymon.rescope import blocks
 
@@ -73,3 +73,34 @@ def test_script_smoke_and_run(tmp_path, monkeypatch, capsys):
     fake_stage1(tmp_path, model_status="STOP_NO_RECOVERY")
     assert w.main([]) == 2
     assert json.loads((tmp_path / "results/summary/ad_inputs_manifest.json").read_text())["status"] == "STOP_REUSE"
+
+
+def test_missing_stage1_is_stop_reuse_and_writes_nothing_frozen(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    w = load_script()
+    fake_stage1(tmp_path)
+    (tmp_path / "results/m4/stage1/BRAIN/result.json").unlink()
+    assert reuse.reuse_problems(fields()) == ["missing_stage1"]
+    assert w.main([]) == 2
+    man = json.loads((tmp_path / "results/summary/ad_inputs_manifest.json").read_text())
+    assert man["status"] == "STOP_REUSE" and man["reuse_problems"] == ["missing_stage1"]
+    assert man["inputs_sha256"] is None and not (tmp_path / "results/summary/ad_inputs.json").exists()
+
+
+def test_digest_drift_after_freeze_is_stop_reuse_not_refusing(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    w = load_script()
+    fake_stage1(tmp_path)
+    assert w.main([]) == 0
+    doc_p = tmp_path / "results/summary/ad_inputs.json"
+    frozen = doc_p.read_text()
+    real = inputs.inputs_doc
+
+    def drifted(spec):
+        d = real(spec)
+        return dict(d, digests=dict(d["digests"], confirm="0" * 64))
+    monkeypatch.setattr(inputs, "inputs_doc", drifted)
+    assert w.main([]) == 2
+    man = json.loads((tmp_path / "results/summary/ad_inputs_manifest.json").read_text())
+    assert man["status"] == "STOP_REUSE" and man["reuse_problems"] == ["confirm_digest"]
+    assert doc_p.read_text() == frozen

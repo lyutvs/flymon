@@ -119,7 +119,8 @@ def input_manifest(doc: dict, doc_path, reuse=None, problems=()) -> dict:
     status = doc["status"] if doc["status"] != "OK" else ("STOP_REUSE" if problems else "OK")
     return dict(status=status, mode=doc["mode"], fixed=fixed_fields(doc), reuse=reuse, reuse_problems=problems,
                 counts=dict(confirm=doc["confirm"]["counts"], new_rest=doc["new"]["n_rest"]),
-                inputs_path=str(doc_path), inputs_sha256=sha256_file(doc_path), label=LABEL)
+                inputs_path=str(doc_path),
+                inputs_sha256=sha256_file(doc_path) if Path(doc_path).exists() else None, label=LABEL)
 
 
 def _norm(x):

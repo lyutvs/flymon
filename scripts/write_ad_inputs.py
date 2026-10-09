@@ -7,8 +7,9 @@ stage-1 reuse fields (가) and the AD-fixed fields (나).
     uv run python scripts/write_ad_inputs.py --smoke    # results/m4-smoke/ad/inputs.json + inputs_manifest.json
     uv run python scripts/write_ad_inputs.py --bench 1  # results/m4-bench/ad-1/...
 
-Exit 0 (OK) or 2 (STOP_REUSE: a reused stage-1 field differs; STOP_SET). A run-mode document already on disk with other
-content is never overwritten."""
+Exit 0 (OK) or 2 (STOP_REUSE: a reused stage-1 field differs or a stage-1 file is missing; STOP_SET). The reuse check
+runs first; on STOP_REUSE only the manifest is written. A run-mode document already on disk with other content is never
+overwritten."""
 from __future__ import annotations
 
 import argparse
@@ -28,14 +29,20 @@ def main(argv=None) -> int:
     spec = smoke() if a.smoke else bench(a.bench) if a.bench is not None else SPEC
     doc_p, man_p = inputs.input_paths(spec)
     doc = inputs.inputs_doc(spec)
+    fields, problems = None, []
+    if spec.mode == "run":                                  # (가) first: a stage-1 change is STOP_REUSE, never "refusing"
+        fields = reuse.reuse_fields(doc["digests"]["confirm"], doc["digests"]["eval"], spec)
+        problems = reuse.reuse_problems(fields, spec)
+    if problems:                                            # nothing frozen is written; the manifest records the STOP
+        man = inputs.input_manifest(doc, doc_p, fields, problems)
+        store.write_json(man_p, man)
+        print(f"{man['status']}: reuse problems {problems}; wrote {man_p} only (not {doc_p}); {doc['label']}",
+              flush=True)
+        return 2
     if spec.mode == "run" and doc_p.exists():
         if json.loads(doc_p.read_text()) != json.loads(json.dumps(doc, sort_keys=True, default=float)):
             raise SystemExit(f"refusing: {doc_p} exists with other content (AD.2 freeze)")
     store.write_json(doc_p, doc)
-    fields, problems = None, []
-    if spec.mode == "run":
-        fields = reuse.reuse_fields(doc["digests"]["confirm"], doc["digests"]["eval"], spec)
-        problems = reuse.reuse_problems(fields, spec)
     man = inputs.input_manifest(doc, doc_p, fields, problems)
     store.write_json(man_p, man)
     print(f"{man['status']}: digests {({k: (v or '')[:12] for k, v in doc['digests'].items()})}; new set from "
