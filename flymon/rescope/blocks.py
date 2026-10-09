@@ -280,7 +280,7 @@ def _complete(ck, sched) -> bool:
 
 
 async def run_block(sched, store, logs_dir, attempt, swarm_state, retry_max, *, block, snapshot=None, rollback=None,
-                    after=None, stop_after=None, should_stop=None) -> dict:
+                    after=None, stop_after=None, should_stop=None, should_stop_battle=None) -> dict:
     """run_cohort over one block. attempt(sb, n) plays attempt n (0 = first) of a battle and returns a dict with
     finished / won / ...; snapshot(sb) is taken before the first attempt, rollback(sb, snap, n, res) undoes an
     unfinished attempt, after(sb, res) runs once the battle is settled (before the commit)."""
@@ -315,7 +315,7 @@ async def run_block(sched, store, logs_dir, attempt, swarm_state, retry_max, *, 
         append_jsonl(logs_dir / "battles.jsonl", rec)
 
     return await run_cohort(sched, store, logs_dir, play_one, swarm_state, stop_after=stop_after,
-                            should_stop=should_stop)
+                            should_stop=should_stop, should_stop_battle=should_stop_battle)
 
 
 def _nobrain_state(n_flies):
