@@ -102,6 +102,25 @@ def lever_sha_job(eng, pl, pops, comps, ro) -> str:
     return hashlib.sha256(w.tobytes()).hexdigest()
 
 
+class _FlyWeights(dict):
+    """The parent's per-fly weights (FlyPool.w) with a generation per fly. Any outside assignment w[f] = ... (rescope
+    blocks' rollback of a failed / cancelled attempt, load_state) takes the pool lock and bumps the fly's generation;
+    LeverFlyPool.reinforce_batch writes through _set_own under that lock only if the generation it read at submission
+    is still current, so a reinforce still running in an executor thread cannot overwrite a rollback."""
+
+    def __init__(self, lock, items):
+        super().__init__(items)
+        self._lock, self.gen = lock, {}
+
+    def __setitem__(self, fly, w) -> None:
+        with self._lock:
+            self.gen[fly] = self.gen.get(fly, 0) + 1
+            super().__setitem__(fly, w)
+
+    def _set_own(self, fly, w) -> None:       # caller holds the lock
+        super().__setitem__(fly, w)
+
+
 class LeverFlyPool(FlyPool):
     """FlyPool whose workers carry the CSC edit `edit` (u_measure's string; "none" = no edit) on p_type.
 
@@ -144,14 +163,32 @@ class LeverFlyPool(FlyPool):
             self.pool.terminate()
             self.pool.join()
             raise
-        self.w = {i: self.w0[f.shuffle_seed].copy() for i, f in enumerate(self.flies)}
+        self.w = _FlyWeights(self._lock, {i: self.w0[f.shuffle_seed].copy() for i, f in enumerate(self.flies)})
 
     def _map(self, fn, items):
         if not self.overlap:
             return super()._map(fn, items)
         if not items:
             return []
+        # timeout_s now also counts time queued behind other in-flight calls' jobs, not only this call's run time
         return self.pool.map_async(fn, items, chunksize=1).get(self.timeout_s)
+
+    # copied from flymon/brain/fly_pool.py:FlyPool.reinforce_batch (+ stale results after a rollback are dropped)
+    def reinforce_batch(self, requests, strength: float, settle_ms: float = 800.0, gap_ms: float = 200.0) -> None:
+        ids = [int(f) for f, *_ in requests]
+        dup = sorted({f for f in ids if ids.count(f) > 1})
+        if dup:
+            raise ValueError(f"reinforce_batch: fly ids {dup} appear more than once in one batch")
+        with self._lock:
+            gen = {f: self.w.gen.get(f, 0) for f in ids}
+            jobs = [dict(w=self.w[f], shuffle_seed=self.flies[f].shuffle_seed, odor=o, strength=strength, dan=d,
+                         pulse_ms=float(pm), seed=int(s), settle_ms=settle_ms, gap_ms=gap_ms,
+                         enabled=self.flies[f].enabled) for f, o, d, pm, s in requests]
+        new = self._map(fly_pool._reinforce_job, jobs)  # waits outside the lock
+        with self._lock:
+            for (f, *_), w in zip(requests, new):
+                if self.w.gen.get(f, 0) == gen[f]:      # rolled back / reloaded meanwhile: this result is stale
+                    self.w._set_own(f, w)
 
     def lever_sha(self) -> str:
         return self.run_jobs(lever_sha_job, [{}])[0]

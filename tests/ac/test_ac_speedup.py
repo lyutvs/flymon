@@ -308,3 +308,31 @@ def test_acbattles_uses_the_overlap_barrier_only_for_an_overlapping_swarm(tmp_pa
     assert all(type(b) is OverlapBarrier for pair in bars.values() for b in pair)
     bars = asyncio.run(make(False))
     assert all(type(b) is BatchBarrier for pair in bars.values() for b in pair)
+
+
+# ---------------------------------------------------------------- rollback race: a stale reinforce must not land
+def test_rollback_during_inflight_reinforce_survives(synthetic_npz):
+    from flymon.brain.fly_pool import FlySpec
+    from flymon.brain.lv_pool import LeverFlyPool
+    from tests.ac.test_ac_swarm import P
+    A = {"ORN_DM1": 1.0, "ORN_DA1": 1.0}
+    with LeverFlyPool(synthetic_npz, P, [FlySpec(), FlySpec()], edit="none", workers=2, timeout_s=120) as pool:
+        snap = np.array(pool.w[0], copy=True)                 # blocks.snapshot_for
+        workers_done, release, real = threading.Event(), threading.Event(), pool._map
+
+        def held_map(fn, items):                              # jobs finished on the workers, result not yet written
+            out = real(fn, items)
+            workers_done.set(); release.wait(30)
+            return out
+        pool._map = held_map
+        req = [(0, A, "PAM08", 400.0, 5), (1, A, "PAM08", 400.0, 6)]
+        th = threading.Thread(target=pool.reinforce_batch, args=(req, 1.0, 100.0))
+        th.start()
+        assert workers_done.wait(60)
+        pool.w[0] = snap.copy()                               # blocks.rollback_for while the reinforce is in flight
+        release.set(); th.join(60)
+        assert np.array_equal(pool.w[0], snap)                # the rolled-back weights survive
+        assert not np.array_equal(pool.w[1], pool.w0[None])   # fly 1 (not rolled back) got its reinforce
+        pool._map = real
+        pool.reinforce_batch([req[0]], 1.0, 100.0)            # the next reinforce of fly 0 lands normally
+        assert not np.array_equal(pool.w[0], snap)
