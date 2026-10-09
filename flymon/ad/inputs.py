@@ -129,12 +129,14 @@ def _norm(x):
 
 def check_inputs(doc: dict, manifest: dict, spec, doc_path) -> list:
     """What does not match ([] = everything does): the document against one rebuilt from the seeds (per top-level key),
-    the manifest's AD-fixed fields against the rebuilt ones, and the manifest's file sha256 against the file."""
+    the manifest's AD-fixed fields against the rebuilt ones, and the manifest's file sha256 against the file (an absent
+    file, or a manifest without a sha256, is "inputs_sha256")."""
     want = _norm(inputs_doc(spec))
     have = _norm(doc)
     bad = [k for k in sorted(set(want) | set(have)) if want.get(k) != have.get(k)]
     if _norm(manifest.get("fixed")) != _norm(fixed_fields(want)):
         bad.append("manifest_fixed")
-    if manifest.get("inputs_sha256") != sha256_file(doc_path):
+    have_sha = sha256_file(doc_path) if Path(doc_path).exists() else None   # absent: a mismatch, not a crash
+    if manifest.get("inputs_sha256") is None or manifest.get("inputs_sha256") != have_sha:
         bad.append("inputs_sha256")
     return bad
