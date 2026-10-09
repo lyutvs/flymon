@@ -142,3 +142,23 @@ class LeverFlyPool(FlyPool):
 
     def lever_sha(self) -> str:
         return self.run_jobs(lever_sha_job, [{}])[0]
+
+    def decide_batch(self, requests, strength: float, settle_ms: float = 800.0, read_ms: float = 600.0, idx=None):
+        """FlyPool.decide_batch with one worker job per candidate (speedup brief fix 2), reassembled in request order:
+        presentation.decide resets the engine from the same seed before every candidate (paired noise) and leaves the
+        weights untouched, so decide([a, b, c]) == stack(decide([a]), decide([b]), decide([c])) bit for bit."""
+        sel = None if idx is None else np.asarray(idx, np.int64)
+        jobs, sizes = [], []
+        for f, c, s in requests:
+            c = list(c)
+            if not c:
+                raise ValueError("decide needs at least one candidate odour")
+            sizes.append(len(c))
+            jobs += [dict(w=self.w[f], shuffle_seed=self.flies[f].shuffle_seed, candidates=[o], strength=strength,
+                          seed=int(s), settle_ms=settle_ms, read_ms=read_ms, idx=sel) for o in c]
+        flat = self._map(fly_pool._decide_job, jobs)
+        out, i = [], 0
+        for n in sizes:
+            out.append(np.concatenate(flat[i:i + n], axis=0))
+            i += n
+        return out
