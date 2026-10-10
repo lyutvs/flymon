@@ -1,0 +1,190 @@
+{
+ "counts": {
+  "confirm": {
+   "all": 1680,
+   "deduped": 102,
+   "different_best": 102,
+   "distinct_types": 183,
+   "not_l": 909,
+   "unique_best": 183
+  },
+  "new_rest": 82
+ },
+ "fixed": {
+  "digests": {
+   "confirm": "71a10cbcabc67d551d9db9834c3436a10ce45e4172d44aba2c1b5c829bfec038",
+   "eval": "03e209ea65d38d461ba58befe3b893a9f54d301edd58cf4d5abb6518a91a8dfa",
+   "learn": "4a19075eacf8a74904b5e41d1e0221d3cc7cf3d49006c883ce6aeff9f4374867",
+   "learn_fallback": "6036ac80bae4a781c0db89d1be51cd91156535f79f32d780259ba66a4d3b1bdc",
+   "learn_futility": "c82526d9d18ddf2e12ec4b58a785129212cd41c6dc1d38b267879aaecdc9bb13",
+   "new": "03b861061e4d56ae03d77b2aaff4cd30def7d5bf61b152cd4dccbc9f8d874eed"
+  },
+  "layout": [
+   [
+    "FLYL",
+    0,
+    24
+   ],
+   [
+    "FLYL",
+    1,
+    25
+   ],
+   [
+    "FLYL",
+    2,
+    26
+   ],
+   [
+    "FLYL",
+    3,
+    27
+   ],
+   [
+    "FLYL",
+    4,
+    28
+   ],
+   [
+    "FLYL",
+    5,
+    29
+   ],
+   [
+    "FLYL",
+    6,
+    30
+   ],
+   [
+    "FLYL",
+    7,
+    31
+   ],
+   [
+    "FLYL",
+    8,
+    32
+   ],
+   [
+    "FLYL",
+    9,
+    33
+   ],
+   [
+    "FLYL",
+    10,
+    34
+   ],
+   [
+    "FLYL",
+    11,
+    35
+   ],
+   [
+    "FLYOS",
+    0,
+    36
+   ],
+   [
+    "FLYOS",
+    1,
+    37
+   ],
+   [
+    "FLYOS",
+    2,
+    38
+   ],
+   [
+    "FLYOS",
+    3,
+    39
+   ],
+   [
+    "FLYOS",
+    4,
+    40
+   ],
+   [
+    "FLYOS",
+    5,
+    41
+   ],
+   [
+    "FLYOS",
+    6,
+    42
+   ],
+   [
+    "FLYOS",
+    7,
+    43
+   ],
+   [
+    "FLYOS",
+    8,
+    44
+   ],
+   [
+    "FLYOS",
+    9,
+    45
+   ],
+   [
+    "FLYOS",
+    10,
+    46
+   ],
+   [
+    "FLYOS",
+    11,
+    47
+   ]
+  ],
+  "seeds": {
+   "boot": 304,
+   "eval": 303,
+   "gen": 301,
+   "learn": 306,
+   "new": 308,
+   "os": 307,
+   "tie": 305
+  },
+  "tags": [
+   "DL",
+   "DE"
+  ]
+ },
+ "inputs_path": "results/summary/ad_inputs.json",
+ "inputs_sha256": "448ff75a6e4333fd8e7278b1d0f8d0db3b0e5e6dec11b97d1f3e779a991221a5",
+ "label": "M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).",
+ "mode": "run",
+ "reuse": {
+  "coff_arm": [
+   "COFF"
+  ],
+  "coff_content_hash": "cdedf1cb714464e8a018820054fa91808f885735b2c77fceb3c8c046bbf812c9",
+  "coff_file_sha256": "c3fb5975d7b011bce188befa408da939fa19bd26eca5c53f8ace3876a66e3570",
+  "coff_flies": [
+   12,
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "coff_frozen": true,
+  "coff_label": true,
+  "coff_path": "results/m4/stage1/BRAIN/logs/situations_init.jsonl",
+  "confirm_digest": "71a10cbcabc67d551d9db9834c3436a10ce45e4172d44aba2c1b5c829bfec038",
+  "eval_digest": "03e209ea65d38d461ba58befe3b893a9f54d301edd58cf4d5abb6518a91a8dfa",
+  "model_path": "results/summary/ac_model_manifest.json",
+  "model_sha256": "7c0123691f81bac307e5c0575774d8ef31f86829d767ec2ef0c37021cac81073",
+  "model_status": "FROZEN",
+  "stage1_confirm_digest": "71a10cbcabc67d551d9db9834c3436a10ce45e4172d44aba2c1b5c829bfec038",
+  "stage1_eval_digest": "03e209ea65d38d461ba58befe3b893a9f54d301edd58cf4d5abb6518a91a8dfa",
+  "stage1_model_sha256": "7c0123691f81bac307e5c0575774d8ef31f86829d767ec2ef0c37021cac81073"
+ },
+ "reuse_problems": [],
+ "status": "OK"
+}
