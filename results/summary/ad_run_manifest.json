@@ -1,0 +1,32 @@
+{
+ "T": 120,
+ "budget_path": "results/summary/ad_budget.json",
+ "budget_sha256": "21de63eee525db492f974e363136edc5c54f57269e4586b0eee9b421c98d2e4a",
+ "code_commit": "ffbffef5a1611c6a2fd47244341b9113f7c7b79a",
+ "code_paths": [
+  "flymon",
+  "scripts/run_ad.py"
+ ],
+ "futility_point": 40,
+ "inputs_manifest_path": "results/summary/ad_inputs_manifest.json",
+ "inputs_manifest_sha256": "22889d009ec0a6bb9c62a2d1aa0cbf96753ed4635cbbbbb6b5d9ea9e932b0e86",
+ "label": "M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).",
+ "learn_prefix_digest": "4a19075eacf8a74904b5e41d1e0221d3cc7cf3d49006c883ce6aeff9f4374867",
+ "mode": "run",
+ "new_points": [
+  0,
+  40,
+  120
+ ],
+ "new_set": true,
+ "points": [
+  0,
+  20,
+  40,
+  60,
+  80,
+  100,
+  120
+ ],
+ "status": "OK"
+}
