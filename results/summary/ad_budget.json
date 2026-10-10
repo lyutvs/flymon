@@ -1,0 +1,164 @@
+{
+ "T": 120,
+ "attempts": [
+  {
+   "attempt": 1,
+   "bench_sha256": "529bffa0dc6d8f1b33f302fc9f33da0317e02bdfd8ecad520f9dea7953adb360",
+   "n_samples": 31,
+   "offenders": [
+    {
+     "cmd": "/Users/jeonsehyeon/.local/bin/codebase-memory-mcp",
+     "first_t": 1791595929.662103,
+     "last_t": 1791596170.2602181,
+     "n_consecutive": 5,
+     "pid": 6146
+    },
+    {
+     "cmd": "/Users/jeonsehyeon/.local/bin/codebase-memory-mcp",
+     "first_t": 1791596110.0960388,
+     "last_t": 1791596290.782891,
+     "n_consecutive": 4,
+     "pid": 30400
+    }
+   ],
+   "reason": "a process outside the bench above the CPU limit",
+   "s_per_batch_battle": 428.3316434621811,
+   "sit_eval_s_per_eval": 17.375942301750182,
+   "valid": false
+  },
+  {
+   "attempt": 2,
+   "bench_sha256": "28ae88ff28b32a0a74eabe7c640ace588d7f9248c4cb0b7925fe5106e2c22a56",
+   "n_samples": 30,
+   "offenders": [
+    {
+     "cmd": "/Users/jeonsehyeon/.local/bin/codebase-memory-mcp",
+     "first_t": 1791598154.6273558,
+     "last_t": 1791598575.652831,
+     "n_consecutive": 8,
+     "pid": 6146
+    },
+    {
+     "cmd": "/Users/jeonsehyeon/.local/bin/codebase-memory-mcp",
+     "first_t": 1791598335.096093,
+     "last_t": 1791598575.652831,
+     "n_consecutive": 5,
+     "pid": 30400
+    }
+   ],
+   "reason": "a process outside the bench above the CPU limit",
+   "s_per_batch_battle": 404.7596789598465,
+   "sit_eval_s_per_eval": 16.63834191560745,
+   "valid": false
+  },
+  {
+   "attempt": 3,
+   "bench_sha256": "72cca9fbbeab4cee8bb760077f57923ef924620ab80f0449aa457762ed4c43f5",
+   "n_samples": 32,
+   "offenders": [
+    {
+     "cmd": "/Users/jeonsehyeon/.local/bin/codebase-memory-mcp",
+     "first_t": 1791600076.894201,
+     "last_t": 1791600257.420288,
+     "n_consecutive": 4,
+     "pid": 6146
+    },
+    {
+     "cmd": "/Users/jeonsehyeon/.local/bin/codebase-memory-mcp",
+     "first_t": 1791600377.744421,
+     "last_t": 1791600620.6395898,
+     "n_consecutive": 5,
+     "pid": 30400
+    }
+   ],
+   "reason": "a process outside the bench above the CPU limit",
+   "s_per_batch_battle": 419.1426088809967,
+   "sit_eval_s_per_eval": 17.259685198465984,
+   "valid": false
+  },
+  {
+   "attempt": 4,
+   "bench_sha256": "70d9d582b97ff97205ec66828e7560d052ca131ccef5bc654b1f6f1be8d6421b",
+   "n_samples": 29,
+   "offenders": [],
+   "reason": null,
+   "s_per_batch_battle": 374.5778864622116,
+   "sit_eval_s_per_eval": 16.862414117654165,
+   "valid": true
+  },
+  {
+   "attempt": 5,
+   "bench_sha256": "7455c00d3c444108ea657c02c0859bb495efa1a5539640c8bb05cf70397bd65f",
+   "n_samples": 30,
+   "offenders": [],
+   "reason": null,
+   "s_per_batch_battle": 376.5893453359604,
+   "sit_eval_s_per_eval": 16.8890860637029,
+   "valid": true
+  },
+  {
+   "attempt": 6,
+   "bench_sha256": "5585ac80c9226e1916ef986b2747f499e0ed200d27fb6281e1846d281e72db82",
+   "n_samples": 30,
+   "offenders": [],
+   "reason": null,
+   "s_per_batch_battle": 394.2689560651779,
+   "sit_eval_s_per_eval": 17.05893601576487,
+   "valid": true
+  }
+ ],
+ "batches": {
+  "T120": 140,
+  "T120_new": 140,
+  "T80": 100,
+  "T80_new": 100
+ },
+ "bench": {
+  "n_attempts": 6,
+  "s_per_batch_battle": 376.5893453359604,
+  "sit_eval_s": 16.8890860637029,
+  "status": "OK",
+  "used": [
+   4,
+   5,
+   6
+  ],
+  "values": {
+   "s_per_batch_battle": [
+    374.5778864622116,
+    376.5893453359604,
+    394.2689560651779
+   ],
+   "sit_eval_s": [
+    16.862414117654165,
+    16.8890860637029,
+    17.05893601576487
+   ]
+  }
+ },
+ "case": "T120_new",
+ "cases": {
+  "T120": 23.33140683179696,
+  "T120_new": 23.770523069453237,
+  "T80": 16.66529059414069,
+  "T80_new": 17.10440683179696
+ },
+ "hours": 23.770523069453237,
+ "label": "M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).",
+ "limit_h": 47.41797222222222,
+ "load_log": ".superpowers/sdd/2026-10-10-ad-stage2/runs/ad_bench_load.log",
+ "load_log_sha256": "1d6e6570563a73de46981fe545d41fa854bb4a38d25b55149c0bcd568a2099c0",
+ "margin": 1.3,
+ "new_set": true,
+ "rescope_s_per_batch_battle": 431.1,
+ "s_per_batch_battle_bench": 376.5893453359604,
+ "s_per_batch_battle_used": 431.1,
+ "sit_eval_s": 16.8890860637029,
+ "sit_evals": {
+  "T120": 252,
+  "T120_new": 324,
+  "T80": 180,
+  "T80_new": 252
+ },
+ "status": "OK"
+}
