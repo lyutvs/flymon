@@ -238,6 +238,11 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   예산(AC.6): 첫 벤치 2 936.1 s/배치-배틀로 외삽 65.0 h > 48 h `STOP_BUDGET`(`1ad03c5`). 사용자 결정 (B) 진단에서 L_V 스텝 비용은 rescope와 같았고(0.97 대 1.02 ms/step) 느린 벤치는 환경 탓으로 보였다. 코드 · 규칙 변경 없이 혼자 다시 잰 벤치 838.9 s/배치-배틀로 외삽 19.1 h OK(`1051a12`) — `STOP_BUDGET`은 규칙 변경이 아니라 재측정으로 대체됐고, 두 측정 모두 이력에 남는다.
   1단계(`3773fb2`): RND 16/16 · MAX 16/16 · BRAIN 24/24 유효, 멈춘 팔 없음, Mac 재부팅 두 번 뒤 체크포인트에서 재개, 벽시계 11.58 h. 기준 1: FLY − C-off 0.192 [0.113, 0.267] 충족, FLY − FLY-TB 0.058 [−0.046, 0.162] 미충족 → "배틀로 학습한 마리의 상성 조건부 선택이 탐색 기준에 못 미쳤다." 기준 2: FLY − C-off 0.145 [0.108, 0.184] 충족(기술, 다중 비교 미보정). 기준 3: FLY − RND 0.021 [−0.071, 0.111] 미충족, MAX − FLY 0.282 [0.181, 0.381] 상한 기술. 기준 4 · 5 미측정(2단계 팔 필요). KC 비율 > 2 턴(FLY) 0.325. M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).
   다음: AC.7 5의 2단계 팔(FLY-RS · FLY-C3 · C-PAM · C-shuf · C-PPL · REV)은 아직 구현 · 실행되지 않았고 다음 계획이다. M2 상태(판정 없음)는 그대로다.
+- **AC 2단계 — 상대 타입 섞기 대조(FLY-OS)와 120배틀 학습(2026-10-11, 부록 AD.10 — 탐색, 판정 없음)**: 라벨: M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC). AC.11 진단(1단계 FLY-TB 냄새는 상대 정보가 없을 뿐 아니라 뇌를 약하게 움직였다) 뒤 사용자 결정(2026-10-10)에 따라, FLY-TB 자리에 총 세기는 FLY와 같고 상대 타입만 POOL 16종에서 제시마다 실제 상대와 독립으로 뽑는 우연 전환 대조 FLY-OS를 두고, 학습을 120배틀(40배틀 무익 점검)로 늘린 AD를 선언했다(`4f795cf`, 레드팀 외부 모델 두 번 반영 `d94d447`, 계획 18태스크 `5e562cc`, 구현 `5e562cc..e18a388`).
+  관문: KC 활성 보정 R 0.9718(SD_R 0.0027, 범위 [0.85, 1.15], `ffe91b3`); 스모크 관문 21개 충족(`e2b1d48`, 시험 3 982 통과, 1단계 마리 0 · 12 재현 바이트 동일); 입력 manifest OK(`3d4475f`, 학습 일정 306, 새 20쌍 308). 혼자 재벤치(`ffbffef`) 시도 6번 중 1–3은 다른 Claude 세션의 `codebase-memory-mcp` 인덱서(pid 6146 연속 5 · 8 · 4분, pid 30400 4 · 5 · 5분)로 무효였고, 유효 4–6의 중앙값 376.6 s/배치-배틀 · 16.9 s/평가(외삽에는 하한 431.1) → 23.77 h ≤ 47.418 h, T 120 · 새 세트 포함(실행 manifest `b6ba107`). Zscaler `zdpd`는 어느 시도에서도 연속 3분에 닿지 않았고(최대 연속 2분), 시도 5 · 6이 끝나기 전에 원장에 써 둔 zdpd 대비 판단은 발동되지 않았다(규칙 그대로).
+  실행: 한 세션 14.86 h(2026-10-10 13:34 → 10-11 04:26 KST), FLY-L 12 · FLY-OS 12 모든 시점 유효, 탈락 · 재시도 마리 · 낡은 펄스 거부 0, 끊긴 세션 없음, 실행 밖 50% 초과 연속 3분 프로세스 없음(load1 중앙 30.34 · 최대 169.14). 40배틀 무익 점검: FLY-L 맞는 방향 쌍 비율 0.392 > 0 시점 0.196 → `CONTINUE`, 최종 판독 시점 120.
+  결과(`c4e080c`, `results/summary/ad_m4.json`): 1차 1 FLY-L − FLY-OS(120배틀) 0.008 [−0.079, 0.100] 미충족, 1차 2(40배틀) 0.079 [−0.012, 0.171] 미충족(교차 부트스트랩 CI −0.167, 0.192 · −0.117, 0.283, 기술). 기준 행 FLY-L(0) − FLY-OS(0) −0.163 [−0.233, −0.096]. 요약: "배틀로 120배틀 학습한 마리의 상성 조건부 선택이 상대 타입을 섞은 우연 전환 대조(FLY-OS)와 비교해 탐색 기준에 못 미쳤다(확인 세트 20쌍에 한함)." 기술(다중 비교 미보정): 차이의 차이 40 0.242 [0.142, 0.346] · 120 0.171 [0.075, 0.271]; FLY-L − C-off 40 0.200 · 120 0.158(C-off는 1단계 0 시점 기록); FLY-L(40) − 1단계 FLY(40) 0.008 [−0.079, 0.096]; 새 20쌍 40 0.054 · 120 0.058(CI 0 포함); 짝지은 OS 평가 20–120 시점 0.012–0.067(CI 모두 0 포함); 기준 2 FLY-L − FLY-OS 0.081 [0.051, 0.112]; 기준 3 FLY-L − FLY-OS 0.008 [−0.079, 0.096], FLY-L − RND 0.004 [−0.079, 0.085], MAX − FLY-L 0.299 [0.207, 0.393]. 기준 4 · 5 미측정(AC.2 2단계 팔 보류). 학습 확인(기록): FLY-L 전환율 0 시점 0.033 → 120 시점 0.217, 맞는 방향 쌍 비율 0.196 → 0.362(40–100 시점 0.392–0.404, 절반 아래); FLY-OS 전환율 0.196 → 0.208, 자기 잡음 기대치 Σq·q 0.201. 바닥 접촉 모든 시점 0.0(마리당 누적 펄스 FLY-L 3 234.0 · FLY-OS 3 340.1). KC 비율 > 2 턴 FLY-L 0.309 · FLY-OS 0.313. 원자료 목록 63파일(분석 전)과 git 밖 보관본. M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).
+  다음: 사용자 결정. M2 상태(판정 없음)는 그대로다.
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -518,6 +523,43 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   6.02 [4.83, 7.49], punishment -4.52 [-5.89, -3.23], 16 widened-pool pairs, coverage 0.855 below nominal). Exploration
   stage (appendix AC). Next: the AC.7 step-5 stage-2 arms (FLY-RS, FLY-C3, C-PAM, C-shuf, C-PPL, REV) are not built or
   run yet and are the next plan. The M2 status (no judgement) is unchanged.
+- **AC stage 2: opponent-shuffled control (FLY-OS) and 120-battle learning; exploration, no judgement (2026-10-11,
+  appendix AD.10).** Label: M2: no formal judgement — the only evidence is the AA effect-size estimate (reward
+  association d' 6.02 [4.83, 7.49], punishment -4.52 [-5.89, -3.23], 16 widened-pool pairs, coverage 0.855 below
+  nominal). Exploration stage (appendix AC). After the AC.11 diagnosis (the stage-1 FLY-TB odour carried no opponent
+  information and also drove the brain weakly), the user decided (2026-10-10) on appendix AD: FLY-TB is replaced by
+  FLY-OS, a chance-switching control whose odour has the same total strength as FLY's but whose opponent type set is
+  drawn, per presentation, uniformly from all 16 POOL species independently of the real opponent; learning is extended
+  to 120 battles with a 40-battle futility check (`4f795cf`, two external-model red-team rounds folded in `d94d447`,
+  18-task plan `5e562cc`, implementation `5e562cc..e18a388`). Gates: KC-activity calibration R 0.9718 (SD_R 0.0027, band
+  [0.85, 1.15], `ffe91b3`); all 21 smoke gates held (`e2b1d48`: 3982 tests passed; stage-1 flies 0 and 12 reproduced
+  byte for byte); input manifest OK (`3d4475f`: learning schedule 306, new 20 pairs 308). Re-bench run alone
+  (`ffbffef`): of six attempts, 1-3 were invalid because `codebase-memory-mcp` indexers from other Claude sessions ran
+  above 50% CPU (pid 6146 for 5 / 8 / 4 consecutive minutes, pid 30400 for 4 / 5 / 5); the medians of valid attempts 4-6
+  were 376.6 s per batch-battle and 16.9 s per evaluation (the 431.1 s floor was used), extrapolating to 23.77 h <=
+  47.418 h, so T 120 with the new set (run manifest `b6ba107`). Zscaler `zdpd` never reached 3 consecutive minutes in
+  any attempt (longest run 2); the contingency ruling for it, written in the ledger before attempts 5-6 finished, was
+  not triggered and the rule is unchanged. Run: one session of 14.86 h (2026-10-10 13:34 to 10-11 04:26 KST); FLY-L 12
+  and FLY-OS 12 valid at every point; no dropouts, no retried flies, 0 stale pulses, no dropped session, no outside
+  process above 50% for 3 consecutive minutes (load1 median 30.34, max 169.14). Futility check at 40 battles: FLY-L
+  right-direction pair share 0.392 > 0.196 at point 0, CONTINUE; final reading point 120. Results (`c4e080c`,
+  `results/summary/ad_m4.json`): primary 1, FLY-L - FLY-OS at 120 battles, 0.008 [-0.079, 0.100] not met; primary 2, at
+  40 battles, 0.079 [-0.012, 0.171] not met (crossed-bootstrap CIs -0.167, 0.192 and -0.117, 0.283, descriptive).
+  Reference row FLY-L(0) - FLY-OS(0) -0.163 [-0.233, -0.096]. Summary: the type-conditional choice of flies trained for
+  120 battles fell short of the exploration criterion against the opponent-shuffled chance-switching control (FLY-OS),
+  limited to the 20 confirmation pairs. Descriptive (no multiple-comparison correction): difference-in-differences 0.242
+  [0.142, 0.346] at 40 and 0.171 [0.075, 0.271] at 120; FLY-L - C-off 0.200 at 40 and 0.158 at 120 (C-off is the stage-1
+  point-0 record); FLY-L(40) - stage-1 FLY(40) 0.008 [-0.079, 0.096]; new 20 pairs 0.054 at 40 and 0.058 at 120 (CIs
+  include 0); paired OS evaluation 0.012-0.067 at points 20-120 (all CIs include 0); criterion 2 FLY-L - FLY-OS 0.081
+  [0.051, 0.112]; criterion 3 FLY-L - FLY-OS 0.008 [-0.079, 0.096], FLY-L - RND 0.004 [-0.079, 0.085], MAX - FLY-L 0.299
+  [0.207, 0.393]. Criteria 4 and 5 not measured (AC.2 stage-2 arms on hold). Learning check (record only): FLY-L switch
+  rate 0.033 at point 0 to 0.217 at 120, right-direction pair share 0.196 to 0.362 (0.392-0.404 at points 40-100, below
+  half); FLY-OS switch rate 0.196 to 0.208 against its self-noise expectation 0.201. Floor contact 0.0 at every point
+  (cumulative pulses per fly FLY-L 3234.0, FLY-OS 3340.1). KC ratio > 2 turns FLY-L 0.309, FLY-OS 0.313. Raw-data list
+  of 63 files (made before the analysis) and an archive outside git. M2: no formal judgement — the only evidence is the
+  AA effect-size estimate (reward association d' 6.02 [4.83, 7.49], punishment -4.52 [-5.89, -3.23], 16 widened-pool
+  pairs, coverage 0.855 below nominal). Exploration stage (appendix AC). Next: the user's decision. The M2 status (no
+  judgement) is unchanged.
 
 ## 실행
 
