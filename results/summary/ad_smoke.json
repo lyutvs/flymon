@@ -1,0 +1,290 @@
+{
+ "brain": {
+  "response": {
+   "a0_ratio": 0.010471204188481676,
+   "n_candidates": 191,
+   "n_situations": 79,
+   "p0_ratio": 0.0,
+   "tie_ratio": 0.0
+  },
+  "strength_error": 4.440892098500626e-16
+ },
+ "calib_sha256": "990553c5cdc10297ac0e9c2bdaf175d27ab84d101ef706df656313ff196de47a",
+ "eval_played": {
+  "digests": {
+   "0": "3a1668361cc24310dd3e6557a90a2183cc2fcad7a0f2b83b67f790a457ff8bff",
+   "1": "3a1668361cc24310dd3e6557a90a2183cc2fcad7a0f2b83b67f790a457ff8bff",
+   "2": "3a1668361cc24310dd3e6557a90a2183cc2fcad7a0f2b83b67f790a457ff8bff",
+   "3": "3a1668361cc24310dd3e6557a90a2183cc2fcad7a0f2b83b67f790a457ff8bff"
+  },
+  "doc_digest": "3a1668361cc24310dd3e6557a90a2183cc2fcad7a0f2b83b67f790a457ff8bff",
+  "problems": [],
+  "result_digest": "3a1668361cc24310dd3e6557a90a2183cc2fcad7a0f2b83b67f790a457ff8bff"
+ },
+ "futility": {
+  "label": "M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).",
+  "n_at_0": 2,
+  "n_at_point": 2,
+  "point": 1,
+  "share_at_0": 0.25,
+  "share_at_point": 0.25,
+  "status": "STOP_FUTILE"
+ },
+ "gates": {
+  "complete_after_resume": true,
+  "eval_digest_shared": true,
+  "full_suite": true,
+  "global_fly_tests": true,
+  "kc_balance": true,
+  "learn_eval_disjoint": true,
+  "log_schema": true,
+  "manifest_refusal_tests": true,
+  "os_draw_tests": true,
+  "os_shadow_schema": true,
+  "os_total_strength": true,
+  "pool_a0": true,
+  "pool_p0": true,
+  "pool_response_equals_stage1": true,
+  "pool_tie": true,
+  "reuse": true,
+  "safety_tests": true,
+  "situation_evals_frozen": true,
+  "stage1_reproduction": true,
+  "stale_interleaving_tests": true,
+  "worker_equals_in_process": true
+ },
+ "groups": {
+  "balance": [
+   "kc_balance"
+  ],
+  "reuse": [
+   "reuse"
+  ],
+  "smoke": [
+   "full_suite",
+   "safety_tests",
+   "worker_equals_in_process",
+   "stale_interleaving_tests",
+   "os_draw_tests",
+   "global_fly_tests",
+   "manifest_refusal_tests",
+   "learn_eval_disjoint",
+   "log_schema",
+   "os_shadow_schema",
+   "complete_after_resume",
+   "situation_evals_frozen",
+   "eval_digest_shared",
+   "stage1_reproduction",
+   "os_total_strength",
+   "pool_response_equals_stage1",
+   "pool_tie",
+   "pool_a0",
+   "pool_p0"
+  ]
+ },
+ "kc_band": {
+  "R": 0.9717684948839783,
+  "half_width": 0.15,
+  "hi": 1.15,
+  "lo": 0.85,
+  "sd_R": 0.0027022001046471725,
+  "status": "OK"
+ },
+ "kc_ratio_gt2": {
+  "frac": 0.3754152823920266,
+  "n_fly_turns": 301,
+  "n_gt2": 113
+ },
+ "label": "M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).",
+ "learn_eval_disjoint_error": null,
+ "n_situation_records": 20,
+ "os_draws": {
+  "by_true": {
+   "Blastoise": {
+    "Blastoise": 1,
+    "Dragonite": 1,
+    "Exeggutor": 1,
+    "Lapras": 1,
+    "Nidoking": 1,
+    "Poliwrath": 2,
+    "Rhydon": 1,
+    "Snorlax": 1,
+    "Venusaur": 1
+   },
+   "Chansey": {
+    "Charizard": 1,
+    "Exeggutor": 1,
+    "Hypno": 2,
+    "Nidoking": 2,
+    "Slowbro": 1,
+    "Tentacruel": 1,
+    "Venusaur": 1
+   },
+   "Charizard": {
+    "Dragonite": 1,
+    "Hypno": 1,
+    "Lapras": 1,
+    "Nidoking": 1,
+    "Rhydon": 1,
+    "Slowbro": 1
+   },
+   "Dragonite": {
+    "Chansey": 1,
+    "Charizard": 2,
+    "Nidoking": 3,
+    "Poliwrath": 1,
+    "Slowbro": 1,
+    "Snorlax": 1,
+    "Tentacruel": 1,
+    "Venusaur": 1
+   },
+   "Exeggutor": {
+    "Chansey": 1,
+    "Dragonite": 2,
+    "Hypno": 3,
+    "Poliwrath": 1,
+    "Rhydon": 3,
+    "Tentacruel": 1,
+    "Venusaur": 2
+   },
+   "Hypno": {
+    "Dragonite": 1,
+    "Exeggutor": 1,
+    "Machamp": 1,
+    "Nidoking": 1,
+    "Snorlax": 1
+   },
+   "Kangaskhan": {
+    "Blastoise": 1,
+    "Charizard": 2,
+    "Dragonite": 3,
+    "Exeggutor": 1,
+    "Lapras": 1,
+    "Machamp": 1,
+    "Poliwrath": 1,
+    "Tentacruel": 2
+   },
+   "Lapras": {
+    "Blastoise": 1,
+    "Chansey": 1,
+    "Charizard": 1,
+    "Dragonite": 2,
+    "Hypno": 1,
+    "Kangaskhan": 2,
+    "Machamp": 1,
+    "Nidoking": 1,
+    "Poliwrath": 1,
+    "Slowbro": 1,
+    "Venusaur": 1
+   },
+   "Machamp": {
+    "Lapras": 1,
+    "Machamp": 1,
+    "Poliwrath": 2,
+    "Snorlax": 1,
+    "Venusaur": 2
+   },
+   "Nidoking": {
+    "Blastoise": 1,
+    "Dragonite": 1,
+    "Kangaskhan": 1,
+    "Nidoking": 2,
+    "Poliwrath": 1,
+    "Slowbro": 2,
+    "Tentacruel": 1,
+    "Venusaur": 2
+   },
+   "Rhydon": {
+    "Blastoise": 1,
+    "Charizard": 1,
+    "Kangaskhan": 1,
+    "Lapras": 2,
+    "Machamp": 1,
+    "Poliwrath": 1,
+    "Rhydon": 2,
+    "Slowbro": 2,
+    "Venusaur": 2
+   },
+   "Slowbro": {
+    "Dragonite": 1,
+    "Exeggutor": 1,
+    "Kangaskhan": 1,
+    "Lapras": 3,
+    "Machamp": 1,
+    "Nidoking": 2,
+    "Poliwrath": 1,
+    "Slowbro": 1,
+    "Snorlax": 1
+   },
+   "Snorlax": {
+    "Blastoise": 1,
+    "Chansey": 1,
+    "Dragonite": 2,
+    "Exeggutor": 1,
+    "Hypno": 2,
+    "Nidoking": 2,
+    "Poliwrath": 1,
+    "Rhydon": 1,
+    "Slowbro": 1,
+    "Snorlax": 2,
+    "Venusaur": 1
+   },
+   "Tentacruel": {
+    "Dragonite": 1,
+    "Exeggutor": 1,
+    "Hypno": 3,
+    "Poliwrath": 1,
+    "Rhydon": 1,
+    "Tentacruel": 1,
+    "Venusaur": 1
+   },
+   "Venusaur": {
+    "Kangaskhan": 1,
+    "Machamp": 1,
+    "Slowbro": 1,
+    "Venusaur": 1
+   }
+  },
+  "n": 150,
+  "same_types_share": 0.08
+ },
+ "os_shadow_errors": [],
+ "provenance": {
+  "git": {
+   "commit": "ffe91b319fe4679ae94197b31d88a0c94ec2dc8c",
+   "dirty": false,
+   "dirty_files": []
+  },
+  "suite_exit": "results/m4-smoke/ad/suite_exit.txt"
+ },
+ "reproduction_diff": [],
+ "reuse": {
+  "coff_arm": [
+   "COFF"
+  ],
+  "coff_content_hash": "cdedf1cb714464e8a018820054fa91808f885735b2c77fceb3c8c046bbf812c9",
+  "coff_file_sha256": "c3fb5975d7b011bce188befa408da939fa19bd26eca5c53f8ace3876a66e3570",
+  "coff_flies": [
+   12,
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "coff_frozen": true,
+  "coff_label": true,
+  "coff_path": "results/m4/stage1/BRAIN/logs/situations_init.jsonl",
+  "confirm_digest": "71a10cbcabc67d551d9db9834c3436a10ce45e4172d44aba2c1b5c829bfec038",
+  "eval_digest": "03e209ea65d38d461ba58befe3b893a9f54d301edd58cf4d5abb6518a91a8dfa",
+  "model_path": "results/summary/ac_model_manifest.json",
+  "model_sha256": "7c0123691f81bac307e5c0575774d8ef31f86829d767ec2ef0c37021cac81073",
+  "model_status": "FROZEN",
+  "stage1_confirm_digest": "71a10cbcabc67d551d9db9834c3436a10ce45e4172d44aba2c1b5c829bfec038",
+  "stage1_eval_digest": "03e209ea65d38d461ba58befe3b893a9f54d301edd58cf4d5abb6518a91a8dfa",
+  "stage1_model_sha256": "7c0123691f81bac307e5c0575774d8ef31f86829d767ec2ef0c37021cac81073"
+ },
+ "reuse_problems": [],
+ "schema_errors": [],
+ "status": "OK"
+}
