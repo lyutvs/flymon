@@ -242,8 +242,11 @@ def q1(S, pairs, z, mi, st, mapr) -> dict:
         predicted_right_share=float(np.mean([d > 0 for d in pred])), predicted_wrong_share=float(np.mean([d < 0 for d in pred])),
         predicted_zero_share=float(np.mean([d == 0 for d in pred])), sign_agreement_with_observed=diag_mean(agree),
         n_pairs_with_nonzero_prediction=len(agree),
-        note="V replaced by the point-0 class mean of centred V (an additive class-only readout); d's sign is the "
-             "predicted direction. Agreement = the predicted sign equals the pair's majority flag over the 12 flies")
+        in_sample=True,
+        note="IN-SAMPLE: the class means are fitted on the same point-0 confirmation-set V this model predicts. More "
+             "independent support: naive_map (all 112 reachable odours, another decision seed; the confirmation "
+             "odours are a subset of it). V replaced by the point-0 class mean of centred V (an additive class-only "
+             "readout); d's sign is the predicted direction. Agreement = the predicted sign equals the pair's majority flag over the 12 flies")
     # by effectiveness class of the two best moves; by opponent type set (side-level correctness)
     pc = defaultdict(list)
     for r in L0.values():
@@ -372,6 +375,11 @@ def naive_map(mapr, pairs, mi, st, type_mult) -> dict:
                "settle / read / strength; KC = cells with >= 1 spike in the read window. Seed noise: q1 seed_noise_at_0")
 
 
+def q1_noise_p(S, pairs) -> float:
+    from flymon.ad import diag
+    return diag.majority_disagreement(list(flag_units(S[("FLYL", "own", 0)], pairs).values()))
+
+
 def q2(S, pairs, z, logs, lay, offl, emap, w120, w0, mapr, r_rec) -> dict:
     from flymon.ac import diag as acd
     from flymon.ad import diag
@@ -405,6 +413,9 @@ def q2(S, pairs, z, logs, lay, offl, emap, w120, w0, mapr, r_rec) -> dict:
         flat = {p: [units[p][g][i] for g in flies for i in range(len(pairs))] for p in POINTS}
         t = diag.transitions(flat)
         t["n_units"] = len(flies) * len(pairs)
+        for k, st_ in t["steps"].items():
+            st_["binom_two_sided_p"] = diag.binom_two_sided(st_["r2w"], st_["r2w"] + st_["w2r"]) \
+                if st_["r2w"] + st_["w2r"] else None
         trans[arm] = t
     # per pair (FLY-L): the naive contrast d(0), the learned contrast change (best_contrast of V(t) - V(0)) at each
     # point, flies' mean: a pair turns right when the learned change exceeds the naive deficit
@@ -428,6 +439,12 @@ def q2(S, pairs, z, logs, lay, offl, emap, w120, w0, mapr, r_rec) -> dict:
              "d(t) = d(0) + dd(t), so a pair is right at t when dd(t) > -d(0)")
     out["pair_trajectories"] = traj
     out["transitions"] = trans
+    pn = q1_noise_p(S, pairs)
+    out["transitions_reference"] = dict(
+        p_majority_disagreement_at_0=pn, expected_flips_independent_redraw=2 * pn * (1 - pn) * 240,
+        note="2 p (1 - p) x 240: expected flag changes per step if every fly x pair flag were redrawn independently "
+             "with p = point-0 seed-noise disagreement. binom_two_sided_p tests r2w vs w2r under symmetric turnover; "
+             "flips cluster by pair, so units are not independent and the p is optimistic")
     out["transitions_note"] = ("units = fly x pair (12 x 20 = 240 per arm); decision seeds carry no point, so a flag "
                                "change between points comes from the weights. Reference for a change of the same "
                                "size from spike noise alone: q1 seed_noise_at_0 flag_majority_disagreement")
@@ -461,6 +478,23 @@ def q2(S, pairs, z, logs, lay, offl, emap, w120, w0, mapr, r_rec) -> dict:
                         acc[t][b // 10 * 10].append(float(v))
         comp[arm] = {t: {str(b): float(np.mean(v)) for b, v in sorted(d.items())} for t, d in acc.items()}
     out["compartment_mean_w_over_w0_by_battle_bin"] = comp
+    fits = {}
+    for arm in ARMS:
+        for t, d in comp[arm].items():
+            bins = sorted(int(b) for b in d)
+            eq = float(np.mean([d[str(b)] for b in bins if b >= 60]))
+            early = [b for b in bins if b <= 30]
+            fits[f"{arm}/{t}"] = dict(
+                early_bins_0_30=diag.fit_tau([b + 5 for b in early], [d[str(b)] for b in early], eq),
+                all_bins=diag.fit_tau([b + 5 for b in bins], [d[str(b)] for b in bins], eq))
+    out["compartment_tau_fit"] = dict(
+        fits=fits,
+        model="approach fraction (1 - w(t)) / (1 - w_eq) = 1 - exp(-t / tau), t = bin centre (battles), w_eq = mean of "
+              "the 60-119 bins, w(0) = 1; least squares over a tau grid",
+        mechanism="plasticity.py depresses multiplicatively (w x (1 - lr tanh(.))) and recover_pulse moves r of the way "
+                  "back to w0: per pulse an edge approaches its equilibrium at rate (a + r), a = its depression rate, "
+                  "and the equilibrium deficit is a / (a + r). The observed tau is therefore shorter than the "
+                  "recovery-only 1 / (r x pulses per battle)")
     # weight summary recorded at the situation evaluations (every point)
     ws = {}
     for arm in ARMS:
@@ -470,7 +504,7 @@ def q2(S, pairs, z, logs, lay, offl, emap, w120, w0, mapr, r_rec) -> dict:
     out["weight_summary_by_point"] = ws
     # the weights at 120 vs w0: by compartment x readout cell, and the confirm-set-active KCs
     if emap is not None and w120 is not None:
-        out["weights_at_120"] = weights_section(emap, w120, w0, lay, mapr, pairs)
+        out["weights_at_120"] = weights_section(emap, w120, w0, lay, mapr, pairs, r_rec)
     # recovery
     out["recovery"] = recovery_section(logs, lay, r_rec)
     # offline variants at 120
@@ -478,7 +512,7 @@ def q2(S, pairs, z, logs, lay, offl, emap, w120, w0, mapr, r_rec) -> dict:
     return out
 
 
-def weights_section(emap, w120, w0, lay, mapr, pairs) -> dict:
+def weights_section(emap, w120, w0, lay, mapr, pairs, r_rec) -> dict:
     from flymon.ad import diag
     tgt, pre = emap["tgt"], emap["pre_kc"]
     a_c, p_c = set(emap["a_cells"].tolist()), set(emap["p_cells"].tolist())
@@ -510,11 +544,26 @@ def weights_section(emap, w120, w0, lay, mapr, pairs) -> dict:
                 if act_name != "all" and am is None:
                     continue
                 mm = m if am is None else (m & am)
-                rs = [diag.ratio_summary(w120[i], w0, mm) for i in range(len(lay)) if lay[i][0] == arm]
+                rs = [diag.ratio_summary(w120[i], w0, mm, r=r_rec) for i in range(len(lay)) if lay[i][0] == arm]
                 cells[f"{name}/{act_name}"] = {k: diag_mean(r.get(k) for r in rs) for k in rs[0]}
         per_arm[arm] = cells
     out["per_arm_mean_over_flies"] = per_arm
-    out["note"] = ("ratio w/w0; floor = share <= 0.2 (the plasticity floor min_weight_frac); at_w0 = unchanged (the "
+    pf = {}
+    for i, (arm, _, g) in enumerate(lay):
+        x = diag.ratio_summary(w120[i], w0, None, r=r_rec)
+        pf[str(g)] = dict(arm=arm, n_edges=x["n"], floor_n=x["floor_n"], floor_frac=x["floor"], min=x["min"],
+                          q01=x["q01"])
+    out["per_fly_floor_all_edges"] = pf
+    for arm in ARMS:
+        xs = [v for v in pf.values() if v["arm"] == arm]
+        out[f"floor_summary_{arm}"] = dict(flies_with_floor_edges=sum(v["floor_n"] > 0 for v in xs), n_flies=len(xs),
+                                           floor_n_min=min(v["floor_n"] for v in xs),
+                                           floor_n_max=max(v["floor_n"] for v in xs),
+                                           floor_frac_max=max(v["floor_frac"] for v in xs))
+    out["floor_tolerance"] = diag.floor_tol(0.2, r_rec)
+    out["note"] = ("ratio w/w0; floor = share <= floor_tolerance = (0.2 + r 0.8)(1 + 1e-6): checkpoints are written "
+                   "after recover_pulse, so an edge held at the 0.2 floor reads 0.2008. The run's floor_contact "
+                   "(AC.3, <= 0.2 (1 + 1e-6)) cannot see such edges; at_w0 = unchanged (the "
                    "rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose "
                    "KC spiked for any confirmation-set FLY odour in the naive map")
     return out
@@ -555,7 +604,7 @@ def recovery_section(logs, lay, r) -> dict:
             per_battle.append(np.mean(list(nb.values())))
         ppb = float(np.mean(per_battle))
         med_o, med_m = float(np.median(gaps_odour)), float(np.median(gaps_mt))
-        out[arm] = dict(pulses_per_battle=ppb, recovery_time_constant_battles=1.0 / (r * ppb),
+        out[arm] = dict(pulses_per_battle=ppb, recovery_only_time_constant_battles=1.0 / (r * ppb),
                         retention_after_20_battles=diag.retention(r, 20 * ppb),
                         retention_after_40_battles=diag.retention(r, 40 * ppb),
                         retention_after_120_battles=diag.retention(r, 120 * ppb),
@@ -569,7 +618,10 @@ def recovery_section(logs, lay, r) -> dict:
     out["note"] = ("recover_pulse: after each DAN pulse every plastic edge moves r of the way back to w0 "
                    "(plasticity.py). Odour key = (move type, opponent type set the brain saw: FLY-L the true one, "
                    "FLY-OS the drawn one). no_recovery factor = r n / (1 - exp(-r n)), the linear-regime ratio of the "
-                   "deficit without recovery to the deficit with it for a constant depression per pulse")
+                   "deficit without recovery to the deficit with it for a constant depression per pulse - a crude figure: the rule "
+                   "is multiplicative, so without recovery edges would be driven unevenly toward the floor, not scaled. "
+                   "recovery_only_time_constant_battles = 1 / (r x pulses per battle) ignores depression; the observed "
+                   "approach (compartment_tau_fit) is faster")
     return out
 
 
@@ -624,21 +676,26 @@ def candidates(q1o, q2o) -> list:
              method="records only (delta_record)",
              caveat="a readout that subtracts each odour's naive V is not a mechanism the fly has; it measures the "
                     "direction of the learned change alone. Point 0 is undefined (V - V = 0)"),
-        dict(cause="learned change too small: depression balanced by recovery r = 0.001 (equilibrium by ~40 battles)",
-             question=2, evidence=dict(recovery=q2o["recovery"], compartments=q2o["compartment_mean_w_over_w0_by_battle_bin"]),
+        dict(cause="learned change too small: equilibrium between multiplicative depression and recovery r = 0.001 "
+                   "(observed tau ~15 battles, compartment_tau_fit)",
+             question=2, evidence=dict(recovery=q2o["recovery"], compartments=q2o["compartment_mean_w_over_w0_by_battle_bin"],
+                                       tau_fit=q2o["compartment_tau_fit"]),
              estimate=dict(metric="FLY-L right-direction share at 120 with the learned change scaled",
                            amp2=pick("amp2"), amp3_4=pick("amp3.4"), actual=off.get("actual_120", {}).get("share")),
              method="offline re-evaluation of the 120-battle weights, w0 + k (w120 - w0)",
-             caveat="k = 3.4 is the linear-regime no-recovery equivalent at ~3 200 pulses; it assumes the change's "
-                    "direction is the same over the run (with recovery, late pulses weigh more) and ignores tanh "
-                    "saturation of the rule. Real no-recovery learning would need new learning runs"),
+             caveat="amp3.4 is a CRUDE bound, not a no-recovery estimate: 3.4 is the linear-regime deficit ratio, but "
+                    "the rule depresses multiplicatively, so without recovery edges would be driven unevenly toward "
+                    "the floor rather than the change scaled by 3.4. Both variants assume the change's direction is "
+                    "fixed and ignore the rule's tanh saturation and the changed choices / rewards. What new learning "
+                    "with another r would give is not estimated here"),
         dict(cause="which reinforcement carries the right direction (PAM08 reward vs PPL105 punishment compartments)",
              question=2, evidence=dict(pulses_by_class=q2o["pulses_by_class"]["FLYL"]),
              estimate=dict(metric="FLY-L right-direction share at 120 keeping only one compartment's change",
                            only_PAM08=pick("only_PAM08"), only_PPL105=pick("only_PPL105"),
                            actual=off.get("actual_120", {}).get("share")),
              method="offline re-evaluation, change kept on one DAN type's core edges",
-             caveat="the two compartments' changes are not independent in the run (each shapes later choices and "
+             caveat="only_PAM08 vs actual: crossed paired CI includes 0 (offline_120.only_PAM08); the two "
+                    "compartments' changes are not independent in the run (each shapes later choices and "
                     "rewards); a different reward / punishment balance needs new learning runs"),
         dict(cause="readout channel (z_A vs z_P carries the bias or the learning)", question=1,
              evidence=dict(naive=dict(centred_z_A=q1o["naive_class_bias"]["centred_z_A"],
@@ -657,12 +714,13 @@ def candidates(q1o, q2o) -> list:
                     "conditioning; it only removes the naive bias's sign"),
         dict(cause="plasticity floor / saturation", question=2,
              evidence=dict(floor_contact=q2o["weight_summary_by_point"], weights_at_120=q2o.get("weights_at_120")),
-             estimate=dict(metric="gain from removing the floor", value=0.0),
-             method="records: no edge reached the 0.2 w0 floor at any point, so removing it changes nothing",
-             caveat="the rule's tanh per-step saturation is not examined"),
+             estimate=dict(metric="gain from removing the floor", value="not material (not re-evaluated)"),
+             method="checkpoint 120 vs w0 with the floor tolerance 0.2 + r 0.8 (weights_at_120.per_fly_floor_all_edges): "
+                    "a handful of edges per fly sit at the floor; the run's floor_contact (<= 0.2) could not see them",
+             caveat="only point 120 has weights; the rule's tanh per-step saturation is not examined"),
         dict(cause="point-to-point flips of the per-pair direction (the 100 -> 120 drop)", question=2,
              evidence=dict(transitions=q2o["transitions"]["FLYL"],
-                           seed_noise_flag_disagreement_at_0=q1o["seed_noise_at_0"]["flag_majority_disagreement"]),
+                           reference=q2o["transitions_reference"]),
              estimate=dict(metric="none (a description of turnover, not a fixable cause)"),
              method="records only", caveat="decision seeds are fixed across points; flips come from weight changes "
                                            "amplified by spiking noise"),

@@ -141,3 +141,27 @@ def test_pulse_rows_and_class_table():
 def test_jaccard():
     assert diag.jaccard([1, 2, 3], [2, 3, 4]) == pytest.approx(0.5)
     assert diag.jaccard([], []) == 1.0
+
+
+def test_floor_tolerance_sees_floored_edges_after_a_recovery_pulse():
+    assert diag.floor_tol(0.2, 0.001) == pytest.approx(0.2008, rel=1e-5)
+    w0 = np.ones(4)
+    w = np.array([0.2 + 0.001 * 0.8, 0.2, 0.2016, 1.0])         # floored then recovered once; floored; above; w0
+    s = diag.ratio_summary(w, w0, r=0.001)
+    assert s["floor_n"] == 2 and s["floor"] == 0.5 and s["min"] == pytest.approx(0.2)
+    assert diag.ratio_summary(w, w0, r=0.0)["floor_n"] == 1
+
+
+def test_fit_tau_recovers_a_known_time_constant():
+    t = np.array([5.0, 15.0, 25.0, 35.0])
+    w_eq = 0.75
+    w = 1 - (1 - w_eq) * (1 - np.exp(-t / 14.5))
+    f = diag.fit_tau(t, w, w_eq)
+    assert f["tau"] == pytest.approx(14.5, abs=0.05) and f["sse"] < 1e-6
+    assert f["frac"] == pytest.approx(list(1 - np.exp(-t / 14.5)))
+
+
+def test_binom_two_sided():
+    assert diag.binom_two_sided(15, 21) == pytest.approx(2 * sum(math.comb(21, i) for i in range(7)) / 2 ** 21)
+    assert diag.binom_two_sided(15, 21) == pytest.approx(0.0784, abs=1e-3)
+    assert diag.binom_two_sided(5, 10) == 1.0

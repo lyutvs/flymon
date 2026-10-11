@@ -26,8 +26,9 @@
    },
    "evidence": {
     "class_model": {
+     "in_sample": true,
      "n_pairs_with_nonzero_prediction": 20,
-     "note": "V replaced by the point-0 class mean of centred V (an additive class-only readout); d's sign is the predicted direction. Agreement = the predicted sign equals the pair's majority flag over the 12 flies",
+     "note": "IN-SAMPLE: the class means are fitted on the same point-0 confirmation-set V this model predicts. More independent support: naive_map (all 112 reachable odours, another decision seed; the confirmation odours are a subset of it). V replaced by the point-0 class mean of centred V (an additive class-only readout); d's sign is the predicted direction. Agreement = the predicted sign equals the pair's majority flag over the 12 flies",
      "predicted_right_share": 0.0,
      "predicted_wrong_share": 1.0,
      "predicted_zero_share": 0.0,
@@ -44,8 +45,8 @@
    "question": 1
   },
   {
-   "cause": "learned change too small: depression balanced by recovery r = 0.001 (equilibrium by ~40 battles)",
-   "caveat": "k = 3.4 is the linear-regime no-recovery equivalent at ~3 200 pulses; it assumes the change's direction is the same over the run (with recovery, late pulses weigh more) and ignores tanh saturation of the rule. Real no-recovery learning would need new learning runs",
+   "cause": "learned change too small: equilibrium between multiplicative depression and recovery r = 0.001 (observed tau ~15 battles, compartment_tau_fit)",
+   "caveat": "amp3.4 is a CRUDE bound, not a no-recovery estimate: 3.4 is the linear-regime deficit ratio, but the rule depresses multiplicatively, so without recovery edges would be driven unevenly toward the floor rather than the change scaled by 3.4. Both variants assume the change's direction is fixed and ignore the rule's tanh saturation and the changed choices / rewards. What new learning with another r would give is not estimated here",
    "estimate": {
     "actual": 0.3625,
     "amp2": 0.4583333333333333,
@@ -120,7 +121,7 @@
       "no_recovery_deficit_factor_at_120": 3.3666443912929487,
       "no_recovery_deficit_factor_at_40": 1.634015154232533,
       "pulses_per_battle": 26.950000000000003,
-      "recovery_time_constant_battles": 37.105751391465674,
+      "recovery_only_time_constant_battles": 37.105751391465674,
       "retention_after_120_battles": 0.0393358847481807,
       "retention_after_20_battles": 0.5831740006406804,
       "retention_after_40_battles": 0.3400919150232562,
@@ -139,7 +140,7 @@
       "no_recovery_deficit_factor_at_120": 3.4627836247938544,
       "no_recovery_deficit_factor_at_40": 1.6579053096333676,
       "pulses_per_battle": 27.834027777777777,
-      "recovery_time_constant_battles": 35.92724732416856,
+      "recovery_only_time_constant_battles": 35.92724732416856,
       "retention_after_120_battles": 0.03537483847181963,
       "retention_after_20_battles": 0.5729487077567803,
       "retention_after_40_battles": 0.3282702217201644,
@@ -154,8 +155,302 @@
        "q90": 190.0
       }
      },
-     "note": "recover_pulse: after each DAN pulse every plastic edge moves r of the way back to w0 (plasticity.py). Odour key = (move type, opponent type set the brain saw: FLY-L the true one, FLY-OS the drawn one). no_recovery factor = r n / (1 - exp(-r n)), the linear-regime ratio of the deficit without recovery to the deficit with it for a constant depression per pulse",
+     "note": "recover_pulse: after each DAN pulse every plastic edge moves r of the way back to w0 (plasticity.py). Odour key = (move type, opponent type set the brain saw: FLY-L the true one, FLY-OS the drawn one). no_recovery factor = r n / (1 - exp(-r n)), the linear-regime ratio of the deficit without recovery to the deficit with it for a constant depression per pulse - a crude figure: the rule is multiplicative, so without recovery edges would be driven unevenly toward the floor, not scaled. recovery_only_time_constant_battles = 1 / (r x pulses per battle) ignores depression; the observed approach (compartment_tau_fit) is faster",
      "r": 0.001
+    },
+    "tau_fit": {
+     "fits": {
+      "FLYL/PAM08": {
+       "all_bins": {
+        "fitted": [
+         0.2925022015815826,
+         0.6458597591609756,
+         0.8227339923009187,
+         0.91126894415861,
+         0.9555853918474148,
+         0.9777681286597796,
+         0.9888717671089181,
+         0.9944297281419527,
+         0.9972117829599506,
+         0.9986043492201927,
+         0.9993014026271276,
+         0.9996503148950688
+        ],
+        "frac": [
+         0.3084441076145909,
+         0.654315097080635,
+         0.807133858098018,
+         0.8993541055483166,
+         0.948813043834982,
+         0.9819647831464652,
+         0.9981717541620957,
+         0.9974364877151491,
+         0.9961390814266635,
+         1.0078767892568083,
+         1.0029929608380659,
+         0.9973829266012153
+        ],
+        "sse": 0.0009758691268731468,
+        "t": [
+         5.0,
+         15.0,
+         25.0,
+         35.0,
+         45.0,
+         55.0,
+         65.0,
+         75.0,
+         85.0,
+         95.0,
+         105.0,
+         115.0
+        ],
+        "tau": 14.450000000000012,
+        "w_eq": 0.7574206696616278
+       },
+       "early_bins_0_30": {
+        "fitted": [
+         0.2925022015815826,
+         0.6458597591609756,
+         0.8227339923009187,
+         0.91126894415861
+        ],
+        "frac": [
+         0.3084441076145909,
+         0.654315097080635,
+         0.807133858098018,
+         0.8993541055483166
+        ],
+        "sse": 0.0007109646735587487,
+        "t": [
+         5.0,
+         15.0,
+         25.0,
+         35.0
+        ],
+        "tau": 14.450000000000012,
+        "w_eq": 0.7574206696616278
+       }
+      },
+      "FLYL/PPL105": {
+       "all_bins": {
+        "fitted": [
+         0.29679911639008694,
+         0.6522731524209189,
+         0.8280520355626286,
+         0.9149731961164387,
+         0.9579549696775456,
+         0.9792090906152726,
+         0.9897190723914618,
+         0.9949161688632222,
+         0.9974860888033287,
+         0.9987568923249573,
+         0.9993852938426002,
+         0.9996960330407966
+        ],
+        "frac": [
+         0.3163072398116242,
+         0.6582037929908413,
+         0.8240206647330888,
+         0.9053933139153746,
+         0.9501694312313109,
+         0.9561989759105134,
+         0.9628436573625396,
+         0.9880967469220872,
+         1.0203019654234133,
+         1.0054346039605009,
+         1.0085189020758054,
+         1.0148041242556534
+        ],
+        "sse": 0.0027594711851076014,
+        "t": [
+         5.0,
+         15.0,
+         25.0,
+         35.0,
+         45.0,
+         55.0,
+         65.0,
+         75.0,
+         85.0,
+         95.0,
+         105.0,
+         115.0
+        ],
+        "tau": 14.200000000000012,
+        "w_eq": 0.8294967540436321
+       },
+       "early_bins_0_30": {
+        "fitted": [
+         0.2994376337515011,
+         0.6561726572996804,
+         0.8312537936894688,
+         0.917181449501486
+        ],
+        "frac": [
+         0.3163072398116242,
+         0.6582037929908413,
+         0.8240206647330888,
+         0.9053933139153746
+        ],
+        "sse": 0.00047998741591581673,
+        "t": [
+         5.0,
+         15.0,
+         25.0,
+         35.0
+        ],
+        "tau": 14.050000000000011,
+        "w_eq": 0.8294967540436321
+       }
+      },
+      "FLYOS/PAM08": {
+       "all_bins": {
+        "fitted": [
+         0.2641643348700795,
+         0.6015787430006492,
+         0.78427316648084,
+         0.8831938158854832,
+         0.9367548096598627,
+         0.9657556307357953,
+         0.9814582449669853,
+         0.9899604902326616,
+         0.9945640660126824,
+         0.9970566911134836,
+         0.998406333259076,
+         0.9991371025675347
+        ],
+        "frac": [
+         0.29631739567435367,
+         0.611394864841158,
+         0.7786256573498573,
+         0.8669982313916894,
+         0.9162907338655516,
+         0.9592357771115734,
+         0.9757628487619318,
+         0.9873994310865541,
+         0.9924112960379406,
+         1.0103151150574106,
+         1.020127045347222,
+         1.0139842637089411
+        ],
+        "sse": 0.002797298086446263,
+        "t": [
+         5.0,
+         15.0,
+         25.0,
+         35.0,
+         45.0,
+         55.0,
+         65.0,
+         75.0,
+         85.0,
+         95.0,
+         105.0,
+         115.0
+        ],
+        "tau": 16.300000000000015,
+        "w_eq": 0.7411170616745949
+       },
+       "early_bins_0_30": {
+        "fitted": [
+         0.26767178162008964,
+         0.607248993539889,
+         0.7893658209475031,
+         0.887035916763143
+        ],
+        "frac": [
+         0.29631739567435367,
+         0.611394864841158,
+         0.7786256573498573,
+         0.8669982313916894
+        ],
+        "sse": 0.001354619402542093,
+        "t": [
+         5.0,
+         15.0,
+         25.0,
+         35.0
+        ],
+        "tau": 16.050000000000015,
+        "w_eq": 0.7411170616745949
+       }
+      },
+      "FLYOS/PPL105": {
+       "all_bins": {
+        "fitted": [
+         0.25807525492238303,
+         0.5916057973471737,
+         0.7751984606700382,
+         0.8762574694820521,
+         0.931885636083167,
+         0.9625062898554363,
+         0.9793614999896204,
+         0.9886394896360984,
+         0.9937465806302102,
+         0.9965577907539506,
+         0.9981052279092572,
+         0.9989570182928367
+        ],
+        "frac": [
+         0.28724423664471366,
+         0.6032748209797535,
+         0.7688947482547241,
+         0.8553111431453488,
+         0.9108820518124304,
+         0.9548844200377885,
+         0.9783810431346878,
+         0.9972745755148958,
+         1.0105512896459719,
+         1.002650362705148,
+         1.0030765892351443,
+         1.0080661397641555
+        ],
+        "sse": 0.002467458645484418,
+        "t": [
+         5.0,
+         15.0,
+         25.0,
+         35.0,
+         45.0,
+         55.0,
+         65.0,
+         75.0,
+         85.0,
+         95.0,
+         105.0,
+         115.0
+        ],
+        "tau": 16.750000000000014,
+        "w_eq": 0.7507025190525586
+       },
+       "early_bins_0_30": {
+        "fitted": [
+         0.2600737939252922,
+         0.5948972165717654,
+         0.7782099568930072,
+         0.8785719939884934
+        ],
+        "frac": [
+         0.28724423664471366,
+         0.6032748209797535,
+         0.7688947482547241,
+         0.8553111431453488
+        ],
+        "sse": 0.0014362575071078668,
+        "t": [
+         5.0,
+         15.0,
+         25.0,
+         35.0
+        ],
+        "tau": 16.600000000000016,
+        "w_eq": 0.7507025190525586
+       }
+      }
+     },
+     "mechanism": "plasticity.py depresses multiplicatively (w x (1 - lr tanh(.))) and recover_pulse moves r of the way back to w0: per pulse an edge approaches its equilibrium at rate (a + r), a = its depression rate, and the equilibrium deficit is a / (a + r). The observed tau is therefore shorter than the recovery-only 1 / (r x pulses per battle)",
+     "model": "approach fraction (1 - w(t)) / (1 - w_eq) = 1 - exp(-t / tau), t = bin centre (battles), w_eq = mean of the 60-119 bins, w(0) = 1; least squares over a tau grid"
     }
    },
    "method": "offline re-evaluation of the 120-battle weights, w0 + k (w120 - w0)",
@@ -163,7 +458,7 @@
   },
   {
    "cause": "which reinforcement carries the right direction (PAM08 reward vs PPL105 punishment compartments)",
-   "caveat": "the two compartments' changes are not independent in the run (each shapes later choices and rewards); a different reward / punishment balance needs new learning runs",
+   "caveat": "only_PAM08 vs actual: crossed paired CI includes 0 (offline_120.only_PAM08); the two compartments' changes are not independent in the run (each shapes later choices and rewards); a different reward / punishment balance needs new learning runs",
    "estimate": {
     "actual": 0.3625,
     "metric": "FLY-L right-direction share at 120 keeping only one compartment's change",
@@ -504,10 +799,10 @@
   },
   {
    "cause": "plasticity floor / saturation",
-   "caveat": "the rule's tanh per-step saturation is not examined",
+   "caveat": "only point 120 has weights; the rule's tanh per-step saturation is not examined",
    "estimate": {
     "metric": "gain from removing the floor",
-    "value": 0.0
+    "value": "not material (not re-evaluated)"
    },
    "evidence": {
     "floor_contact": {
@@ -593,17 +888,34 @@
      "PAM08_core_has_P_cells": true,
      "PPL105_core_has_A_cells": true,
      "PPL105_core_has_P_cells": false,
+     "floor_summary_FLYL": {
+      "flies_with_floor_edges": 11,
+      "floor_frac_max": 0.0004179603534750418,
+      "floor_n_max": 14,
+      "floor_n_min": 0,
+      "n_flies": 12
+     },
+     "floor_summary_FLYOS": {
+      "flies_with_floor_edges": 11,
+      "floor_frac_max": 0.0008657750179125866,
+      "floor_n_max": 29,
+      "floor_n_min": 0,
+      "n_flies": 12
+     },
+     "floor_tolerance": 0.2008002008,
      "n_confirm_active_kc": 3414,
      "n_edges": 33496,
-     "note": "ratio w/w0; floor = share <= 0.2 (the plasticity floor min_weight_frac); at_w0 = unchanged (the rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose KC spiked for any confirmation-set FLY odour in the naive map",
+     "note": "ratio w/w0; floor = share <= floor_tolerance = (0.2 + r 0.8)(1 + 1e-6): checkpoints are written after recover_pulse, so an edge held at the 0.2 floor reads 0.2008. The run's floor_contact (AC.3, <= 0.2 (1 + 1e-6)) cannot see such edges; at_w0 = unchanged (the rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose KC spiked for any confirmation-set FLY odour in the naive map",
      "per_arm_mean_over_flies": {
       "FLYL": {
        "A_cells/all": {
         "above_w0": 0.0,
         "at_w0": 0.10680157391793142,
         "floor": 0.0,
+        "floor_n": 0.0,
         "mean": 0.8265188365184457,
         "mean_deficit": 0.17348116348155437,
+        "min": 0.23716115590655598,
         "n": 593.0,
         "q01": 0.2689658602055783,
         "q10": 0.47326518479480173,
@@ -614,8 +926,10 @@
         "above_w0": 0.0,
         "at_w0": 0.058071472581638944,
         "floor": 0.0,
+        "floor_n": 0.0,
         "mean": 0.8119639613235949,
         "mean_deficit": 0.18803603867640503,
+        "min": 0.23716115590655598,
         "n": 541.0,
         "q01": 0.26531322866488816,
         "q10": 0.45662182651425876,
@@ -625,9 +939,11 @@
        "P_cells/all": {
         "above_w0": 0.0,
         "at_w0": 0.16656131479140326,
-        "floor": 0.0,
+        "floor": 0.0004740834386852086,
+        "floor_n": 0.75,
         "mean": 0.72425365053182,
         "mean_deficit": 0.27574634946818005,
+        "min": 0.2018441637267282,
         "n": 1582.0,
         "q01": 0.21415452767938803,
         "q10": 0.33023073016773935,
@@ -637,9 +953,11 @@
        "P_cells/confirm_active_kc": {
         "above_w0": 0.0,
         "at_w0": 0.017518939393939392,
-        "floor": 0.0,
+        "floor": 0.0006087662337662338,
+        "floor_n": 0.75,
         "mean": 0.6566571163451135,
         "mean_deficit": 0.3433428836548866,
+        "min": 0.2018441637267282,
         "n": 1232.0,
         "q01": 0.21092918532748292,
         "q10": 0.3027567721317875,
@@ -649,9 +967,11 @@
        "core_PAM08/all": {
         "above_w0": 0.0,
         "at_w0": 0.13566438264140804,
-        "floor": 0.0,
+        "floor": 0.0003022974607013301,
+        "floor_n": 0.75,
         "mean": 0.7594802837554809,
         "mean_deficit": 0.24051971624451904,
+        "min": 0.2018441637267282,
         "n": 2481.0,
         "q01": 0.22154304453465576,
         "q10": 0.3843518927012097,
@@ -661,9 +981,11 @@
        "core_PAM08/confirm_active_kc": {
         "above_w0": 0.0,
         "at_w0": 0.01879044300647088,
-        "floor": 0.0,
+        "floor": 0.0003733200597312095,
+        "floor_n": 0.75,
         "mean": 0.7114841136261264,
         "mean_deficit": 0.28851588637387354,
+        "min": 0.2018441637267282,
         "n": 2009.0,
         "q01": 0.21767213994596954,
         "q10": 0.35191298927821535,
@@ -674,8 +996,10 @@
         "above_w0": 0.0,
         "at_w0": 0.09425463199048105,
         "floor": 0.0,
+        "floor_n": 0.0,
         "mean": 0.8268982457520663,
         "mean_deficit": 0.1731017542479337,
+        "min": 0.23004383985022117,
         "n": 1961.0,
         "q01": 0.26117467623740626,
         "q10": 0.48006937216791523,
@@ -686,8 +1010,10 @@
         "above_w0": 0.0,
         "at_w0": 0.04833795013850415,
         "floor": 0.0,
+        "floor_n": 0.0,
         "mean": 0.813611295999784,
         "mean_deficit": 0.18638870400021593,
+        "min": 0.23004383985022117,
         "n": 1805.0,
         "q01": 0.25907689770951287,
         "q10": 0.4663922785708794,
@@ -700,8 +1026,10 @@
         "above_w0": 0.0,
         "at_w0": 0.060848791455874095,
         "floor": 0.0,
+        "floor_n": 0.0,
         "mean": 0.7692622324505581,
         "mean_deficit": 0.23073776754944209,
+        "min": 0.2203177785348508,
         "n": 593.0,
         "q01": 0.249767012781724,
         "q10": 0.4624449109761584,
@@ -712,8 +1040,10 @@
         "above_w0": 0.0,
         "at_w0": 0.014171287738755393,
         "floor": 0.0,
+        "floor_n": 0.0,
         "mean": 0.7495850308295541,
         "mean_deficit": 0.250414969170446,
+        "min": 0.2203177785348508,
         "n": 541.0,
         "q01": 0.24742684618221633,
         "q10": 0.4476862894839145,
@@ -723,9 +1053,11 @@
        "P_cells/all": {
         "above_w0": 0.0,
         "at_w0": 0.16055625790139064,
-        "floor": 0.0,
+        "floor": 0.002107037505267594,
+        "floor_n": 3.3333333333333335,
         "mean": 0.6993902525800713,
         "mean_deficit": 0.3006097474199289,
+        "min": 0.20282295032864864,
         "n": 1582.0,
         "q01": 0.2229520163191354,
         "q10": 0.34566724977217395,
@@ -735,9 +1067,11 @@
        "P_cells/confirm_active_kc": {
         "above_w0": 0.0,
         "at_w0": 0.01535443722943723,
-        "floor": 0.0,
+        "floor": 0.0027056277056277055,
+        "floor_n": 3.3333333333333335,
         "mean": 0.6247042060848589,
         "mean_deficit": 0.3752957939151412,
+        "min": 0.20282295032864864,
         "n": 1232.0,
         "q01": 0.21987977775098289,
         "q10": 0.3193493549289092,
@@ -747,9 +1081,11 @@
        "core_PAM08/all": {
         "above_w0": 0.0,
         "at_w0": 0.12988714228133816,
-        "floor": 0.0,
+        "floor": 0.0013435442697836894,
+        "floor_n": 3.3333333333333335,
         "mean": 0.7389865625229571,
         "mean_deficit": 0.2610134374770429,
+        "min": 0.20282295032864864,
         "n": 2481.0,
         "q01": 0.2320568946999484,
         "q10": 0.3960678044611416,
@@ -759,9 +1095,11 @@
        "core_PAM08/confirm_active_kc": {
         "above_w0": 0.0,
         "at_w0": 0.01679940268790443,
-        "floor": 0.0,
+        "floor": 0.0016592002654720426,
+        "floor_n": 3.3333333333333335,
         "mean": 0.6861339479485898,
         "mean_deficit": 0.31386605205141005,
+        "min": 0.20282295032864864,
         "n": 2009.0,
         "q01": 0.22648479837555333,
         "q10": 0.3679262254604121,
@@ -771,9 +1109,11 @@
        "core_PPL105/all": {
         "above_w0": 0.0,
         "at_w0": 0.05222675505694374,
-        "floor": 0.0,
+        "floor": 4.249532551419344e-05,
+        "floor_n": 0.08333333333333333,
         "mean": 0.7461155778687587,
         "mean_deficit": 0.25388442213124124,
+        "min": 0.20914910031112544,
         "n": 1961.0,
         "q01": 0.25006729599259797,
         "q10": 0.4147671943677405,
@@ -783,9 +1123,11 @@
        "core_PPL105/confirm_active_kc": {
         "above_w0": 0.0,
         "at_w0": 0.013434903047091414,
-        "floor": 0.0,
+        "floor": 4.616805170821792e-05,
+        "floor_n": 0.08333333333333333,
         "mean": 0.7267312530984479,
         "mean_deficit": 0.27326874690155206,
+        "min": 0.20914910031112544,
         "n": 1805.0,
         "q01": 0.24872488586943756,
         "q10": 0.40025291588494394,
@@ -793,10 +1135,204 @@
         "q90": 0.9885719050498182
        }
       }
+     },
+     "per_fly_floor_all_edges": {
+      "24": {
+       "arm": "FLYL",
+       "floor_frac": 0.00011941724385001195,
+       "floor_n": 4,
+       "min": 0.20079999904632573,
+       "n_edges": 33496,
+       "q01": 0.2691855006188302
+      },
+      "25": {
+       "arm": "FLYL",
+       "floor_frac": 0.0,
+       "floor_n": 0,
+       "min": 0.20159918888847725,
+       "n_edges": 33496,
+       "q01": 0.27384479943928575
+      },
+      "26": {
+       "arm": "FLYL",
+       "floor_frac": 0.00014927155481251491,
+       "floor_n": 5,
+       "min": 0.20079998674894609,
+       "n_edges": 33496,
+       "q01": 0.27874692576105325
+      },
+      "27": {
+       "arm": "FLYL",
+       "floor_frac": 8.956293288750896e-05,
+       "floor_n": 3,
+       "min": 0.20079999981504498,
+       "n_edges": 33496,
+       "q01": 0.271168564678373
+      },
+      "28": {
+       "arm": "FLYL",
+       "floor_frac": 0.00011941724385001195,
+       "floor_n": 4,
+       "min": 0.20080000267974593,
+       "n_edges": 33496,
+       "q01": 0.2626021790539428
+      },
+      "29": {
+       "arm": "FLYL",
+       "floor_frac": 0.00029854310962502983,
+       "floor_n": 10,
+       "min": 0.20079999272258267,
+       "n_edges": 33496,
+       "q01": 0.2535289584101177
+      },
+      "30": {
+       "arm": "FLYL",
+       "floor_frac": 0.00017912586577501792,
+       "floor_n": 6,
+       "min": 0.20079999272258267,
+       "n_edges": 33496,
+       "q01": 0.26525786164756626
+      },
+      "31": {
+       "arm": "FLYL",
+       "floor_frac": 0.00017912586577501792,
+       "floor_n": 6,
+       "min": 0.20079999272258267,
+       "n_edges": 33496,
+       "q01": 0.25710097177706215
+      },
+      "32": {
+       "arm": "FLYL",
+       "floor_frac": 0.00032839742058753287,
+       "floor_n": 11,
+       "min": 0.20079999272258267,
+       "n_edges": 33496,
+       "q01": 0.2859937251370144
+      },
+      "33": {
+       "arm": "FLYL",
+       "floor_frac": 0.0002089801767375209,
+       "floor_n": 7,
+       "min": 0.20080000409388352,
+       "n_edges": 33496,
+       "q01": 0.2553152873843963
+      },
+      "34": {
+       "arm": "FLYL",
+       "floor_frac": 0.00029854310962502983,
+       "floor_n": 10,
+       "min": 0.20079999272258267,
+       "n_edges": 33496,
+       "q01": 0.2534154087816741
+      },
+      "35": {
+       "arm": "FLYL",
+       "floor_frac": 0.0004179603534750418,
+       "floor_n": 14,
+       "min": 0.20079998674894609,
+       "n_edges": 33496,
+       "q01": 0.26488933235484946
+      },
+      "36": {
+       "arm": "FLYOS",
+       "floor_frac": 0.00017912586577501792,
+       "floor_n": 6,
+       "min": 0.2008000001330829,
+       "n_edges": 33496,
+       "q01": 0.2442922275591657
+      },
+      "37": {
+       "arm": "FLYOS",
+       "floor_frac": 0.0002089801767375209,
+       "floor_n": 7,
+       "min": 0.2008000001330829,
+       "n_edges": 33496,
+       "q01": 0.2574540983066578
+      },
+      "38": {
+       "arm": "FLYOS",
+       "floor_frac": 0.0006866491521375687,
+       "floor_n": 23,
+       "min": 0.20079999272258267,
+       "n_edges": 33496,
+       "q01": 0.2602699253121101
+      },
+      "39": {
+       "arm": "FLYOS",
+       "floor_frac": 0.0,
+       "floor_n": 0,
+       "min": 0.2015528022767379,
+       "n_edges": 33496,
+       "q01": 0.259182713031946
+      },
+      "40": {
+       "arm": "FLYOS",
+       "floor_frac": 0.0006567948411750657,
+       "floor_n": 22,
+       "min": 0.20079999272258267,
+       "n_edges": 33496,
+       "q01": 0.2629803554527835
+      },
+      "41": {
+       "arm": "FLYOS",
+       "floor_frac": 0.0008657750179125866,
+       "floor_n": 29,
+       "min": 0.20079998674894609,
+       "n_edges": 33496,
+       "q01": 0.2639593575957532
+      },
+      "42": {
+       "arm": "FLYOS",
+       "floor_frac": 0.0006269405302125626,
+       "floor_n": 21,
+       "min": 0.20079998674894609,
+       "n_edges": 33496,
+       "q01": 0.25386121937853523
+      },
+      "43": {
+       "arm": "FLYOS",
+       "floor_frac": 0.00026868879866252685,
+       "floor_n": 9,
+       "min": 0.20079999272258267,
+       "n_edges": 33496,
+       "q01": 0.24673890738393095
+      },
+      "44": {
+       "arm": "FLYOS",
+       "floor_frac": 5.970862192500597e-05,
+       "floor_n": 2,
+       "min": 0.2008000012883164,
+       "n_edges": 33496,
+       "q01": 0.26587897774287955
+      },
+      "45": {
+       "arm": "FLYOS",
+       "floor_frac": 0.0005970862192500597,
+       "floor_n": 20,
+       "min": 0.20079999272258267,
+       "n_edges": 33496,
+       "q01": 0.28621402631561615
+      },
+      "46": {
+       "arm": "FLYOS",
+       "floor_frac": 0.00038810604251253883,
+       "floor_n": 13,
+       "min": 0.20079998674894609,
+       "n_edges": 33496,
+       "q01": 0.2744547453059642
+      },
+      "47": {
+       "arm": "FLYOS",
+       "floor_frac": 0.0006866491521375687,
+       "floor_n": 23,
+       "min": 0.20079998674894609,
+       "n_edges": 33496,
+       "q01": 0.24481880804467201
+      }
      }
     }
    },
-   "method": "records: no edge reached the 0.2 w0 floor at any point, so removing it changes nothing",
+   "method": "checkpoint 120 vs w0 with the floor tolerance 0.2 + r 0.8 (weights_at_120.per_fly_floor_all_edges): a handful of edges per fly sit at the floor; the run's floor_contact (<= 0.2) could not see them",
    "question": 2
   },
   {
@@ -806,36 +1342,46 @@
     "metric": "none (a description of turnover, not a fixable cause)"
    },
    "evidence": {
-    "seed_noise_flag_disagreement_at_0": 0.05416666666666667,
+    "reference": {
+     "expected_flips_independent_redraw": 24.59166666666667,
+     "note": "2 p (1 - p) x 240: expected flag changes per step if every fly x pair flag were redrawn independently with p = point-0 seed-noise disagreement. binom_two_sided_p tests r2w vs w2r under symmetric turnover; flips cluster by pair, so units are not independent and the p is optimistic",
+     "p_majority_disagreement_at_0": 0.05416666666666667
+    },
     "transitions": {
      "n_units": 240,
      "steps": {
       "0-20": {
+       "binom_two_sided_p": 3.0752289603697136e-11,
        "r2w": 2,
        "same": 194,
        "w2r": 44
       },
       "100-120": {
+       "binom_two_sided_p": 0.0783538818359375,
        "r2w": 15,
        "same": 219,
        "w2r": 6
       },
       "20-40": {
+       "binom_two_sided_p": 0.359283447265625,
        "r2w": 7,
        "same": 221,
        "w2r": 12
       },
       "40-60": {
+       "binom_two_sided_p": 1.0,
        "r2w": 10,
        "same": 220,
        "w2r": 10
       },
       "60-80": {
+       "binom_two_sided_p": 0.629058837890625,
        "r2w": 7,
        "same": 223,
        "w2r": 10
       },
       "80-100": {
+       "binom_two_sided_p": 1.0,
        "r2w": 10,
        "same": 221,
        "w2r": 9
@@ -1005,8 +1551,9 @@
    }
   },
   "class_model": {
+   "in_sample": true,
    "n_pairs_with_nonzero_prediction": 20,
-   "note": "V replaced by the point-0 class mean of centred V (an additive class-only readout); d's sign is the predicted direction. Agreement = the predicted sign equals the pair's majority flag over the 12 flies",
+   "note": "IN-SAMPLE: the class means are fitted on the same point-0 confirmation-set V this model predicts. More independent support: naive_map (all 112 reachable odours, another decision seed; the confirmation odours are a subset of it). V replaced by the point-0 class mean of centred V (an additive class-only readout); d's sign is the predicted direction. Agreement = the predicted sign equals the pair's majority flag over the 12 flies",
    "predicted_right_share": 0.0,
    "predicted_wrong_share": 1.0,
    "predicted_zero_share": 0.0,
@@ -1174,7 +1721,7 @@
     "by_class": {
      "immune": {
       "n": 4,
-      "v": -0.16971270699206997
+      "v": -0.16971270699207
      },
      "neutral": {
       "n": 14,
@@ -1182,11 +1729,11 @@
      },
      "not_very": {
       "n": 15,
-      "v": 0.05587713953121109
+      "v": 0.055877139531211095
      },
      "super": {
       "n": 19,
-      "v": -0.6566040263385647
+      "v": -0.6566040263385649
      }
     },
     "n": 52,
@@ -1650,6 +2197,300 @@
      "90": 0.7500417903065681
     }
    }
+  },
+  "compartment_tau_fit": {
+   "fits": {
+    "FLYL/PAM08": {
+     "all_bins": {
+      "fitted": [
+       0.2925022015815826,
+       0.6458597591609756,
+       0.8227339923009187,
+       0.91126894415861,
+       0.9555853918474148,
+       0.9777681286597796,
+       0.9888717671089181,
+       0.9944297281419527,
+       0.9972117829599506,
+       0.9986043492201927,
+       0.9993014026271276,
+       0.9996503148950688
+      ],
+      "frac": [
+       0.3084441076145909,
+       0.654315097080635,
+       0.807133858098018,
+       0.8993541055483166,
+       0.948813043834982,
+       0.9819647831464652,
+       0.9981717541620957,
+       0.9974364877151491,
+       0.9961390814266635,
+       1.0078767892568083,
+       1.0029929608380659,
+       0.9973829266012153
+      ],
+      "sse": 0.0009758691268731468,
+      "t": [
+       5.0,
+       15.0,
+       25.0,
+       35.0,
+       45.0,
+       55.0,
+       65.0,
+       75.0,
+       85.0,
+       95.0,
+       105.0,
+       115.0
+      ],
+      "tau": 14.450000000000012,
+      "w_eq": 0.7574206696616278
+     },
+     "early_bins_0_30": {
+      "fitted": [
+       0.2925022015815826,
+       0.6458597591609756,
+       0.8227339923009187,
+       0.91126894415861
+      ],
+      "frac": [
+       0.3084441076145909,
+       0.654315097080635,
+       0.807133858098018,
+       0.8993541055483166
+      ],
+      "sse": 0.0007109646735587487,
+      "t": [
+       5.0,
+       15.0,
+       25.0,
+       35.0
+      ],
+      "tau": 14.450000000000012,
+      "w_eq": 0.7574206696616278
+     }
+    },
+    "FLYL/PPL105": {
+     "all_bins": {
+      "fitted": [
+       0.29679911639008694,
+       0.6522731524209189,
+       0.8280520355626286,
+       0.9149731961164387,
+       0.9579549696775456,
+       0.9792090906152726,
+       0.9897190723914618,
+       0.9949161688632222,
+       0.9974860888033287,
+       0.9987568923249573,
+       0.9993852938426002,
+       0.9996960330407966
+      ],
+      "frac": [
+       0.3163072398116242,
+       0.6582037929908413,
+       0.8240206647330888,
+       0.9053933139153746,
+       0.9501694312313109,
+       0.9561989759105134,
+       0.9628436573625396,
+       0.9880967469220872,
+       1.0203019654234133,
+       1.0054346039605009,
+       1.0085189020758054,
+       1.0148041242556534
+      ],
+      "sse": 0.0027594711851076014,
+      "t": [
+       5.0,
+       15.0,
+       25.0,
+       35.0,
+       45.0,
+       55.0,
+       65.0,
+       75.0,
+       85.0,
+       95.0,
+       105.0,
+       115.0
+      ],
+      "tau": 14.200000000000012,
+      "w_eq": 0.8294967540436321
+     },
+     "early_bins_0_30": {
+      "fitted": [
+       0.2994376337515011,
+       0.6561726572996804,
+       0.8312537936894688,
+       0.917181449501486
+      ],
+      "frac": [
+       0.3163072398116242,
+       0.6582037929908413,
+       0.8240206647330888,
+       0.9053933139153746
+      ],
+      "sse": 0.00047998741591581673,
+      "t": [
+       5.0,
+       15.0,
+       25.0,
+       35.0
+      ],
+      "tau": 14.050000000000011,
+      "w_eq": 0.8294967540436321
+     }
+    },
+    "FLYOS/PAM08": {
+     "all_bins": {
+      "fitted": [
+       0.2641643348700795,
+       0.6015787430006492,
+       0.78427316648084,
+       0.8831938158854832,
+       0.9367548096598627,
+       0.9657556307357953,
+       0.9814582449669853,
+       0.9899604902326616,
+       0.9945640660126824,
+       0.9970566911134836,
+       0.998406333259076,
+       0.9991371025675347
+      ],
+      "frac": [
+       0.29631739567435367,
+       0.611394864841158,
+       0.7786256573498573,
+       0.8669982313916894,
+       0.9162907338655516,
+       0.9592357771115734,
+       0.9757628487619318,
+       0.9873994310865541,
+       0.9924112960379406,
+       1.0103151150574106,
+       1.020127045347222,
+       1.0139842637089411
+      ],
+      "sse": 0.002797298086446263,
+      "t": [
+       5.0,
+       15.0,
+       25.0,
+       35.0,
+       45.0,
+       55.0,
+       65.0,
+       75.0,
+       85.0,
+       95.0,
+       105.0,
+       115.0
+      ],
+      "tau": 16.300000000000015,
+      "w_eq": 0.7411170616745949
+     },
+     "early_bins_0_30": {
+      "fitted": [
+       0.26767178162008964,
+       0.607248993539889,
+       0.7893658209475031,
+       0.887035916763143
+      ],
+      "frac": [
+       0.29631739567435367,
+       0.611394864841158,
+       0.7786256573498573,
+       0.8669982313916894
+      ],
+      "sse": 0.001354619402542093,
+      "t": [
+       5.0,
+       15.0,
+       25.0,
+       35.0
+      ],
+      "tau": 16.050000000000015,
+      "w_eq": 0.7411170616745949
+     }
+    },
+    "FLYOS/PPL105": {
+     "all_bins": {
+      "fitted": [
+       0.25807525492238303,
+       0.5916057973471737,
+       0.7751984606700382,
+       0.8762574694820521,
+       0.931885636083167,
+       0.9625062898554363,
+       0.9793614999896204,
+       0.9886394896360984,
+       0.9937465806302102,
+       0.9965577907539506,
+       0.9981052279092572,
+       0.9989570182928367
+      ],
+      "frac": [
+       0.28724423664471366,
+       0.6032748209797535,
+       0.7688947482547241,
+       0.8553111431453488,
+       0.9108820518124304,
+       0.9548844200377885,
+       0.9783810431346878,
+       0.9972745755148958,
+       1.0105512896459719,
+       1.002650362705148,
+       1.0030765892351443,
+       1.0080661397641555
+      ],
+      "sse": 0.002467458645484418,
+      "t": [
+       5.0,
+       15.0,
+       25.0,
+       35.0,
+       45.0,
+       55.0,
+       65.0,
+       75.0,
+       85.0,
+       95.0,
+       105.0,
+       115.0
+      ],
+      "tau": 16.750000000000014,
+      "w_eq": 0.7507025190525586
+     },
+     "early_bins_0_30": {
+      "fitted": [
+       0.2600737939252922,
+       0.5948972165717654,
+       0.7782099568930072,
+       0.8785719939884934
+      ],
+      "frac": [
+       0.28724423664471366,
+       0.6032748209797535,
+       0.7688947482547241,
+       0.8553111431453488
+      ],
+      "sse": 0.0014362575071078668,
+      "t": [
+       5.0,
+       15.0,
+       25.0,
+       35.0
+      ],
+      "tau": 16.600000000000016,
+      "w_eq": 0.7507025190525586
+     }
+    }
+   },
+   "mechanism": "plasticity.py depresses multiplicatively (w x (1 - lr tanh(.))) and recover_pulse moves r of the way back to w0: per pulse an edge approaches its equilibrium at rate (a + r), a = its depression rate, and the equilibrium deficit is a / (a + r). The observed tau is therefore shorter than the recovery-only 1 / (r x pulses per battle)",
+   "model": "approach fraction (1 - w(t)) / (1 - w_eq) = 1 - exp(-t / tau), t = bin centre (battles), w_eq = mean of the 60-119 bins, w(0) = 1; least squares over a tau grid"
   },
   "flyl_120_given_naive": {
    "naive_right": {
@@ -2857,7 +3698,7 @@
     "no_recovery_deficit_factor_at_120": 3.3666443912929487,
     "no_recovery_deficit_factor_at_40": 1.634015154232533,
     "pulses_per_battle": 26.950000000000003,
-    "recovery_time_constant_battles": 37.105751391465674,
+    "recovery_only_time_constant_battles": 37.105751391465674,
     "retention_after_120_battles": 0.0393358847481807,
     "retention_after_20_battles": 0.5831740006406804,
     "retention_after_40_battles": 0.3400919150232562,
@@ -2876,7 +3717,7 @@
     "no_recovery_deficit_factor_at_120": 3.4627836247938544,
     "no_recovery_deficit_factor_at_40": 1.6579053096333676,
     "pulses_per_battle": 27.834027777777777,
-    "recovery_time_constant_battles": 35.92724732416856,
+    "recovery_only_time_constant_battles": 35.92724732416856,
     "retention_after_120_battles": 0.03537483847181963,
     "retention_after_20_battles": 0.5729487077567803,
     "retention_after_40_battles": 0.3282702217201644,
@@ -2891,7 +3732,7 @@
      "q90": 190.0
     }
    },
-   "note": "recover_pulse: after each DAN pulse every plastic edge moves r of the way back to w0 (plasticity.py). Odour key = (move type, opponent type set the brain saw: FLY-L the true one, FLY-OS the drawn one). no_recovery factor = r n / (1 - exp(-r n)), the linear-regime ratio of the deficit without recovery to the deficit with it for a constant depression per pulse",
+   "note": "recover_pulse: after each DAN pulse every plastic edge moves r of the way back to w0 (plasticity.py). Odour key = (move type, opponent type set the brain saw: FLY-L the true one, FLY-OS the drawn one). no_recovery factor = r n / (1 - exp(-r n)), the linear-regime ratio of the deficit without recovery to the deficit with it for a constant depression per pulse - a crude figure: the rule is multiplicative, so without recovery edges would be driven unevenly toward the floor, not scaled. recovery_only_time_constant_battles = 1 / (r x pulses per battle) ignores depression; the observed approach (compartment_tau_fit) is faster",
    "r": 0.001
   },
   "right_share_by_readout": {
@@ -3312,31 +4153,37 @@
     "n_units": 240,
     "steps": {
      "0-20": {
+      "binom_two_sided_p": 3.0752289603697136e-11,
       "r2w": 2,
       "same": 194,
       "w2r": 44
      },
      "100-120": {
+      "binom_two_sided_p": 0.0783538818359375,
       "r2w": 15,
       "same": 219,
       "w2r": 6
      },
      "20-40": {
+      "binom_two_sided_p": 0.359283447265625,
       "r2w": 7,
       "same": 221,
       "w2r": 12
      },
      "40-60": {
+      "binom_two_sided_p": 1.0,
       "r2w": 10,
       "same": 220,
       "w2r": 10
      },
      "60-80": {
+      "binom_two_sided_p": 0.629058837890625,
       "r2w": 7,
       "same": 223,
       "w2r": 10
      },
      "80-100": {
+      "binom_two_sided_p": 1.0,
       "r2w": 10,
       "same": 221,
       "w2r": 9
@@ -3352,31 +4199,37 @@
     "n_units": 240,
     "steps": {
      "0-20": {
+      "binom_two_sided_p": 0.5189580031896518,
       "r2w": 33,
       "same": 180,
       "w2r": 27
      },
      "100-120": {
+      "binom_two_sided_p": 0.7011080384254456,
       "r2w": 15,
       "same": 213,
       "w2r": 12
      },
      "20-40": {
+      "binom_two_sided_p": 0.5412561893463135,
       "r2w": 14,
       "same": 216,
       "w2r": 10
      },
      "40-60": {
+      "binom_two_sided_p": 0.37708558747544885,
       "r2w": 13,
       "same": 208,
       "w2r": 19
      },
      "60-80": {
+      "binom_two_sided_p": 0.7428293587290682,
       "r2w": 20,
       "same": 203,
       "w2r": 17
      },
      "80-100": {
+      "binom_two_sided_p": 0.32693958282470703,
       "r2w": 10,
       "same": 214,
       "w2r": 16
@@ -3390,6 +4243,11 @@
    }
   },
   "transitions_note": "units = fly x pair (12 x 20 = 240 per arm); decision seeds carry no point, so a flag change between points comes from the weights. Reference for a change of the same size from spike noise alone: q1 seed_noise_at_0 flag_majority_disagreement",
+  "transitions_reference": {
+   "expected_flips_independent_redraw": 24.59166666666667,
+   "note": "2 p (1 - p) x 240: expected flag changes per step if every fly x pair flag were redrawn independently with p = point-0 seed-noise disagreement. binom_two_sided_p tests r2w vs w2r under symmetric turnover; flips cluster by pair, so units are not independent and the p is optimistic",
+   "p_majority_disagreement_at_0": 0.05416666666666667
+  },
   "weight_summary_by_point": {
    "FLYL": {
     "20": {
@@ -3473,17 +4331,34 @@
    "PAM08_core_has_P_cells": true,
    "PPL105_core_has_A_cells": true,
    "PPL105_core_has_P_cells": false,
+   "floor_summary_FLYL": {
+    "flies_with_floor_edges": 11,
+    "floor_frac_max": 0.0004179603534750418,
+    "floor_n_max": 14,
+    "floor_n_min": 0,
+    "n_flies": 12
+   },
+   "floor_summary_FLYOS": {
+    "flies_with_floor_edges": 11,
+    "floor_frac_max": 0.0008657750179125866,
+    "floor_n_max": 29,
+    "floor_n_min": 0,
+    "n_flies": 12
+   },
+   "floor_tolerance": 0.2008002008,
    "n_confirm_active_kc": 3414,
    "n_edges": 33496,
-   "note": "ratio w/w0; floor = share <= 0.2 (the plasticity floor min_weight_frac); at_w0 = unchanged (the rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose KC spiked for any confirmation-set FLY odour in the naive map",
+   "note": "ratio w/w0; floor = share <= floor_tolerance = (0.2 + r 0.8)(1 + 1e-6): checkpoints are written after recover_pulse, so an edge held at the 0.2 floor reads 0.2008. The run's floor_contact (AC.3, <= 0.2 (1 + 1e-6)) cannot see such edges; at_w0 = unchanged (the rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose KC spiked for any confirmation-set FLY odour in the naive map",
    "per_arm_mean_over_flies": {
     "FLYL": {
      "A_cells/all": {
       "above_w0": 0.0,
       "at_w0": 0.10680157391793142,
       "floor": 0.0,
+      "floor_n": 0.0,
       "mean": 0.8265188365184457,
       "mean_deficit": 0.17348116348155437,
+      "min": 0.23716115590655598,
       "n": 593.0,
       "q01": 0.2689658602055783,
       "q10": 0.47326518479480173,
@@ -3494,8 +4369,10 @@
       "above_w0": 0.0,
       "at_w0": 0.058071472581638944,
       "floor": 0.0,
+      "floor_n": 0.0,
       "mean": 0.8119639613235949,
       "mean_deficit": 0.18803603867640503,
+      "min": 0.23716115590655598,
       "n": 541.0,
       "q01": 0.26531322866488816,
       "q10": 0.45662182651425876,
@@ -3505,9 +4382,11 @@
      "P_cells/all": {
       "above_w0": 0.0,
       "at_w0": 0.16656131479140326,
-      "floor": 0.0,
+      "floor": 0.0004740834386852086,
+      "floor_n": 0.75,
       "mean": 0.72425365053182,
       "mean_deficit": 0.27574634946818005,
+      "min": 0.2018441637267282,
       "n": 1582.0,
       "q01": 0.21415452767938803,
       "q10": 0.33023073016773935,
@@ -3517,9 +4396,11 @@
      "P_cells/confirm_active_kc": {
       "above_w0": 0.0,
       "at_w0": 0.017518939393939392,
-      "floor": 0.0,
+      "floor": 0.0006087662337662338,
+      "floor_n": 0.75,
       "mean": 0.6566571163451135,
       "mean_deficit": 0.3433428836548866,
+      "min": 0.2018441637267282,
       "n": 1232.0,
       "q01": 0.21092918532748292,
       "q10": 0.3027567721317875,
@@ -3529,9 +4410,11 @@
      "core_PAM08/all": {
       "above_w0": 0.0,
       "at_w0": 0.13566438264140804,
-      "floor": 0.0,
+      "floor": 0.0003022974607013301,
+      "floor_n": 0.75,
       "mean": 0.7594802837554809,
       "mean_deficit": 0.24051971624451904,
+      "min": 0.2018441637267282,
       "n": 2481.0,
       "q01": 0.22154304453465576,
       "q10": 0.3843518927012097,
@@ -3541,9 +4424,11 @@
      "core_PAM08/confirm_active_kc": {
       "above_w0": 0.0,
       "at_w0": 0.01879044300647088,
-      "floor": 0.0,
+      "floor": 0.0003733200597312095,
+      "floor_n": 0.75,
       "mean": 0.7114841136261264,
       "mean_deficit": 0.28851588637387354,
+      "min": 0.2018441637267282,
       "n": 2009.0,
       "q01": 0.21767213994596954,
       "q10": 0.35191298927821535,
@@ -3554,8 +4439,10 @@
       "above_w0": 0.0,
       "at_w0": 0.09425463199048105,
       "floor": 0.0,
+      "floor_n": 0.0,
       "mean": 0.8268982457520663,
       "mean_deficit": 0.1731017542479337,
+      "min": 0.23004383985022117,
       "n": 1961.0,
       "q01": 0.26117467623740626,
       "q10": 0.48006937216791523,
@@ -3566,8 +4453,10 @@
       "above_w0": 0.0,
       "at_w0": 0.04833795013850415,
       "floor": 0.0,
+      "floor_n": 0.0,
       "mean": 0.813611295999784,
       "mean_deficit": 0.18638870400021593,
+      "min": 0.23004383985022117,
       "n": 1805.0,
       "q01": 0.25907689770951287,
       "q10": 0.4663922785708794,
@@ -3580,8 +4469,10 @@
       "above_w0": 0.0,
       "at_w0": 0.060848791455874095,
       "floor": 0.0,
+      "floor_n": 0.0,
       "mean": 0.7692622324505581,
       "mean_deficit": 0.23073776754944209,
+      "min": 0.2203177785348508,
       "n": 593.0,
       "q01": 0.249767012781724,
       "q10": 0.4624449109761584,
@@ -3592,8 +4483,10 @@
       "above_w0": 0.0,
       "at_w0": 0.014171287738755393,
       "floor": 0.0,
+      "floor_n": 0.0,
       "mean": 0.7495850308295541,
       "mean_deficit": 0.250414969170446,
+      "min": 0.2203177785348508,
       "n": 541.0,
       "q01": 0.24742684618221633,
       "q10": 0.4476862894839145,
@@ -3603,9 +4496,11 @@
      "P_cells/all": {
       "above_w0": 0.0,
       "at_w0": 0.16055625790139064,
-      "floor": 0.0,
+      "floor": 0.002107037505267594,
+      "floor_n": 3.3333333333333335,
       "mean": 0.6993902525800713,
       "mean_deficit": 0.3006097474199289,
+      "min": 0.20282295032864864,
       "n": 1582.0,
       "q01": 0.2229520163191354,
       "q10": 0.34566724977217395,
@@ -3615,9 +4510,11 @@
      "P_cells/confirm_active_kc": {
       "above_w0": 0.0,
       "at_w0": 0.01535443722943723,
-      "floor": 0.0,
+      "floor": 0.0027056277056277055,
+      "floor_n": 3.3333333333333335,
       "mean": 0.6247042060848589,
       "mean_deficit": 0.3752957939151412,
+      "min": 0.20282295032864864,
       "n": 1232.0,
       "q01": 0.21987977775098289,
       "q10": 0.3193493549289092,
@@ -3627,9 +4524,11 @@
      "core_PAM08/all": {
       "above_w0": 0.0,
       "at_w0": 0.12988714228133816,
-      "floor": 0.0,
+      "floor": 0.0013435442697836894,
+      "floor_n": 3.3333333333333335,
       "mean": 0.7389865625229571,
       "mean_deficit": 0.2610134374770429,
+      "min": 0.20282295032864864,
       "n": 2481.0,
       "q01": 0.2320568946999484,
       "q10": 0.3960678044611416,
@@ -3639,9 +4538,11 @@
      "core_PAM08/confirm_active_kc": {
       "above_w0": 0.0,
       "at_w0": 0.01679940268790443,
-      "floor": 0.0,
+      "floor": 0.0016592002654720426,
+      "floor_n": 3.3333333333333335,
       "mean": 0.6861339479485898,
       "mean_deficit": 0.31386605205141005,
+      "min": 0.20282295032864864,
       "n": 2009.0,
       "q01": 0.22648479837555333,
       "q10": 0.3679262254604121,
@@ -3651,9 +4552,11 @@
      "core_PPL105/all": {
       "above_w0": 0.0,
       "at_w0": 0.05222675505694374,
-      "floor": 0.0,
+      "floor": 4.249532551419344e-05,
+      "floor_n": 0.08333333333333333,
       "mean": 0.7461155778687587,
       "mean_deficit": 0.25388442213124124,
+      "min": 0.20914910031112544,
       "n": 1961.0,
       "q01": 0.25006729599259797,
       "q10": 0.4147671943677405,
@@ -3663,15 +4566,211 @@
      "core_PPL105/confirm_active_kc": {
       "above_w0": 0.0,
       "at_w0": 0.013434903047091414,
-      "floor": 0.0,
+      "floor": 4.616805170821792e-05,
+      "floor_n": 0.08333333333333333,
       "mean": 0.7267312530984479,
       "mean_deficit": 0.27326874690155206,
+      "min": 0.20914910031112544,
       "n": 1805.0,
       "q01": 0.24872488586943756,
       "q10": 0.40025291588494394,
       "q50": 0.7526769725775236,
       "q90": 0.9885719050498182
      }
+    }
+   },
+   "per_fly_floor_all_edges": {
+    "24": {
+     "arm": "FLYL",
+     "floor_frac": 0.00011941724385001195,
+     "floor_n": 4,
+     "min": 0.20079999904632573,
+     "n_edges": 33496,
+     "q01": 0.2691855006188302
+    },
+    "25": {
+     "arm": "FLYL",
+     "floor_frac": 0.0,
+     "floor_n": 0,
+     "min": 0.20159918888847725,
+     "n_edges": 33496,
+     "q01": 0.27384479943928575
+    },
+    "26": {
+     "arm": "FLYL",
+     "floor_frac": 0.00014927155481251491,
+     "floor_n": 5,
+     "min": 0.20079998674894609,
+     "n_edges": 33496,
+     "q01": 0.27874692576105325
+    },
+    "27": {
+     "arm": "FLYL",
+     "floor_frac": 8.956293288750896e-05,
+     "floor_n": 3,
+     "min": 0.20079999981504498,
+     "n_edges": 33496,
+     "q01": 0.271168564678373
+    },
+    "28": {
+     "arm": "FLYL",
+     "floor_frac": 0.00011941724385001195,
+     "floor_n": 4,
+     "min": 0.20080000267974593,
+     "n_edges": 33496,
+     "q01": 0.2626021790539428
+    },
+    "29": {
+     "arm": "FLYL",
+     "floor_frac": 0.00029854310962502983,
+     "floor_n": 10,
+     "min": 0.20079999272258267,
+     "n_edges": 33496,
+     "q01": 0.2535289584101177
+    },
+    "30": {
+     "arm": "FLYL",
+     "floor_frac": 0.00017912586577501792,
+     "floor_n": 6,
+     "min": 0.20079999272258267,
+     "n_edges": 33496,
+     "q01": 0.26525786164756626
+    },
+    "31": {
+     "arm": "FLYL",
+     "floor_frac": 0.00017912586577501792,
+     "floor_n": 6,
+     "min": 0.20079999272258267,
+     "n_edges": 33496,
+     "q01": 0.25710097177706215
+    },
+    "32": {
+     "arm": "FLYL",
+     "floor_frac": 0.00032839742058753287,
+     "floor_n": 11,
+     "min": 0.20079999272258267,
+     "n_edges": 33496,
+     "q01": 0.2859937251370144
+    },
+    "33": {
+     "arm": "FLYL",
+     "floor_frac": 0.0002089801767375209,
+     "floor_n": 7,
+     "min": 0.20080000409388352,
+     "n_edges": 33496,
+     "q01": 0.2553152873843963
+    },
+    "34": {
+     "arm": "FLYL",
+     "floor_frac": 0.00029854310962502983,
+     "floor_n": 10,
+     "min": 0.20079999272258267,
+     "n_edges": 33496,
+     "q01": 0.2534154087816741
+    },
+    "35": {
+     "arm": "FLYL",
+     "floor_frac": 0.0004179603534750418,
+     "floor_n": 14,
+     "min": 0.20079998674894609,
+     "n_edges": 33496,
+     "q01": 0.26488933235484946
+    },
+    "36": {
+     "arm": "FLYOS",
+     "floor_frac": 0.00017912586577501792,
+     "floor_n": 6,
+     "min": 0.2008000001330829,
+     "n_edges": 33496,
+     "q01": 0.2442922275591657
+    },
+    "37": {
+     "arm": "FLYOS",
+     "floor_frac": 0.0002089801767375209,
+     "floor_n": 7,
+     "min": 0.2008000001330829,
+     "n_edges": 33496,
+     "q01": 0.2574540983066578
+    },
+    "38": {
+     "arm": "FLYOS",
+     "floor_frac": 0.0006866491521375687,
+     "floor_n": 23,
+     "min": 0.20079999272258267,
+     "n_edges": 33496,
+     "q01": 0.2602699253121101
+    },
+    "39": {
+     "arm": "FLYOS",
+     "floor_frac": 0.0,
+     "floor_n": 0,
+     "min": 0.2015528022767379,
+     "n_edges": 33496,
+     "q01": 0.259182713031946
+    },
+    "40": {
+     "arm": "FLYOS",
+     "floor_frac": 0.0006567948411750657,
+     "floor_n": 22,
+     "min": 0.20079999272258267,
+     "n_edges": 33496,
+     "q01": 0.2629803554527835
+    },
+    "41": {
+     "arm": "FLYOS",
+     "floor_frac": 0.0008657750179125866,
+     "floor_n": 29,
+     "min": 0.20079998674894609,
+     "n_edges": 33496,
+     "q01": 0.2639593575957532
+    },
+    "42": {
+     "arm": "FLYOS",
+     "floor_frac": 0.0006269405302125626,
+     "floor_n": 21,
+     "min": 0.20079998674894609,
+     "n_edges": 33496,
+     "q01": 0.25386121937853523
+    },
+    "43": {
+     "arm": "FLYOS",
+     "floor_frac": 0.00026868879866252685,
+     "floor_n": 9,
+     "min": 0.20079999272258267,
+     "n_edges": 33496,
+     "q01": 0.24673890738393095
+    },
+    "44": {
+     "arm": "FLYOS",
+     "floor_frac": 5.970862192500597e-05,
+     "floor_n": 2,
+     "min": 0.2008000012883164,
+     "n_edges": 33496,
+     "q01": 0.26587897774287955
+    },
+    "45": {
+     "arm": "FLYOS",
+     "floor_frac": 0.0005970862192500597,
+     "floor_n": 20,
+     "min": 0.20079999272258267,
+     "n_edges": 33496,
+     "q01": 0.28621402631561615
+    },
+    "46": {
+     "arm": "FLYOS",
+     "floor_frac": 0.00038810604251253883,
+     "floor_n": 13,
+     "min": 0.20079998674894609,
+     "n_edges": 33496,
+     "q01": 0.2744547453059642
+    },
+    "47": {
+     "arm": "FLYOS",
+     "floor_frac": 0.0006866491521375687,
+     "floor_n": 23,
+     "min": 0.20079998674894609,
+     "n_edges": 33496,
+     "q01": 0.24481880804467201
     }
    }
   }

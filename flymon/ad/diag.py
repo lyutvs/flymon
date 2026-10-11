@@ -131,18 +131,46 @@ def keep_only(w, w0, mask) -> np.ndarray:
     return np.where(m, w, w0).astype(np.float32)
 
 
-def ratio_summary(w, w0, mask=None, floor: float = 0.2) -> dict:
-    """w / w0 over the selected edges: n, the floor share (<= floor), the unchanged share (== w0, the ceiling: the
-    rule only depresses and recovers toward w0), the share above w0, and quantiles."""
+def floor_tol(floor: float = 0.2, r: float = 0.001) -> float:
+    """The floor test's ratio bound. A checkpoint is written after recover_pulse, so an edge held at the floor reads
+    floor + r (1 - floor) (0.2008 for r 0.001); the bound is that value, with a relative 1e-6 margin."""
+    return (float(floor) + float(r) * (1.0 - float(floor))) * (1 + 1e-6)
+
+
+def ratio_summary(w, w0, mask=None, floor: float = 0.2, r: float = 0.001) -> dict:
+    """w / w0 over the selected edges: n, the floor count and share (<= floor_tol(floor, r): at the floor, recovered
+    by one pulse), the unchanged share (== w0, the ceiling: the rule only depresses and recovers toward w0), the share
+    above w0, and quantiles (min, q01, ...)."""
     w, w0 = np.asarray(w, float), np.asarray(w0, float)
     m = np.ones(w.shape, bool) if mask is None else np.asarray(mask, bool)
-    r = w[m] / w0[m]
-    if r.size == 0:
+    x = w[m] / w0[m]
+    if x.size == 0:
         return dict(n=0)
-    q = np.percentile(r, [1, 10, 50, 90])
-    return dict(n=int(r.size), floor=float(np.mean(r <= floor * (1 + 1e-6))), at_w0=float(np.mean(r == 1.0)),
-                above_w0=float(np.mean(r > 1.0)), mean=float(r.mean()), q01=float(q[0]), q10=float(q[1]),
-                q50=float(q[2]), q90=float(q[3]), mean_deficit=float(np.mean(1.0 - r)))
+    q = np.percentile(x, [1, 10, 50, 90])
+    at_floor = x <= floor_tol(floor, r)
+    return dict(n=int(x.size), floor_n=int(at_floor.sum()), floor=float(np.mean(at_floor)),
+                at_w0=float(np.mean(x == 1.0)), above_w0=float(np.mean(x > 1.0)), mean=float(x.mean()),
+                min=float(x.min()), q01=float(q[0]), q10=float(q[1]), q50=float(q[2]), q90=float(q[3]),
+                mean_deficit=float(np.mean(1.0 - x)))
+
+
+def fit_tau(t, w, w_eq: float, w_start: float = 1.0, taus=None) -> dict:
+    """Least-squares tau of the approach fraction (w_start - w) / (w_start - w_eq) = 1 - exp(-t / tau) over bin
+    centres t (grid search, 0.05-battle steps over 0.5-200). Returns tau, the fitted and observed fractions, the SSE."""
+    t, w = np.asarray(t, float), np.asarray(w, float)
+    frac = (w_start - w) / (w_start - float(w_eq))
+    grid = np.arange(0.5, 200.0, 0.05) if taus is None else np.asarray(taus, float)
+    sse = np.array([np.sum((frac - (1 - np.exp(-t / g))) ** 2) for g in grid])
+    k = int(np.argmin(sse))
+    return dict(tau=float(grid[k]), sse=float(sse[k]), frac=[float(x) for x in frac],
+                fitted=[float(x) for x in 1 - np.exp(-t / grid[k])], t=[float(x) for x in t], w_eq=float(w_eq))
+
+
+def binom_two_sided(k: int, n: int) -> float:
+    """Exact two-sided binomial p for k of n under p = 1/2 (doubled smaller tail, capped at 1)."""
+    k = min(int(k), int(n) - int(k))
+    tail = sum(math.comb(int(n), i) for i in range(k + 1)) / 2 ** int(n)
+    return float(min(1.0, 2 * tail))
 
 
 # ---------------------------------------------------------------- recovery
