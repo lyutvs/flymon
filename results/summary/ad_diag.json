@@ -905,7 +905,7 @@
      "floor_tolerance": 0.2008002008,
      "n_confirm_active_kc": 3414,
      "n_edges": 33496,
-     "note": "ratio w/w0; floor = share <= floor_tolerance = (0.2 + r 0.8)(1 + 1e-6): checkpoints are written after recover_pulse, so an edge held at the 0.2 floor reads 0.2008. The run's floor_contact (AC.3, <= 0.2 (1 + 1e-6)) cannot see such edges; at_w0 = unchanged (the rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose KC spiked for any confirmation-set FLY odour in the naive map",
+     "note": "ratio w/w0; floor = share <= floor_tolerance = (0.2 + r 0.8)(1 + 1e-6): checkpoints are written after recover_pulse, so an edge held at the 0.2 floor reads 0.2008. floor_n is a LOWER BOUND: the 0.2008 bound catches an edge that touched the floor and then recovered exactly once; an edge that touched the floor and recovered twice reads 0.2016 (fly 25's min, 0.20160) and is not counted. The run's floor_contact (AC.3, <= 0.2 (1 + 1e-6)) cannot see such edges; at_w0 = unchanged (the rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose KC spiked for any confirmation-set FLY odour in the naive map",
      "per_arm_mean_over_flies": {
       "FLYL": {
        "A_cells/all": {
@@ -1332,7 +1332,7 @@
      }
     }
    },
-   "method": "checkpoint 120 vs w0 with the floor tolerance 0.2 + r 0.8 (weights_at_120.per_fly_floor_all_edges): a handful of edges per fly sit at the floor; the run's floor_contact (<= 0.2) could not see them",
+   "method": "checkpoint 120 vs w0 with the floor tolerance 0.2 + r 0.8 (weights_at_120.per_fly_floor_all_edges): at least a handful of edges per fly sit at the floor (a lower bound: 0.2008 catches one recovery after the floor only; fly 25's min 0.2016 is a floor edge recovered twice); the run's floor_contact (<= 0.2) could not see them",
    "question": 2
   },
   {
@@ -4348,7 +4348,7 @@
    "floor_tolerance": 0.2008002008,
    "n_confirm_active_kc": 3414,
    "n_edges": 33496,
-   "note": "ratio w/w0; floor = share <= floor_tolerance = (0.2 + r 0.8)(1 + 1e-6): checkpoints are written after recover_pulse, so an edge held at the 0.2 floor reads 0.2008. The run's floor_contact (AC.3, <= 0.2 (1 + 1e-6)) cannot see such edges; at_w0 = unchanged (the rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose KC spiked for any confirmation-set FLY odour in the naive map",
+   "note": "ratio w/w0; floor = share <= floor_tolerance = (0.2 + r 0.8)(1 + 1e-6): checkpoints are written after recover_pulse, so an edge held at the 0.2 floor reads 0.2008. floor_n is a LOWER BOUND: the 0.2008 bound catches an edge that touched the floor and then recovered exactly once; an edge that touched the floor and recovered twice reads 0.2016 (fly 25's min, 0.20160) and is not counted. The run's floor_contact (AC.3, <= 0.2 (1 + 1e-6)) cannot see such edges; at_w0 = unchanged (the rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose KC spiked for any confirmation-set FLY odour in the naive map",
    "per_arm_mean_over_flies": {
     "FLYL": {
      "A_cells/all": {

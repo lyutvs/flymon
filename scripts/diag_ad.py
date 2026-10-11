@@ -562,7 +562,10 @@ def weights_section(emap, w120, w0, lay, mapr, pairs, r_rec) -> dict:
                                            floor_frac_max=max(v["floor_frac"] for v in xs))
     out["floor_tolerance"] = diag.floor_tol(0.2, r_rec)
     out["note"] = ("ratio w/w0; floor = share <= floor_tolerance = (0.2 + r 0.8)(1 + 1e-6): checkpoints are written "
-                   "after recover_pulse, so an edge held at the 0.2 floor reads 0.2008. The run's floor_contact "
+                   "after recover_pulse, so an edge held at the 0.2 floor reads 0.2008. floor_n is a LOWER BOUND: the 0.2008 "
+                   "bound catches an edge that touched the floor and then recovered exactly once; an edge that touched "
+                   "the floor and recovered twice reads 0.2016 (fly 25's min, 0.20160) and is not counted. "
+                   "The run's floor_contact "
                    "(AC.3, <= 0.2 (1 + 1e-6)) cannot see such edges; at_w0 = unchanged (the "
                    "rule depresses only and recovers toward w0, so w0 is the ceiling); confirm_active_kc = edges whose "
                    "KC spiked for any confirmation-set FLY odour in the naive map")
@@ -716,7 +719,9 @@ def candidates(q1o, q2o) -> list:
              evidence=dict(floor_contact=q2o["weight_summary_by_point"], weights_at_120=q2o.get("weights_at_120")),
              estimate=dict(metric="gain from removing the floor", value="not material (not re-evaluated)"),
              method="checkpoint 120 vs w0 with the floor tolerance 0.2 + r 0.8 (weights_at_120.per_fly_floor_all_edges): "
-                    "a handful of edges per fly sit at the floor; the run's floor_contact (<= 0.2) could not see them",
+                    "at least a handful of edges per fly sit at the floor (a lower bound: 0.2008 catches one recovery after "
+                    "the floor only; fly 25's min 0.2016 is a floor edge recovered twice); the run's floor_contact "
+                    "(<= 0.2) could not see them",
              caveat="only point 120 has weights; the rule's tanh per-step saturation is not examined"),
         dict(cause="point-to-point flips of the per-pair direction (the 100 -> 120 drop)", question=2,
              evidence=dict(transitions=q2o["transitions"]["FLYL"],
