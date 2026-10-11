@@ -244,8 +244,8 @@ M2: 인코더·판독·학습 단위 시험 — no-go(시험 불성립). STD 지
   결과(`c4e080c`, `results/summary/ad_m4.json`): 1차 1 FLY-L − FLY-OS(120배틀) 0.008 [−0.079, 0.100] 미충족, 1차 2(40배틀) 0.079 [−0.012, 0.171] 미충족(교차 부트스트랩 CI −0.167, 0.192 · −0.117, 0.283, 기술). 기준 행 FLY-L(0) − FLY-OS(0) −0.163 [−0.233, −0.096]. 요약: "배틀로 120배틀 학습한 마리의 상성 조건부 선택이 상대 타입을 섞은 우연 전환 대조(FLY-OS)와 비교해 탐색 기준에 못 미쳤다(확인 세트 20쌍에 한함)." 기술(다중 비교 미보정): 차이의 차이 40 0.242 [0.142, 0.346] · 120 0.171 [0.075, 0.271]; FLY-L − C-off 40 0.200 · 120 0.158(C-off는 1단계 0 시점 기록); FLY-L(40) − 1단계 FLY(40) 0.008 [−0.079, 0.096]; 새 20쌍 40 0.054 · 120 0.058(CI 0 포함); 짝지은 OS 평가 20–120 시점 0.012–0.067(CI 모두 0 포함); 기준 2 FLY-L − FLY-OS 0.081 [0.051, 0.112]; 기준 3 FLY-L − FLY-OS 0.008 [−0.079, 0.096], FLY-L − RND 0.004 [−0.079, 0.085], MAX − FLY-L 0.299 [0.207, 0.393]. 기준 4 · 5 미측정(AC.2 2단계 팔 보류). 학습 확인(기록): FLY-L 전환율 0 시점 0.033 → 120 시점 0.217, 맞는 방향 쌍 비율 0.196 → 0.362(40–100 시점 0.392–0.404, 절반 아래); FLY-OS 전환율 0.196 → 0.208, 자기 잡음 기대치 Σq·q 0.201. 바닥 접촉 모든 시점 0.0(마리당 누적 펄스 FLY-L 3 234.0 · FLY-OS 3 340.1). KC 비율 > 2 턴 FLY-L 0.309 · FLY-OS 0.313. 원자료 목록 63파일(분석 전)과 git 밖 보관본. M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).
   다음: 사용자 결정. M2 상태(판정 없음)는 그대로다.
 - **AD.11 진단 — 순진 판독 치우침과 학습 정체(2026-10-11, 부록 AD.11 — 기록 전용 추정, 판정 · 규칙 변경 없음)**: 라벨: M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC). 사용자의 두 질문(순진 FLY-L 0.196 대 FLY-OS 0.45–0.50; 40배틀 근처 약 0.40에서 멈추고 120에서 0.362)을 새 배틀 · 새 학습 없이 기록과 기존 가중치(0 · 120 시점뿐, 20–100 시점은 기록만)로 진단했다(코드 `f7dc3ce`, 리뷰 수정 `5c878b5`, `results/summary/ad_diag.json`).
-  질문 1: 확인 세트 20쌍 중 13쌍이 두 최적 수가 모두 효과 굉장함이고, 순진 w0 판독은 효과 굉장함을 낮게 읽는다(중심화 V −0.331, 무효 +0.732). 치우침은 P 판독(MBON05)에 있고(−z_P만 0.242, z_A만 0.529), w0 냄새 112개 지도에서도 보인다 — 효과 굉장함 냄새가 KC를 더 켜고(277 대 보통 214) KC 수와 P 계수의 Spearman 0.44. FLY-OS의 약 0.5는 두 쪽 상대를 독립으로 뽑는 대칭에서 온다(0 시점 0.496; FLY-L을 OS 냄새로 평가해도 0.517). 질문 2: 학습 전 값을 뺀 변화(V(t) − V(0))는 20–120 시점 0.767–0.800이 맞는 방향이지만, 학습 전에 깊게 틀린 10쌍은 끝까지 다수가 틀렸다(순진 d와 120 시점 쌍별 맞는 방향의 Spearman 0.82). 구획 평균 가중치는 곱셈 억압과 회복 r 0.001의 평형으로 관찰 τ ≈ 14–15배틀에 멈췄다. 100–120의 하락은 맞음 → 틀림 15 · 틀림 → 맞음 6으로 대칭 회전과 구별되지 않는다. 바닥 간선은 마리당 적어도 2–29개(하한; 실행의 바닥 접촉 정의로는 보이지 않음).
-  "고치면"(기록 전용 추정, 새 학습의 예측 아님, 120 시점 실제 0.362): V(t) − V(0) 판독 0.767(마리가 가진 기제 아님); 변화 ×2 0.458 [+0.021, +0.196], ×3.4 0.433(조잡한 한계); 보상 구획 변화만 0.458(CI 0 포함). 새 20쌍의 등급 구성은 보지 않았다. 다음 선택지: (권장) M5 정리 — 탐색 트랙을 닫고 최종 요약, M2는 "정식 판정 없음"; (대안) 순진 기준선을 빼거나 KC 수로 나누는 판독을 사전 등록해 쓰지 않은 쌍에서 먼저 오프라인으로 시험. 결정은 사용자. M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).
+  질문 1: 확인 세트 20쌍 중 13쌍이 두 최적 수가 모두 효과 굉장함이고, 순진 w0 판독은 효과 굉장함을 낮게 읽는다(중심화 V −0.331, 무효 +0.732; 등급 평균만 쓴 모형은 20쌍 모두를 틀린 방향으로 예측하지만 표본 내 모형이다). 치우침은 P 판독(MBON05)에 있고(−z_P만 0.242, z_A만 0.529), w0 냄새 112개 지도에서도 보인다 — 효과 굉장함 냄새가 KC를 더 켜고(277 대 보통 214) KC 수와 P 계수의 Spearman 0.44. FLY-OS의 약 0.5는 두 쪽 상대를 독립으로 뽑는 대칭에서 온다(0 시점 0.496; FLY-L을 OS 냄새로 평가해도 0.517). 질문 2: 학습 전 값을 뺀 변화(V(t) − V(0))는 20–120 시점 0.767–0.800이 맞는 방향이지만, 학습 전에 깊게 틀린 10쌍은 끝까지 다수가 틀렸다(순진 d와 120 시점 쌍별 맞는 방향의 Spearman 0.82). 구획 평균 가중치는 곱셈 억압과 회복 r 0.001의 평형으로 관찰 τ ≈ 14–15배틀에 멈췄다. 100–120의 하락은 맞음 → 틀림 15 · 틀림 → 맞음 6으로 대칭 회전과 구별되지 않는다. 바닥 간선은 24마리 중 적어도 22마리에 있고 그 마리들에서 마리당 2–29개다(전체 마리로는 FLY-L 0–14 · FLY-OS 0–29; 모두 하한, 실행의 바닥 접촉 정의로는 보이지 않음).
+  "고치면"(기록 전용 추정, 새 학습의 예측 아님, 120 시점 실제 0.362): V(t) − V(0) 판독 0.767(마리가 가진 기제 아님); 변화 ×2 0.458(실제 0.362와의 차이 +0.096, 교차 짝 부트스트랩 CI [0.021, 0.196]), ×3.4 0.433(조잡한 한계); 보상 구획 변화만 0.458(실제와의 차이의 CI가 0 포함). 오프라인 재평가의 재현 확인은 마리 24 한 마리만 했다. 새 20쌍의 등급 구성은 보지 않았다. 다음 선택지: (권장) M5 정리 — 탐색 트랙을 닫고 최종 요약, M2는 "정식 판정 없음"; (대안) 순진 기준선을 빼거나 KC 수로 나누는 판독을 사전 등록해 쓰지 않은 쌍에서 먼저 오프라인으로 시험. 결정은 사용자. M2 정식 판정 없음 — 근거는 AA 효과 크기 추정(보상 연합 d′ 6.02 [4.83, 7.49], 처벌 −4.52 [−5.89, −3.23], 넓힌 풀 16쌍, 커버리지 0.855 명목 미달)뿐. 탐색 단계(부록 AC).
 - **안 된 것(운영)**: 실패한 튜닝 실행은 스크립트를 `--out results/m0/<태그>.json`으로 다시 돌려 보관한다.
   `results/`는 `results/summary/`를 빼고 git에서 제외되며, 채택한 실행만 `results/summary/m0.json`에 요약된다.
 
@@ -571,7 +571,8 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   a stop near 0.40 by about 40 battles and 0.362 at 120) were diagnosed without new battles or learning, from the
   records and the existing weights (points 0 and 120 only; points 20-100 from records only; code `f7dc3ce`, review fix
   `5c878b5`, `results/summary/ad_diag.json`). Question 1: 13 of the 20 confirmation pairs have super-effective best
-  moves on both sides, and the naive w0 readout reads super-effective candidates low (centred V -0.331, immune +0.732).
+  moves on both sides, and the naive w0 readout reads super-effective candidates low (centred V -0.331, immune +0.732; a class-only model predicts all 20 pairs in the
+  wrong direction, but it is in-sample).
   The skew sits in the P readout (MBON05; -z_P only 0.242, z_A only 0.529) and also shows in a w0 map of 112 odours:
   super-effective odours drive more KCs (277 vs neutral 214) and KC count tracks the P count (Spearman 0.44). FLY-OS sits
   near 0.5 by symmetry, since both sides' opponents are drawn independently (0.496 at point 0; FLY-L weights on OS
@@ -579,13 +580,16 @@ heuristic coach. The ledger above separates what was measured, what we chose, an
   20-120, but the 10 pairs that were deeply wrong before learning stayed mostly wrong (Spearman 0.82 between naive d
   and the per-pair share at 120). Compartment-mean weights levelled off at the equilibrium of multiplicative depression
   and recovery r 0.001, observed tau about 14-15 battles. The 100-120 drop (right to wrong 15, wrong to right 6) cannot
-  be told apart from symmetric turnover. Floor edges: at least 2-29 per fly (a lower bound; invisible to the run's floor
-  contact definition). "If fixed" (record-only estimates, not predictions of new learning; actual 0.362 at 120):
-  V(t) - V(0) readout 0.767 (not a mechanism the fly has); change x2 0.458 [+0.021, +0.196], x3.4 0.433 (a crude
-  bound); reward-compartment change only 0.458 (CI includes 0). The class mix of the new 20 pairs was not examined.
+  be told apart from symmetric turnover. Floor edges: present in at least 22 of 24 flies, 2-29 each among those (FLY-L 0-14,
+  FLY-OS 0-29 over all flies; all lower bounds, invisible to the run's floor contact definition). "If fixed" (record-only estimates, not predictions of new learning; actual 0.362 at 120):
+  V(t) - V(0) readout 0.767 (not a mechanism the fly has); change x2 0.458 (difference from the actual 0.362 +0.096, crossed paired bootstrap
+  CI [0.021, 0.196]), x3.4 0.433 (a crude bound); reward-compartment change only 0.458 (the CI of its difference
+  from the actual includes 0). The offline reproduction check covered one fly (fly 24). The class mix of the new
+  20 pairs was not examined.
   Options: (recommended) M5 wrap-up, closing the exploration track with a final summary and M2 left as "no formal
   judgement"; (alternative) pre-register a readout that subtracts each odour's naive baseline or normalises by KC count
-  and test it offline on unused pairs first. The decision is the user's. M2: no formal judgement — the only evidence is the AA effect-size estimate (reward
+  and test it offline on unused pairs first. The decision is the user's.
+  Label: M2: no formal judgement — the only evidence is the AA effect-size estimate (reward
   association d' 6.02 [4.83, 7.49], punishment -4.52 [-5.89, -3.23], 16 widened-pool pairs, coverage 0.855 below
   nominal). Exploration stage (appendix AC).
 
